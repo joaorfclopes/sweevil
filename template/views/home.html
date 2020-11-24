@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sweevil</title>
+    <link rel="icon" type="image/png" href="../images/brand/favicon.png" />
+    <link rel="stylesheet" href="../style/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <header class="navbar">
+      <div>
+        <a href="./home.html">
+          <img
+            class="logo"
+            src="../images/brand/logo_white_yellow.PNG"
+            alt="logo"
+          />
+        </a>
+        <ul class="nav-desktop">
+          <li><a class="active" href="./home.html">Home</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./gallery.html">Gallery</a></li>
+          <li><a href="./contacts.html">Contacts</a></li>
+          <li><a href="./shop.html">Shop</a></li>
+        </ul>
+        <ul class="nav-mobile">
+          <li onclick="openMenu()">Menu</li>
+          <li class="close" onclick="closeMenu()">x</li>
+          <li><a class="active" href="./home.html">Home</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./gallery.html">Gallery</a></li>
+          <li><a href="./contacts.html">Contacts</a></li>
+          <li><a href="./shop.html">Shop</a></li>
+        </ul>
+      </div>
+    </header>
+    <script>
+      const openMenu = () => {
+        $(".nav-mobile li").first().addClass("hide");
+        $(".nav-mobile li").not(":first").addClass("show");
+        $(".nav-mobile").addClass("full-screen");
+      };
+      const closeMenu = () => {
+        $(".nav-mobile li").first().removeClass("hide");
+        $(".nav-mobile li").not(":first").removeClass("show");
+        $(".nav-mobile").removeClass("full-screen");
+      };
+    </script>
+  </body>
+</html>
