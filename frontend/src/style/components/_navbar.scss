@@ -19,13 +19,13 @@
       width: 180px;
       position: absolute;
       top: 0;
-      margin-top: 20px !important;
+      padding-top: 20px;
       margin: 0;
       cursor: pointer;
       transition: 0.2s;
 
       @include md {
-        margin-top: 30px !important;
+        padding-top: 30px;
         width: 200px;
       }
 
@@ -119,10 +119,6 @@
         @include md {
           display: none;
         }
-      }
-
-      .active {
-        color: $primaryColor;
       }
     }
   }

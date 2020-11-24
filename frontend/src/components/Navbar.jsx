@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import $ from "jquery";
 import logo from "../assets/images/brand/logo_white_yellow.PNG";
 
 export default function Navbar() {
-  const options = useMemo(
-    () => ["home", "about", "gallery", "contacts", "shop"],
-    []
-  );
+  const options = ["home", "about", "gallery", "contacts", "shop"];
 
   const openMenu = () => {
     $(".nav-mobile li").first().addClass("hide");
@@ -20,26 +18,16 @@ export default function Navbar() {
     $(".nav-mobile").removeClass("full-screen");
   };
 
-  useEffect(() => {
-    options.forEach((option) => {
-      if (window.location.href.indexOf(`/${option}`) > -1) {
-        $(`.${option}`).addClass("active");
-      }
-    });
-  }, [options]);
-
   return (
     <header className="navbar">
       <div>
-        <a href="./index.html">
+        <Link to="/">
           <img className="logo" src={logo} alt="logo" />
-        </a>
+        </Link>
         <ul className="nav-desktop">
           {options.map((option) => (
             <li key={option}>
-              <a className={option} href={option}>
-                {option}
-              </a>
+              <Link to={option === "home" ? "" : option}>{option}</Link>
             </li>
           ))}
         </ul>
@@ -49,10 +37,8 @@ export default function Navbar() {
             x
           </li>
           {options.map((option) => (
-            <li key={option}>
-              <a className={option} href={option}>
-                {option}
-              </a>
+            <li onClick={closeMenu} key={option}>
+              <Link to={option === "home" ? "" : option}>{option}</Link>
             </li>
           ))}
         </ul>
