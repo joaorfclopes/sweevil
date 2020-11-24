@@ -1,0 +1,21 @@
+@import "./general/variables";
+@import "./general/fonts";
+@import "./general/breakpoints";
+@import "./general/mixins";
+@import "./components/navbar";
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/images/brand/background_none.PNG");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
