@@ -2,14 +2,14 @@
 
 # dependencies
 node_modules
-/.pnp
+.pnp
 .pnp.js
 
 # testing
-/coverage
+coverage
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -25,3 +25,4 @@ package-lock.json
 .eslintcache
 
 .vercel
+debug.log

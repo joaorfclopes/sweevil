@@ -1,125 +1,58 @@
-.navbar {
-  font-family: brushstrikeregular;
+header {
   width: 100%;
-  top: 0;
   position: fixed;
-
-  div {
-    width: 100vw;
-    padding: 0 3vw 0 3vw;
-    height: 130px;
-    display: table-cell;
-    vertical-align: middle;
-
+  padding: 1rem 3vw;
+  font-family: brushstrikeregular;
+  .brand-logo {
+    width: 10rem;
+    &:hover {
+      fill: $primaryColor;
+    }
     @include md {
-      height: 180px;
+      width: 15rem;
     }
-
-    img {
-      width: 180px;
-      position: absolute;
-      top: 0;
-      padding-top: 20px;
-      margin: 0;
-      cursor: pointer;
+  }
+  @include nav-options;
+  .icon {
+    width: 30px;
+    transition: 0.2s;
+    vertical-align: middle;
+  }
+  .badge {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 0.2rem 0.5rem;
+    margin-left: -15px;
+    position: relative;
+    top: -17px;
+  }
+  .nav-desktop {
+    display: none;
+    @include lg {
+      display: block;
+    }
+    li {
+      margin-left: 1.5rem;
+      display: inline;
+      font-size: 30px;
       transition: 0.2s;
-
-      @include md {
-        padding-top: 30px;
-        width: 200px;
+      &:hover {
+        color: $primaryColor;
+        transition: 0.2s;
       }
-
-      @include lg {
-        width: 250px;
+      .icon {
+        &:hover {
+          fill: $primaryColor;
+        }
       }
     }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-      float: right;
-
-      li {
-        font-size: 28px;
-        cursor: pointer;
-        transition: 0.2s;
-
-        @include lg {
-          font-size: 30px;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-      }
-
-      &.nav-desktop {
-        text-align: right;
-        display: none;
-
-        @include md {
-          display: block;
-        }
-
-        li {
-          display: inline;
-          margin: 0 10px;
-
-          &:hover {
-            color: $primaryColor;
-          }
-
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-
-      &.nav-mobile {
-        transition: 0.2s;
-        &.full-screen {
-          background-color: white;
-          margin: 0;
-          padding: 0;
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100vh;
-          text-align: center;
-        }
-
-        li {
-          &.close {
-            text-align: right;
-            margin-right: 10vw;
-            margin-top: 17vw;
-            line-height: 0;
-
-            @include sm-height {
-              margin-bottom: 7vh;
-            }
-          }
-
-          &:not(:first-child) {
-            display: none;
-          }
-
-          &.show {
-            display: block;
-            font-size: 32px;
-          }
-
-          &.hide {
-            display: none;
-          }
-        }
-
-        @include md {
-          display: none;
-        }
-      }
+  }
+  .icon-mobile {
+    @include lg {
+      display: none;
     }
   }
 }

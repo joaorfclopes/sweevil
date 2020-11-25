@@ -3,27 +3,34 @@
     @content;
   }
 }
-
 @mixin md {
   @media (min-width: #{$screen-md-min}) {
     @content;
   }
 }
-
 @mixin lg {
   @media (min-width: #{$screen-lg-min}) {
     @content;
   }
 }
-
 @mixin xl {
   @media (min-width: #{$screen-xl-min}) {
     @content;
   }
 }
-
 @mixin sm-height {
   @media (min-height: #{$screen-sm-min-height}) {
     @content;
+  }
+}
+@mixin nav-options {
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    .active {
+      color: $primaryColor;
+      fill: $primaryColor;
+    }
   }
 }

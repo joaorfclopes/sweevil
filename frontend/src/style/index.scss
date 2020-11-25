@@ -2,7 +2,9 @@
 @import "./general/fonts";
 @import "./general/breakpoints";
 @import "./general/mixins";
+@import "./general/layout";
 @import "./components/navbar";
+@import "./components/menuMobile";
 
 * {
   box-sizing: border-box;
@@ -18,4 +20,8 @@ body,
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
+}
+a {
+  text-decoration: none;
+  color: inherit;
 }

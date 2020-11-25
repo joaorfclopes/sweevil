@@ -1,47 +1,52 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import $ from "jquery";
 import logo from "../assets/images/brand/logo_white_yellow.PNG";
+import { ReactComponent as Cart } from "../assets/images/svg/cart.svg";
+import { ReactComponent as Menu } from "../assets/images/svg/menu.svg";
+import { options } from "../utils";
 
 export default function Navbar() {
-  const options = ["home", "about", "gallery", "contacts", "shop"];
-
   const openMenu = () => {
-    $(".nav-mobile li").first().addClass("hide");
-    $(".nav-mobile li").not(":first").addClass("show");
-    $(".nav-mobile").addClass("full-screen");
-  };
-
-  const closeMenu = () => {
-    $(".nav-mobile li").first().removeClass("hide");
-    $(".nav-mobile li").not(":first").removeClass("show");
-    $(".nav-mobile").removeClass("full-screen");
+    $(".nav-mobile").addClass("show");
   };
 
   return (
-    <header className="navbar">
+    <header className="row">
+      <div className="icon-mobile">
+        <NavLink exact to="/cart" activeClassName="active">
+          <Cart className="icon" />
+          <span className="badge">0</span>
+        </NavLink>
+      </div>
       <div>
-        <Link to="/">
-          <img className="logo" src={logo} alt="logo" />
-        </Link>
+        <NavLink exact className="brand" to="/">
+          <img className="brand-logo" src={logo} alt="logo" />
+        </NavLink>
+      </div>
+      <div>
         <ul className="nav-desktop">
           {options.map((option) => (
             <li key={option}>
-              <Link to={option === "home" ? "" : option}>{option}</Link>
+              <NavLink
+                exact
+                to={option !== "home" ? option : "/"}
+                activeClassName="active"
+              >
+                {option}
+              </NavLink>
             </li>
           ))}
-        </ul>
-        <ul className="nav-mobile">
-          <li onClick={openMenu}>Menu</li>
-          <li className="close" onClick={closeMenu}>
-            x
+          <li>
+            <NavLink exact to="/cart" activeClassName="active">
+              <Cart className="icon" />
+              <span className="badge">0</span>
+            </NavLink>
           </li>
-          {options.map((option) => (
-            <li onClick={closeMenu} key={option}>
-              <Link to={option === "home" ? "" : option}>{option}</Link>
-            </li>
-          ))}
         </ul>
+        <div onClick={openMenu} className="icon-mobile">
+          <Menu className="icon" />
+        </div>
       </div>
     </header>
   );
