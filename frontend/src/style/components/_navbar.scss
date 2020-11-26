@@ -41,12 +41,8 @@ header {
       transition: 0.2s;
       &:hover {
         color: $primaryColor;
+        fill: $primaryColor;
         transition: 0.2s;
-      }
-      .icon {
-        &:hover {
-          fill: $primaryColor;
-        }
       }
     }
   }
