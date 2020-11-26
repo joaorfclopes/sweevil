@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
+    "build": "npm run dos2unix && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
