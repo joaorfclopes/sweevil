@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import $ from "jquery";
-import Loading from "./screens/LoadingScreen";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import HomeScreen from "./screens/HomeScreen";
@@ -12,16 +11,15 @@ export default function App() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
+      $(".loading").css({ display: "none" });
       $("html").addClass("fade-in");
     }, 1500);
   }, []);
 
   return (
     <BrowserRouter>
-      <div className="App">
-        {loading ? (
-          <Loading />
-        ) : (
+      {!loading && (
+        <div className="App">
           <div className="grid-container">
             <Navbar />
             <MenuMobile />
@@ -31,8 +29,8 @@ export default function App() {
               </Switch>
             </main>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </BrowserRouter>
   );
 }
