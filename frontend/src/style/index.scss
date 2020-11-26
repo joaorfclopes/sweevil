@@ -3,6 +3,8 @@
 @import "./general/breakpoints";
 @import "./general/mixins";
 @import "./general/layout";
+@import "./components/spinner";
+@import "./screens//loading";
 @import "./components/navbar";
 @import "./components/menuMobile";
 
@@ -24,4 +26,7 @@ body,
 a {
   text-decoration: none;
   color: inherit;
+}
+.fade-in {
+  @include fade-in;
 }
