@@ -4,7 +4,7 @@ header {
   padding: 1rem 3vw;
   font-family: brushstrikeregular;
   .brand-logo {
-    width: 10rem;
+    width: 12rem;
     &:hover {
       fill: $primaryColor;
     }
@@ -14,7 +14,7 @@ header {
   }
   @include nav-options;
   .icon {
-    width: 30px;
+    width: $large;
     transition: 0.2s;
     vertical-align: middle;
   }
@@ -35,9 +35,9 @@ header {
       display: block;
     }
     li {
+      font-size: $large;
       margin-left: 1.5rem;
       display: inline;
-      font-size: 30px;
       transition: 0.2s;
       &:hover {
         color: $primaryColor;
