@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import $ from "jquery";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
-import HomeScreen from "./screens/HomeScreen";
+import AdminScreen from "./screens/AdminScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -12,7 +12,6 @@ export default function App() {
     setTimeout(() => {
       setLoading(false);
       $(".loading").css({ display: "none" });
-      $("html").addClass("fade-in");
     }, 1500);
   }, []);
 
@@ -25,7 +24,7 @@ export default function App() {
             <MenuMobile />
             <main>
               <Switch>
-                <Route exact path="/" component={HomeScreen} />
+                <Route exact path="/admin" component={AdminScreen} />
               </Switch>
             </main>
           </div>
