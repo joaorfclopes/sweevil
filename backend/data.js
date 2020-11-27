@@ -15,7 +15,8 @@ const data = {
     {
       name: "Bag",
       category: "Bags",
-      image: "/images/bag1.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/bag1.jpg",
       finalPrice: 20,
       description: "high quality product",
       isClothing: false,
@@ -32,7 +33,8 @@ const data = {
     {
       name: "Bag & T-Shirt",
       category: "T-Shirts",
-      image: "/images/bag1&tshirt4.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/bag1%26tshirt4.jpg",
       finalPrice: 40,
       description: "high quality product",
       countInStock: 10,
@@ -50,7 +52,8 @@ const data = {
     {
       name: "Long Sleeve 1",
       category: "Hoodies",
-      image: "/images/long-sleeve1.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/long-sleeve1.JPG",
       finalPrice: 40,
       description: "high quality product",
       countInStock: 10,
@@ -68,7 +71,8 @@ const data = {
     {
       name: "Long Sleeve 2",
       category: "Hoodies",
-      image: "/images/long-sleeve2.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/long-sleeve2.JPG",
       finalPrice: 40,
       description: "high quality product",
       countInStock: 10,
@@ -86,7 +90,8 @@ const data = {
     {
       name: "T-Shirt 1",
       category: "T-Shirts",
-      image: "/images/tshirt1.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/tshirt1.JPG",
       finalPrice: 30,
       description: "high quality product",
       countInStock: 10,
@@ -104,7 +109,8 @@ const data = {
     {
       name: "T-Shirt 2",
       category: "T-Shirts",
-      image: "/images/tshirt2.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/tshirt2.JPG",
       finalPrice: 30,
       description: "high quality product",
       countInStock: 10,
@@ -122,7 +128,8 @@ const data = {
     {
       name: "T-Shirt 3 & 1",
       category: "T-Shirts",
-      image: "/images/tshirt3&1.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/tshirt3%261.JPG",
       finalPrice: 30,
       description: "high quality product",
       countInStock: 10,
@@ -140,7 +147,8 @@ const data = {
     {
       name: "T-Shirt 4",
       category: "T-Shirts",
-      image: "/images/tshirt4.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/tshirt4.JPG",
       finalPrice: 30,
       description: "high quality product",
       countInStock: 10,
@@ -158,7 +166,8 @@ const data = {
     {
       name: "T-Shirt 5",
       category: "T-Shirts",
-      image: "/images/tshirt5.jpg",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/images/tshirt5.jpg",
       finalPrice: 30,
       description: "high quality product",
       countInStock: 10,
