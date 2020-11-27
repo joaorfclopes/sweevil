@@ -3,16 +3,15 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import $ from "jquery";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
-import AdminScreen from "./screens/AdminScreen";
+import HomeScreen from "./screens/HomeScreen";
+import SigninScreen from "./screens/SigninScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      $(".loading").css({ display: "none" });
-    }, 1500);
+    setLoading(false);
+    $(".loading").css({ display: "none" });
   }, []);
 
   return (
@@ -24,7 +23,8 @@ export default function App() {
             <MenuMobile />
             <main>
               <Switch>
-                <Route exact path="/admin" component={AdminScreen} />
+                <Route path="/signin" component={SigninScreen} />
+                <Route path="/" component={HomeScreen} exact />
               </Switch>
             </main>
           </div>
