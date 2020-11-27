@@ -9,7 +9,8 @@
     "frontend": "cd frontend && npm start",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
-    "deploy": "npm run build && git push heroku"
+    "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
+    "deploy": "npm run dos2unix npm run build && git push heroku"
   },
   "repository": {
     "type": "git",
