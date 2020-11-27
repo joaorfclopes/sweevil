@@ -8,7 +8,8 @@
     "backend": "nodemon --watch backend --exec node --experimental-modules backend/server.js",
     "frontend": "cd frontend && npm start",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "build": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && npm install && npm run build",
+    "deploy": "npm run build && git push heroku"
   },
   "repository": {
     "type": "git",
