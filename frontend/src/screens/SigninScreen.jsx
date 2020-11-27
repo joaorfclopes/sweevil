@@ -15,7 +15,7 @@ export default function SigninScreen(props) {
 
   const redirect = props.location.search
     ? props.location.search.split("=")[1]
-    : "/";
+    : "/admin";
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ export default function SigninScreen(props) {
         <div>
           <h1>Sign In</h1>
         </div>
-        {loading && <LoadingBox width="50px" />}
+        {loading && <LoadingBox />}
         {error && <MessageBox variant="error">{error}</MessageBox>}
         <div>
           <label htmlFor="email">Email address</label>

@@ -2,6 +2,7 @@ header {
   width: 100%;
   position: fixed;
   font-family: brushstrikeregular;
+  z-index: 999;
   .brand-logo {
     width: 12rem;
     &:hover {

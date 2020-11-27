@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import HomeScreen from "./screens/HomeScreen";
 import SigninScreen from "./screens/SigninScreen";
+import ShopScreen from "./screens/ShopScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function App() {
             <MenuMobile />
             <main>
               <Switch>
+                <Route path="/shop" component={ShopScreen} />
                 <Route path="/signin" component={SigninScreen} />
                 <Route path="/" component={HomeScreen} exact />
               </Switch>
