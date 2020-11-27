@@ -20,7 +20,12 @@ export default function MenuMobile() {
       <ul>
         {userInfo && (
           <li>
-            <NavLink exact to="/admin" activeClassName="active">
+            <NavLink
+              exact
+              to="/admin"
+              activeClassName="active"
+              onClick={closeMenu}
+            >
               Admin
             </NavLink>
           </li>
