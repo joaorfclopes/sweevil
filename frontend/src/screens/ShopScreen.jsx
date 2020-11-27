@@ -20,7 +20,7 @@ export default function ShopScreen() {
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div>
+        <div className="shop" style={{ marginTop: "4vw" }}>
           <div className="row center">
             {products.map(
               (product) =>
