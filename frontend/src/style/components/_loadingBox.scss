@@ -1,0 +1,6 @@
+.loading-box {
+  .spinner {
+    @include spin;
+    margin: auto !important;
+  }
+}

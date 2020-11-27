@@ -5,8 +5,12 @@ import logo from "../assets/images/brand/logo_white_yellow.PNG";
 import { ReactComponent as Cart } from "../assets/images/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/images/svg/menu.svg";
 import { options } from "../utils";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
+  const userSignin = useSelector((state) => state.userSignin);
+  const { userInfo } = userSignin;
+
   const [counter, setCounter] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -15,18 +19,19 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    $(document).mouseup(function (e) {
-      var container = $(".brand-logo");
-      if (!container.is(e.target) && container.has(e.target).length === 0) {
-        setCounter(0);
-        setIsAdmin(false);
+    if (!userInfo) {
+      $(document).mouseup(function (e) {
+        var container = $(".brand-logo");
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+          setCounter(0);
+          setIsAdmin(false);
+        }
+      });
+      if (counter === 10) {
+        setIsAdmin(true);
       }
-    });
-
-    if (counter === 10) {
-      setIsAdmin(true);
     }
-  }, [counter]);
+  }, [userInfo, counter]);
 
   return (
     <header className="row">
@@ -37,7 +42,7 @@ export default function Navbar() {
         </NavLink>
       </div>
       <div>
-        <NavLink exact className="brand" to={!isAdmin ? "/" : "/admin"}>
+        <NavLink exact className="brand" to={!isAdmin ? "/" : "/signin"}>
           <img
             onClick={() => setCounter(counter + 1)}
             className="brand-logo"
