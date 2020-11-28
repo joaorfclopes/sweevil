@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 
 export default function Product(props) {
   const { product } = props;
+
   return (
     <div className="product" key={product._id}>
       <Link to={`/product/${product._id}`}>
         <div className="product-body">
-          <div
-            className="product-image"
-            style={{ backgroundImage: `url(${product.image})` }}
-          ></div>
+          <div className="product-image">
+            <img src={product.image} alt={product.image} />
+          </div>
           <div className="product-description">
             <p className="product-name">{product.name}</p>
             <div className="line"></div>
