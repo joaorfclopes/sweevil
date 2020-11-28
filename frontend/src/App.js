@@ -11,8 +11,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(false);
-    $(".loading").css({ display: "none" });
+    setTimeout(() => {
+      setLoading(false);
+      $(".loading").css({ display: "none" });
+    }, 1500);
   }, []);
 
   return (
