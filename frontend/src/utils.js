@@ -1,4 +1,4 @@
-export const options = ["home", "about", "gallery", "contacts", "shop"];
+export const options = ["about", "gallery", "contacts", "shop"];
 
 export const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
