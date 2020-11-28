@@ -14,22 +14,23 @@ export default function ShopScreen() {
     dispatch(listProducts());
   }, [dispatch]);
   return (
-    <section>
+    <section style={{ marginTop: "3vw" }}>
       {loading ? (
-        <LoadingBox />
+        <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="shop" style={{ marginTop: "3vw" }}>
+        <div className="shop">
           <div className="row center">
-            {products.map(
-              (product) =>
-                product.image &&
-                product.name &&
-                product.finalPrice && (
-                  <Product key={product._id} product={product} />
-                )
-            )}
+            {products &&
+              products.map(
+                (product) =>
+                  product.image &&
+                  product.name &&
+                  product.finalPrice && (
+                    <Product key={product._id} product={product} />
+                  )
+              )}
           </div>
         </div>
       )}
