@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import $ from "jquery";
+import Axios from "axios";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import HomeScreen from "./screens/HomeScreen";
@@ -12,9 +13,11 @@ export default function App() {
 
   useEffect(() => {
     setTimeout(() => {
-      setLoading(false);
-      $(".loading").css({ display: "none" });
-    }, 1500);
+      Axios.get("/api/products").then(() => {
+        setLoading(false);
+        $(".loading").css({ display: "none" });
+      });
+    }, 1200);
   }, []);
 
   return (
