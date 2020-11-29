@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 import $ from "jquery";
-import logo from "../assets/images/brand/logo_white_yellow.PNG";
+import { ReactComponent as Logo } from "../assets/images/svg/logo.svg";
 import { ReactComponent as Cart } from "../assets/images/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/images/svg/menu.svg";
 import { options } from "../utils";
-import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -43,11 +43,9 @@ export default function Navbar() {
       </div>
       <div>
         <NavLink exact className="brand" to={!isAdmin ? "/" : "/signin"}>
-          <img
-            onClick={() => setCounter(counter + 1)}
+          <Logo
             className="brand-logo"
-            src={logo}
-            alt="logo"
+            onClick={() => setCounter(counter + 1)}
           />
         </NavLink>
       </div>
