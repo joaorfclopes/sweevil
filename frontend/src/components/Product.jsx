@@ -10,7 +10,7 @@ export default function Product(props) {
       <Link to={`/product/${product._id}`}>
         <div className="product-body">
           <div className="product-image">
-            <LazyImage src={product.image} alt={product.image} />
+            <LazyImage src={product.images[0]} alt={product.image} />
           </div>
           <div className="product-description">
             <p className="product-name">{product.name}</p>

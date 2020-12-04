@@ -3,22 +3,7 @@ import multer from "multer";
 import multerS3 from "multer-s3";
 import aws from "aws-sdk";
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename(req, file, cb) {
-    cb(null, `${Date.now()}.jpg`);
-  },
-});
-
-const upload = multer({ storage });
-
 const uploadRouter = express.Router();
-
-uploadRouter.post("/", upload.single("image"), (req, res) => {
-  res.send(`/${req.file.path}`);
-});
 
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
