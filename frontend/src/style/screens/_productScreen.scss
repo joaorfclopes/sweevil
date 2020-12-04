@@ -1,0 +1,28 @@
+.product-screen {
+  .product-images {
+    line-height: 0;
+    width: 310px;
+    @include sm {
+      width: 510px;
+    }
+    img {
+      display: block;
+      &.large {
+        width: 300px;
+        @include sm {
+          width: 500px;
+        }
+      }
+      &.small {
+        width: 97px;
+        display: inline-block;
+        cursor: pointer;
+        margin-top: 5px;
+        margin-right: 5px;
+        @include sm {
+          width: 96px;
+        }
+      }
+    }
+  }
+}

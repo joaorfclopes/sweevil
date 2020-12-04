@@ -13,6 +13,7 @@ export default function ShopScreen() {
   useEffect(() => {
     dispatch(listProducts());
   }, [dispatch]);
+
   return (
     <section style={{ marginTop: "3vw" }}>
       {loading ? (

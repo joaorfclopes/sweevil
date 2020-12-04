@@ -53,14 +53,14 @@ export default function Navbar() {
         <ul className="nav-desktop">
           {userInfo && (
             <li>
-              <NavLink exact to="/admin" activeClassName="active">
+              <NavLink to="/admin" activeClassName="active">
                 Admin
               </NavLink>
             </li>
           )}
           {options.map((option) => (
             <li key={option}>
-              <NavLink exact to={option} activeClassName="active">
+              <NavLink to={`/${option}`} activeClassName="active">
                 {option}
               </NavLink>
             </li>
