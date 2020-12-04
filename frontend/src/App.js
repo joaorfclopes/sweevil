@@ -7,6 +7,7 @@ import MenuMobile from "./components/MenuMobile";
 import HomeScreen from "./screens/HomeScreen";
 import SigninScreen from "./screens/SigninScreen";
 import ShopScreen from "./screens/ShopScreen";
+import ProductScreen from "./screens/ProductScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -29,8 +30,13 @@ export default function App() {
             <MenuMobile />
             <main>
               <Switch>
-                <Route path="/shop" component={ShopScreen} />
-                <Route path="/signin" component={SigninScreen} />
+                <Route path="/shop" component={ShopScreen} exact />
+                <Route
+                  path="/shop/product/:id"
+                  component={ProductScreen}
+                  exact
+                />
+                <Route path="/signin" component={SigninScreen} exact />
                 <Route path="/" component={HomeScreen} exact />
               </Switch>
             </main>

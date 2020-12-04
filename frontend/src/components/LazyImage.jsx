@@ -27,7 +27,7 @@ const Image = styled.img`
   }
 `;
 
-export const LazyImage = ({ src, alt }) => {
+export const LazyImage = ({ src, alt, className }) => {
   const [imageSrc, setImageSrc] = useState(placeHolder);
   const [imageRef, setImageRef] = useState();
 
@@ -64,13 +64,11 @@ export const LazyImage = ({ src, alt }) => {
         );
         observer.observe(imageRef);
       } else {
-        // Old browsers fallback
         setImageSrc(src);
       }
     }
     return () => {
       didCancel = true;
-      // on component cleanup, we remove the listner
       if (observer && observer.unobserve) {
         observer.unobserve(imageRef);
       }
@@ -78,7 +76,7 @@ export const LazyImage = ({ src, alt }) => {
   }, [src, imageSrc, imageRef]);
   return (
     <Image
-      className="lazy-image"
+      className={`lazy-image ${className}`}
       ref={setImageRef}
       src={imageSrc}
       alt={alt}

@@ -20,19 +20,14 @@ export default function MenuMobile() {
       <ul>
         {userInfo && (
           <li>
-            <NavLink
-              exact
-              to="/admin"
-              activeClassName="active"
-              onClick={closeMenu}
-            >
+            <NavLink to="/admin" activeClassName="active" onClick={closeMenu}>
               Admin
             </NavLink>
           </li>
         )}
         {options.map((option) => (
           <li onClick={closeMenu} key={option}>
-            <NavLink exact to={option} activeClassName="active">
+            <NavLink to={`/${option}`} activeClassName="active">
               {option}
             </NavLink>
           </li>
