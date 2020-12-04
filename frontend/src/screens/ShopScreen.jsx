@@ -25,7 +25,7 @@ export default function ShopScreen() {
             {products &&
               products.map(
                 (product) =>
-                  product.image &&
+                  product.images[0] &&
                   product.name &&
                   product.finalPrice && (
                     <Product key={product._id} product={product} />
