@@ -41,6 +41,11 @@ export default function ProductScreen(props) {
                 </span>
               ))}
           </div>
+          <div className="product-details">
+            <ul>
+              <li>{product.name}</li>
+            </ul>
+          </div>
         </div>
       )}
     </section>
