@@ -10,8 +10,7 @@
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
-    "commit": "git add . && git commit -m \"heroku deploy\" && git push origin master",
-    "deploy": "npm run dos2unix && npm run commit && npm run build && git push heroku"
+    "deploy": "npm run dos2unix && npm run build && git push heroku"
   },
   "repository": {
     "type": "git",
