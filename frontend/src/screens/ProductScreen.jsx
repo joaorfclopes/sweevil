@@ -21,13 +21,13 @@ export default function ProductScreen(props) {
   };
 
   return (
-    <section className="row center" style={{ marginTop: "5vw" }}>
+    <section style={{ marginTop: "5vw" }}>
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="product-screen">
+        <div className="product-screen row center">
           <div className="product-images">
             <LazyImage
               className="large"
@@ -44,6 +44,14 @@ export default function ProductScreen(props) {
           <div className="product-details">
             <ul>
               <li>{product.name}</li>
+              <li>{product.category}</li>
+              <li>
+                {product.finalPrice
+                  ? product.finalPrice.toFixed(2)
+                  : product.finalPrice}
+                €
+              </li>
+              <li>{product.description}</li>
             </ul>
           </div>
         </div>
