@@ -22,13 +22,13 @@ export default function ShopScreen() {
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <div className="shop">
-          <div className="row center">
+          <div className="row center" style={{ minHeight: "70vh" }}>
             {products &&
               products.map(
                 (product) =>
                   product.images[0] &&
                   product.name &&
-                  product.finalPrice && (
+                  product.price && (
                     <Product key={product._id} product={product} />
                   )
               )}
