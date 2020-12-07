@@ -28,6 +28,11 @@
     @content;
   }
 }
+@mixin lg-max {
+  @media (max-width: #{$screen-lg-min}) {
+    @content;
+  }
+}
 @mixin nav-options {
   ul {
     list-style-type: none;

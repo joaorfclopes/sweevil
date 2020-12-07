@@ -71,8 +71,13 @@ export default function ProductScreen(props) {
                 </a>
               </div>
               <div className="image-preview-container">
-                {product.images.map((image) => (
-                  <div key={image} className="image-preview">
+                {product.images.map((image, index) => (
+                  <div
+                    key={image}
+                    className="image-preview"
+                    data-target="#productImageCarousel"
+                    data-slide-to={index}
+                  >
                     <LazyImage
                       src={image}
                       className="d-block w-100"
