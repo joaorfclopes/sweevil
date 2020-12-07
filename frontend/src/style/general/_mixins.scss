@@ -23,6 +23,11 @@
     @content;
   }
 }
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
 @mixin nav-options {
   ul {
     list-style-type: none;

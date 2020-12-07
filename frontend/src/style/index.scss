@@ -12,7 +12,9 @@
 @import "./components/product";
 @import "./screens/productScreen";
 
-* {
+*,
+::after,
+::before {
   box-sizing: border-box;
 }
 html,
