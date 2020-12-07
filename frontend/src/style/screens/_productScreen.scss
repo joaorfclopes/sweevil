@@ -1,4 +1,5 @@
 .product-screen {
+  min-height: 70vh;
   .container {
     width: 100%;
     padding-right: 15px;
@@ -9,12 +10,9 @@
       max-width: 540px;
     }
     @include md {
-      max-width: 720px;
-    }
-    @include lg {
       max-width: 960px;
     }
-    @include xl {
+    @include lg {
       max-width: 1140px;
     }
   }
@@ -315,6 +313,16 @@
     .carousel-control-next,
     .carousel-control-prev {
       transition: none;
+    }
+  }
+  .product-details {
+    .name {
+      @include sm {
+        margin-top: 0;
+      }
+    }
+    .price {
+      color: $primaryColor;
     }
   }
 }

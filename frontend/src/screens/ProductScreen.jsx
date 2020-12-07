@@ -16,7 +16,7 @@ export default function ProductScreen(props) {
   }, [dispatch, productId]);
 
   return (
-    <section className="product-screen" style={{ marginTop: "6vw" }}>
+    <section className="product-screen row center" style={{ marginTop: "3vw" }}>
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -25,7 +25,7 @@ export default function ProductScreen(props) {
         <div className="container">
           <div className="row-bootstrap">
             <div className="col-md-2"></div>
-            <div className="col-md-5">
+            <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
                 className="carousel slide"
@@ -87,21 +87,18 @@ export default function ProductScreen(props) {
                 ))}
               </div>
             </div>
-            <div className="col-md-5">
-              <h2>
+            <div className="col-md-5 product-details">
+              <h2 className="name">
                 <b>{product.name}</b>
               </h2>
-              <p className="price">
-                {product.finalPrice
-                  ? product.finalPrice.toFixed(2)
-                  : product.finalPrice}
-                €
-              </p>
-              <p>
-                <b>Availability:</b> <span className="stock"></span>
-              </p>
+              <h2 className="price">
+                <b>{product.price && product.price.toFixed(2)}€</b>
+              </h2>
               <p>
                 <b>Category:</b> {product.category}
+              </p>
+              <p>
+                <b>Description:</b> {product.description}
               </p>
             </div>
           </div>

@@ -16,10 +16,7 @@ export default function Product(props) {
             <p className="product-name">{product.name}</p>
             <div className="line"></div>
             <p className="product-name">
-              {product.finalPrice
-                ? product.finalPrice.toFixed(2)
-                : product.finalPrice}
-              €
+              {product.price && product.price.toFixed(2)}€
             </p>
           </div>
         </div>
