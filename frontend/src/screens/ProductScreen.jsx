@@ -1,19 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
 import LazyImage from "../components/LazyImage";
+import { sizes } from "../utils";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
   const productId = props.match.params.id;
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error } = productDetails;
+  const [chosenSize, setChosenSize] = useState("");
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
   }, [dispatch, productId]);
+
+  const availability = (val) => {
+    return val <= 0;
+  };
 
   return (
     <section className="product-screen row center" style={{ marginTop: "3vw" }}>
@@ -100,6 +106,37 @@ export default function ProductScreen(props) {
               <p>
                 <b>Description:</b> {product.description}
               </p>
+              {product.isClothing && (
+                <div className="size">
+                  {sizes.map((size, index) => (
+                    <div key={size} className="size-option">
+                      <button
+                        onClick={() => setChosenSize(size)}
+                        className={`secondary ${
+                          size === chosenSize ? "active" : ""
+                        }`}
+                        type="button"
+                        disabled={
+                          size === "xs"
+                            ? availability(product.countInStock.xs)
+                            : size === "s"
+                            ? availability(product.countInStock.s)
+                            : size === "m"
+                            ? availability(product.countInStock.m)
+                            : size === "l"
+                            ? availability(product.countInStock.l)
+                            : size === "xl"
+                            ? availability(product.countInStock.xl)
+                            : size === "xxl" &&
+                              availability(product.countInStock.xxl)
+                        }
+                      >
+                        {size}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

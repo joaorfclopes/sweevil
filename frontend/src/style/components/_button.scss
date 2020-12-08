@@ -1,0 +1,28 @@
+button {
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid !important;
+  transition: 0.3s;
+  &.primary:not(:disabled) {
+    background-color: $darkColor;
+    color: white;
+    border: 1px $darkColor solid !important;
+    &:hover {
+      background-color: transparent;
+      color: black;
+    }
+  }
+  &.secondary {
+    background-color: transparent;
+    &:hover:not(:disabled),
+    &.active {
+      color: white;
+      background-color: $darkColor;
+      border: 1px $darkColor solid !important;
+    }
+  }
+  &:disabled {
+    border: 1px solid $disabledColor;
+    color: $disabledColor;
+  }
+}

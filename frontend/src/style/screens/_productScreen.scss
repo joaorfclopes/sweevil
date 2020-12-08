@@ -324,5 +324,14 @@
     .price {
       color: $primaryColor;
     }
+    .size-option {
+      display: inline-block;
+      text-align: center;
+      margin-right: 3px;
+      margin-bottom: 5px;
+      button {
+        width: 40px;
+      }
+    }
   }
 }
