@@ -1,6 +1,6 @@
 export const options = ["about", "gallery", "contacts", "shop"];
 
-export const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
 
 export const formatDateDayHour = (date) => {
   const day = date.substring(8, 10);
