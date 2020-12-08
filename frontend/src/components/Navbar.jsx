@@ -10,6 +10,8 @@ import { options } from "../utils";
 export default function Navbar() {
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
 
   const [counter, setCounter] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -38,7 +40,7 @@ export default function Navbar() {
       <div className="icon-mobile">
         <NavLink exact to="/cart" activeClassName="active">
           <Cart className="icon" />
-          <span className="badge">0</span>
+          <span className="badge">{cartItems.length}</span>
         </NavLink>
       </div>
       <div>
@@ -68,7 +70,7 @@ export default function Navbar() {
           <li>
             <NavLink exact to="/cart" activeClassName="active">
               <Cart className="icon" />
-              <span className="badge">0</span>
+              <span className="badge">{cartItems.length}</span>
             </NavLink>
           </li>
         </ul>

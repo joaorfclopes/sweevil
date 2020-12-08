@@ -3,13 +3,19 @@ button {
   background-color: transparent;
   border: 1px solid !important;
   transition: 0.3s;
-  &.primary:not(:disabled) {
+  &.primary {
     background-color: $darkColor;
     color: white;
-    border: 1px $darkColor solid !important;
-    &:hover {
+    &:hover:not(:disabled),
+    &.active {
       background-color: transparent;
-      color: black;
+      color: $darkColor;
+    }
+    &:disabled {
+      cursor: auto;
+      border: 1px solid $disabledColor;
+      background-color: $disabledColor;
+      color: white;
     }
   }
   &.secondary {
@@ -20,9 +26,10 @@ button {
       background-color: $darkColor;
       border: 1px $darkColor solid !important;
     }
-  }
-  &:disabled {
-    border: 1px solid $disabledColor;
-    color: $disabledColor;
+    &:disabled {
+      cursor: auto;
+      border: 1px solid $disabledColor;
+      color: $disabledColor;
+    }
   }
 }

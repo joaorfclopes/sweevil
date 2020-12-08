@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import { addToCart } from "../actions/cartActions";
 import { detailsProduct } from "../actions/productActions";
 import LazyImage from "../components/LazyImage";
 import { sizes } from "../utils";
@@ -11,6 +12,7 @@ export default function ProductScreen(props) {
   const productId = props.match.params.id;
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error } = productDetails;
+  const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
 
   useEffect(() => {
@@ -19,6 +21,34 @@ export default function ProductScreen(props) {
 
   const availability = (val) => {
     return val <= 0;
+  };
+
+  const selectSize = (val) => {
+    setChosenSize(val);
+    setQty(1);
+  };
+
+  const selectQty = (val) => {
+    return (
+      val > 0 && (
+        <>
+          <select
+            value={qty}
+            onChange={(e) => setQty(parseInt(e.target.value))}
+          >
+            {[...Array(val >= 5 ? 5 : val).keys()].map((x) => (
+              <option key={x + 1} value={x + 1}>
+                {x + 1}
+              </option>
+            ))}
+          </select>
+        </>
+      )
+    );
+  };
+
+  const addToCartHandler = async () => {
+    dispatch(addToCart(productId, qty, chosenSize));
   };
 
   return (
@@ -108,10 +138,10 @@ export default function ProductScreen(props) {
               </p>
               {product.isClothing && (
                 <div className="size">
-                  {sizes.map((size, index) => (
+                  {sizes.map((size) => (
                     <div key={size} className="size-option">
                       <button
-                        onClick={() => setChosenSize(size)}
+                        onClick={() => selectSize(size)}
                         className={`secondary ${
                           size === chosenSize ? "active" : ""
                         }`}
@@ -137,6 +167,36 @@ export default function ProductScreen(props) {
                   ))}
                 </div>
               )}
+              <div className="qty">
+                <b>Quantity:</b>{" "}
+                {product.isClothing && !chosenSize && (
+                  <select>
+                    <option value={qty}>{qty}</option>
+                  </select>
+                )}
+                {!product.isClothing
+                  ? selectQty(product.countInStock.stock)
+                  : chosenSize === "xs"
+                  ? selectQty(product.countInStock.xs)
+                  : chosenSize === "s"
+                  ? selectQty(product.countInStock.s)
+                  : chosenSize === "m"
+                  ? selectQty(product.countInStock.m)
+                  : chosenSize === "l"
+                  ? selectQty(product.countInStock.l)
+                  : chosenSize === "xl"
+                  ? selectQty(product.countInStock.xl)
+                  : chosenSize === "xxl" && selectQty(product.countInStock.xxl)}
+              </div>
+              <div className="add-to-cart">
+                <button
+                  onClick={addToCartHandler}
+                  className="primary"
+                  disabled={product.isClothing && !chosenSize}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           </div>
         </div>
