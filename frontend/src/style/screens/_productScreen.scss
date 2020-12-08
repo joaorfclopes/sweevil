@@ -24,6 +24,7 @@
     margin-right: -15px;
     margin-left: -15px;
   }
+  .col-md-1,
   .col-md-2,
   .col-md-5 {
     position: relative;
@@ -156,26 +157,25 @@
     margin-right: -15px;
     margin-left: -15px;
   }
-  .col-md-2 {
-    position: relative;
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
+  .col-md-1 {
     @include md {
-      -ms-flex: 0 0 16.666667%;
-      flex: 0 0 16.666667%;
-      max-width: 16.666667%;
+      flex: 0 0 auto;
+      width: 9%;
+    }
+    @include lg {
+      width: 11%;
+    }
+  }
+  .col-md-2 {
+    @include md {
+      flex: 0 0 auto;
+      width: 16.6666666667%;
     }
   }
   .col-md-5 {
-    position: relative;
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
     @include md {
-      -ms-flex: 0 0 41.666667%;
-      flex: 0 0 41.666667%;
-      max-width: 41.666667%;
+      flex: 0 0 auto;
+      width: 41.6666666667%;
     }
   }
   .carousel {
@@ -341,6 +341,9 @@
       margin-top: 1.5rem;
       button {
         width: 100%;
+        @include lg {
+          width: 70%;
+        }
       }
     }
   }
