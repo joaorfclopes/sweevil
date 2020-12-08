@@ -5,6 +5,8 @@ import {
   CART_EMPTY,
   CART_SAVE_SHIPPING_ADDRESS,
 } from "../constants/cartConstants";
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
 
 export const addToCart = (productId, qty, size) => async (
   dispatch,
@@ -24,6 +26,8 @@ export const addToCart = (productId, qty, size) => async (
       size,
     },
   });
+  const notyf = new Notyf();
+  notyf.success("Added to Cart");
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
 };
 
