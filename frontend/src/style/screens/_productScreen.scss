@@ -324,13 +324,23 @@
     .price {
       color: $primaryColor;
     }
-    .size-option {
-      display: inline-block;
-      text-align: center;
-      margin-right: 3px;
-      margin-bottom: 5px;
+    .size {
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      .size-option {
+        display: inline-block;
+        text-align: center;
+        margin-right: 3px;
+        margin-bottom: 5px;
+        button {
+          width: 40px;
+        }
+      }
+    }
+    .add-to-cart {
+      margin-top: 1.5rem;
       button {
-        width: 40px;
+        width: 100%;
       }
     }
   }
