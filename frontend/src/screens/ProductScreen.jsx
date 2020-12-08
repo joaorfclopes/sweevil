@@ -29,21 +29,18 @@ export default function ProductScreen(props) {
   };
 
   const selectQty = (val) => {
-    return (
-      val > 0 && (
-        <>
-          <select
-            value={qty}
-            onChange={(e) => setQty(parseInt(e.target.value))}
-          >
-            {[...Array(val >= 5 ? 5 : val).keys()].map((x) => (
-              <option key={x + 1} value={x + 1}>
-                {x + 1}
-              </option>
-            ))}
-          </select>
-        </>
-      )
+    return val > 0 ? (
+      <>
+        <select value={qty} onChange={(e) => setQty(parseInt(e.target.value))}>
+          {[...Array(val >= 5 ? 5 : val).keys()].map((x) => (
+            <option key={x + 1} value={x + 1}>
+              {x + 1}
+            </option>
+          ))}
+        </select>
+      </>
+    ) : (
+      <span style={{ color: "red" }}>Out of Stock</span>
     );
   };
 
@@ -60,7 +57,7 @@ export default function ProductScreen(props) {
       ) : (
         <div className="container">
           <div className="row-bootstrap">
-            <div className="col-md-2"></div>
+            <div className="col-md-1"></div>
             <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
@@ -192,7 +189,10 @@ export default function ProductScreen(props) {
                 <button
                   onClick={addToCartHandler}
                   className="primary"
-                  disabled={product.isClothing && !chosenSize}
+                  disabled={
+                    (product.isClothing && !chosenSize) ||
+                    (!product.isClothing && product.countInStock.stock <= 0)
+                  }
                 >
                   Add to Cart
                 </button>
