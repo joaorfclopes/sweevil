@@ -48,7 +48,9 @@ export default function ProductScreen(props) {
 
   const addToCartHandler = async () => {
     dispatch(addToCart(productId, qty, chosenSize));
-    notyf.success(`${product.name} added to cart`);
+    notyf.success(`${product.name} added to cart`).on("click", () => {
+      props.history.push("/cart");
+    });
   };
 
   return (

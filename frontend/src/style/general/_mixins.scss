@@ -23,6 +23,11 @@
     @content;
   }
 }
+@mixin xs {
+  @media (max-width: #{$screen-xs-max}) {
+    @content;
+  }
+}
 @mixin reduced-motion {
   @media (prefers-reduced-motion: reduce) {
     @content;
@@ -54,7 +59,7 @@
     }
   }
   animation-name: spin;
-  animation-duration: 5000ms;
+  animation-duration: 6000ms;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
