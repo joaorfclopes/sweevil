@@ -49,7 +49,7 @@ export default function ProductScreen(props) {
   };
 
   return (
-    <section className="product-screen row center" style={{ marginTop: "3vw" }}>
+    <section className="product-screen row center">
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (

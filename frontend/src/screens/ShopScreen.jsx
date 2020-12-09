@@ -15,7 +15,7 @@ export default function ShopScreen() {
   }, [dispatch]);
 
   return (
-    <section style={{ marginTop: "3vw" }}>
+    <section>
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (

@@ -4,10 +4,10 @@ import $ from "jquery";
 import Axios from "axios";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
-import HomeScreen from "./screens/HomeScreen";
 import SigninScreen from "./screens/SigninScreen";
 import ShopScreen from "./screens/ShopScreen";
 import ProductScreen from "./screens/ProductScreen";
+import CartScreen from "./screens/CartScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ export default function App() {
                   exact
                 />
                 <Route path="/signin" component={SigninScreen} exact />
-                <Route path="/" component={HomeScreen} exact />
+                <Route path="/cart" component={CartScreen} exact />
               </Switch>
             </main>
           </div>

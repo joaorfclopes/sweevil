@@ -11,4 +11,14 @@
     border: #20a020 1px solid;
     background-color: #eeffe0;
   }
+  &.info {
+    color: $secondaryColor;
+    border: $secondaryColor 1px solid;
+    background-color: #fee0ff;
+  }
+  a {
+    text-decoration: underline;
+    font-weight: bold;
+    transition: 0.3s;
+  }
 }

@@ -3,9 +3,6 @@ header {
   font-family: brushstrikeregular;
   .brand-logo {
     width: 10rem;
-    &:hover {
-      fill: $primaryColor;
-    }
     @include md {
       width: 13rem;
     }
