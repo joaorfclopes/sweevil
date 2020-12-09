@@ -69,7 +69,7 @@ export default function Navbar() {
           ))}
           <li>
             <NavLink exact to="/cart" activeClassName="active">
-              <Cart className="icon fill" />
+              <Cart className="icon" />
               <span className="badge">{cartItems.length}</span>
             </NavLink>
           </li>
