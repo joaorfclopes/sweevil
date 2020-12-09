@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import { addToCart } from "../actions/cartActions";
 import { detailsProduct } from "../actions/productActions";
+import { addToCart } from "../actions/cartActions";
 import LazyImage from "../components/LazyImage";
 import { sizes } from "../utils";
+import { Notyf } from "notyf";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ export default function ProductScreen(props) {
   const { loading, product, error } = productDetails;
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
+  const notyf = new Notyf();
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -46,6 +48,7 @@ export default function ProductScreen(props) {
 
   const addToCartHandler = async () => {
     dispatch(addToCart(productId, qty, chosenSize));
+    notyf.success(`${product.name} added to cart`);
   };
 
   return (

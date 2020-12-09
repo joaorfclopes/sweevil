@@ -59,8 +59,6 @@ productRouter.put(
       product.isClothing = req.body.isClothing;
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
-      product.taxPrice = req.body.taxPrice;
-      product.finalPrice = req.body.finalPrice;
       const updatedProduct = await product.save();
       res.send({ message: "Product updated", product: updatedProduct });
     } else {

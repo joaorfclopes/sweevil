@@ -17,8 +17,6 @@ const productSchema = new mongoose.Schema(
       xl: { type: Number },
       xxl: { type: Number },
     },
-    taxPrice: { type: Number },
-    finalPrice: { type: Number },
   },
   {
     timestamps: true,
