@@ -34,17 +34,26 @@ export default function CartScreen(props) {
 
   const changeSize = (id, size) => {
     dispatch(addToCart(id, 1, String(size)));
-    notyf.success("Product size updated");
+    notyf.success({
+      icon: false,
+      message: "Product size updated",
+    });
   };
 
   const changeQty = (id, qty, size) => {
     dispatch(addToCart(id, Number(qty), size));
-    notyf.success("Product quantity updated");
+    notyf.success({
+      icon: false,
+      message: "Product quantity updated",
+    });
   };
 
   const removeFromCartHandler = (id) => {
     dispatch(removeFromCart(id));
-    notyf.error("Product removed from cart");
+    notyf.error({
+      icon: false,
+      message: "Product removed from cart",
+    });
   };
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
