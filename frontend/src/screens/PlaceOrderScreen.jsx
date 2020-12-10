@@ -1,10 +1,12 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import LazyImage from "../components/LazyImage";
 import { toPrice } from "../utils";
+import { createOrder } from "../actions/orderActions";
 
 export default function PlaceOrderScreen(props) {
+  const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
 
@@ -18,6 +20,16 @@ export default function PlaceOrderScreen(props) {
   );
   cart.shippingPrice = cart.subtotalPrice > 50 ? toPrice(0) : toPrice(9.99);
   cart.totalPrice = toPrice(cart.subtotalPrice + cart.shippingPrice);
+
+  const placeOrderHandler = () => {
+    dispatch(
+      createOrder({
+        ...cart,
+        orderItems: cartItems,
+        status: "IN PROGRESS",
+      })
+    );
+  };
 
   return (
     <section className="place-order">
@@ -80,7 +92,9 @@ export default function PlaceOrderScreen(props) {
         <p>Shipping : {cart.shippingPrice.toFixed(2)}€</p>
         <h3 className="total">Total : {cart.totalPrice.toFixed(2)}€</h3>
       </div>
-      <button className="primary">Place Order</button>
+      <button className="primary" onClick={placeOrderHandler}>
+        Place Order
+      </button>
     </section>
   );
 }
