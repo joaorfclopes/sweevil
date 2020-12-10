@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import LazyImage from "../components/LazyImage";
 import { toPrice } from "../utils";
 import { createOrder } from "../actions/orderActions";
+import { ORDER_CREATE_RESET } from "../constants/orderConstants";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
+  const orderCreate = useSelector((state) => state.orderCreate);
+  const { loading, success, error, order } = orderCreate;
 
   if (cartItems.length <= 0) {
     props.history.push("/cart");
@@ -30,6 +35,13 @@ export default function PlaceOrderScreen(props) {
       })
     );
   };
+
+  useEffect(() => {
+    if (success) {
+      props.history.push(`/cart/order/${order._id}`);
+      dispatch({ type: ORDER_CREATE_RESET });
+    }
+  }, [success, props, order, dispatch]);
 
   return (
     <section className="place-order">
@@ -95,6 +107,8 @@ export default function PlaceOrderScreen(props) {
       <button className="primary" onClick={placeOrderHandler}>
         Place Order
       </button>
+      {loading && <LoadingBox />}
+      {error && <MessageBox variant="error">{error}</MessageBox>}
     </section>
   );
 }
