@@ -8,7 +8,7 @@ import { sizes } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
 import { ReactComponent as Remove } from "../assets/images/svg/remove.svg";
 
-export default function CartScreen() {
+export default function CartScreen(props) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
@@ -54,6 +54,10 @@ export default function CartScreen() {
   );
   cart.shippingPrice = cart.subtotalPrice > 50 ? toPrice(0) : toPrice(9.99);
   cart.totalPrice = toPrice(cart.subtotalPrice + cart.shippingPrice);
+
+  const checkoutHandler = () => {
+    props.history.push("/cart/shipping");
+  };
 
   return (
     <section className="cart">
@@ -162,6 +166,11 @@ export default function CartScreen() {
             <li>Shipping : {cart.shippingPrice}€</li>
             <li>
               <h2>Total : {cart.totalPrice}€</h2>
+            </li>
+            <li>
+              <button className="primary" onClick={checkoutHandler}>
+                Checkout
+              </button>
             </li>
           </ul>
         </>

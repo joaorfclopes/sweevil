@@ -1,7 +1,10 @@
 .form {
   max-width: 50rem;
   margin: 0 auto;
-  padding: 2rem;
+  @include sm {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
   div {
     display: flex;
     flex-direction: column;
