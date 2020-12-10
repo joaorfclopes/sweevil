@@ -34,15 +34,7 @@
         display: none;
       }
     }
-    @include xs {
-      font-size: 60%;
-      select {
-        font-size: 90%;
-      }
-      .icon {
-        width: 20px;
-      }
-    }
+
     li {
       h3 {
         margin: 0;
@@ -56,33 +48,35 @@
       .item-content {
         margin-left: 115px;
         width: calc(100% - 115px);
-        height: 57.5px;
+        min-height: 57.5px;
         @include sm {
           margin-left: 140px;
           width: calc(100% - 140px);
-          height: 70px;
+          min-height: 70px;
         }
-        .item-name {
-          width: 65%;
-        }
-        .item-name,
-        .item-size,
-        .item-qty {
-          float: left;
-          span {
-            display: none;
-            @include sm {
-              display: block;
-              display: inline-block;
+        @include xs {
+          .item-name {
+            width: 65%;
+          }
+          .item-name,
+          .item-size,
+          .item-qty {
+            float: left;
+            span {
+              display: none;
+              @include sm {
+                display: block;
+                display: inline-block;
+              }
             }
           }
-        }
-        .item-price,
-        .item-remove {
-          float: right;
-        }
-        .item-size {
-          margin-right: 1rem;
+          .item-price,
+          .item-remove {
+            float: right;
+          }
+          .item-size {
+            margin-right: 1rem;
+          }
         }
       }
       .line {
@@ -104,9 +98,6 @@
     }
     button {
       width: 100%;
-      @include sm {
-        width: 35%;
-      }
     }
   }
 }

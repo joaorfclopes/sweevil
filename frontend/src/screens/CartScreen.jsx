@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
 import MessageBox from "../components/MessageBox";
 import LazyImage from "../components/LazyImage";
-import { sizes } from "../utils";
+import { sizes, toPrice } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
 import { ReactComponent as Remove } from "../assets/images/svg/remove.svg";
 
@@ -47,13 +47,12 @@ export default function CartScreen(props) {
     notyf.error("Product removed from cart");
   };
 
-  const toPrice = (num) => Number(num.toFixed(2));
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
   cart.subtotalPrice = toPrice(
     cartItems.reduce((a, c) => a + c.price * c.qty, 0)
   );
   cart.shippingPrice = cart.subtotalPrice > 50 ? toPrice(0) : toPrice(9.99);
-  cart.totalPrice = toPrice(cart.subtotalPrice + cart.shippingPrice);
+  cart.totalPrice = cart.subtotalPrice + cart.shippingPrice;
 
   const checkoutHandler = () => {
     props.history.push("/cart/shipping");
@@ -87,7 +86,7 @@ export default function CartScreen(props) {
                     <h3>{item.name}</h3>
                   </div>
                   <div className="item-price">
-                    <h3>{item.price ? item.price.toFixed(2) : item.price}€</h3>
+                    <h3>{item.price.toFixed(2)}€</h3>
                   </div>
                 </div>
                 <div className="item-content">
@@ -161,11 +160,11 @@ export default function CartScreen(props) {
           <ul className="cart-total">
             <li>
               Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
-              : {cart.subtotalPrice}€
+              : {cart.subtotalPrice.toFixed(2)}€
             </li>
-            <li>Shipping : {cart.shippingPrice}€</li>
+            <li>Shipping : {cart.shippingPrice.toFixed(2)}€</li>
             <li>
-              <h2>Total : {cart.totalPrice}€</h2>
+              <h2>Total : {cart.totalPrice.toFixed(2)}€</h2>
             </li>
             <li>
               <button className="primary" onClick={checkoutHandler}>

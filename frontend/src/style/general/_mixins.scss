@@ -1,3 +1,8 @@
+@mixin xs {
+  @media (min-width: #{$screen-xs-min}) {
+    @content;
+  }
+}
 @mixin sm {
   @media (min-width: #{$screen-sm-min}) {
     @content;
@@ -20,11 +25,6 @@
 }
 @mixin sm-height {
   @media (min-height: #{$screen-sm-min-height}) {
-    @content;
-  }
-}
-@mixin xs {
-  @media (max-width: #{$screen-xs-max}) {
     @content;
   }
 }
