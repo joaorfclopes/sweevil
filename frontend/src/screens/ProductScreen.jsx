@@ -130,7 +130,7 @@ export default function ProductScreen(props) {
                 <b>{product.name}</b>
               </h2>
               <h2 className="price">
-                <b>{product.price && product.price.toFixed(2)}€</b>
+                <b>{product.price.toFixed(2)}€</b>
               </h2>
               <p>
                 <b>Category:</b> {product.category}

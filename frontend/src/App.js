@@ -9,6 +9,7 @@ import ShopScreen from "./screens/ShopScreen";
 import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/CartScreen";
 import ShippingScreen from "./screens/ShippingScreen";
+import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,11 @@ export default function App() {
                 <Route path="/signin" component={SigninScreen} exact />
                 <Route path="/cart" component={CartScreen} exact />
                 <Route path="/cart/shipping" component={ShippingScreen} exact />
+                <Route
+                  path="/cart/placeorder"
+                  component={PlaceOrderScreen}
+                  exact
+                />
               </Switch>
             </main>
           </div>
