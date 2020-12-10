@@ -102,6 +102,12 @@
     h2 {
       margin: 0;
     }
+    button {
+      width: 100%;
+      @include sm {
+        width: 35%;
+      }
+    }
   }
 }
 img.small {

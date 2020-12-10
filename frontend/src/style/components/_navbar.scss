@@ -46,6 +46,11 @@ header {
     }
   }
   .icon-mobile {
+    a.active {
+      .icon.fill {
+        fill: $primaryColor;
+      }
+    }
     @include lg {
       display: none;
     }

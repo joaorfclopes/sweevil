@@ -38,8 +38,8 @@ export default function Navbar() {
   return (
     <header className="row">
       <div className="icon-mobile">
-        <NavLink exact to="/cart" activeClassName="active">
-          <Cart className="icon" />
+        <NavLink to="/cart" activeClassName="active">
+          <Cart className="icon fill" />
           <span className="badge">{cartItems.length}</span>
         </NavLink>
       </div>
@@ -68,7 +68,7 @@ export default function Navbar() {
             </li>
           ))}
           <li>
-            <NavLink exact to="/cart" activeClassName="active">
+            <NavLink to="/cart" activeClassName="active">
               <Cart className="icon" />
               <span className="badge">{cartItems.length}</span>
             </NavLink>
