@@ -61,7 +61,6 @@ orderRouter.get(
 
 orderRouter.post(
   "/",
-  isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
       if (req.body.orderItems.length === 0) {
@@ -70,10 +69,10 @@ orderRouter.post(
         const order = new Order({
           orderItems: req.body.orderItems,
           shippingAddress: req.body.shippingAddress,
-          itemsPrice: req.body.itemsPrice,
+          itemsQty: req.body.itemsQty,
+          subtotalPrice: req.body.subtotalPrice,
           shippingPrice: req.body.shippingPrice,
           totalPrice: req.body.totalPrice,
-          user: req.user._id,
           status: req.body.status,
         });
         const createdOrder = await order.save();

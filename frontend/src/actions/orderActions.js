@@ -27,17 +27,10 @@ import {
   ORDER_CANCEL_FAIL,
 } from "../constants/orderConstants";
 
-export const createOrder = (order) => async (dispatch, getState) => {
+export const createOrder = (order) => async (dispatch) => {
   dispatch({ type: ORDER_CREATE_REQUEST, payload: order });
-  const {
-    userSignin: { userInfo },
-  } = getState();
   try {
-    const { data } = await Axios.post("/api/orders", order, {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    });
+    const { data } = await Axios.post("/api/orders", order);
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: data.order });
     dispatch({ type: CART_EMPTY });
     localStorage.removeItem("cartItems");
