@@ -1,5 +1,3 @@
 .shipping {
-  @include sm {
-    margin-top: 4vw;
-  }
+  @include margin-center;
 }

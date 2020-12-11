@@ -10,6 +10,7 @@ import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/CartScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
+import OrderScreen from "./screens/OrderScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,7 @@ export default function App() {
                   component={PlaceOrderScreen}
                   exact
                 />
+                <Route path="/cart/order/:id" component={OrderScreen} />
               </Switch>
             </main>
           </div>

@@ -36,11 +36,9 @@ export default function ShippingScreen(props) {
   };
 
   return (
-    <section>
-      <form className="form shipping" onSubmit={submitHandler}>
-        <div>
-          <h1>Shipping Details</h1>
-        </div>
+    <section className="shipping">
+      <h1>Shipping Details</h1>
+      <form className="form" onSubmit={submitHandler}>
         <div>
           <label htmlFor="email">Email</label>
           <input
