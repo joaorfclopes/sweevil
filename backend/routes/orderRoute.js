@@ -99,7 +99,6 @@ orderRouter.get(
 
 orderRouter.put(
   "/:id/pay",
-  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
@@ -145,7 +144,6 @@ orderRouter.put(
 
 orderRouter.put(
   "/:id/cancel",
-  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {

@@ -51,7 +51,7 @@ export default function ProductScreen(props) {
     notyf
       .success({
         icon: false,
-        message: `${product.name} added to cart`,
+        message: `${product.name} added <b>to cart</b>`,
       })
       .on("click", () => {
         props.history.push("/cart");

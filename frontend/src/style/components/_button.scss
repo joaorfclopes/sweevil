@@ -32,4 +32,19 @@ button {
       color: $disabledColor;
     }
   }
+  &.dangerous {
+    background-color: $dangerColor;
+    color: white;
+    &:hover:not(:disabled),
+    &.active {
+      background-color: transparent;
+      color: $dangerColor;
+    }
+    &:disabled {
+      cursor: auto;
+      border: 1px solid $disabledColor;
+      background-color: $disabledColor;
+      color: white;
+    }
+  }
 }
