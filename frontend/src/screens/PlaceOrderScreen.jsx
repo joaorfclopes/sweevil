@@ -44,7 +44,7 @@ export default function PlaceOrderScreen(props) {
   }, [success, props, order, dispatch]);
 
   return (
-    <section className="place-order">
+    <section className="place-order cards-section">
       <h1>Place Order</h1>
       <div className="card">
         <h3>Shipping Address</h3>
