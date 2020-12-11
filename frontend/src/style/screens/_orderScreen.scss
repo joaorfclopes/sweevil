@@ -1,3 +1,22 @@
 .order {
   @include margin-center;
+  .paypal-button,
+  .cancel-button {
+    width: 100%;
+    @include md {
+      width: 49%;
+    }
+  }
+  .paypal-button {
+    float: left;
+  }
+  .deliver-button {
+    margin-bottom: 0.5rem;
+  }
+  .cancel-button {
+    float: right;
+    &.full-width {
+      width: 100%;
+    }
+  }
 }
