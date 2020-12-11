@@ -29,11 +29,9 @@ export default function SigninScreen(props) {
   }, [userInfo, props, redirect]);
 
   return (
-    <section>
+    <section className="signin">
+      <h1>Sign In</h1>
       <form className="form admin" onSubmit={submitHandler}>
-        <div>
-          <h1>Sign In</h1>
-        </div>
         {loading && <LoadingBox />}
         {error && <MessageBox variant="error">{error}</MessageBox>}
         <div>
