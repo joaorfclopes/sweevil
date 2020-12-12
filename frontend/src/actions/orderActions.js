@@ -69,6 +69,14 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
       paymentResult
     );
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
+    // eslint-disable-next-line no-unused-vars
+    const { sendEmail } = await Axios.post("/api/email/placedOrder", {
+      order: order,
+    });
+    // eslint-disable-next-line no-unused-vars
+    const { sendEmailAdmin } = await Axios.post("/api/email/placedOrderAdmin", {
+      order: order,
+    });
   } catch (error) {
     dispatch({
       type: ORDER_PAY_FAIL,

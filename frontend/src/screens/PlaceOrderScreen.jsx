@@ -5,26 +5,22 @@ import LazyImage from "../components/LazyImage";
 import { toPrice } from "../utils";
 import { createOrder } from "../actions/orderActions";
 import { ORDER_CREATE_RESET } from "../constants/orderConstants";
-import LoadingBox from "../components/LoadingBox";
-import MessageBox from "../components/MessageBox";
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
   const orderCreate = useSelector((state) => state.orderCreate);
-  const { loading, success, error, order } = orderCreate;
+  const { success, order } = orderCreate;
 
   if (cartItems.length <= 0) {
     props.history.push("/cart");
   }
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
-  cart.subtotalPrice = toPrice(
-    cartItems.reduce((a, c) => a + c.price * c.qty, 0)
-  );
-  cart.shippingPrice = cart.subtotalPrice > 50 ? toPrice(0) : toPrice(9.99);
-  cart.totalPrice = toPrice(cart.subtotalPrice + cart.shippingPrice);
+  cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
+  cart.shippingPrice = cart.itemsPrice > 50 ? toPrice(0) : toPrice(9.99);
+  cart.totalPrice = toPrice(cart.itemsPrice + cart.shippingPrice);
 
   const placeOrderHandler = () => {
     dispatch(
@@ -99,7 +95,7 @@ export default function PlaceOrderScreen(props) {
       <div className="card total-amount">
         <p>
           Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"}) :{" "}
-          {cart.subtotalPrice.toFixed(2)}€
+          {cart.itemsPrice.toFixed(2)}€
         </p>
         <p>Shipping : {cart.shippingPrice.toFixed(2)}€</p>
         <h3 className="total">Total : {cart.totalPrice.toFixed(2)}€</h3>
@@ -107,8 +103,6 @@ export default function PlaceOrderScreen(props) {
       <button className="primary" onClick={placeOrderHandler}>
         Place Order
       </button>
-      {loading && <LoadingBox />}
-      {error && <MessageBox variant="error">{error}</MessageBox>}
     </section>
   );
 }

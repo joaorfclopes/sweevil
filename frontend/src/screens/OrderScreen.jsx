@@ -184,7 +184,7 @@ export default function OrderScreen(props) {
           <div className="card total-amount">
             <p>
               Subtotal ({order.itemsQty} {order.itemsQty > 1 ? "items" : "item"}
-              ) : {order.subtotalPrice.toFixed(2)}€
+              ) : {order.itemsPrice.toFixed(2)}€
             </p>
             <p>Shipping : {order.shippingPrice.toFixed(2)}€</p>
             <h3 className="total">Total : {order.totalPrice.toFixed(2)}€</h3>
