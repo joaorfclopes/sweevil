@@ -57,11 +57,9 @@ export default function CartScreen(props) {
   };
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
-  cart.subtotalPrice = toPrice(
-    cartItems.reduce((a, c) => a + c.price * c.qty, 0)
-  );
-  cart.shippingPrice = cart.subtotalPrice > 50 ? toPrice(0) : toPrice(9.99);
-  cart.totalPrice = cart.subtotalPrice + cart.shippingPrice;
+  cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
+  cart.shippingPrice = cart.itemsPrice > 50 ? toPrice(0) : toPrice(9.99);
+  cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   const checkoutHandler = () => {
     props.history.push("/cart/shipping");
@@ -169,7 +167,7 @@ export default function CartScreen(props) {
           <ul className="cart-total">
             <li>
               Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
-              : {cart.subtotalPrice.toFixed(2)}€
+              : {cart.itemsPrice.toFixed(2)}€
             </li>
             <li>Shipping : {cart.shippingPrice.toFixed(2)}€</li>
             <li>

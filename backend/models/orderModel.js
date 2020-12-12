@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema(
       email_address: String,
     },
     itemsQty: { type: Number, required: true },
-    subtotalPrice: { type: Number, required: true },
+    itemsPrice: { type: Number, required: true },
     shippingPrice: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
     isPaid: { type: Boolean, default: false },

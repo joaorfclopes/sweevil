@@ -69,7 +69,7 @@ orderRouter.post(
           orderItems: req.body.orderItems,
           shippingAddress: req.body.shippingAddress,
           itemsQty: req.body.itemsQty,
-          subtotalPrice: req.body.subtotalPrice,
+          itemsPrice: req.body.itemsPrice,
           shippingPrice: req.body.shippingPrice,
           totalPrice: req.body.totalPrice,
           status: req.body.status,

@@ -50,3 +50,12 @@ export const formatDate = (date) => {
   const result = `${day}.${month}.${year}`;
   return result;
 };
+
+export const formatName = (name) => {
+  if (/\s/.test(name)) {
+    const firstName = name.substr(0, name.indexOf(" "));
+    return firstName;
+  } else {
+    return name;
+  }
+};
