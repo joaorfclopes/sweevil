@@ -116,7 +116,7 @@ export default function OrderScreen(props) {
           <h1>Order {order._id}</h1>
           {loadingDeliver && <LoadingBox />}
           {errorDeliver && (
-            <MessageBox variant="danger">{errorDeliver}</MessageBox>
+            <MessageBox variant="error">{errorDeliver}</MessageBox>
           )}
           {loadingCancel && <LoadingBox />}
           {errorCancel && (
@@ -196,7 +196,7 @@ export default function OrderScreen(props) {
               ) : (
                 <>
                   {errorPay && (
-                    <MessageBox variant="danger">{errorPay}</MessageBox>
+                    <MessageBox variant="error">{errorPay}</MessageBox>
                   )}
                   {loadingPay && <LoadingBox />}
                   <PayPalButton

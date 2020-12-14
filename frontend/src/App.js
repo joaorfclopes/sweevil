@@ -11,6 +11,8 @@ import CartScreen from "./screens/CartScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+import ResetPasswordScreen from "./screens/ResetPasswordScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,15 @@ export default function App() {
                   exact
                 />
                 <Route path="/signin" component={SigninScreen} exact />
+                <Route
+                  path="/forgotPassword"
+                  component={ForgotPasswordScreen}
+                  exact
+                />
+                <Route
+                  path="/resetPassword/:id"
+                  component={ResetPasswordScreen}
+                />
                 <Route path="/cart" component={CartScreen} exact />
                 <Route path="/cart/shipping" component={ShippingScreen} exact />
                 <Route
