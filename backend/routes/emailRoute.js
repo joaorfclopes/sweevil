@@ -101,41 +101,29 @@ emailRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    if (req.body.order.user) {
-      const user = await User.findById(req.body.order.user);
-      try {
-        const mailOptions = {
-          from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
-          to: user.email,
-          subject: "Thanks for your order!",
-          html: deliveredOrder({
-            userInfo: {
-              userName: req.body.userInfo.name,
-            },
-            order: {
-              orderId: req.body.order._id,
-              orderDate: formatDate(req.body.order.createdAt),
-              shippingAddress: {
-                fullName: req.body.order.shippingAddress.fullName,
-                address: req.body.order.shippingAddress.address,
-                country: req.body.order.shippingAddress.country,
-                postalCode: req.body.order.shippingAddress.postalCode,
-                city: req.body.order.shippingAddress.city,
-              },
-              orderItems: req.body.order.orderItems,
-              itemsPrice: req.body.order.itemsPrice,
-              shippingPrice: req.body.order.shippingPrice,
-              totalPrice: req.body.order.totalPrice,
-            },
-          }),
-        };
-        sendEmail(res, mailOptions);
-      } catch (error) {
-        res.status(404).send({ message: "Order doesn't exist" });
-      }
-    } else {
-      res.status(404).send({ message: "Error delivering order" });
-    }
+    const mailOptions = {
+      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+      to: req.body.order.shippingAddress.email,
+      subject: "Thanks for your order!",
+      html: deliveredOrder({
+        order: {
+          orderId: req.body.order._id,
+          orderDate: formatDate(req.body.order.createdAt),
+          shippingAddress: {
+            fullName: req.body.order.shippingAddress.fullName,
+            address: req.body.order.shippingAddress.address,
+            country: req.body.order.shippingAddress.country,
+            postalCode: req.body.order.shippingAddress.postalCode,
+            city: req.body.order.shippingAddress.city,
+          },
+          orderItems: req.body.order.orderItems,
+          itemsPrice: req.body.order.itemsPrice,
+          shippingPrice: req.body.order.shippingPrice,
+          totalPrice: req.body.order.totalPrice,
+        },
+      }),
+    };
+    sendEmail(res, mailOptions);
   })
 );
 

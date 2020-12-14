@@ -1,7 +1,7 @@
+import { formatName } from "../utils.js";
 import itemsDetails from "./itemsDetails.js";
 
 export const deliveredOrder = ({
-  userInfo: { userName },
   order: {
     orderId,
     orderDate,
@@ -169,7 +169,9 @@ export const deliveredOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${userName}, your order has been received.
+                                  Hi ${formatName(
+                                    fullName
+                                  )}, your order has been received.
                                 </font>
                               </td>
                             </tr>
@@ -264,7 +266,7 @@ export const deliveredOrder = ({
                                           href="${
                                             process.env.HOME_PAGE ||
                                             "http://localhost:3000"
-                                          }/order/${orderId}"
+                                          }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',

@@ -108,7 +108,7 @@ export default function OrderScreen(props) {
   return (
     <section className="order cards-section">
       {loading ? (
-        <LoadingBox lineHeight="70vh" />
+        <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (

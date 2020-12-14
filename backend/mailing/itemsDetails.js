@@ -9,7 +9,7 @@ const itemsDetails = (orderItems) =>
               <a
                 href="${
                   process.env.HOME_PAGE || "http://localhost:3000"
-                }/product/${item.product}"
+                }/shop/product/${item.product}"
                 rel="noreferrer"
                 target="_blank"
               >
