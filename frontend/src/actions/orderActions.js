@@ -104,6 +104,16 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
       }
     );
     dispatch({ type: ORDER_DELIVER_SUCCESS, payload: data });
+    // eslint-disable-next-line no-unused-vars
+    const { sendEmail } = await Axios.post(
+      "/api/email/deliveredOrder",
+      { order: data.order },
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
   } catch (error) {
     dispatch({
       type: ORDER_DELIVER_FAIL,
