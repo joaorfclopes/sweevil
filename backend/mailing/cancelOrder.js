@@ -1,10 +1,11 @@
+import { formatName } from "../utils.js";
 import itemsDetails from "./itemsDetails.js";
 
 export const cancelOrder = ({
-  userInfo: { userName },
   order: {
     orderId,
     orderDate,
+    shippingAddress: { fullName },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -168,7 +169,9 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${userName}, your order was canceled!
+                                  Hi ${formatName(
+                                    fullName
+                                  )}, your order was canceled!
                                 </font>
                               </td>
                             </tr>
@@ -263,7 +266,7 @@ export const cancelOrder = ({
                                           href="${
                                             process.env.HOME_PAGE ||
                                             "http://localhost:3000"
-                                          }/order/${orderId}"
+                                          }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',

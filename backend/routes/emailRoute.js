@@ -130,34 +130,25 @@ emailRouter.post(
 emailRouter.post(
   "/cancelOrder",
   expressAsyncHandler(async (req, res) => {
-    if (req.body.order.user) {
-      const user = await User.findById(req.body.order.user);
-      try {
-        const mailOptions = {
-          from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
-          to: user.email,
-          subject: "Order Canceled!",
-          html: cancelOrder({
-            userInfo: {
-              userName: req.body.userInfo.name,
-            },
-            order: {
-              orderId: req.body.order._id,
-              orderDate: formatDate(req.body.order.createdAt),
-              orderItems: req.body.order.orderItems,
-              itemsPrice: req.body.order.itemsPrice,
-              shippingPrice: req.body.order.shippingPrice,
-              totalPrice: req.body.order.totalPrice,
-            },
-          }),
-        };
-        sendEmail(res, mailOptions);
-      } catch (error) {
-        res.status(404).send({ message: "Order doesn't exist" });
-      }
-    } else {
-      res.status(404).send({ message: "Error cancelling order" });
-    }
+    const mailOptions = {
+      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+      to: req.body.order.shippingAddress.email,
+      subject: "Order Canceled!",
+      html: cancelOrder({
+        order: {
+          orderId: req.body.order._id,
+          orderDate: formatDate(req.body.order.createdAt),
+          shippingAddress: {
+            fullName: req.body.order.shippingAddress.fullName,
+          },
+          orderItems: req.body.order.orderItems,
+          itemsPrice: req.body.order.itemsPrice,
+          shippingPrice: req.body.order.shippingPrice,
+          totalPrice: req.body.order.totalPrice,
+        },
+      }),
+    };
+    sendEmail(res, mailOptions);
   })
 );
 
@@ -169,14 +160,14 @@ emailRouter.post(
       to: process.env.SENDER_EMAIL_ADDRESS,
       subject: "Refund Request",
       html: cancelOrderAdmin({
-        userInfo: {
-          userName: req.body.userInfo.name,
-          email: req.body.userInfo.email,
-          phoneNumber: req.body.userInfo.phoneNumber,
-        },
         order: {
           orderId: req.body.order._id,
           orderDate: formatDate(req.body.order.createdAt),
+          shippingAddress: {
+            fullName: req.body.order.shippingAddress.fullName,
+            email: req.body.order.shippingAddress.email,
+            phoneNumber: req.body.order.shippingAddress.phoneNumber,
+          },
           orderItems: req.body.order.orderItems,
           itemsPrice: req.body.order.itemsPrice,
           shippingPrice: req.body.order.shippingPrice,

@@ -1,10 +1,11 @@
+import { formatName } from "../utils.js";
 import itemsDetails from "./itemsDetails.js";
 
 export const cancelOrderAdmin = ({
-  userInfo: { userName, email, phoneNumber },
   order: {
     orderId,
     orderDate,
+    shippingAddress: { fullName, email, phoneNumber },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -170,7 +171,9 @@ export const cancelOrderAdmin = ({
                                 >
                                   Hi ${
                                     process.env.BRAND_NAME
-                                  }, you recieved a refund request from ${userName}!
+                                  }, you recieved a refund request from ${formatName(
+    fullName
+  )}!
                                 </font>
                               </td>
                             </tr>
@@ -265,7 +268,7 @@ export const cancelOrderAdmin = ({
                                           href="${
                                             process.env.HOME_PAGE ||
                                             "http://localhost:3000"
-                                          }/order/${orderId}"
+                                          }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -404,7 +407,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Name: ${userName}
+                                                  Name: ${formatName(fullName)}
                                                 </font>
                                               </td>
                                           </tr>
@@ -474,7 +477,9 @@ export const cancelOrderAdmin = ({
                                                 >
                                                   Access your PayPal Business account and refund ${totalPrice.toFixed(
                                                     2
-                                                  )}€ to ${userName} here: 
+                                                  )}€ to ${formatName(
+    fullName
+  )} here: 
                                                   ${
                                                     process.env
                                                       .PAYPAL_BUSINESS_LINK ||
