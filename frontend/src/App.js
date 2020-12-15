@@ -13,6 +13,8 @@ import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "./screens/ResetPasswordScreen";
+import PrivateRoute from "./components/PrivateRoute";
+import AdminScreen from "./screens/AdminScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,7 @@ export default function App() {
                   exact
                 />
                 <Route path="/signin" component={SigninScreen} exact />
+                <PrivateRoute path="/admin" component={AdminScreen} exact />
                 <Route
                   path="/forgotPassword"
                   component={ForgotPasswordScreen}
