@@ -71,7 +71,7 @@ const itemsDetails = (orderItems) =>
                     </td>
                   </tr>
                   ${
-                    item.size !== "null" &&
+                    item.size !== "" &&
                     `<tr>
                   <td align="left">
                     <span
