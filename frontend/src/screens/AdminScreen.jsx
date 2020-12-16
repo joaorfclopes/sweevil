@@ -15,11 +15,13 @@ export default function AdminScreen() {
 
   return (
     <section className="admin-screen">
-      <Link to="/">
-        <button className="primary" onClick={signoutHandler}>
-          Log Out
-        </button>
-      </Link>
+      <div className="logout-container">
+        <Link to="/">
+          <button className="primary" onClick={signoutHandler}>
+            Log Out
+          </button>
+        </Link>
+      </div>
       <ProductsTable />
     </section>
   );

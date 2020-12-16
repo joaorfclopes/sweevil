@@ -1,9 +1,16 @@
-.table {
-  min-width: 650;
-  td {
-    min-width: 150px;
+.products-table {
+  .table {
+    min-width: 650;
+    td {
+      min-width: 160px;
+    }
+    button {
+      margin-left: 5px;
+    }
   }
-  button {
-    margin: 2px;
+  .MuiIconButton-root {
+    border: none !important;
+    padding: none !important;
+    color: black;
   }
 }
