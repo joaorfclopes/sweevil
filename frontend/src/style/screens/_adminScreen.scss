@@ -1,6 +1,8 @@
 .admin-screen {
-  button {
-    margin-bottom: 1rem;
-    float: right;
+  .logout-container {
+    text-align: right;
+    button {
+      margin-bottom: 1rem;
+    }
   }
 }
