@@ -47,4 +47,20 @@ button {
       color: white;
     }
   }
+  &.dangerous-outline {
+    background-color: transparent;
+    border: 1px $dangerColor solid !important;
+    color: $dangerColor;
+    &:hover:not(:disabled),
+    &.active {
+      color: white;
+      background-color: $dangerColor;
+      border: 1px $dangerColor solid !important;
+    }
+    &:disabled {
+      cursor: auto;
+      border: 1px solid $disabledColor;
+      color: $disabledColor;
+    }
+  }
 }
