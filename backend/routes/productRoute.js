@@ -39,7 +39,9 @@ productRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const product = new Product({});
+    const product = new Product({
+      countInStock: { stock: 0 },
+    });
     const createdProduct = await product.save();
     res.send({ message: "Product created", product: createdProduct });
   })

@@ -130,7 +130,7 @@ export default function ProductEditScreen(props) {
   const uploadFileHandler = async (e) => {
     setLoadingUpload(true);
     const files = fileInput.current.files;
-    const imagesArray = [];
+    const imagesArray = [...images];
     try {
       for (let i = 0; i < files.length; i++) {
         const file = e.target.files[i];
@@ -149,6 +149,16 @@ export default function ProductEditScreen(props) {
     } catch (error) {
       setErrorUpload(error.message);
       setLoadingUpload(false);
+    }
+  };
+
+  const clearImages = () => {
+    if (
+      window.confirm(
+        `This will clear all the images of this product. Are you sure?`
+      )
+    ) {
+      setImages([]);
     }
   };
 
@@ -175,177 +185,182 @@ export default function ProductEditScreen(props) {
   };
 
   return (
-    <>
-      <form className="form" onSubmit={submitHandler}>
-        <div>
-          <h1>Edit {name}</h1>
-        </div>
-        {loadingUpdate && <LoadingBox />}
-        {errorUpdate && <MessageBox variant="danger">{errorUpdate}</MessageBox>}
-        {loading ? (
-          <LoadingBox />
-        ) : error ? (
-          <MessageBox variant="danger">{error}</MessageBox>
-        ) : (
-          <>
-            <div>
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Enter name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="price">Price</label>
-              <input
-                type="number"
-                step="0.01"
-                id="price"
-                placeholder="Enter price"
-                value={price}
-                onChange={(e) => setPriceAndTax(e.target.value)}
-              />
-              {price && (
-                <>
-                  <div className="danger">IVA: {taxPrice}€</div>
-                  <div>Final Price: {finalPrice}€</div>
-                </>
-              )}
-            </div>
-            <div>
-              <label htmlFor="imageFile">Image File</label>
-              {images &&
-                images.map((image) => (
-                  <img className="preview" src={image} alt="imagePreview" />
-                ))}
-              <input
-                ref={fileInput}
-                type="file"
-                id="imageFile"
-                label="Choose image"
-                onChange={uploadFileHandler}
-                multiple
-              />
-              {loadingUpload && <LoadingBox />}
-              {errorUpload && !images && (
-                <MessageBox variant="danger">{errorUpload}</MessageBox>
-              )}
-            </div>
-            <div>
-              <label htmlFor="category">Category</label>
-              <select
-                value={category}
-                onChange={(e) => setCategoryAndClothing(e)}
-              >
-                <optgroup label="Artwork">
-                  {artworkOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Clothing">
-                  {clothingOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Accessories">
-                  {accessoriesOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-            {category === "T-Shirts" || category === "Hoodies" ? (
-              <div>
-                <label>Count In Stock</label>
-                <input
-                  type="number"
-                  id="countInStockXS"
-                  placeholder="XS"
-                  value={countInStockXS}
-                  onChange={(e) => setCountInStockXS(e.target.value)}
-                />
-                <br />
-                <input
-                  type="number"
-                  id="countInStockS"
-                  placeholder="S"
-                  value={countInStockS}
-                  onChange={(e) => setCountInStockS(e.target.value)}
-                />
-                <br />
-                <input
-                  type="number"
-                  id="countInStockM"
-                  placeholder="M"
-                  value={countInStockM}
-                  onChange={(e) => setCountInStockM(e.target.value)}
-                />
-                <br />
-                <input
-                  type="number"
-                  id="countInStockL"
-                  placeholder="L"
-                  value={countInStockL}
-                  onChange={(e) => setCountInStockL(e.target.value)}
-                />
-                <br />
-                <input
-                  type="number"
-                  id="countInStockXL"
-                  placeholder="XL"
-                  value={countInStockXL}
-                  onChange={(e) => setCountInStockXL(e.target.value)}
-                />
-                <br />
-                <input
-                  type="number"
-                  id="countInStockXXL"
-                  placeholder="XXL"
-                  value={countInStockXXL}
-                  onChange={(e) => setCountInStockXXL(e.target.value)}
-                />
-              </div>
-            ) : (
-              <div>
-                <label htmlFor="countInStock">Count In Stock</label>
-                <input
-                  type="number"
-                  id="countInStock"
-                  placeholder="Enter count in stock"
-                  value={countInStock}
-                  onChange={(e) => setCountInStock(e.target.value)}
-                />
-              </div>
+    <section className="product-edit">
+      {loading ? (
+        <LoadingBox lineHeight="70vh" width="100px" />
+      ) : error ? (
+        <MessageBox variant="error">{error}</MessageBox>
+      ) : (
+        <>
+          <h1>Edit {product && product.name ? product.name : "New Product"}</h1>
+          <form className="form" onSubmit={submitHandler}>
+            {loadingUpdate && <LoadingBox lineHeight="70vh" width="100px" />}
+            {errorUpdate && (
+              <MessageBox variant="error">{errorUpdate}</MessageBox>
             )}
-            <div>
-              <label htmlFor="description">Description</label>
-              <textarea
-                type="text"
-                rows="3"
-                id="description"
-                placeholder="Enter description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <label />
-              <button className="primary" type="submit">
-                Update
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-    </>
+            <>
+              <div>
+                <label htmlFor="name">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Enter name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="price">Price (EUR)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="price"
+                  placeholder="Enter price"
+                  value={price}
+                  onChange={(e) => setPriceAndTax(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="imageFile">Image File</label>
+                <input
+                  ref={fileInput}
+                  type="file"
+                  id="imageFile"
+                  label="Choose image"
+                  onChange={uploadFileHandler}
+                  multiple
+                />
+                {loadingUpload && <LoadingBox />}
+                {errorUpload && !images && (
+                  <MessageBox variant="danger">{errorUpload}</MessageBox>
+                )}
+                <button
+                  type="button"
+                  className="secondary clear-images-btn"
+                  onClick={clearImages}
+                >
+                  Clear Images
+                </button>
+                <div className="preview">
+                  {images &&
+                    images.map((image, index) => (
+                      <img key={image} src={image} alt="imagePreview" />
+                    ))}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="category">Category</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategoryAndClothing(e)}
+                >
+                  <optgroup label="Artwork">
+                    {artworkOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Clothing">
+                    {clothingOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Accessories">
+                    {accessoriesOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+              {category === "T-Shirts" || category === "Hoodies" ? (
+                <div>
+                  <label>Count In Stock</label>
+                  <input
+                    type="number"
+                    id="countInStockXS"
+                    placeholder="XS"
+                    value={countInStockXS}
+                    onChange={(e) => setCountInStockXS(e.target.value)}
+                  />
+                  <br />
+                  <input
+                    type="number"
+                    id="countInStockS"
+                    placeholder="S"
+                    value={countInStockS}
+                    onChange={(e) => setCountInStockS(e.target.value)}
+                  />
+                  <br />
+                  <input
+                    type="number"
+                    id="countInStockM"
+                    placeholder="M"
+                    value={countInStockM}
+                    onChange={(e) => setCountInStockM(e.target.value)}
+                  />
+                  <br />
+                  <input
+                    type="number"
+                    id="countInStockL"
+                    placeholder="L"
+                    value={countInStockL}
+                    onChange={(e) => setCountInStockL(e.target.value)}
+                  />
+                  <br />
+                  <input
+                    type="number"
+                    id="countInStockXL"
+                    placeholder="XL"
+                    value={countInStockXL}
+                    onChange={(e) => setCountInStockXL(e.target.value)}
+                  />
+                  <br />
+                  <input
+                    type="number"
+                    id="countInStockXXL"
+                    placeholder="XXL"
+                    value={countInStockXXL}
+                    onChange={(e) => setCountInStockXXL(e.target.value)}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label htmlFor="countInStock">Count In Stock</label>
+                  <input
+                    type="number"
+                    id="countInStock"
+                    placeholder="Enter count in stock"
+                    value={countInStock}
+                    onChange={(e) => setCountInStock(e.target.value)}
+                  />
+                </div>
+              )}
+              <div>
+                <label htmlFor="description">Description</label>
+                <textarea
+                  type="text"
+                  rows="3"
+                  id="description"
+                  placeholder="Enter description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div>
+                <label />
+                <button className="primary" type="submit">
+                  Update
+                </button>
+              </div>
+            </>
+          </form>
+        </>
+      )}
+    </section>
   );
 }
