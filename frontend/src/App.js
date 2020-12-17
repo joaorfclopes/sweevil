@@ -15,6 +15,7 @@ import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "./screens/ResetPasswordScreen";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminScreen from "./screens/AdminScreen";
+import ProductEditScreen from "./screens/ProductEditScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,11 @@ export default function App() {
                 />
                 <Route path="/signin" component={SigninScreen} exact />
                 <PrivateRoute path="/admin" component={AdminScreen} exact />
+                <PrivateRoute
+                  path="/admin/product/:id/edit"
+                  component={ProductEditScreen}
+                  exact
+                />
                 <Route
                   path="/forgotPassword"
                   component={ForgotPasswordScreen}

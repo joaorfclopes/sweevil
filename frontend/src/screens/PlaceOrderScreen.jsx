@@ -74,7 +74,7 @@ export default function PlaceOrderScreen(props) {
                   <p>{item.name}</p>
                 </div>
                 <div className="item-price">
-                  <p>{item.price.toFixed(2)}€</p>
+                  <p>{item.price && item.price.toFixed(2)}€</p>
                 </div>
               </div>
               <div className="item-content">
@@ -95,10 +95,12 @@ export default function PlaceOrderScreen(props) {
       <div className="card total-amount">
         <p>
           Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"}) :{" "}
-          {cart.itemsPrice.toFixed(2)}€
+          {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
         </p>
-        <p>Shipping : {cart.shippingPrice.toFixed(2)}€</p>
-        <h3 className="total">Total : {cart.totalPrice.toFixed(2)}€</h3>
+        <p>Shipping : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€</p>
+        <h3 className="total">
+          Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
+        </h3>
       </div>
       <button className="primary" onClick={placeOrderHandler}>
         Place Order

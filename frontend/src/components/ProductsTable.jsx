@@ -14,11 +14,18 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 import Paper from "@material-ui/core/Paper";
-import DeleteIcon from "@material-ui/icons/Add";
-import { deleteProduct, listProducts } from "../actions/productActions";
-import { PRODUCT_DELETE_RESET } from "../constants/productConstants";
+import AddIcon from "@material-ui/icons/Add";
+import {
+  createProduct,
+  deleteProduct,
+  listProducts,
+} from "../actions/productActions";
+import {
+  PRODUCT_CREATE_RESET,
+  PRODUCT_DELETE_RESET,
+} from "../constants/productConstants";
 
-export default function ProductsTable() {
+export default function ProductsTable({ props }) {
   const dispatch = useDispatch();
 
   const productList = useSelector((state) => state.productList);
@@ -29,6 +36,13 @@ export default function ProductsTable() {
     success: successDelete,
     error: errorDelete,
   } = productDelete;
+  const productCreate = useSelector((state) => state.productCreate);
+  const {
+    loading: loadingCreate,
+    success: successCreate,
+    product: createdProduct,
+    error: errorCreate,
+  } = productCreate;
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -40,8 +54,14 @@ export default function ProductsTable() {
     dispatch(listProducts());
     if (successDelete) {
       dispatch({ type: PRODUCT_DELETE_RESET });
+      dispatch(listProducts());
     }
-  }, [dispatch, successDelete]);
+    if (successCreate) {
+      dispatch({ type: PRODUCT_CREATE_RESET });
+      props.history.push(`/admin/product/${createdProduct._id}/edit`);
+      dispatch(listProducts());
+    }
+  }, [dispatch, successDelete, successCreate, props, createdProduct]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -66,11 +86,21 @@ export default function ProductsTable() {
     }
   };
 
+  const createHandler = () => {
+    dispatch(createProduct());
+  };
+
   return (
     <div className="products-table">
       <Paper className="paper">
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+        {loadingCreate && <LoadingBox />}
+        {errorCreate && (
+          <MessageBox variant="error" dismissible>
+            {errorCreate}
+          </MessageBox>
+        )}
         {loading ? (
           <LoadingBox lineHeight="60vh" />
         ) : error ? (
@@ -88,8 +118,8 @@ export default function ProductsTable() {
                 <b>Products</b>
               </Typography>
               <Tooltip title="Create Product">
-                <IconButton aria-label="create">
-                  <DeleteIcon />
+                <IconButton aria-label="create" onClick={createHandler}>
+                  <AddIcon />
                 </IconButton>
               </Tooltip>
             </Toolbar>
@@ -129,11 +159,20 @@ export default function ProductsTable() {
                         </TableCell>
                         <TableCell align="center">{product.name}</TableCell>
                         <TableCell align="center">
-                          {product.price.toFixed(2)}€
+                          {product.price && product.price.toFixed(2)}€
                         </TableCell>
                         <TableCell align="center">{product.category}</TableCell>
                         <TableCell align="right">
-                          <button className="secondary">Edit</button>
+                          <button
+                            className="secondary"
+                            onClick={() =>
+                              props.history.push(
+                                `/admin/product/${product._id}/edit`
+                              )
+                            }
+                          >
+                            Edit
+                          </button>
                           <button
                             className="dangerous-outline"
                             onClick={() => deleteHandler(product)}

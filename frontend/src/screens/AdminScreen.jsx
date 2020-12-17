@@ -5,7 +5,7 @@ import ProductsTable from "../components/ProductsTable";
 import { signout } from "../actions/userActions";
 import { emptyCart } from "../actions/cartActions";
 
-export default function AdminScreen() {
+export default function AdminScreen(props) {
   const dispatch = useDispatch();
 
   const signoutHandler = () => {
@@ -22,7 +22,7 @@ export default function AdminScreen() {
           </button>
         </Link>
       </div>
-      <ProductsTable />
+      <ProductsTable props={props} />
     </section>
   );
 }
