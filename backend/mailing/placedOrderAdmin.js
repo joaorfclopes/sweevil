@@ -767,7 +767,10 @@ export const placedOrderAdmin = ({
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
                                                   Shipping:
-                                                  ${shippingPrice.toFixed(2)}€
+                                                  ${
+                                                    shippingPrice &&
+                                                    shippingPrice.toFixed(2)
+                                                  }€
                                                 </font>
                                               </td>
                                             </tr>

@@ -165,7 +165,7 @@ export default function OrderScreen(props) {
                       <p>{item.name}</p>
                     </div>
                     <div className="item-price">
-                      <p>{item.price.toFixed(2)}€</p>
+                      <p>{item.price && item.price.toFixed(2)}€</p>
                     </div>
                   </div>
                   <div className="item-content">
@@ -184,10 +184,15 @@ export default function OrderScreen(props) {
           <div className="card total-amount">
             <p>
               Subtotal ({order.itemsQty} {order.itemsQty > 1 ? "items" : "item"}
-              ) : {order.itemsPrice.toFixed(2)}€
+              ) : {order.itemsPrice && order.itemsPrice.toFixed(2)}€
             </p>
-            <p>Shipping : {order.shippingPrice.toFixed(2)}€</p>
-            <h3 className="total">Total : {order.totalPrice.toFixed(2)}€</h3>
+            <p>
+              Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}
+              €
+            </p>
+            <h3 className="total">
+              Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
+            </h3>
           </div>
           {order.status !== "CANCELED" && !order.isPaid && (
             <div className="paypal-button">

@@ -93,7 +93,7 @@ export default function CartScreen(props) {
                     <h3>{item.name}</h3>
                   </div>
                   <div className="item-price">
-                    <h3>{item.price.toFixed(2)}€</h3>
+                    <h3>{item.price && item.price.toFixed(2)}€</h3>
                   </div>
                 </div>
                 <div className="item-content">
@@ -167,11 +167,13 @@ export default function CartScreen(props) {
           <ul className="cart-total">
             <li>
               Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
-              : {cart.itemsPrice.toFixed(2)}€
+              : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </li>
-            <li>Shipping : {cart.shippingPrice.toFixed(2)}€</li>
             <li>
-              <h2>Total : {cart.totalPrice.toFixed(2)}€</h2>
+              Shipping : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+            </li>
+            <li>
+              <h2>Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h2>
             </li>
             <li>
               <button className="primary" onClick={checkoutHandler}>

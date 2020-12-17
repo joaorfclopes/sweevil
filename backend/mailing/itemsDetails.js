@@ -149,7 +149,7 @@ const itemsDetails = (orderItems) =>
                         <font
                           face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                         >
-                          ${item.price.toFixed(2)}€
+                          ${item.price && item.price.toFixed(2)}€
                         </font>
                       </span>
                     </td>
