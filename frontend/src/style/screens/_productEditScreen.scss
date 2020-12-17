@@ -1,0 +1,17 @@
+.product-edit {
+  @include margin-center;
+  .clear-images-btn {
+    margin-top: 1rem;
+  }
+  .preview {
+    display: inline-block;
+    text-align: center;
+    img {
+      margin-right: 4px;
+      width: 20vw;
+      @include lg {
+        width: 100px;
+      }
+    }
+  }
+}
