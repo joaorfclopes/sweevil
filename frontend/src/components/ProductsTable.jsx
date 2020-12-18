@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import Swal from "sweetalert2";
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
 import Table from "@material-ui/core/Table";
@@ -73,17 +74,24 @@ export default function ProductsTable({ props }) {
   };
 
   const deleteHandler = (product) => {
-    if (window.confirm(`Delete ${product.name}?`)) {
-      dispatch(deleteProduct(product._id));
-      const counter =
-        Math.min(
-          rowsPerPage,
-          (products && products.length) - page * rowsPerPage
-        ) - 1;
-      if (counter === 0 && page !== 0) {
-        setPage(page - 1);
+    Swal.fire({
+      title: `Delete ${product.name}?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteProduct(product._id));
+        const counter =
+          Math.min(
+            rowsPerPage,
+            (products && products.length) - page * rowsPerPage
+          ) - 1;
+        if (counter === 0 && page !== 0) {
+          setPage(page - 1);
+        }
+        Swal.fire("Deleted!", "", "success");
       }
-    }
+    });
   };
 
   const createHandler = () => {
