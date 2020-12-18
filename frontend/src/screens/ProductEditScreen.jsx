@@ -1,6 +1,7 @@
 import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import {
   detailsProduct,
   listProducts,
@@ -153,13 +154,16 @@ export default function ProductEditScreen(props) {
   };
 
   const clearImages = () => {
-    if (
-      window.confirm(
-        `This will clear all the images of this product. Are you sure?`
-      )
-    ) {
-      setImages([]);
-    }
+    Swal.fire({
+      title: `Clear Product Images?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setImages([]);
+        Swal.fire("Cleared!", "", "success");
+      }
+    });
   };
 
   const setPriceAndTax = (val) => {
@@ -243,7 +247,7 @@ export default function ProductEditScreen(props) {
                 </button>
                 <div className="preview">
                   {images &&
-                    images.map((image, index) => (
+                    images.map((image) => (
                       <img key={image} src={image} alt="imagePreview" />
                     ))}
                 </div>

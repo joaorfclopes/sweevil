@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
+import Swal from "sweetalert2";
 import {
   cancelOrder,
   deliverOrder,
@@ -94,15 +95,31 @@ export default function OrderScreen(props) {
   };
 
   const deliverHandler = () => {
-    if (window.confirm(`Deliver order ${order._id}?`)) {
-      dispatch(deliverOrder(order._id));
-    }
+    Swal.fire({
+      title: `Deliver Order?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deliverOrder(order._id));
+        Swal.fire("Delivered!", "", "success");
+      }
+    });
   };
 
   const cancelHandler = () => {
-    if (window.confirm(`Cancel order ${order._id}?`)) {
-      dispatch(cancelOrder(order._id));
-    }
+    Swal.fire({
+      title: `Cancel Order?`,
+      showConfirmButton: false,
+      showDenyButton: true,
+      showCancelButton: true,
+      denyButtonText: "Yes",
+    }).then((result) => {
+      if (result.isDenied) {
+        dispatch(cancelOrder(order._id));
+        Swal.fire("Canceled!", "", "error");
+      }
+    });
   };
 
   return (
