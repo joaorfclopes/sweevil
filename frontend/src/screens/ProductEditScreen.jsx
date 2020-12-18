@@ -234,10 +234,6 @@ export default function ProductEditScreen(props) {
                   onChange={uploadFileHandler}
                   multiple
                 />
-                {loadingUpload && <LoadingBox />}
-                {errorUpload && !images && (
-                  <MessageBox variant="danger">{errorUpload}</MessageBox>
-                )}
                 <button
                   type="button"
                   className="secondary clear-images-btn"
@@ -245,6 +241,10 @@ export default function ProductEditScreen(props) {
                 >
                   Clear Images
                 </button>
+                {loadingUpload && <LoadingBox />}
+                {errorUpload && !images && (
+                  <MessageBox variant="danger">{errorUpload}</MessageBox>
+                )}
                 <div className="preview">
                   {images &&
                     images.map((image) => (
