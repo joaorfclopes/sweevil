@@ -1,16 +1,14 @@
-.products-table {
-  .table {
-    min-width: 650;
-    td {
-      min-width: 160px;
-    }
-    button {
-      margin-left: 5px;
-    }
+.table {
+  min-width: 650;
+  td {
+    min-width: 160px;
   }
-  .MuiIconButton-root {
-    border: none !important;
-    padding: none !important;
-    color: black;
+  button {
+    margin-left: 5px;
   }
+}
+.MuiIconButton-root {
+  border: none !important;
+  padding: none !important;
+  color: black;
 }
