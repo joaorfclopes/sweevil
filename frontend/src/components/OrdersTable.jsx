@@ -9,60 +9,58 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
-import IconButton from "@material-ui/core/IconButton";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 import Paper from "@material-ui/core/Paper";
-import AddIcon from "@material-ui/icons/Add";
-import {
-  createProduct,
-  deleteProduct,
-  listProducts,
-} from "../actions/productActions";
-import {
-  PRODUCT_CREATE_RESET,
-  PRODUCT_DELETE_RESET,
-} from "../constants/productConstants";
+import { deleteOrder, listOrders } from "../actions/orderActions";
+import { ORDER_DELETE_RESET } from "../constants/orderConstants";
+import { formatDateDay, formatName } from "../utils";
 
-export default function ProductsTable({ props }) {
+export default function OrdersTable({ props }) {
   const dispatch = useDispatch();
-
-  const productList = useSelector((state) => state.productList);
-  const { loading, products, error } = productList;
-  const productDelete = useSelector((state) => state.productDelete);
+  const orderAdminList = useSelector((state) => state.orderAdminList);
+  const { loading, orders, error } = orderAdminList;
+  const orderDelete = useSelector((state) => state.orderDelete);
   const {
     loading: loadingDelete,
     success: successDelete,
     error: errorDelete,
-  } = productDelete;
-  const productCreate = useSelector((state) => state.productCreate);
-  const {
-    loading: loadingCreate,
-    success: successCreate,
-    product: createdProduct,
-    error: errorCreate,
-  } = productCreate;
+  } = orderDelete;
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const emptyRows =
     rowsPerPage -
-    Math.min(rowsPerPage, (products && products.length) - page * rowsPerPage);
+    Math.min(rowsPerPage, (orders && orders.length) - page * rowsPerPage);
 
   useEffect(() => {
-    dispatch(listProducts());
+    dispatch(listOrders());
     if (successDelete) {
-      dispatch({ type: PRODUCT_DELETE_RESET });
-      dispatch(listProducts());
+      dispatch({ type: ORDER_DELETE_RESET });
     }
-    if (successCreate) {
-      dispatch({ type: PRODUCT_CREATE_RESET });
-      props.history.push(`/admin/product/${createdProduct._id}/edit`);
-      dispatch(listProducts());
-    }
-  }, [dispatch, successDelete, successCreate, props, createdProduct]);
+  }, [dispatch, successDelete]);
+
+  const deleteHandler = (order) => {
+    Swal.fire({
+      title: `Delete ${order._id}?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteOrder(order._id));
+        const counter =
+          Math.min(
+            rowsPerPage,
+            (orders && orders.length) - page * rowsPerPage
+          ) - 1;
+        if (counter === 0 && page !== 0) {
+          setPage(page - 1);
+        }
+        Swal.fire("Deleted!", "", "success");
+      }
+    });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -73,42 +71,11 @@ export default function ProductsTable({ props }) {
     setPage(0);
   };
 
-  const deleteHandler = (product) => {
-    Swal.fire({
-      title: `Delete ${product.name}?`,
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(deleteProduct(product._id));
-        const counter =
-          Math.min(
-            rowsPerPage,
-            (products && products.length) - page * rowsPerPage
-          ) - 1;
-        if (counter === 0 && page !== 0) {
-          setPage(page - 1);
-        }
-        Swal.fire("Deleted!", "", "success");
-      }
-    });
-  };
-
-  const createHandler = () => {
-    dispatch(createProduct());
-  };
-
   return (
-    <div className="products-table" style={{ marginBottom: "50px" }}>
-      <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
+    <div className="orders-table" style={{ marginBottom: "50px" }}>
+      <Paper className="paper">
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
-        {loadingCreate && <LoadingBox />}
-        {errorCreate && (
-          <MessageBox variant="error" dismissible>
-            {errorCreate}
-          </MessageBox>
-        )}
         {loading ? (
           <LoadingBox lineHeight="60vh" />
         ) : error ? (
@@ -123,13 +90,8 @@ export default function ProductsTable({ props }) {
                 id="tableTitle"
                 component="div"
               >
-                <b>Products</b>
+                <b>Orders</b>
               </Typography>
-              <Tooltip title="Create Product">
-                <IconButton aria-label="create" onClick={createHandler}>
-                  <AddIcon />
-                </IconButton>
-              </Tooltip>
             </Toolbar>
             <TableContainer>
               <Table className="table" aria-label="simple table">
@@ -139,13 +101,22 @@ export default function ProductsTable({ props }) {
                       <b>ID</b>
                     </TableCell>
                     <TableCell align="center">
-                      <b>Name</b>
+                      <b>User</b>
                     </TableCell>
                     <TableCell align="center">
-                      <b>Price</b>
+                      <b>Date</b>
                     </TableCell>
                     <TableCell align="center">
-                      <b>Category</b>
+                      <b>Total</b>
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Paid</b>
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Delivered</b>
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Status</b>
                     </TableCell>
                     <TableCell align="right">
                       <b>Actions</b>
@@ -153,37 +124,48 @@ export default function ProductsTable({ props }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {products &&
+                  {orders &&
                     (rowsPerPage > 0
-                      ? products.slice(
+                      ? orders.slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
-                      : products
-                    ).map((product) => (
-                      <TableRow key={product._id}>
+                      : orders
+                    ).map((order) => (
+                      <TableRow key={order._id}>
                         <TableCell component="th" scope="row">
-                          {product._id}
+                          {order._id}
                         </TableCell>
-                        <TableCell align="center">{product.name}</TableCell>
                         <TableCell align="center">
-                          {product.price && product.price.toFixed(2)}€
+                          {formatName(order.shippingAddress.fullName)}
                         </TableCell>
-                        <TableCell align="center">{product.category}</TableCell>
+                        <TableCell align="center">
+                          {formatDateDay(order.createdAt)}
+                        </TableCell>
+                        <TableCell align="center">
+                          {order.totalPrice && order.totalPrice.toFixed(2)}€
+                        </TableCell>
+                        <TableCell align="center">
+                          {order.isPaid ? formatDateDay(order.paidAt) : "No"}
+                        </TableCell>
+                        <TableCell align="center">
+                          {order.isDelivered
+                            ? formatDateDay(order.deliveredAt)
+                            : "No"}
+                        </TableCell>
+                        <TableCell align="center">{order.status}</TableCell>
                         <TableCell align="right">
                           <button
                             className="secondary"
                             onClick={() =>
-                              props.history.push(
-                                `/admin/product/${product._id}/edit`
-                              )
+                              props.history.push(`/cart/order/${order._id}`)
                             }
                           >
-                            Edit
+                            Details
                           </button>
                           <button
                             className="dangerous-outline"
-                            onClick={() => deleteHandler(product)}
+                            onClick={() => deleteHandler(order)}
                           >
                             Delete
                           </button>
@@ -201,7 +183,7 @@ export default function ProductsTable({ props }) {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={products ? products.length : 0}
+              count={orders ? orders.length : 0}
               rowsPerPage={rowsPerPage}
               page={page}
               onChangePage={handleChangePage}
