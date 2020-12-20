@@ -6,6 +6,15 @@ header {
     @include md {
       width: 13rem;
     }
+    .cls-18 {
+      transition: 0.2s;
+    }
+    :hover {
+      .cls-18 {
+        fill: #c3a9e8;
+        transition: 0.2s;
+      }
+    }
   }
   @include nav-options;
   .icon {

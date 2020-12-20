@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import $ from "jquery";
-import { ReactComponent as Logo } from "../assets/images/svg/logo.svg";
+import { ReactComponent as Logo } from "../assets/images/brand/logo.svg";
 import { ReactComponent as Cart } from "../assets/images/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/images/svg/menu.svg";
 import { options } from "../utils";
