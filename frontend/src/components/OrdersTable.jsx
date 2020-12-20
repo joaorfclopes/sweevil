@@ -43,7 +43,7 @@ export default function OrdersTable({ props }) {
 
   const deleteHandler = (order) => {
     Swal.fire({
-      title: `Delete ${order._id}?`,
+      title: `Delete ${formatName(order.shippingAddress.fullName)}'s Order?`,
       showCancelButton: true,
       confirmButtonText: "Yes",
     }).then((result) => {
