@@ -315,14 +315,15 @@
   .carousel-indicators li {
     box-sizing: content-box;
     flex: 0 1 auto;
-    width: 12px;
-    margin-right: 5px;
-    margin-left: 5px;
-    margin-top: 10px;
-    border-radius: 50%;
+    width: 30px;
+    height: 3px;
+    margin-right: 3px;
+    margin-left: 3px;
+    text-indent: -999px;
     background-color: black;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
+    background-clip: padding-box;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
     opacity: 0.7;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -363,7 +364,7 @@
   }
   .product-details {
     .name {
-      margin-top: 12px;
+      margin-top: 5px;
       @include sm {
         margin-top: 0;
       }
