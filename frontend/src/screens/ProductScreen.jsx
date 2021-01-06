@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Notyf } from "notyf";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import LazyImage from "../components/LazyImage";
 import { sizes } from "../utils";
-import { Notyf } from "notyf";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -71,7 +71,9 @@ export default function ProductScreen(props) {
             <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
-                className="carousel"
+                className={`carousel pointer-event ${
+                  window.innerWidth <= 768 && "slide"
+                }`}
                 data-interval="false"
               >
                 <div className="carousel-inner">
@@ -114,6 +116,16 @@ export default function ProductScreen(props) {
                     ></span>
                   </a>
                 </div>
+                <ol className="carousel-indicators">
+                  {product.images.map((image, index) => (
+                    <li
+                      key={index}
+                      data-target="#productImageCarousel"
+                      data-slide-to={index}
+                      className={`${image === product.images[0] && "active"}`}
+                    ></li>
+                  ))}
+                </ol>
               </div>
               <div className="image-preview-container">
                 {product.images.map((image, index) => (
