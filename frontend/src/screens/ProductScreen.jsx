@@ -71,7 +71,7 @@ export default function ProductScreen(props) {
             <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
-                className="carousel slide"
+                className="carousel"
                 data-interval="false"
               >
                 <div className="carousel-inner">
@@ -90,28 +90,30 @@ export default function ProductScreen(props) {
                     </div>
                   ))}
                 </div>
-                <a
-                  className="carousel-control-prev"
-                  href="#productImageCarousel"
-                  role="button"
-                  data-slide="prev"
-                >
-                  <span
-                    className="carousel-control-prev-icon"
-                    aria-hidden="true"
-                  ></span>
-                </a>
-                <a
-                  className="carousel-control-next"
-                  href="#productImageCarousel"
-                  role="button"
-                  data-slide="next"
-                >
-                  <span
-                    className="carousel-control-next-icon"
-                    aria-hidden="true"
-                  ></span>
-                </a>
+                <div className="arrows">
+                  <a
+                    className="carousel-control-prev"
+                    href="#productImageCarousel"
+                    role="button"
+                    data-slide="prev"
+                  >
+                    <span
+                      className="carousel-control-prev-icon"
+                      aria-hidden="true"
+                    ></span>
+                  </a>
+                  <a
+                    className="carousel-control-next"
+                    href="#productImageCarousel"
+                    role="button"
+                    data-slide="next"
+                  >
+                    <span
+                      className="carousel-control-next-icon"
+                      aria-hidden="true"
+                    ></span>
+                  </a>
+                </div>
               </div>
               <div className="image-preview-container">
                 {product.images.map((image, index) => (
