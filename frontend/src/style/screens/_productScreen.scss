@@ -315,6 +315,20 @@
       transition: none;
     }
   }
+  .carousel-item > img {
+    cursor: pointer;
+  }
+  .arrows {
+    @include md {
+      display: none;
+    }
+  }
+  .image-preview-container {
+    display: none;
+    @include md {
+      display: inline-block;
+    }
+  }
   .product-details {
     .name {
       @include sm {

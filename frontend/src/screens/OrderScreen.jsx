@@ -139,16 +139,23 @@ export default function OrderScreen(props) {
           {errorCancel && (
             <MessageBox variant="error">{errorCancel}</MessageBox>
           )}
-          {order.status === "CANCELED" ? (
+          {order.status === "PAID" && (
             <div style={{ marginBottom: "0.5rem" }}>
-              <MessageBox variant="error">Order Canceled.</MessageBox>
+              <MessageBox variant="success">
+                Order successfully paid! Check your email inbox or spam for more
+                info.
+              </MessageBox>
             </div>
-          ) : (
-            order.status === "DELIVERED" && (
-              <div style={{ marginBottom: "0.5rem" }}>
-                <MessageBox variant="success">Order Delivered.</MessageBox>
-              </div>
-            )
+          )}
+          {order.status === "CANCELED" && (
+            <div style={{ marginBottom: "0.5rem" }}>
+              <MessageBox variant="error">Order canceled.</MessageBox>
+            </div>
+          )}
+          {order.status === "DELIVERED" && (
+            <div style={{ marginBottom: "0.5rem" }}>
+              <MessageBox variant="success">Order delivered!</MessageBox>
+            </div>
           )}
           <div className="card">
             <h3>Shipping Address</h3>
