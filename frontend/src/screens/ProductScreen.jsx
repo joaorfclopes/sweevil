@@ -71,9 +71,7 @@ export default function ProductScreen(props) {
             <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
-                className={`carousel pointer-event ${
-                  window.innerWidth <= 768 && "slide"
-                }`}
+                className={`carousel ${window.innerWidth <= 768 && "slide"}`}
                 data-interval="false"
               >
                 <div className="carousel-inner">
