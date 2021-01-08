@@ -6,7 +6,8 @@ import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import LazyImage from "../components/LazyImage";
-import { sizes } from "../utils";
+import { isMobile, sizes } from "../utils";
+import Modal from "../components/Modal";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
+  const [openModal, setOpenModal] = React.useState(false);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -58,6 +60,14 @@ export default function ProductScreen(props) {
       });
   };
 
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   return (
     <section className="product-screen row center">
       {loading ? (
@@ -71,7 +81,7 @@ export default function ProductScreen(props) {
             <div className="col-md-5 product-images">
               <div
                 id="productImageCarousel"
-                className={`carousel ${window.innerWidth <= 768 && "slide"}`}
+                className={`carousel ${isMobile() && "slide"}`}
                 data-interval="false"
               >
                 <div className="carousel-inner">
@@ -81,6 +91,7 @@ export default function ProductScreen(props) {
                       className={`carousel-item ${
                         image === product.images[0] && "active"
                       }`}
+                      onClick={handleOpenModal}
                     >
                       <LazyImage
                         src={image}
@@ -142,6 +153,12 @@ export default function ProductScreen(props) {
                 ))}
               </div>
             </div>
+            <Modal
+              open={openModal}
+              handleClose={handleCloseModal}
+              img={product.images[0]}
+              noMobile
+            />
             <div className="col-md-5 product-details">
               <h2 className="name">
                 <b>{product.name}</b>
