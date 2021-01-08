@@ -17,7 +17,8 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -60,8 +61,9 @@ export default function ProductScreen(props) {
       });
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (index) => {
     setOpenModal(true);
+    setImgIndex(index);
   };
 
   const handleCloseModal = () => {
@@ -84,14 +86,14 @@ export default function ProductScreen(props) {
                 className={`carousel ${isMobile() && "slide"}`}
                 data-interval="false"
               >
-                <div className="carousel-inner">
-                  {product.images.map((image) => (
+                <div className="carousel-inner" style={{ marginBottom: "5px" }}>
+                  {product.images.map((image, index) => (
                     <div
                       key={image}
                       className={`carousel-item ${
                         image === product.images[0] && "active"
                       }`}
-                      onClick={handleOpenModal}
+                      onClick={() => handleOpenModal(index)}
                     >
                       <LazyImage
                         src={image}
@@ -156,7 +158,8 @@ export default function ProductScreen(props) {
             <Modal
               open={openModal}
               handleClose={handleCloseModal}
-              img={product.images[0]}
+              images={product.images}
+              imgIndex={imgIndex}
               noMobile
             />
             <div className="col-md-5 product-details">
