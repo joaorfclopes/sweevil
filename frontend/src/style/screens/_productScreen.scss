@@ -1,5 +1,8 @@
 .product-screen {
   min-height: 70vh;
+  @include md {
+    margin-top: 2vh;
+  }
   .container {
     width: 100%;
     padding-right: 15px;
@@ -45,7 +48,7 @@
     cursor: pointer;
     display: inline-block;
     margin-right: 5px;
-    width: calc(33.333% - 3.322px);
+    width: calc(33.332% - 3.322px);
     @include lg-max {
       &:nth-child(3n) {
         margin-right: 0;
@@ -163,7 +166,7 @@
       width: 9%;
     }
     @include lg {
-      width: 11%;
+      width: 14%;
     }
   }
   .col-md-2 {

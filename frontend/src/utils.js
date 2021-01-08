@@ -29,3 +29,11 @@ export const formatName = (name) => {
     return name;
   }
 };
+
+export const isMobile = () => {
+  if (window.innerWidth <= 768) {
+    return true;
+  } else {
+    return false;
+  }
+};
