@@ -10,9 +10,11 @@ header {
       transition: 0.2s;
     }
     :hover {
-      .cls-18 {
-        fill: #c3a9e8;
-        transition: 0.2s;
+      @include md {
+        .cls-18 {
+          fill: #c3a9e8;
+          transition: 0.2s;
+        }
       }
     }
   }
