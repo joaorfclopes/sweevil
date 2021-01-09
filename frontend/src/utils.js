@@ -31,7 +31,7 @@ export const formatName = (name) => {
 };
 
 export const isMobile = () => {
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth < 768) {
     return true;
   } else {
     return false;

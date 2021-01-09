@@ -35,6 +35,9 @@
     padding-right: 15px;
     padding-left: 15px;
   }
+  .carousel-item > img {
+    cursor: pointer;
+  }
   .image-preview {
     cursor: pointer;
     display: inline-block;
