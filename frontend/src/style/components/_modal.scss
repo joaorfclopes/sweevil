@@ -10,9 +10,9 @@
     border-radius: 0;
   }
   img {
-    width: 700px;
+    width: 700px !important;
     @include lg {
-      width: 850px;
+      width: 850px !important;
     }
   }
 }

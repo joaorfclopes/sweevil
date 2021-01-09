@@ -16,6 +16,7 @@ import ResetPasswordScreen from "./screens/ResetPasswordScreen";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
+import AboutScreen from "./screens/AboutScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,7 @@ export default function App() {
                   exact
                 />
                 <Route path="/cart/order/:id" component={OrderScreen} />
+                <Route path="/about" component={AboutScreen} />
               </Switch>
             </main>
           </div>
