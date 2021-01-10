@@ -1,0 +1,11 @@
+.about {
+  margin: auto;
+  @include lg {
+    width: 68vw;
+  }
+  .video-react {
+    button {
+      border: none !important;
+    }
+  }
+}
