@@ -1,11 +1,14 @@
 .about {
-  margin: auto;
-  @include lg {
-    width: 68vw;
-  }
-  .video-react {
-    button {
-      border: none !important;
+  .video {
+    text-align: center;
+    video {
+      width: 100%;
+      &:hover {
+        cursor: pointer;
+      }
+      @include lg {
+        width: 68vw;
+      }
     }
   }
 }
