@@ -1,14 +1,33 @@
 .about {
   .video {
-    text-align: center;
+    cursor: pointer;
+    margin: auto;
+    position: relative;
     video {
       width: 100%;
-      &:hover {
-        cursor: pointer;
+    }
+    &:hover {
+      .play {
+        opacity: 0;
       }
-      @include lg {
-        width: 68vw;
+    }
+    .play {
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin-top: 10px;
+      margin-left: 10px;
+      opacity: 1;
+      transition: 0.3s;
+      svg {
+        width: 50px;
       }
+      &.hide {
+        display: none;
+      }
+    }
+    @include lg {
+      width: 68vw;
     }
   }
 }
