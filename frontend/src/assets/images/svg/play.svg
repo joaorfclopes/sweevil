@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <defs>
+        <style>.play_button{fill:#fff;}</style>
+    </defs>
+    <title>Asset 1</title>
+    <g id="Layer_2" data-name="Layer 2">
+        <g id="Layer_1-2" data-name="Layer 1">
+            <rect class="play_button" x="192" y="149.33" width="170.67" height="213.34"/>
+            <path d="M256,0C114.83,0,0,114.84,0,256S114.83,512,256,512,512,397.16,512,256,397.17,0,256,0ZM357.77,265,208.44,361A10.67,10.67,0,0,1,192,352V160a10.66,10.66,0,0,1,16.44-9l149.33,96a10.66,10.66,0,0,1,0,17.94Z"/>
+        </g>
+    </g>
+</svg>
