@@ -1,7 +1,9 @@
 .about {
+  @include md {
+    margin-top: 2vh;
+  }
   .video {
     cursor: pointer;
-    margin: auto;
     position: relative;
     video {
       width: 100%;
@@ -26,8 +28,15 @@
         display: none;
       }
     }
-    @include lg {
-      width: 68vw;
+    margin-top: 20px;
+    @include sm {
+      margin-top: 0;
+    }
+    @include md {
+      width: 52vw;
+    }
+    @include xl {
+      width: 600px;
     }
   }
 }
