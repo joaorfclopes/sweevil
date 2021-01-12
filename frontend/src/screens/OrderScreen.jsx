@@ -142,8 +142,8 @@ export default function OrderScreen(props) {
           {order.status === "PAID" && (
             <div style={{ marginBottom: "0.5rem" }}>
               <MessageBox variant="success">
-                Order successfully paid! Check your email inbox or spam for more
-                info.
+                Order successfully paid! Check your email Inbox (if you can't
+                find it check your Spam) for more information.
               </MessageBox>
             </div>
           )}
