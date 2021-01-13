@@ -2,6 +2,14 @@
   @include md {
     margin-top: 2vh;
   }
+  .brushstrikeregular {
+    font-family: brushstrikeregular;
+    line-height: 1;
+    font-size: $extraLargeMobile;
+    @include md {
+      font-size: $extraLargeDesktop;
+    }
+  }
   .video {
     cursor: pointer;
     position: relative;
@@ -34,6 +42,10 @@
     }
     @include md {
       width: 52vw;
+      position: absolute;
+      top: 50%;
+      left: 73%;
+      transform: translate(-50%, -50%);
     }
     @include xl {
       width: 600px;
