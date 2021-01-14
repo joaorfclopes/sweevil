@@ -1,5 +1,7 @@
 .cart {
-  @include margin-center;
+  @include lg {
+    @include margin-center;
+  }
   h1 {
     font-size: $large;
   }

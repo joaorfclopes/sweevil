@@ -1,3 +1,5 @@
 .signin {
-  @include margin-center;
+  @include lg {
+    @include margin-center;
+  }
 }

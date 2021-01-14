@@ -17,6 +17,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import AboutScreen from "./screens/AboutScreen";
+import GalleryScreen from "./screens/GalleryScreen";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ export default function App() {
                 />
                 <Route path="/cart/order/:id" component={OrderScreen} />
                 <Route path="/about" component={AboutScreen} />
+                <Route path="/gallery" component={GalleryScreen} />
               </Switch>
             </main>
           </div>
