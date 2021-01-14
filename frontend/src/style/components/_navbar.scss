@@ -10,7 +10,7 @@ header {
       fill: $primaryColor;
       transition: 0.2s;
     }
-    :hover {
+    &:hover {
       @include md {
         .cls-18 {
           fill: $secondaryColor;
