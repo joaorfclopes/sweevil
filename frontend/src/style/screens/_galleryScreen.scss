@@ -1,0 +1,20 @@
+.gallery {
+  .gallery-container {
+    line-height: 0;
+    column-gap: 0px;
+    column-count: 1;
+    @include md {
+      column-count: 3;
+    }
+    @include lg {
+      column-count: 4;
+      margin-left: 10%;
+      margin-right: 10%;
+    }
+    img {
+      width: 100% !important;
+      height: auto !important;
+      padding: 3px;
+    }
+  }
+}

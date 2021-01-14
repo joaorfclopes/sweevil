@@ -1,5 +1,7 @@
 .product-edit {
-  @include margin-center;
+  @include lg {
+    @include margin-center;
+  }
   .clear-images-btn {
     margin-top: 1rem;
   }

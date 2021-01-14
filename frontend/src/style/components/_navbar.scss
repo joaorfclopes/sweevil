@@ -11,7 +11,7 @@ header {
       transition: 0.2s;
     }
     &:hover {
-      @include md {
+      @include lg {
         .cls-18 {
           fill: $secondaryColor;
           transition: 0.2s;
