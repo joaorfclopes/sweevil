@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import video from "../assets/images/video/video.mp4";
-import poster from "../assets/images/video/poster.png";
+import poster from "../assets/images/video/poster.jpg";
 import { ReactComponent as Play } from "../assets/images/svg/play.svg";
 
 export default function AboutScreen() {
