@@ -26,6 +26,7 @@ import {
   userSigninReducer,
   userUpdateReducer,
 } from "./reducers/userReducers";
+import { galleryImageListReducer } from "./reducers/galleryReducers";
 
 const initialState = {
   userSignin: {
@@ -64,6 +65,7 @@ const reducer = combineReducers({
   orderDelete: orderDeleteReducer,
   orderDeliver: orderDeliverReducer,
   orderCancel: orderCancelReducer,
+  galleryImageList: galleryImageListReducer,
 });
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

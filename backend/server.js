@@ -7,6 +7,7 @@ import productRoute from "./routes/productRoute.js";
 import orderRoute from "./routes/orderRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
 import emailRoute from "./routes/emailRoute.js";
+import galleryImageRoute from "./routes/galleryImageRoute.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/products", productRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/uploads", uploadRoute);
 app.use("/api/email", emailRoute);
+app.use("/api/gallery", galleryImageRoute);
 
 app.get("/api/config/paypal", (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || "sb");
