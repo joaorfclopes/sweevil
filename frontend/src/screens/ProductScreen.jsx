@@ -108,6 +108,7 @@ export default function ProductScreen(props) {
                         style={{ cursor: "pointer" }}
                         onSwipeRight={previous}
                         onSwipeLeft={next}
+                        tolerance={50}
                       >
                         <LazyImage
                           src={image}
