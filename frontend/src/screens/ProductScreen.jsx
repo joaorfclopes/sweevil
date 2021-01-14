@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
+import Swipe from "react-easy-swipe";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
@@ -70,6 +71,14 @@ export default function ProductScreen(props) {
     setOpenModal(false);
   };
 
+  const next = () => {
+    document.getElementById("carousel-control-next").click();
+  };
+
+  const previous = () => {
+    document.getElementById("carousel-control-prev").click();
+  };
+
   return (
     <section className="product-screen row center">
       {loading ? (
@@ -95,16 +104,23 @@ export default function ProductScreen(props) {
                       }`}
                       onClick={() => handleOpenModal(index)}
                     >
-                      <LazyImage
-                        src={image}
-                        className="d-block w-100"
-                        alt="product"
-                      />
+                      <Swipe
+                        style={{ cursor: "pointer" }}
+                        onSwipeRight={previous}
+                        onSwipeLeft={next}
+                      >
+                        <LazyImage
+                          src={image}
+                          className="d-block w-100"
+                          alt="product"
+                        />
+                      </Swipe>
                     </div>
                   ))}
                 </div>
                 <div className="arrows">
                   <a
+                    id="carousel-control-prev"
                     className="carousel-control-prev"
                     href="#productImageCarousel"
                     role="button"
@@ -116,6 +132,7 @@ export default function ProductScreen(props) {
                     ></span>
                   </a>
                   <a
+                    id="carousel-control-next"
                     className="carousel-control-next"
                     href="#productImageCarousel"
                     role="button"
