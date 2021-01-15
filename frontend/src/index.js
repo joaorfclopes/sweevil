@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
 import "./style/index.scss";
 import "notyf/notyf.min.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -11,9 +10,7 @@ import store from "./store";
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <App />
   </Provider>,
   document.getElementById("root")
 );

@@ -7,7 +7,6 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { isMobile, sizes } from "../utils";
 import Modal from "../components/Modal";
 
@@ -90,7 +89,7 @@ export default function ProductScreen(props) {
       transition={props.pageTransition}
     >
       {loading ? (
-        <LoadingBox lineHeight="70vh" width="100px" />
+        <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
@@ -172,12 +171,7 @@ export default function ProductScreen(props) {
                     data-target="#productImageCarousel"
                     data-slide-to={index}
                   >
-                    <LazyLoadImage
-                      src={image}
-                      className="d-block w-100"
-                      alt="product"
-                      effect="blur"
-                    />
+                    <img src={image} className="d-block w-100" alt="product" />
                   </div>
                 ))}
               </div>

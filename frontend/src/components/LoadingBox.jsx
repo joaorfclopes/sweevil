@@ -5,9 +5,9 @@ export default function LoadingBox(props) {
     <div className="loading-box" style={{ lineHeight: props.lineHeight }}>
       <img
         className="spinner"
-        src={window.location.origin + "/favicon.png"}
+        src={window.location.origin + "/icon.svg"}
         alt="spinner"
-        width={props.width ? props.width : "50px"}
+        width={props.width ? props.width : "70px"}
       />
     </div>
   );

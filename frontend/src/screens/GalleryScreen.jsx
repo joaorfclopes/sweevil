@@ -24,7 +24,7 @@ export default function GalleryScreen(props) {
       transition={props.pageTransition}
     >
       {loading ? (
-        <LoadingBox lineHeight="70vh" width="100px" />
+        <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
