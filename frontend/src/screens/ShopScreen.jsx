@@ -6,7 +6,7 @@ import MessageBox from "../components/MessageBox";
 import { useDispatch, useSelector } from "react-redux";
 import { listProducts } from "../actions/productActions";
 
-export default function ShopScreen() {
+export default function ShopScreen(props) {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
@@ -17,9 +17,11 @@ export default function ShopScreen() {
 
   return (
     <motion.section
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
     >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />

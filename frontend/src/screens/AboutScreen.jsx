@@ -4,7 +4,7 @@ import video from "../assets/images/video/video.mp4";
 import poster from "../assets/images/video/poster.jpg";
 import { ReactComponent as Play } from "../assets/images/svg/play.svg";
 
-export default function AboutScreen() {
+export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
 
   useEffect(() => {
@@ -26,9 +26,11 @@ export default function AboutScreen() {
   return (
     <motion.section
       className="about"
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
     >
       <div className="row" style={{ minHeight: "70vh" }}>
         <div className="container">
