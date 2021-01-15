@@ -44,6 +44,7 @@ export default function App() {
       Axios.get("/api/products").then(() => {
         setLoading(false);
         $(".loading").css({ display: "none" });
+        $("body").css({ overflowY: "scroll" });
       });
     }, 1200);
   }, []);

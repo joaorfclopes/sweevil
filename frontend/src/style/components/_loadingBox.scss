@@ -1,11 +1,7 @@
 .loading-box {
   text-align: center;
   position: relative;
-  z-index: 1001 !important;
-  background-color: white !important;
-  &.full-screen {
-    position: fixed !important;
-  }
+  z-index: 1000;
   .spinner {
     @include spin;
     margin: auto !important;
