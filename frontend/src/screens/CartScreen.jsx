@@ -69,9 +69,11 @@ export default function CartScreen(props) {
   return (
     <motion.section
       className="cart"
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
     >
       <h1>Cart</h1>
       {cartItems.length === 0 ? (

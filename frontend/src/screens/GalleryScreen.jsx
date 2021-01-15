@@ -6,7 +6,7 @@ import LazyImage from "../components/LazyImage";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 
-export default function GalleryScreen() {
+export default function GalleryScreen(props) {
   const dispatch = useDispatch();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
@@ -17,9 +17,11 @@ export default function GalleryScreen() {
 
   return (
     <motion.section
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
     >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />

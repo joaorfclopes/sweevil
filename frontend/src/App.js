@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Route, Switch, useLocation } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { useSelector } from "react-redux";
 import $ from "jquery";
 import Axios from "axios";
 import { AnimatePresence } from "framer-motion";
@@ -14,16 +15,30 @@ import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "./screens/ResetPasswordScreen";
-import PrivateRoute from "./components/PrivateRoute";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import AboutScreen from "./screens/AboutScreen";
 import GalleryScreen from "./screens/GalleryScreen";
+import HomeScreen from "./screens/HomeScreen";
 
 export default function App() {
+  const userSignin = useSelector((state) => state.userSignin);
+  const { userInfo } = userSignin;
+
   const [loading, setLoading] = useState(true);
 
-  const location = useLocation();
+  const pageVariants = {
+    in: {
+      opacity: 1,
+    },
+    out: {
+      opacity: 0,
+    },
+  };
+
+  const pageTransition = {
+    transition: "linear",
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -42,44 +57,160 @@ export default function App() {
             <Navbar />
             <MenuMobile />
             <main>
-              <AnimatePresence exitBeforeEnter>
-                <Switch location={location} key={location.pathname}>
-                  <Route path="/shop" component={ShopScreen} exact />
+              <AnimatePresence>
+                <Switch>
+                  <Route
+                    exact
+                    path="/"
+                    render={(props) => (
+                      <HomeScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/about"
+                    render={(props) => (
+                      <AboutScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/gallery"
+                    render={(props) => (
+                      <GalleryScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/shop"
+                    render={(props) => (
+                      <ShopScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
                   <Route
                     path="/shop/product/:id"
-                    component={ProductScreen}
-                    exact
-                  />
-                  <Route path="/signin" component={SigninScreen} exact />
-                  <PrivateRoute path="/admin" component={AdminScreen} exact />
-                  <PrivateRoute
-                    path="/admin/product/:id/edit"
-                    component={ProductEditScreen}
-                    exact
+                    render={(props) => (
+                      <ProductScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
                   />
                   <Route
-                    path="/forgotPassword"
-                    component={ForgotPasswordScreen}
                     exact
+                    path="/cart"
+                    render={(props) => (
+                      <CartScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
                   />
-                  <Route
-                    path="/resetPassword/:id"
-                    component={ResetPasswordScreen}
-                  />
-                  <Route path="/cart" component={CartScreen} exact />
                   <Route
                     path="/cart/shipping"
-                    component={ShippingScreen}
-                    exact
+                    render={(props) => (
+                      <ShippingScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
                   />
                   <Route
                     path="/cart/placeorder"
-                    component={PlaceOrderScreen}
-                    exact
+                    render={(props) => (
+                      <PlaceOrderScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
                   />
-                  <Route path="/cart/order/:id" component={OrderScreen} />
-                  <Route path="/about" component={AboutScreen} />
-                  <Route path="/gallery" component={GalleryScreen} />
+                  <Route
+                    path="/cart/order/:id"
+                    render={(props) => (
+                      <OrderScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/signin"
+                    render={(props) => (
+                      <SigninScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    exact
+                    path="/admin"
+                    render={(props) =>
+                      userInfo ? (
+                        <AdminScreen
+                          {...props}
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      ) : (
+                        <Redirect to="/signin" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/admin/product/:id/edit"
+                    render={(props) =>
+                      userInfo ? (
+                        <ProductEditScreen
+                          {...props}
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      ) : (
+                        <Redirect to="/signin" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/forgotPassword"
+                    render={(props) => (
+                      <ForgotPasswordScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/resetPassword/:id"
+                    render={(props) => (
+                      <ResetPasswordScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
                 </Switch>
               </AnimatePresence>
             </main>
