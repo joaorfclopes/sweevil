@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import { saveShippingAddress } from "../actions/cartActions";
 
 export default function ShippingScreen(props) {
@@ -36,7 +37,14 @@ export default function ShippingScreen(props) {
   };
 
   return (
-    <section className="shipping">
+    <motion.section
+      className="shipping"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <h1>Shipping Details</h1>
       <form className="form" onSubmit={submitHandler}>
         <div>
@@ -115,6 +123,6 @@ export default function ShippingScreen(props) {
           </button>
         </div>
       </form>
-    </section>
+    </motion.section>
   );
 }

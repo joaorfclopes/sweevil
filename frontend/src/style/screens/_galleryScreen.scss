@@ -10,9 +10,12 @@
     margin-left: 10%;
     margin-right: 10%;
   }
-  img {
-    width: 100% !important;
-    height: auto !important;
+  .gallery-image {
+    display: inline-block;
     padding: 8px;
+    img {
+      width: 100% !important;
+      height: auto !important;
+    }
   }
 }

@@ -31,12 +31,13 @@ export default function GalleryScreen(props) {
         <div className="gallery">
           {gallery &&
             gallery.map((galleryImage) => (
-              <LazyLoadImage
-                key={galleryImage._id}
-                src={galleryImage.image}
-                alt="gallery-img"
-                effect="blur"
-              />
+              <div key={galleryImage._id} className="gallery-image">
+                <LazyLoadImage
+                  src={galleryImage.image}
+                  alt="gallery-img"
+                  effect="blur"
+                />
+              </div>
             ))}
         </div>
       )}

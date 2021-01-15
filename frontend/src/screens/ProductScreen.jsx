@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
 import Swipe from "react-easy-swipe";
+import { motion } from "framer-motion";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
@@ -80,7 +81,14 @@ export default function ProductScreen(props) {
   };
 
   return (
-    <section className="product-screen row center">
+    <motion.section
+      className="product-screen row center"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -263,6 +271,6 @@ export default function ProductScreen(props) {
           </div>
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { toPrice } from "../utils";
 import { createOrder } from "../actions/orderActions";
@@ -40,7 +41,14 @@ export default function PlaceOrderScreen(props) {
   }, [success, props, order, dispatch]);
 
   return (
-    <section className="place-order cards-section">
+    <motion.section
+      className="place-order cards-section"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <h1>Place Order</h1>
       <div className="card">
         <h3>Shipping Address</h3>
@@ -106,6 +114,6 @@ export default function PlaceOrderScreen(props) {
       <button className="primary" onClick={placeOrderHandler}>
         Place Order
       </button>
-    </section>
+    </motion.section>
   );
 }

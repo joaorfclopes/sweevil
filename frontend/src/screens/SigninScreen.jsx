@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { signin } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -29,7 +30,14 @@ export default function SigninScreen(props) {
   }, [userInfo, props, redirect]);
 
   return (
-    <section className="signin">
+    <motion.section
+      className="signin"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <h1>Sign In</h1>
       <form className="form admin" onSubmit={submitHandler}>
         {loading && <LoadingBox />}
@@ -61,6 +69,6 @@ export default function SigninScreen(props) {
           </button>
         </div>
       </form>
-    </section>
+    </motion.section>
   );
 }

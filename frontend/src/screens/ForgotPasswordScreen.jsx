@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import { sendResetPasswordMail } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 
-export default function ForgotPasswordScreen() {
+export default function ForgotPasswordScreen(props) {
   const dispatch = useDispatch();
 
   const userForgotPassword = useSelector((state) => state.userForgotPassword);
@@ -18,7 +19,14 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <section className="signin">
+    <motion.section
+      className="signin"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <h1>Forgot Password</h1>
       {error && <MessageBox variant="error">{error}</MessageBox>}
       {success && (
@@ -50,6 +58,6 @@ export default function ForgotPasswordScreen() {
           )}
         </div>
       </form>
-    </section>
+    </motion.section>
   );
 }

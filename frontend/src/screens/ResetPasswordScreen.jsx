@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import { resetPassword } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -35,7 +36,14 @@ export default function ResetPasswordScreen(props) {
   };
 
   return (
-    <section className="signin">
+    <motion.section
+      className="signin"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <h1>Reset Password</h1>
       {loading && <LoadingBox lineHeight="70vh" width="100px" />}
       {error && <MessageBox variant="error">{error}</MessageBox>}
@@ -78,6 +86,6 @@ export default function ResetPasswordScreen(props) {
           </button>
         </div>
       </form>
-    </section>
+    </motion.section>
   );
 }
