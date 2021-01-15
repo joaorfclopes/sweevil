@@ -1,6 +1,5 @@
 import React from "react";
 import { Dialog, Backdrop, Fade } from "@material-ui/core";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { isMobile } from "../utils";
 
 export default function Modal(props) {
@@ -34,12 +33,7 @@ export default function Modal(props) {
                         image === props.images[props.imgIndex] && "active"
                       }`}
                     >
-                      <LazyLoadImage
-                        src={image}
-                        className="d-block w-100"
-                        alt="img"
-                        effect="blur"
-                      />
+                      <img src={image} className="d-block w-100" alt="img" />
                     </div>
                   ))}
                 </div>

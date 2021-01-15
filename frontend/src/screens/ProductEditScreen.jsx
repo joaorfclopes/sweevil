@@ -2,6 +2,7 @@ import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { motion } from "framer-motion";
 import {
   detailsProduct,
   listProducts,
@@ -189,7 +190,14 @@ export default function ProductEditScreen(props) {
   };
 
   return (
-    <section className="product-edit">
+    <motion.section
+      className="product-edit"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -365,6 +373,6 @@ export default function ProductEditScreen(props) {
           </form>
         </>
       )}
-    </section>
+    </motion.section>
   );
 }

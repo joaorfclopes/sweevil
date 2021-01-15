@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
 import Swal from "sweetalert2";
+import { motion } from "framer-motion";
 import {
   cancelOrder,
   deliverOrder,
@@ -123,7 +124,14 @@ export default function OrderScreen(props) {
   };
 
   return (
-    <section className="order cards-section">
+    <motion.section
+      className="order cards-section"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -258,6 +266,6 @@ export default function OrderScreen(props) {
           )}
         </>
       )}
-    </section>
+    </motion.section>
   );
 }
