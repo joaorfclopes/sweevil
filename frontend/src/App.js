@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 import $ from "jquery";
 import Axios from "axios";
@@ -44,13 +44,12 @@ export default function App() {
       Axios.get("/api/products").then(() => {
         setLoading(false);
         $(".loading").css({ display: "none" });
-        $("body").css({ overflowY: "scroll" });
       });
     }, 1200);
   }, []);
 
   return (
-    <>
+    <BrowserRouter>
       {!loading && (
         <div className="App">
           <div className="grid-container">
@@ -206,6 +205,6 @@ export default function App() {
           </div>
         </div>
       )}
-    </>
+    </BrowserRouter>
   );
 }

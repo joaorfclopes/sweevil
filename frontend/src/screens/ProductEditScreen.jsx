@@ -199,14 +199,14 @@ export default function ProductEditScreen(props) {
       transition={props.pageTransition}
     >
       {loading ? (
-        <LoadingBox lineHeight="70vh" width="100px" />
+        <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <>
           <h1>Edit {product && product.name ? product.name : "New Product"}</h1>
           <form className="form" onSubmit={submitHandler}>
-            {loadingUpdate && <LoadingBox lineHeight="70vh" width="100px" />}
+            {loadingUpdate && <LoadingBox lineHeight="75vh" width="100px" />}
             {errorUpdate && (
               <MessageBox variant="error">{errorUpdate}</MessageBox>
             )}

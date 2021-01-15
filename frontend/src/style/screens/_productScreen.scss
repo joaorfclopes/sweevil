@@ -6,6 +6,12 @@
   .carousel-item > img {
     cursor: pointer;
   }
+  .image-preview-container {
+    display: none;
+    @include md {
+      display: inline-block;
+    }
+  }
   .image-preview {
     cursor: pointer;
     display: inline-block;
@@ -26,12 +32,6 @@
   .arrows {
     @include md {
       display: none;
-    }
-  }
-  .image-preview-container {
-    display: none;
-    @include md {
-      display: inline-block;
     }
   }
   .product-details {
