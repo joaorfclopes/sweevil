@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
 import { motion } from "framer-motion";
 import MessageBox from "../components/MessageBox";
-import LazyImage from "../components/LazyImage";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { sizes, toPrice } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
 import { ReactComponent as Remove } from "../assets/images/svg/remove.svg";
@@ -89,10 +89,11 @@ export default function CartScreen(props) {
               <li key={item.product}>
                 <div className="item-image">
                   <Link to={`/shop/product/${item.product}`}>
-                    <LazyImage
+                    <LazyLoadImage
                       className="small"
                       src={item.image}
                       alt={item.name}
+                      effect="blur"
                     />
                   </Link>
                 </div>

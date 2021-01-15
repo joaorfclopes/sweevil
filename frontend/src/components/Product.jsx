@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import LazyImage from "./LazyImage";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function Product(props) {
   const { product } = props;
@@ -10,7 +10,11 @@ export default function Product(props) {
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
           <div className="product-image">
-            <LazyImage src={product.images[0]} alt={product.image} />
+            <LazyLoadImage
+              src={product.images[0]}
+              alt={product.image}
+              effect="blur"
+            />
           </div>
           <div className="product-description">
             <p className="product-name">{product.name}</p>
