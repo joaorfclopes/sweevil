@@ -3,6 +3,9 @@
   position: relative;
   z-index: 1001 !important;
   background-color: white !important;
+  &.full-screen {
+    position: fixed !important;
+  }
   .spinner {
     @include spin;
     margin: auto !important;
