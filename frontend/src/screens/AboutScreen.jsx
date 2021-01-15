@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import video from "../assets/images/video/video.mp4";
 import poster from "../assets/images/video/poster.jpg";
 import { ReactComponent as Play } from "../assets/images/svg/play.svg";
@@ -23,7 +24,12 @@ export default function AboutScreen() {
   }, []);
 
   return (
-    <section className="about">
+    <motion.section
+      className="about"
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <div className="row" style={{ minHeight: "70vh" }}>
         <div className="container">
           <div className="row-bootstrap">
@@ -75,6 +81,6 @@ export default function AboutScreen() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

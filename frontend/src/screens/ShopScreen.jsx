@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { motion } from "framer-motion";
 import Product from "../components/Product";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -15,7 +16,11 @@ export default function ShopScreen() {
   }, [dispatch]);
 
   return (
-    <section>
+    <motion.section
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -35,6 +40,6 @@ export default function ShopScreen() {
           </div>
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }

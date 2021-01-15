@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import { listGalleryImages } from "../actions/galleryActions";
 import LazyImage from "../components/LazyImage";
 import LoadingBox from "../components/LoadingBox";
@@ -15,7 +16,11 @@ export default function GalleryScreen() {
   }, [dispatch]);
 
   return (
-    <section>
+    <motion.section
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {loading ? (
         <LoadingBox lineHeight="70vh" width="100px" />
       ) : error ? (
@@ -32,6 +37,6 @@ export default function GalleryScreen() {
             ))}
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
+import { motion } from "framer-motion";
 import MessageBox from "../components/MessageBox";
 import LazyImage from "../components/LazyImage";
 import { sizes, toPrice } from "../utils";
@@ -66,7 +67,12 @@ export default function CartScreen(props) {
   };
 
   return (
-    <section className="cart">
+    <motion.section
+      className="cart"
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <h1>Cart</h1>
       {cartItems.length === 0 ? (
         <div>
@@ -183,6 +189,6 @@ export default function CartScreen(props) {
           </ul>
         </>
       )}
-    </section>
+    </motion.section>
   );
 }
