@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import LazyImage from "../components/LazyImage";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { toPrice } from "../utils";
 import { createOrder } from "../actions/orderActions";
 import { ORDER_CREATE_RESET } from "../constants/orderConstants";
@@ -62,10 +62,11 @@ export default function PlaceOrderScreen(props) {
             <li key={item.product}>
               <div className="item-image">
                 <Link to={`/shop/product/${item.product}`}>
-                  <LazyImage
+                  <LazyLoadImage
                     className="small"
                     src={item.image}
                     alt={item.name}
+                    effect="blur"
                   />
                 </Link>
               </div>

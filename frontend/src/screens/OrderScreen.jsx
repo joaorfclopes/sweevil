@@ -11,7 +11,7 @@ import {
 } from "../actions/orderActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import LazyImage from "../components/LazyImage";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import Axios from "axios";
 import {
   ORDER_CANCEL_RESET,
@@ -177,10 +177,11 @@ export default function OrderScreen(props) {
                 <li key={item.product}>
                   <div className="item-image">
                     <Link to={`/shop/product/${item.product}`}>
-                      <LazyImage
+                      <LazyLoadImage
                         className="small"
                         src={item.image}
                         alt={item.name}
+                        effect="blur"
                       />
                     </Link>
                   </div>

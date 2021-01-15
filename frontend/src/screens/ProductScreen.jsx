@@ -6,7 +6,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
-import LazyImage from "../components/LazyImage";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { isMobile, sizes } from "../utils";
 import Modal from "../components/Modal";
 
@@ -110,10 +110,11 @@ export default function ProductScreen(props) {
                         onSwipeLeft={next}
                         tolerance={50}
                       >
-                        <LazyImage
+                        <LazyLoadImage
                           src={image}
                           className="d-block w-100"
                           alt="product"
+                          effect="blur"
                         />
                       </Swipe>
                     </div>
@@ -164,10 +165,11 @@ export default function ProductScreen(props) {
                     data-target="#productImageCarousel"
                     data-slide-to={index}
                   >
-                    <LazyImage
+                    <LazyLoadImage
                       src={image}
                       className="d-block w-100"
                       alt="product"
+                      effect="blur"
                     />
                   </div>
                 ))}

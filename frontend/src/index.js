@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import "./style/index.scss";
 import "notyf/notyf.min.css";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
