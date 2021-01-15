@@ -1,12 +1,11 @@
 import React from "react";
-import spinner from "../assets/images/brand/spinner.png";
 
 export default function LoadingBox(props) {
   return (
     <div className="loading-box" style={{ lineHeight: props.lineHeight }}>
       <img
         className="spinner"
-        src={spinner}
+        src={window.location.origin + "/favicon.png"}
         alt="spinner"
         width={props.width ? props.width : "50px"}
       />

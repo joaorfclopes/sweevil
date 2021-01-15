@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import video from "../assets/images/video/video.mp4";
-import poster from "../assets/images/video/poster.jpg";
 import { ReactComponent as Play } from "../assets/images/svg/play.svg";
 
 export default function AboutScreen(props) {
@@ -71,7 +70,11 @@ export default function AboutScreen(props) {
                 onMouseEnter={() => setPlay(true)}
                 onMouseLeave={() => setPlay(false)}
               >
-                <video id="video" poster={poster} controls={play}>
+                <video
+                  id="video"
+                  poster={window.location.origin + "/sweevil.jpg"}
+                  controls={play}
+                >
                   <source src={video} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
