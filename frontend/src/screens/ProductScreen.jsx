@@ -118,11 +118,10 @@ export default function ProductScreen(props) {
                         onSwipeLeft={next}
                         tolerance={50}
                       >
-                        <LazyLoadImage
+                        <img
                           src={image}
                           className="d-block w-100"
                           alt="product"
-                          effect="blur"
                         />
                       </Swipe>
                     </div>
