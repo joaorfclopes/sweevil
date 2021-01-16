@@ -35,7 +35,7 @@ export default function AboutScreen(props) {
         <div className="container">
           <div className="row-bootstrap">
             <div className="col-md-5">
-              <h1 className="tahoma">Who's Sweevil?</h1>
+              <h1 className="brushstrikeregular">Who's Sweevil ?</h1>
               <p>
                 Sílvia Peralta is a multi-disciplinary artist from Portugal born
                 in 1992.
