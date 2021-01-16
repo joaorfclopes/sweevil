@@ -28,7 +28,7 @@ export default function ShopScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="row center" style={{ minHeight: "70vh" }}>
+      <div className="row center" style={{ minHeight: "75vh" }}>
         {products &&
           products.map(
             (product) =>
