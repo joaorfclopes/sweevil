@@ -215,10 +215,6 @@ const data = {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/FD8AFAB6-8E7B-439E-ACC1-D7F2A2986E2C.jpeg",
     },
-    {
-      image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/FD8AFAB6-8E7B-439E-ACC1-D7F2A2986E2C.jpeg",
-    },
   ],
 };
 export default data;
