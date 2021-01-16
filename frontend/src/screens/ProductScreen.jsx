@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
 import Swipe from "react-easy-swipe";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { motion } from "framer-motion";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -171,7 +172,12 @@ export default function ProductScreen(props) {
                     data-target="#productImageCarousel"
                     data-slide-to={index}
                   >
-                    <img src={image} className="d-block w-100" alt="product" />
+                    <LazyLoadImage
+                      src={image}
+                      className="d-block w-100"
+                      alt="product"
+                      effect="blur"
+                    />
                   </div>
                 ))}
               </div>
