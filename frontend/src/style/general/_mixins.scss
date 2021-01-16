@@ -73,11 +73,3 @@
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
-@mixin set-background {
-  @include lg {
-    background-image: url("../../assets/background.PNG");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
-  }
-}

@@ -1,5 +1,6 @@
 .nav-mobile {
-  font-family: brushstrikeregular;
+  font-family: "Roboto Condensed", sans-serif;
+  text-transform: uppercase;
   position: fixed;
   right: -100%;
   top: 0;
@@ -17,10 +18,10 @@
   @include nav-options;
   .close {
     text-align: right;
-    margin-right: 1rem;
-    margin-top: 0.5rem;
+    margin-right: 0.3rem;
+    margin-top: 1.8rem;
     @include md {
-      margin-top: 1rem;
+      margin-top: 2.4rem;
     }
   }
   ul {

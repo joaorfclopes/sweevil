@@ -1,6 +1,7 @@
 header {
   width: 100%;
-  font-family: brushstrikeregular;
+  font-family: "Roboto Condensed", sans-serif;
+  text-transform: uppercase;
   .brand-logo {
     width: 10rem;
     @include md {
