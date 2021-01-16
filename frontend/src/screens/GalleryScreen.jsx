@@ -28,16 +28,27 @@ export default function GalleryScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      {gallery &&
-        gallery.map(
-          (galleryImage) =>
-            galleryImage.image && (
-              <GalleryImage
-                key={galleryImage._id}
-                galleryImage={galleryImage}
-              />
-            )
-        )}
+      <div className="filters">
+        <div className="filter">All</div>
+        <div className="filter">Art</div>
+        <div className="filter">Digital</div>
+        <div className="filter">Tapecaria</div>
+        <div className="filter">Tattoos</div>
+      </div>
+      <div className="gallery-container">
+        <div className="images">
+          {gallery &&
+            gallery.map(
+              (galleryImage) =>
+                galleryImage.image && (
+                  <GalleryImage
+                    key={galleryImage._id}
+                    galleryImage={galleryImage}
+                  />
+                )
+            )}
+        </div>
+      </div>
     </motion.section>
   );
 }
