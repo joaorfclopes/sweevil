@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   detailsProduct,
   listProducts,
@@ -256,7 +257,12 @@ export default function ProductEditScreen(props) {
                 <div className="preview">
                   {images &&
                     images.map((image) => (
-                      <img key={image} src={image} alt="imagePreview" />
+                      <LazyLoadImage
+                        key={image}
+                        src={image}
+                        alt="imagePreview"
+                        effect="blur"
+                      />
                     ))}
                 </div>
               </div>

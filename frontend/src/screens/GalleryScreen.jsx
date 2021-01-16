@@ -15,32 +15,29 @@ export default function GalleryScreen(props) {
     dispatch(listGalleryImages());
   }, [dispatch]);
 
-  return (
+  return loading ? (
+    <LoadingBox lineHeight="75vh" width="100px" />
+  ) : error ? (
+    <MessageBox variant="error">{error}</MessageBox>
+  ) : (
     <motion.section
+      className="gallery"
       initial="out"
       animate="in"
       exit="out"
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      {loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
-        <MessageBox variant="error">{error}</MessageBox>
-      ) : (
-        <div className="gallery">
-          {gallery &&
-            gallery.map((galleryImage) => (
-              <div key={galleryImage._id} className="gallery-image">
-                <LazyLoadImage
-                  src={galleryImage.image}
-                  alt="gallery-img"
-                  effect="blur"
-                />
-              </div>
-            ))}
-        </div>
-      )}
+      {gallery &&
+        gallery.map((galleryImage) => (
+          <div key={galleryImage._id} className="gallery-image">
+            <LazyLoadImage
+              src={galleryImage.image}
+              alt="gallery-img"
+              effect="blur"
+            />
+          </div>
+        ))}
     </motion.section>
   );
 }

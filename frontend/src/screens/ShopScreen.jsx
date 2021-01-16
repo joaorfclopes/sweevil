@@ -15,33 +15,28 @@ export default function ShopScreen(props) {
     dispatch(listProducts());
   }, [dispatch]);
 
-  return (
+  return loading ? (
+    <LoadingBox lineHeight="75vh" width="100px" />
+  ) : error ? (
+    <MessageBox variant="error">{error}</MessageBox>
+  ) : (
     <motion.section
+      className="shop"
       initial="out"
       animate="in"
       exit="out"
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      {loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
-        <MessageBox variant="error">{error}</MessageBox>
-      ) : (
-        <div className="shop">
-          <div className="row center" style={{ minHeight: "70vh" }}>
-            {products &&
-              products.map(
-                (product) =>
-                  product.images[0] &&
-                  product.name &&
-                  product.price && (
-                    <Product key={product._id} product={product} />
-                  )
-              )}
-          </div>
-        </div>
-      )}
+      <div className="row center" style={{ minHeight: "70vh" }}>
+        {products &&
+          products.map(
+            (product) =>
+              product.images[0] &&
+              product.name &&
+              product.price && <Product key={product._id} product={product} />
+          )}
+      </div>
     </motion.section>
   );
 }
