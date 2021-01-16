@@ -50,11 +50,11 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {!loading && (
-        <div className="App">
-          <div className="grid-container">
-            <Navbar />
-            <MenuMobile />
+      <div className="App">
+        <div className="grid-container">
+          <Navbar />
+          <MenuMobile />
+          {!loading && (
             <main>
               <AnimatePresence>
                 <Switch>
@@ -202,9 +202,9 @@ export default function App() {
                 </Switch>
               </AnimatePresence>
             </main>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </BrowserRouter>
   );
 }
