@@ -1,21 +1,40 @@
 .gallery {
-  line-height: 0;
-  column-gap: 0px;
-  column-count: 1;
-  @include md {
-    column-count: 3;
-  }
   @include lg {
-    column-count: 4;
     margin-left: 10%;
     margin-right: 10%;
   }
-  .gallery-image {
-    display: inline-block;
+  .filters {
     padding: 8px;
-    img {
-      width: 100% !important;
-      height: auto !important;
+    text-align: center;
+    .filter {
+      text-transform: uppercase;
+      display: inline-block;
+      margin: 5px;
+      font-family: "Roboto Condensed", sans-serif;
+      cursor: pointer;
+      transition: 0.2s;
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+  }
+  .gallery-container {
+    line-height: 0;
+    column-gap: 0px;
+    column-count: 1;
+    @include md {
+      column-count: 3;
+    }
+    @include lg {
+      column-count: 4;
+    }
+    .gallery-image {
+      display: inline-block;
+      padding: 8px;
+      img {
+        width: 100% !important;
+        height: auto !important;
+      }
     }
   }
 }

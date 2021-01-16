@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.0",
     "framer-motion": "^3.2.1",
+    "isotope-layout": "^3.0.6",
     "jquery": "^3.5.1",
     "node-sass": "^4.14.1",
     "notyf": "^3.9.0",
