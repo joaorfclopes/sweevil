@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import GalleryImage from "../components/GalleryImage";
 
 export default function GalleryScreen(props) {
   const dispatch = useDispatch();
@@ -29,15 +29,15 @@ export default function GalleryScreen(props) {
       transition={props.pageTransition}
     >
       {gallery &&
-        gallery.map((galleryImage) => (
-          <div key={galleryImage._id} className="gallery-image">
-            <LazyLoadImage
-              src={galleryImage.image}
-              alt="gallery-img"
-              effect="blur"
-            />
-          </div>
-        ))}
+        gallery.map(
+          (galleryImage) =>
+            galleryImage.image && (
+              <GalleryImage
+                key={galleryImage._id}
+                galleryImage={galleryImage}
+              />
+            )
+        )}
     </motion.section>
   );
 }
