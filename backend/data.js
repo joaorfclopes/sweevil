@@ -177,6 +177,18 @@ const data = {
     },
     {
       image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art1.jpg",
+    },
+    {
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art2.jpg",
+    },
+    {
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art3.jpg",
+    },
+    {
+      image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/BB939203-3751-4FF6-97C1-F64206DFC0BF.png",
     },
     {
@@ -198,6 +210,10 @@ const data = {
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/EEA5D8E4-E510-47FD-A45A-E3ED9140A605.jpeg",
+    },
+    {
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/FD8AFAB6-8E7B-439E-ACC1-D7F2A2986E2C.jpeg",
     },
     {
       image:

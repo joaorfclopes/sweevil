@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const galleryImageSchema = new mongoose.Schema(
   {
-    image: { type: String },
+    image: { type: String, unique: true },
   },
   {
     timestamps: true,
