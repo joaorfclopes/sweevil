@@ -176,6 +176,11 @@ const data = {
     },
     {
       image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tapecaria.jpg",
+      category: "Tapecaria",
+    },
+    {
+      image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/9286C4FC-FC3A-43F8-88E0-E5A552EB76FC.jpeg",
       category: "Tattoos",
     },
