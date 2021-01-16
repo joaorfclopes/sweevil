@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import GalleryImage from "../components/GalleryImage";
 
 export default function GalleryScreen(props) {
   const dispatch = useDispatch();
@@ -30,21 +30,28 @@ export default function GalleryScreen(props) {
     >
       <div className="filters">
         <div className="filter">All</div>
+        <div className="filter">Tattoos</div>
         <div className="filter">Art</div>
         <div className="filter">Digital</div>
         <div className="filter">Tapecaria</div>
-        <div className="filter">Tattoos</div>
       </div>
       <div className="gallery-container">
-        <div className="images">
+        <div className="gallery-images">
           {gallery &&
             gallery.map(
               (galleryImage) =>
-                galleryImage.image && (
-                  <GalleryImage
+                galleryImage.image &&
+                galleryImage.category && (
+                  <div
+                    className={`gallery-image ${galleryImage.category}`}
                     key={galleryImage._id}
-                    galleryImage={galleryImage}
-                  />
+                  >
+                    <LazyLoadImage
+                      src={galleryImage.image}
+                      alt={galleryImage.image}
+                      effect="blur"
+                    />
+                  </div>
                 )
             )}
         </div>
