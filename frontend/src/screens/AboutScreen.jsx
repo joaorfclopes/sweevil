@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import video from "../assets/images/video/video.mp4";
-import { ReactComponent as Play } from "../assets/images/svg/play.svg";
+import video from "../assets/video/video.mp4";
+import { ReactComponent as Play } from "../assets/svg/play.svg";
 
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
@@ -35,7 +35,7 @@ export default function AboutScreen(props) {
         <div className="container">
           <div className="row-bootstrap">
             <div className="col-md-5">
-              <h1 className="brushstrikeregular">Who's Sweevil ?</h1>
+              <h1 className="tahoma">Who's Sweevil?</h1>
               <p>
                 Sílvia Peralta is a multi-disciplinary artist from Portugal born
                 in 1992.

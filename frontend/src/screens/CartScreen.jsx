@@ -7,7 +7,7 @@ import MessageBox from "../components/MessageBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { sizes, toPrice } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
-import { ReactComponent as Remove } from "../assets/images/svg/remove.svg";
+import { ReactComponent as Remove } from "../assets/svg/remove.svg";
 
 export default function CartScreen(props) {
   const dispatch = useDispatch();

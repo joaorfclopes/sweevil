@@ -75,7 +75,7 @@
 }
 @mixin set-background {
   @include lg {
-    background-image: url("../../assets/images/brand/background.PNG");
+    background-image: url("../../assets/background.PNG");
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
