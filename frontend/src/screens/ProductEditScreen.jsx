@@ -262,6 +262,7 @@ export default function ProductEditScreen(props) {
                         src={image}
                         alt="imagePreview"
                         effect="blur"
+                        placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
                       />
                     ))}
                 </div>

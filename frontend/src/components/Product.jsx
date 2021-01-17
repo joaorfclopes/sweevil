@@ -14,6 +14,7 @@ export default function Product(props) {
               src={product.images[0]}
               alt={product.image}
               effect="blur"
+              placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
             />
           </div>
           <div className="product-description">
