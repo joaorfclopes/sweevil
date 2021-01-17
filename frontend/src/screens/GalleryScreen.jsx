@@ -76,6 +76,7 @@ export default function GalleryScreen(props) {
                     src={galleryImage.image}
                     alt={galleryImage.image}
                     effect="blur"
+                    placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
                   />
                 </div>
               )

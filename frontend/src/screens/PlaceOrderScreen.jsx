@@ -75,6 +75,7 @@ export default function PlaceOrderScreen(props) {
                     src={item.image}
                     alt={item.name}
                     effect="blur"
+                    placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
                   />
                 </Link>
               </div>

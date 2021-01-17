@@ -177,6 +177,7 @@ export default function ProductScreen(props) {
                       className="d-block w-100"
                       alt="product"
                       effect="blur"
+                      placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
                     />
                   </div>
                 ))}
