@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 export const options = ["about", "gallery", "shop"];
 
 export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
@@ -38,4 +40,14 @@ export const isMobile = () => {
   } else {
     return false;
   }
+};
+
+export const hide = (el) => {
+  $(el).addClass("hide");
+  $(el).removeClass("show");
+};
+
+export const show = (el) => {
+  $(el).removeClass("hide");
+  $(el).addClass("show");
 };
