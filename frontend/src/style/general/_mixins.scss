@@ -73,3 +73,29 @@
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
+@mixin fade-out {
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  animation-name: fade-out;
+  animation-fill-mode: both;
+  animation-duration: 0.5s;
+}
+@mixin fade-in {
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  animation-name: fade-in;
+  animation-fill-mode: both;
+  animation-duration: 0.5s;
+}

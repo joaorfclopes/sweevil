@@ -6,7 +6,7 @@ import $ from "jquery";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import { filters } from "../utils";
+import { filters, hide, show } from "../utils";
 
 export default function GalleryScreen(props) {
   const dispatch = useDispatch();
@@ -14,28 +14,20 @@ export default function GalleryScreen(props) {
   const { loading, gallery, error } = galleryImageList;
 
   const handleClick = (e) => {
+    const images = ".gallery-images";
+    hide(images);
     if (e === "*") {
-      $(".gallery-image").removeClass("hide");
-    } else if (e === "Tattoos") {
-      $(".Tattoos").removeClass("hide");
-      $(".Art").addClass("hide");
-      $(".Digital").addClass("hide");
-      $(".Tapecaria").addClass("hide");
-    } else if (e === "Art") {
-      $(".Tattoos").addClass("hide");
-      $(".Art").removeClass("hide");
-      $(".Digital").addClass("hide");
-      $(".Tapecaria").addClass("hide");
-    } else if (e === "Digital") {
-      $(".Tattoos").addClass("hide");
-      $(".Art").addClass("hide");
-      $(".Digital").removeClass("hide");
-      $(".Tapecaria").addClass("hide");
-    } else if (e === "Tapecaria") {
-      $(".Tattoos").addClass("hide");
-      $(".Art").addClass("hide");
-      $(".Digital").addClass("hide");
-      $(".Tapecaria").removeClass("hide");
+      $(".gallery-image").show();
+      show(images);
+    } else {
+      filters.forEach((filter) => {
+        if (e !== filter) {
+          $(`.${filter}`).hide();
+        } else {
+          $(`.${filter}`).show();
+        }
+      });
+      show(images);
     }
   };
 

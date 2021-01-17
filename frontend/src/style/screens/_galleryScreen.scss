@@ -32,11 +32,14 @@
     @include lg {
       column-count: 4;
     }
+    &.hide {
+      @include fade-out;
+    }
+    &.show {
+      @include fade-in;
+    }
     .gallery-image {
       margin-bottom: 15px;
-      &.hide {
-        display: none;
-      }
       img {
         width: 100%;
       }
