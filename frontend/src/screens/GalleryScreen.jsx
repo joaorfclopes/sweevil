@@ -70,26 +70,24 @@ export default function GalleryScreen(props) {
           </div>
         ))}
       </div>
-      <div className="gallery-container">
-        <div className="gallery-images">
-          {gallery &&
-            gallery.map(
-              (galleryImage) =>
-                galleryImage.image &&
-                galleryImage.category && (
-                  <div
-                    key={galleryImage._id}
-                    className={`gallery-image ${galleryImage.category}`}
-                  >
-                    <LazyLoadImage
-                      src={galleryImage.image}
-                      alt={galleryImage.image}
-                      effect="blur"
-                    />
-                  </div>
-                )
-            )}
-        </div>
+      <div className="gallery-images">
+        {gallery &&
+          gallery.map(
+            (galleryImage) =>
+              galleryImage.image &&
+              galleryImage.category && (
+                <div
+                  key={galleryImage._id}
+                  className={`gallery-image ${galleryImage.category}`}
+                >
+                  <LazyLoadImage
+                    src={galleryImage.image}
+                    alt={galleryImage.image}
+                    effect="blur"
+                  />
+                </div>
+              )
+          )}
       </div>
     </motion.section>
   );
