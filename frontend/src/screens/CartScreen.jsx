@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
 import { motion } from "framer-motion";
+import $ from "jquery";
 import MessageBox from "../components/MessageBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { sizes, toPrice } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
 import { ReactComponent as Remove } from "../assets/svg/remove.svg";
+import PlaceHolder from "../components/Placeholder";
 
 export default function CartScreen(props) {
   const dispatch = useDispatch();
@@ -66,6 +68,10 @@ export default function CartScreen(props) {
     props.history.push("/cart/shipping");
   };
 
+  const imageLoaded = (id) => {
+    $(`#${id}-cart-img`).addClass("show");
+  };
+
   return (
     <motion.section
       className="cart"
@@ -88,15 +94,21 @@ export default function CartScreen(props) {
             {cartItems.map((item) => (
               <li key={item.product}>
                 <div className="item-image">
-                  <Link to={`/shop/product/${item.product}`}>
-                    <LazyLoadImage
-                      className="small"
-                      src={item.image}
-                      alt={item.name}
-                      effect="blur"
-                      placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
-                    />
-                  </Link>
+                  <PlaceHolder height="100%">
+                    <div
+                      id={`${item.product}-cart-img`}
+                      className="item-image-inner"
+                    >
+                      <Link to={`/shop/product/${item.product}`}>
+                        <LazyLoadImage
+                          className="small"
+                          src={item.image}
+                          alt={item.name}
+                          afterLoad={() => imageLoaded(item.product)}
+                        />
+                      </Link>
+                    </div>
+                  </PlaceHolder>
                 </div>
                 <div className="item-content">
                   <div className="item-name">
