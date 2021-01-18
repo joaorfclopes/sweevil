@@ -13,6 +13,16 @@
   .video {
     cursor: pointer;
     position: relative;
+    .poster {
+      position: absolute;
+      top: 0;
+      left: 0;
+      img {
+        display: block;
+        width: 100%;
+        display: none;
+      }
+    }
     video {
       width: 100%;
       display: block;
