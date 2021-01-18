@@ -6,6 +6,7 @@ import $ from "jquery";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import Placeholder from "../components/Placeholder";
 import { filters, hide, show } from "../utils";
 
 export default function GalleryScreen(props) {
@@ -29,6 +30,10 @@ export default function GalleryScreen(props) {
       });
       show(images);
     }
+  };
+
+  const imageLoaded = (id) => {
+    $(`#${id}-gallery-img`).addClass("show");
   };
 
   useEffect(() => {
@@ -72,12 +77,14 @@ export default function GalleryScreen(props) {
                   key={galleryImage._id}
                   className={`gallery-image ${galleryImage.category}`}
                 >
-                  <LazyLoadImage
-                    src={galleryImage.image}
-                    alt={galleryImage.image}
-                    effect="blur"
-                    placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
-                  />
+                  <Placeholder height="100%">
+                    <LazyLoadImage
+                      id={`${galleryImage._id}-gallery-img`}
+                      src={galleryImage.image}
+                      alt={galleryImage.image}
+                      afterLoad={() => imageLoaded(galleryImage._id)}
+                    />
+                  </Placeholder>
                 </div>
               )
           )}
