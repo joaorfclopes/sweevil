@@ -19,7 +19,6 @@
     }
   }
   .gallery-images {
-    line-height: 0;
     column-gap: 15px;
     column-count: 1;
     display: inline-block;
@@ -32,17 +31,19 @@
     @include lg {
       column-count: 4;
     }
-    &.hide {
-      @include fade-out;
-    }
-    &.show {
-      @include fade-in;
-    }
     .gallery-image {
       margin-bottom: 15px;
       img {
+        opacity: 0;
+        display: block;
         width: 100%;
       }
     }
+  }
+  .hide {
+    @include fade-out;
+  }
+  .show {
+    @include fade-in;
   }
 }
