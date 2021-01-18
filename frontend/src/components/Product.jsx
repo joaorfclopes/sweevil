@@ -10,10 +10,10 @@ export default function Product(props) {
   const [hidePlaceholder, setHidePlaceholder] = useState(false);
 
   const imageLoaded = (id) => {
-    $(`#${id}-img`).addClass("show");
-    $(`#${id}-name`).addClass("show");
-    $(`#${id}-line`).addClass("show");
-    $(`#${id}-price`).addClass("show");
+    $(`#${id}-product-img`).addClass("show");
+    $(`#${id}-product-name`).addClass("show");
+    $(`#${id}-product-line`).addClass("show");
+    $(`#${id}-product-price`).addClass("show");
     setHidePlaceholder(true);
   };
 
@@ -22,7 +22,7 @@ export default function Product(props) {
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
           <Placeholder>
-            <div id={`${product._id}-img`} className="product-image">
+            <div id={`${product._id}-product-img`} className="product-image">
               <LazyLoadImage
                 src={product.images[0]}
                 alt={product.image}
@@ -32,13 +32,13 @@ export default function Product(props) {
           </Placeholder>
           <div className="product-description">
             <Placeholder hide={hidePlaceholder}>
-              <p id={`${product._id}-name`} className="product-name">
+              <p id={`${product._id}-product-name`} className="product-name">
                 {product.name}
               </p>
-              <div id={`${product._id}-line`} className="line"></div>
+              <div id={`${product._id}-product-line`} className="line"></div>
             </Placeholder>
             <Placeholder hide={hidePlaceholder}>
-              <p id={`${product._id}-price`} className="product-price">
+              <p id={`${product._id}-product-price`} className="product-price">
                 {product.price && product.price.toFixed(2)}€
               </p>
             </Placeholder>

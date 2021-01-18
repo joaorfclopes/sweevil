@@ -73,19 +73,18 @@ export default function GalleryScreen(props) {
             (galleryImage) =>
               galleryImage.image &&
               galleryImage.category && (
-                <div
-                  key={galleryImage._id}
-                  className={`gallery-image ${galleryImage.category}`}
-                >
-                  <Placeholder height="100%">
+                <Placeholder key={galleryImage._id}>
+                  <div
+                    id={`${galleryImage._id}-gallery-img`}
+                    className={`gallery-image ${galleryImage.category}`}
+                  >
                     <LazyLoadImage
-                      id={`${galleryImage._id}-gallery-img`}
                       src={galleryImage.image}
                       alt={galleryImage.image}
                       afterLoad={() => imageLoaded(galleryImage._id)}
                     />
-                  </Placeholder>
-                </div>
+                  </div>
+                </Placeholder>
               )
           )}
       </div>
