@@ -9,7 +9,7 @@ import Placeholder from "../components/Placeholder";
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
 
-  const videoIsLoaded = () => {
+  const videoLoaded = () => {
     $("#video").addClass("show");
     $(".play").addClass("show");
   };
@@ -95,7 +95,7 @@ export default function AboutScreen(props) {
                   <div className="poster">
                     <LazyLoadImage
                       src={window.location.origin + "/sweevil.jpg"}
-                      afterLoad={() => videoIsLoaded()}
+                      afterLoad={videoLoaded}
                     />
                   </div>
                 </Placeholder>

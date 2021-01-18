@@ -35,6 +35,11 @@
   -webkit-background-size: 800px 104px;
   background-size: 1200px 104px;
   position: relative;
+  &.hide {
+    background: transparent !important;
+    animation: none !important;
+    transition: 0.5s;
+  }
 }
 
 @keyframes placeload {
