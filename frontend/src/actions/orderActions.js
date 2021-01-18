@@ -186,9 +186,7 @@ export const listOrders = () => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     });
-    setTimeout(() => {
-      dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
-    }, 500);
+    dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ORDER_ADMIN_LIST_FAIL,
