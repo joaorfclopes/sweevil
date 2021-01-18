@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import $ from "jquery";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import video from "../assets/video/video.mp4";
 import { ReactComponent as Play } from "../assets/svg/play.svg";
 import Placeholder from "../components/Placeholder";
@@ -8,24 +9,26 @@ import Placeholder from "../components/Placeholder";
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
 
+  const videoIsLoaded = () => {
+    $("#video").addClass("show");
+    $(".play").addClass("show");
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      const videoElem = document.getElementById("video");
-      const playElem = document.querySelector(".play");
-      videoElem.onplay = () => {
-        playElem.classList.add("hide");
-      };
-      videoElem.onpause = () => {
-        playElem.classList.remove("hide");
-      };
-      videoElem.onended = () => {
-        videoElem.pause();
-        videoElem.removeAttribute("src");
-        videoElem.load();
-      };
-      $("#video").addClass("show");
+    const videoElem = document.getElementById("video");
+    videoElem.onplay = () => {
+      $(".play").addClass("hide");
+      $(".play").removeClass("show");
+    };
+    videoElem.onpause = () => {
       $(".play").addClass("show");
-    }, 1000);
+      $(".play").removeClass("hide");
+    };
+    videoElem.onended = () => {
+      videoElem.pause();
+      videoElem.removeAttribute("src");
+      videoElem.load();
+    };
   }, []);
 
   return (
@@ -88,6 +91,12 @@ export default function AboutScreen(props) {
                   </video>
                   <div className="play">
                     <Play />
+                  </div>
+                  <div className="poster">
+                    <LazyLoadImage
+                      src={window.location.origin + "/sweevil.jpg"}
+                      afterLoad={() => videoIsLoaded()}
+                    />
                   </div>
                 </Placeholder>
               </div>
