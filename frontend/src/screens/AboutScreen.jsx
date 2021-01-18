@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import $ from "jquery";
 import video from "../assets/video/video.mp4";
 import { ReactComponent as Play } from "../assets/svg/play.svg";
+import Placeholder from "../components/Placeholder";
 
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
 
   useEffect(() => {
-    const videoElem = document.getElementById("video");
-    const playElem = document.querySelector(".play");
-    videoElem.onplay = () => {
-      playElem.classList.add("hide");
-    };
-    videoElem.onpause = () => {
-      playElem.classList.remove("hide");
-    };
-    videoElem.onended = () => {
-      videoElem.pause();
-      videoElem.removeAttribute("src");
-      videoElem.load();
-    };
+    setTimeout(() => {
+      const videoElem = document.getElementById("video");
+      const playElem = document.querySelector(".play");
+      videoElem.onplay = () => {
+        playElem.classList.add("hide");
+      };
+      videoElem.onpause = () => {
+        playElem.classList.remove("hide");
+      };
+      videoElem.onended = () => {
+        videoElem.pause();
+        videoElem.removeAttribute("src");
+        videoElem.load();
+      };
+      $("#video").addClass("show");
+      $(".play").addClass("show");
+    }, 1000);
   }, []);
 
   return (
@@ -40,6 +46,7 @@ export default function AboutScreen(props) {
                 Sílvia Peralta is a multi-disciplinary artist from Portugal born
                 in 1992.
               </p>
+
               <p>
                 In 2013 after finishing a BfA in Design studies in Porto she
                 started tattooing independently.
@@ -70,17 +77,19 @@ export default function AboutScreen(props) {
                 onMouseEnter={() => setPlay(true)}
                 onMouseLeave={() => setPlay(false)}
               >
-                <video
-                  id="video"
-                  poster={window.location.origin + "/sweevil.jpg"}
-                  controls={play}
-                >
-                  <source src={video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                <div className="play">
-                  <Play />
-                </div>
+                <Placeholder height="100%">
+                  <video
+                    id="video"
+                    poster={window.location.origin + "/sweevil.jpg"}
+                    controls={play}
+                  >
+                    <source src={video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <div className="play">
+                    <Play />
+                  </div>
+                </Placeholder>
               </div>
             </div>
           </div>
