@@ -1,18 +1,79 @@
 .about {
   @include md {
-    margin-top: 2vh;
+    margin-top: 3vh;
   }
-  .title {
-    font-family: $font;
-    font-weight: bold;
-    line-height: 1;
-    font-size: $extraLargeMobile;
+  .text {
+    .title {
+      font-family: $font;
+      font-weight: bold;
+      line-height: 1;
+      font-size: $extraLargeMobile;
+      @include md {
+        font-size: $extraLargeDesktop;
+      }
+    }
+    @include xxs {
+      width: 250px;
+    }
+    @include xs {
+      width: 350px;
+    }
+    @include sm {
+      width: 500px;
+    }
     @include md {
-      font-size: $extraLargeDesktop;
+      width: 40%;
+    }
+    @include xl {
+      width: 35%;
     }
   }
   .video {
     position: relative;
+    @include xxs {
+      margin-top: 20px;
+      width: 250px;
+      height: 140.63px;
+    }
+    @include xs {
+      width: 350px;
+      height: 196.88px;
+    }
+    @include sm {
+      width: 500px;
+      height: 281.25px;
+    }
+    @include md {
+      margin-left: 2rem;
+      width: 400px;
+      height: 225px;
+    }
+    @include lg {
+      margin-left: 3rem;
+      width: 500px;
+      height: 281.25px;
+    }
+    @include xl {
+      margin-left: 4rem;
+      width: 600px;
+      height: 337.5px;
+    }
+    video {
+      opacity: 0;
+      width: 100%;
+      display: block;
+    }
+    .play {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin-top: 10px;
+      margin-left: 10px;
+      svg {
+        width: 50px;
+      }
+    }
     .poster {
       position: absolute;
       top: 0;
@@ -22,36 +83,6 @@
         width: 100%;
         display: none;
       }
-    }
-    video {
-      width: 100%;
-      display: block;
-      opacity: 0;
-    }
-    .play {
-      position: absolute;
-      top: 0;
-      left: 0;
-      margin-top: 10px;
-      margin-left: 10px;
-      opacity: 0;
-      svg {
-        width: 50px;
-      }
-    }
-    margin-top: 20px;
-    @include sm {
-      margin-top: 0;
-    }
-    @include md {
-      width: 51vw;
-      position: absolute;
-      top: 50%;
-      left: 70%;
-      transform: translate(-50%, -50%);
-    }
-    @include xl {
-      width: 600px;
     }
   }
   .show {

@@ -58,7 +58,7 @@
           width: calc(100% - 140px);
           min-height: 70px;
         }
-        @include xs {
+        @include xxs {
           .item-name {
             width: 65%;
           }

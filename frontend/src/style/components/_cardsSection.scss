@@ -36,7 +36,7 @@
         .item-price {
           font-weight: bold;
         }
-        @include xs {
+        @include xxs {
           .item-name {
             float: left;
             width: 60%;
