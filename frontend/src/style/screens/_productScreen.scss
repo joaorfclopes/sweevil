@@ -3,8 +3,24 @@
   @include md {
     margin-top: 5vh;
   }
-  .carousel-item > img {
-    cursor: pointer;
+  .carousel-image {
+    opacity: 0;
+    min-height: 233px;
+    @include sm {
+      min-height: 510px;
+    }
+    @include md {
+      min-height: 271px;
+    }
+    @include lg {
+      min-height: 359px;
+    }
+    @include xl {
+      min-height: 445px;
+    }
+    img {
+      width: 100%;
+    }
   }
   .image-preview-container {
     min-height: 200px;

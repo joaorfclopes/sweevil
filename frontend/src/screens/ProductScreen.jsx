@@ -83,6 +83,10 @@ export default function ProductScreen(props) {
   };
 
   const imageLoaded = (id) => {
+    $(`#${id}-carousel-img`).addClass("show");
+  };
+
+  const previewImageLoaded = (id) => {
     $(`#${id}-preview-img`).addClass("show");
   };
 
@@ -118,18 +122,26 @@ export default function ProductScreen(props) {
                       }`}
                       onClick={() => handleOpenModal(index)}
                     >
-                      <Swipe
-                        style={{ cursor: "pointer" }}
-                        onSwipeRight={previous}
-                        onSwipeLeft={next}
-                        tolerance={50}
-                      >
-                        <img
-                          src={image}
-                          className="d-block w-100"
-                          alt="product"
-                        />
-                      </Swipe>
+                      <Placeholder height="100%">
+                        <div
+                          id={`${index}-carousel-img`}
+                          className="carousel-image"
+                        >
+                          <Swipe
+                            style={{ cursor: "pointer" }}
+                            onSwipeRight={previous}
+                            onSwipeLeft={next}
+                            tolerance={50}
+                          >
+                            <LazyLoadImage
+                              src={image}
+                              className="d-block w-100"
+                              alt="product"
+                              afterLoad={() => imageLoaded(index)}
+                            />
+                          </Swipe>
+                        </div>
+                      </Placeholder>
                     </div>
                   ))}
                 </div>
@@ -187,7 +199,7 @@ export default function ProductScreen(props) {
                           src={image}
                           className="d-block w-100"
                           alt="product"
-                          afterLoad={() => imageLoaded(index)}
+                          afterLoad={() => previewImageLoaded(index)}
                         />
                       </div>
                     </Placeholder>
