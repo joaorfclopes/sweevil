@@ -18,6 +18,11 @@ section {
     justify-content: center;
   }
 }
+.custom-font {
+  font-family: $font;
+  font-weight: bold;
+}
+/*Remove later*/
 .container {
   width: 100%;
   padding-right: 15px;
@@ -83,8 +88,4 @@ section {
 }
 .w-100 {
   width: 100% !important;
-}
-.custom-font {
-  font-family: $font;
-  font-weight: bold;
 }

@@ -45,6 +45,10 @@ body,
   &::-webkit-scrollbar {
     display: none;
   }
+  display: none;
+  @include xxs {
+    display: block;
+  }
 }
 a {
   text-decoration: none;
