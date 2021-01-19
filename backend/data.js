@@ -132,27 +132,22 @@ const data = {
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/1F27BDD3-FFB6-4A29-9C31-124DC218BCEF.jpeg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/3406E5D9-049A-4EFD-9545-6C3E0E45C5D3.jpeg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/3BADAF22-7639-42B2-82B4-04610A837067.jpeg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/518550C4-0393-4287-8D01-ADF7774A6E58.jpeg",
-      category: "Art",
-    },
-    {
-      image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/58BD360F-22D6-45C4-80DA-0C3ED62C0335.jpeg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
@@ -176,18 +171,13 @@ const data = {
     },
     {
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tapecaria.jpg",
-      category: "Tapecaria",
-    },
-    {
-      image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/9286C4FC-FC3A-43F8-88E0-E5A552EB76FC.jpeg",
       category: "Tattoos",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/9EA9E015-77F6-4EBA-BBCE-F9A6B264AF9D.jpeg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
@@ -197,17 +187,17 @@ const data = {
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art1.jpg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art2.jpg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/art3.jpg",
-      category: "Art",
+      category: "Paintings",
     },
     {
       image:
@@ -216,8 +206,8 @@ const data = {
     },
     {
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/C806C778-E819-42CE-81FD-30328AC01395.jpeg",
-      category: "Art",
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/58BD360F-22D6-45C4-80DA-0C3ED62C0335.jpeg",
+      category: "Paintings",
     },
     {
       image:
@@ -242,8 +232,14 @@ const data = {
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/FD8AFAB6-8E7B-439E-ACC1-D7F2A2986E2C.jpeg",
-      category: "Art",
+      category: "Paintings",
+    },
+    {
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/C806C778-E819-42CE-81FD-30328AC01395.jpeg",
+      category: "Paintings",
     },
   ],
 };
+
 export default data;
