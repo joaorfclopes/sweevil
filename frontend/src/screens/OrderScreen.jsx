@@ -144,7 +144,7 @@ export default function OrderScreen(props) {
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <>
-          <h1>Order {order._id}</h1>
+          <h1 className="custom-font">Order {order._id}</h1>
           {loadingDeliver && <LoadingBox />}
           {errorDeliver && (
             <MessageBox variant="error">{errorDeliver}</MessageBox>

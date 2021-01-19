@@ -191,7 +191,7 @@ export default function ProductScreen(props) {
               noMobile
             />
             <div className="col-md-5 product-details">
-              <h2 className="name">
+              <h2 className="name custom-font">
                 <b>{product.name}</b>
               </h2>
               <h2 className="price">

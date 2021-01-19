@@ -45,7 +45,7 @@ export default function ShippingScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Shipping Details</h1>
+      <h1 className="custom-font">Shipping Details</h1>
       <form className="form" onSubmit={submitHandler}>
         <div>
           <label htmlFor="email">Email</label>

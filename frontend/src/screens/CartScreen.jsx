@@ -81,7 +81,7 @@ export default function CartScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Cart</h1>
+      <h1 className="custom-font">Cart</h1>
       {cartItems.length === 0 ? (
         <div>
           <MessageBox>

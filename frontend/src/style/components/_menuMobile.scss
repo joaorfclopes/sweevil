@@ -1,5 +1,6 @@
 .nav-mobile {
-  font-family: "Roboto Condensed", sans-serif;
+  font-family: $font;
+  font-weight: bold;
   text-transform: uppercase;
   position: fixed;
   right: -100%;

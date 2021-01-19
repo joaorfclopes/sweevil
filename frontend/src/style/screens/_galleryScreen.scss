@@ -10,7 +10,8 @@
       text-transform: uppercase;
       display: inline-block;
       margin: 5px;
-      font-family: "Roboto Condensed", sans-serif;
+      font-family: $font;
+      font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
       &:hover {
