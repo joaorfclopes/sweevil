@@ -29,6 +29,9 @@
         margin-right: 0;
       }
     }
+    .image-preview-inner {
+      opacity: 0;
+    }
   }
   .arrows {
     @include md {
@@ -67,5 +70,8 @@
         }
       }
     }
+  }
+  .show {
+    @include fade-in;
   }
 }
