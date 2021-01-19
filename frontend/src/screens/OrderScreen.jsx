@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { PayPalButton } from "react-paypal-button-v2";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
+import $ from "jquery";
 import {
   cancelOrder,
   deliverOrder,
@@ -19,6 +20,7 @@ import {
   ORDER_DELIVER_RESET,
   ORDER_PAY_RESET,
 } from "../constants/orderConstants";
+import PlaceHolder from "../components/Placeholder";
 
 export default function OrderScreen(props) {
   const dispatch = useDispatch();
@@ -123,6 +125,10 @@ export default function OrderScreen(props) {
     });
   };
 
+  const imageLoaded = (id) => {
+    $(`#${id}-order-img`).addClass("show");
+  };
+
   return (
     <motion.section
       className="order cards-section"
@@ -184,15 +190,21 @@ export default function OrderScreen(props) {
               {order.orderItems.map((item, index) => (
                 <li key={item.product}>
                   <div className="item-image">
-                    <Link to={`/shop/product/${item.product}`}>
-                      <LazyLoadImage
-                        className="small"
-                        src={item.image}
-                        alt={item.name}
-                        effect="blur"
-                        placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
-                      />
-                    </Link>
+                    <PlaceHolder>
+                      <div
+                        id={`${item.product}-order-img`}
+                        className="item-image-inner"
+                      >
+                        <Link to={`/shop/product/${item.product}`}>
+                          <LazyLoadImage
+                            className="small"
+                            src={item.image}
+                            alt={item.name}
+                            afterLoad={() => imageLoaded(item.product)}
+                          />
+                        </Link>
+                      </div>
+                    </PlaceHolder>
                   </div>
                   <div className="item-content">
                     <div className="item-name">

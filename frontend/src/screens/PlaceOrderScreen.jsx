@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import $ from "jquery";
 import { toPrice } from "../utils";
 import { createOrder } from "../actions/orderActions";
 import { ORDER_CREATE_RESET } from "../constants/orderConstants";
+import Placeholder from "../components/Placeholder";
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
@@ -40,6 +42,10 @@ export default function PlaceOrderScreen(props) {
     }
   }, [success, props, order, dispatch]);
 
+  const imageLoaded = (id) => {
+    $(`#${id}-place-order-img`).addClass("show");
+  };
+
   return (
     <motion.section
       className="place-order cards-section"
@@ -69,15 +75,21 @@ export default function PlaceOrderScreen(props) {
           {cartItems.map((item, index) => (
             <li key={item.product}>
               <div className="item-image">
-                <Link to={`/shop/product/${item.product}`}>
-                  <LazyLoadImage
-                    className="small"
-                    src={item.image}
-                    alt={item.name}
-                    effect="blur"
-                    placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
-                  />
-                </Link>
+                <Placeholder>
+                  <div
+                    id={`${item.product}-place-order-img`}
+                    className="item-image-inner"
+                  >
+                    <Link to={`/shop/product/${item.product}`}>
+                      <LazyLoadImage
+                        className="small"
+                        src={item.image}
+                        alt={item.name}
+                        afterLoad={() => imageLoaded(item.product)}
+                      />
+                    </Link>
+                  </div>
+                </Placeholder>
               </div>
               <div className="item-content">
                 <div className="item-name">
