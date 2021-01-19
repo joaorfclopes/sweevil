@@ -4,6 +4,8 @@
   cursor: pointer;
   text-align: center;
   transition: 0.3s;
+  font-family: $font;
+  font-weight: 300;
   .product-image {
     opacity: 0;
     width: 250px;
@@ -22,7 +24,7 @@
     p {
       margin: 0;
       &:first-child {
-        margin-top: 5px !important;
+        margin-top: 7px !important;
         margin: 0;
         font-size: 1.2rem;
       }

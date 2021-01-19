@@ -2,9 +2,6 @@
   @include lg {
     @include margin-center;
   }
-  h1 {
-    font-size: $large;
-  }
   ul {
     list-style-type: none;
     margin: 0;

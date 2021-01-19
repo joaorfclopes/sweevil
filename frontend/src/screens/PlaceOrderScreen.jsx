@@ -55,7 +55,7 @@ export default function PlaceOrderScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Place Order</h1>
+      <h1 className="custom-font">Place Order</h1>
       <div className="card">
         <h3>Shipping Address</h3>
         <p>{shippingAddress.fullName}</p>
