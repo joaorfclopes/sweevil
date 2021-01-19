@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
 import Swipe from "react-easy-swipe";
+import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { motion } from "framer-motion";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import Placeholder from "../components/Placeholder";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import { isMobile, sizes } from "../utils";
@@ -78,6 +80,10 @@ export default function ProductScreen(props) {
 
   const previous = () => {
     document.getElementById("carousel-control-prev").click();
+  };
+
+  const imageLoaded = (id) => {
+    $(`#${id}-preview-img`).addClass("show");
   };
 
   return (
@@ -172,13 +178,19 @@ export default function ProductScreen(props) {
                     data-target="#productImageCarousel"
                     data-slide-to={index}
                   >
-                    <LazyLoadImage
-                      src={image}
-                      className="d-block w-100"
-                      alt="product"
-                      effect="blur"
-                      placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
-                    />
+                    <Placeholder height="100%">
+                      <div
+                        id={`${index}-preview-img`}
+                        className="image-preview-inner"
+                      >
+                        <LazyLoadImage
+                          src={image}
+                          className="d-block w-100"
+                          alt="product"
+                          afterLoad={() => imageLoaded(index)}
+                        />
+                      </div>
+                    </Placeholder>
                   </div>
                 ))}
               </div>
