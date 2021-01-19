@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 import $ from "jquery";
-import Axios from "axios";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
@@ -41,10 +40,8 @@ export default function App() {
 
   useEffect(() => {
     setTimeout(() => {
-      Axios.get("/api/products").then(() => {
-        setLoading(false);
-        $(".loading").css({ display: "none" });
-      });
+      setLoading(false);
+      $(".loading").css({ display: "none" });
     }, 1200);
   }, []);
 
@@ -90,6 +87,7 @@ export default function App() {
                     )}
                   />
                   <Route
+                    exact
                     path="/shop/product/:id"
                     render={(props) => (
                       <ProductScreen
