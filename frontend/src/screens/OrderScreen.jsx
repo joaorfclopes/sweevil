@@ -190,7 +190,7 @@ export default function OrderScreen(props) {
               {order.orderItems.map((item, index) => (
                 <li key={item.product}>
                   <div className="item-image">
-                    <PlaceHolder>
+                    <PlaceHolder height="100%">
                       <div
                         id={`${item.product}-order-img`}
                         className="item-image-inner"

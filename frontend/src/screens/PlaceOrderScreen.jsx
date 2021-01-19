@@ -75,7 +75,7 @@ export default function PlaceOrderScreen(props) {
           {cartItems.map((item, index) => (
             <li key={item.product}>
               <div className="item-image">
-                <Placeholder>
+                <Placeholder height="100%">
                   <div
                     id={`${item.product}-place-order-img`}
                     className="item-image-inner"
