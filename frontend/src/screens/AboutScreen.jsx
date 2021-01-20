@@ -40,7 +40,7 @@ export default function AboutScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="row center" style={{ minHeight: "70vh" }}>
+      <div className="row center about-container">
         <div className="text">
           <h1 className="title">Who's Sweevil?</h1>
           <p>

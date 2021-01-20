@@ -8,6 +8,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
+import Modal from "../components/Modal";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import { sizes } from "../utils";
@@ -20,6 +21,8 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
+  const [openModal, setOpenModal] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -60,6 +63,15 @@ export default function ProductScreen(props) {
       .on("click", () => {
         props.history.push("/cart");
       });
+  };
+
+  const handleOpenModal = (index) => {
+    setOpenModal(true);
+    setImgIndex(index);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   const next = () => {
@@ -106,6 +118,7 @@ export default function ProductScreen(props) {
                     className={`carousel-item product-image ${
                       image === product.images[0] && "active"
                     }`}
+                    onClick={() => handleOpenModal(index)}
                   >
                     <Placeholder height="100%">
                       <div
@@ -189,6 +202,12 @@ export default function ProductScreen(props) {
               ))}
             </div>
           </div>
+          <Modal
+            open={openModal}
+            handleClose={handleCloseModal}
+            images={product.images}
+            imgIndex={imgIndex}
+          />
           <div className="product-details">
             <h2 className="name custom-font">
               <b>{product.name}</b>

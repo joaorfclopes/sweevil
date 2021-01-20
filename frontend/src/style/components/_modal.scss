@@ -1,7 +1,13 @@
 .modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 760px;
+  display: none;
+  margin: auto;
+  @include md {
+    display: block;
+  }
+  @include lg {
+    width: 950px;
+  }
   .MuiDialog-paperWidthSm {
     max-width: none;
     max-height: none;
@@ -10,9 +16,8 @@
     border-radius: 0;
   }
   img {
-    width: 700px !important;
-    @include lg {
-      width: 850px !important;
-    }
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 }
