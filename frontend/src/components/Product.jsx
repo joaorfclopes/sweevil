@@ -31,13 +31,13 @@ export default function Product(props) {
             </div>
           </Placeholder>
           <div className="product-description">
-            <Placeholder hide={hidePlaceholder}>
+            <Placeholder hide={hidePlaceholder} text>
               <p id={`${product._id}-product-name`} className="product-name">
                 {product.name}
               </p>
               <div id={`${product._id}-product-line`} className="line"></div>
             </Placeholder>
-            <Placeholder hide={hidePlaceholder}>
+            <Placeholder hide={hidePlaceholder} text>
               <p id={`${product._id}-product-price`} className="product-price">
                 {product.price && product.price.toFixed(2)}€
               </p>

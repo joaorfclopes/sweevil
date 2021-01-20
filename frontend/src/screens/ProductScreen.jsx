@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
-import Swipe from "react-easy-swipe";
+import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { motion } from "framer-motion";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
-import { isMobile, sizes } from "../utils";
-import Modal from "../components/Modal";
+import { sizes } from "../utils";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -21,8 +19,6 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
-  const [openModal, setOpenModal] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -65,25 +61,12 @@ export default function ProductScreen(props) {
       });
   };
 
-  const handleOpenModal = (index) => {
-    setOpenModal(true);
-    setImgIndex(index);
+  const changeImage = (newSrc) => {
+    document.getElementById("product-img").src = newSrc;
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const next = () => {
-    document.getElementById("carousel-control-next").click();
-  };
-
-  const previous = () => {
-    document.getElementById("carousel-control-prev").click();
-  };
-
-  const imageLoaded = (id) => {
-    $(`#${id}-carousel-img`).addClass("show");
+  const imageLoaded = () => {
+    $(".product-image-inner").addClass("show");
   };
 
   const previewImageLoaded = (id) => {
@@ -92,7 +75,7 @@ export default function ProductScreen(props) {
 
   return (
     <motion.section
-      className="product-screen row center"
+      className="product-screen"
       initial="out"
       animate="in"
       exit="out"
@@ -104,193 +87,119 @@ export default function ProductScreen(props) {
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="container">
-          <div className="row-bootstrap">
-            <div className="col-md-1"></div>
-            <div className="col-md-5 product-images">
-              <div
-                id="productImageCarousel"
-                className={`carousel ${isMobile() && "slide"}`}
-                data-interval="false"
-              >
-                <div className="carousel-inner" style={{ marginBottom: "5px" }}>
-                  {product.images.map((image, index) => (
+        <div className="product-screen-container row center">
+          <div className="product-images">
+            <div className="product-image">
+              <Placeholder height="100%">
+                <div className="product-image-inner">
+                  <LazyLoadImage
+                    id="product-img"
+                    src={product.images[0]}
+                    alt="product"
+                    afterLoad={imageLoaded}
+                  />
+                </div>
+              </Placeholder>
+            </div>
+            <div className="image-preview-container">
+              {product.images.map((image, index) => (
+                <div
+                  key={image}
+                  className="image-preview"
+                  onClick={() => changeImage(image)}
+                >
+                  <Placeholder height="100%">
                     <div
-                      key={image}
-                      className={`carousel-item ${
-                        image === product.images[0] && "active"
-                      }`}
-                      onClick={() => handleOpenModal(index)}
+                      id={`${index}-preview-img`}
+                      className="image-preview-inner"
                     >
-                      <Placeholder height="100%">
-                        <div
-                          id={`${index}-carousel-img`}
-                          className="carousel-image"
-                        >
-                          <Swipe
-                            style={{ cursor: "pointer" }}
-                            onSwipeRight={previous}
-                            onSwipeLeft={next}
-                            tolerance={50}
-                          >
-                            <LazyLoadImage
-                              src={image}
-                              className="d-block w-100"
-                              alt="product"
-                              afterLoad={() => imageLoaded(index)}
-                            />
-                          </Swipe>
-                        </div>
-                      </Placeholder>
+                      <LazyLoadImage
+                        src={image}
+                        alt="product"
+                        afterLoad={() => previewImageLoaded(index)}
+                      />
                     </div>
-                  ))}
+                  </Placeholder>
                 </div>
-                <div className="arrows">
-                  <a
-                    id="carousel-control-prev"
-                    className="carousel-control-prev"
-                    href="#productImageCarousel"
-                    role="button"
-                    data-slide="prev"
-                  >
-                    <span
-                      className="carousel-control-prev-icon"
-                      aria-hidden="true"
-                    ></span>
-                  </a>
-                  <a
-                    id="carousel-control-next"
-                    className="carousel-control-next"
-                    href="#productImageCarousel"
-                    role="button"
-                    data-slide="next"
-                  >
-                    <span
-                      className="carousel-control-next-icon"
-                      aria-hidden="true"
-                    ></span>
-                  </a>
-                </div>
-                <ol className="carousel-indicators">
-                  {product.images.map((image, index) => (
-                    <li
-                      key={index}
-                      data-target="#productImageCarousel"
-                      data-slide-to={index}
-                      className={`${image === product.images[0] && "active"}`}
-                    ></li>
-                  ))}
-                </ol>
-              </div>
-              <div className="image-preview-container">
-                {product.images.map((image, index) => (
-                  <div
-                    key={image}
-                    className="image-preview"
-                    data-target="#productImageCarousel"
-                    data-slide-to={index}
-                  >
-                    <Placeholder height="100%">
-                      <div
-                        id={`${index}-preview-img`}
-                        className="image-preview-inner"
-                      >
-                        <LazyLoadImage
-                          src={image}
-                          className="d-block w-100"
-                          alt="product"
-                          afterLoad={() => previewImageLoaded(index)}
-                        />
-                      </div>
-                    </Placeholder>
+              ))}
+            </div>
+          </div>
+          <div className="product-details">
+            <h2 className="name custom-font">
+              <b>{product.name}</b>
+            </h2>
+            <h2 className="price">
+              <b>{product.price && product.price.toFixed(2)}€</b>
+            </h2>
+            <p>
+              <b>Category:</b> {product.category}
+            </p>
+            <p>
+              <b>Description:</b> {product.description}
+            </p>
+            {product.isClothing && (
+              <div className="size">
+                {sizes.map((size) => (
+                  <div key={size} className="size-option">
+                    <button
+                      onClick={() => selectSize(size)}
+                      className={`secondary ${
+                        size === chosenSize ? "active" : ""
+                      }`}
+                      type="button"
+                      disabled={
+                        size === "xs"
+                          ? availability(product.countInStock.xs)
+                          : size === "s"
+                          ? availability(product.countInStock.s)
+                          : size === "m"
+                          ? availability(product.countInStock.m)
+                          : size === "l"
+                          ? availability(product.countInStock.l)
+                          : size === "xl"
+                          ? availability(product.countInStock.xl)
+                          : size === "xxl" &&
+                            availability(product.countInStock.xxl)
+                      }
+                    >
+                      {size}
+                    </button>
                   </div>
                 ))}
               </div>
-            </div>
-            <Modal
-              open={openModal}
-              handleClose={handleCloseModal}
-              images={product.images}
-              imgIndex={imgIndex}
-              noMobile
-            />
-            <div className="col-md-5 product-details">
-              <h2 className="name custom-font">
-                <b>{product.name}</b>
-              </h2>
-              <h2 className="price">
-                <b>{product.price && product.price.toFixed(2)}€</b>
-              </h2>
-              <p>
-                <b>Category:</b> {product.category}
-              </p>
-              <p>
-                <b>Description:</b> {product.description}
-              </p>
-              {product.isClothing && (
-                <div className="size">
-                  {sizes.map((size) => (
-                    <div key={size} className="size-option">
-                      <button
-                        onClick={() => selectSize(size)}
-                        className={`secondary ${
-                          size === chosenSize ? "active" : ""
-                        }`}
-                        type="button"
-                        disabled={
-                          size === "xs"
-                            ? availability(product.countInStock.xs)
-                            : size === "s"
-                            ? availability(product.countInStock.s)
-                            : size === "m"
-                            ? availability(product.countInStock.m)
-                            : size === "l"
-                            ? availability(product.countInStock.l)
-                            : size === "xl"
-                            ? availability(product.countInStock.xl)
-                            : size === "xxl" &&
-                              availability(product.countInStock.xxl)
-                        }
-                      >
-                        {size}
-                      </button>
-                    </div>
-                  ))}
-                </div>
+            )}
+            <div className="qty">
+              <b>Quantity:</b>{" "}
+              {product.isClothing && !chosenSize && (
+                <select>
+                  <option value={qty}>{qty}</option>
+                </select>
               )}
-              <div className="qty">
-                <b>Quantity:</b>{" "}
-                {product.isClothing && !chosenSize && (
-                  <select>
-                    <option value={qty}>{qty}</option>
-                  </select>
-                )}
-                {!product.isClothing
-                  ? selectQty(product.countInStock.stock)
-                  : chosenSize === "xs"
-                  ? selectQty(product.countInStock.xs)
-                  : chosenSize === "s"
-                  ? selectQty(product.countInStock.s)
-                  : chosenSize === "m"
-                  ? selectQty(product.countInStock.m)
-                  : chosenSize === "l"
-                  ? selectQty(product.countInStock.l)
-                  : chosenSize === "xl"
-                  ? selectQty(product.countInStock.xl)
-                  : chosenSize === "xxl" && selectQty(product.countInStock.xxl)}
-              </div>
-              <div className="add-to-cart">
-                <button
-                  onClick={addToCartHandler}
-                  className="primary"
-                  disabled={
-                    (product.isClothing && !chosenSize) ||
-                    (!product.isClothing && product.countInStock.stock <= 0)
-                  }
-                >
-                  Add to Cart
-                </button>
-              </div>
+              {!product.isClothing
+                ? selectQty(product.countInStock.stock)
+                : chosenSize === "xs"
+                ? selectQty(product.countInStock.xs)
+                : chosenSize === "s"
+                ? selectQty(product.countInStock.s)
+                : chosenSize === "m"
+                ? selectQty(product.countInStock.m)
+                : chosenSize === "l"
+                ? selectQty(product.countInStock.l)
+                : chosenSize === "xl"
+                ? selectQty(product.countInStock.xl)
+                : chosenSize === "xxl" && selectQty(product.countInStock.xxl)}
+            </div>
+            <div className="add-to-cart">
+              <button
+                onClick={addToCartHandler}
+                className="primary"
+                disabled={
+                  (product.isClothing && !chosenSize) ||
+                  (!product.isClothing && product.countInStock.stock <= 0)
+                }
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>
