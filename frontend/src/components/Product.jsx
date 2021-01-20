@@ -11,8 +11,7 @@ export default function Product(props) {
 
   const imageLoaded = (id) => {
     $(`#${id}-product-img`).addClass("show");
-    $(`#${id}-name-line`).addClass("show");
-    $(`#${id}-price`).addClass("show");
+    $(`#${id}-product-desc`).addClass("show");
     setHidePlaceholder(true);
   };
 
@@ -29,24 +28,18 @@ export default function Product(props) {
               />
             </div>
           </Placeholder>
-          <div className="product-description">
-            <Placeholder height="100%" hide={hidePlaceholder} text>
-              <div
-                id={`${product._id}-name-line`}
-                className="name-line-placeholder"
-              >
-                <p className="product-name">{product.name}</p>
-                <div className="line"></div>
-              </div>
-            </Placeholder>
-            <Placeholder height="100%" hide={hidePlaceholder} text>
-              <div id={`${product._id}-price`} className="price-placeholder">
-                <p className="product-price">
-                  {product.price && product.price.toFixed(2)}€
-                </p>
-              </div>
-            </Placeholder>
-          </div>
+          <Placeholder height="100%" hide={hidePlaceholder} text>
+            <div
+              id={`${product._id}-product-desc`}
+              className="product-description"
+            >
+              <p className="product-name">{product.name}</p>
+              <div className="line"></div>
+              <p className="product-price">
+                {product.price && product.price.toFixed(2)}€
+              </p>
+            </div>
+          </Placeholder>
         </div>
       </Link>
     </div>
