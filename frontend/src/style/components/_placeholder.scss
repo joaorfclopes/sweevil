@@ -40,6 +40,9 @@
     animation: none !important;
     transition: 0.5s;
   }
+  &.text {
+    border-radius: 100px;
+  }
 }
 
 @keyframes placeload {
