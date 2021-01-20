@@ -21,6 +21,14 @@
     }
   }
   .product-description {
+    .name-line-placeholder {
+      min-height: 32px;
+      opacity: 0;
+    }
+    .price-placeholder {
+      min-height: 23px;
+      opacity: 0;
+    }
     p {
       margin: 0;
       &:first-child {
@@ -28,7 +36,6 @@
         margin: 0;
         font-size: 1.2rem;
       }
-      opacity: 0;
     }
     .line {
       width: 50px;
@@ -38,7 +45,6 @@
       margin-right: auto;
       margin-top: 8px;
       margin-bottom: 8px;
-      opacity: 0;
     }
   }
   .show {
