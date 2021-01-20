@@ -1,6 +1,6 @@
 .about {
-  @include md {
-    margin-top: 3vh;
+  .about-container {
+    min-height: 75vh;
   }
   .text {
     .title {
