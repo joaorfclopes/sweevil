@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
+import Swipe from "react-easy-swipe";
 import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -61,12 +62,16 @@ export default function ProductScreen(props) {
       });
   };
 
-  const changeImage = (newSrc) => {
-    document.getElementById("product-img").src = newSrc;
+  const next = () => {
+    document.getElementById("carousel-control-next").click();
   };
 
-  const imageLoaded = () => {
-    $(".product-image-inner").addClass("show");
+  const previous = () => {
+    document.getElementById("carousel-control-prev").click();
+  };
+
+  const imageLoaded = (id) => {
+    $(`#${id}-carousel-img`).addClass("show");
   };
 
   const previewImageLoaded = (id) => {
@@ -89,24 +94,84 @@ export default function ProductScreen(props) {
       ) : (
         <div className="product-screen-container row center">
           <div className="product-images">
-            <div className="product-image">
-              <Placeholder height="100%">
-                <div className="product-image-inner">
-                  <LazyLoadImage
-                    id="product-img"
-                    src={product.images[0]}
-                    alt="product"
-                    afterLoad={imageLoaded}
-                  />
-                </div>
-              </Placeholder>
+            <div
+              id="productImageCarousel"
+              className="carousel"
+              data-interval="false"
+            >
+              <div className="carousel-inner">
+                {product.images.map((image, index) => (
+                  <div
+                    key={image}
+                    className={`carousel-item product-image ${
+                      image === product.images[0] && "active"
+                    }`}
+                  >
+                    <Placeholder height="100%">
+                      <div
+                        id={`${index}-carousel-img`}
+                        className="carousel-image product-image-inner"
+                      >
+                        <Swipe
+                          onSwipeRight={previous}
+                          onSwipeLeft={next}
+                          tolerance={50}
+                        >
+                          <LazyLoadImage
+                            src={image}
+                            alt="product"
+                            afterLoad={() => imageLoaded(index)}
+                          />
+                        </Swipe>
+                      </div>
+                    </Placeholder>
+                  </div>
+                ))}
+              </div>
+              <div className="arrows">
+                <a
+                  id="carousel-control-prev"
+                  className="carousel-control-prev"
+                  href="#productImageCarousel"
+                  role="button"
+                  data-slide="prev"
+                >
+                  <span
+                    className="carousel-control-prev-icon"
+                    aria-hidden="true"
+                  ></span>
+                </a>
+                <a
+                  id="carousel-control-next"
+                  className="carousel-control-next"
+                  href="#productImageCarousel"
+                  role="button"
+                  data-slide="next"
+                >
+                  <span
+                    className="carousel-control-next-icon"
+                    aria-hidden="true"
+                  ></span>
+                </a>
+              </div>
+              <ol className="carousel-indicators">
+                {product.images.map((image, index) => (
+                  <li
+                    key={index}
+                    data-target="#productImageCarousel"
+                    data-slide-to={index}
+                    className={`${image === product.images[0] && "active"}`}
+                  ></li>
+                ))}
+              </ol>
             </div>
             <div className="image-preview-container">
               {product.images.map((image, index) => (
                 <div
                   key={image}
                   className="image-preview"
-                  onClick={() => changeImage(image)}
+                  data-target="#productImageCarousel"
+                  data-slide-to={index}
                 >
                   <Placeholder height="100%">
                     <div
