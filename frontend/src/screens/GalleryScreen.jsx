@@ -51,9 +51,11 @@ export default function GalleryScreen(props) {
       <div className="row center">
         <div className="gallery-container">
           <div className="filters">
-            <div className="filter" onClick={() => handleClick("*")}>
-              All
-            </div>
+            {gallery.length > 0 && (
+              <div className="filter" onClick={() => handleClick("*")}>
+                All
+              </div>
+            )}
             {filters.map((filter) => (
               <div
                 key={filter}
