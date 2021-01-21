@@ -38,6 +38,14 @@ body {
   overflow-y: scroll;
 }
 html,
+#root {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+html,
 body,
 #root {
   padding: 0;
