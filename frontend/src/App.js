@@ -41,6 +41,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    document.body.style.overflowY = "hidden";
     setTimeout(() => {
       setLoading(false);
       $(".loading").css({ display: "none" });
