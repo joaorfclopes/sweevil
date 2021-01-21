@@ -48,32 +48,36 @@ export default function GalleryScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="filters">
-        <div className="filter" onClick={() => handleClick("*")}>
-          All
-        </div>
-        {filters.map((filter) => (
-          <div
-            key={filter}
-            className="filter"
-            onClick={() => handleClick(filter)}
-          >
-            {filter}
+      <div className="row center">
+        <div className="gallery-container">
+          <div className="filters">
+            <div className="filter" onClick={() => handleClick("*")}>
+              All
+            </div>
+            {filters.map((filter) => (
+              <div
+                key={filter}
+                className="filter"
+                onClick={() => handleClick(filter)}
+              >
+                {filter}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="gallery-images">
-        {gallery &&
-          gallery.map(
-            (galleryImage) =>
-              galleryImage.image &&
-              galleryImage.category && (
-                <GalleryImage
-                  key={galleryImage._id}
-                  galleryImage={galleryImage}
-                />
-              )
-          )}
+          <div className="gallery-images">
+            {gallery &&
+              gallery.map(
+                (galleryImage) =>
+                  galleryImage.image &&
+                  galleryImage.category && (
+                    <GalleryImage
+                      key={galleryImage._id}
+                      galleryImage={galleryImage}
+                    />
+                  )
+              )}
+          </div>
+        </div>
       </div>
     </motion.section>
   );
