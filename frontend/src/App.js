@@ -18,6 +18,8 @@ import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import AboutScreen from "./screens/AboutScreen";
 import GalleryScreen from "./screens/GalleryScreen";
+import NotFoundScreen from "./screens/NotFoundScreen";
+import HomeScreen from "./screens/HomeScreen";
 
 export default function App() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -55,6 +57,17 @@ export default function App() {
             <main>
               <AnimatePresence>
                 <Switch>
+                  <Route
+                    exact
+                    path="/"
+                    render={(props) => (
+                      <HomeScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
                   <Route
                     path="/about"
                     render={(props) => (
@@ -191,6 +204,15 @@ export default function App() {
                     path="/resetPassword/:id"
                     render={(props) => (
                       <ResetPasswordScreen
+                        {...props}
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    )}
+                  />
+                  <Route
+                    render={(props) => (
+                      <NotFoundScreen
                         {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
