@@ -32,15 +32,6 @@
     @include lg {
       column-count: 4;
     }
-    .gallery-image {
-      opacity: 0;
-      margin-bottom: 15px;
-      img {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-    }
   }
   .hide {
     @include fade-out;
