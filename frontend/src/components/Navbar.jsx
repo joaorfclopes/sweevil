@@ -62,7 +62,11 @@ export default function Navbar() {
           )}
           {options.map((option) => (
             <li key={option}>
-              <NavLink to={`/${option}`} activeClassName="active">
+              <NavLink
+                to={`/${option === "home" ? "" : option}`}
+                activeClassName="active"
+                exact={option === "home"}
+              >
                 {option}
               </NavLink>
             </li>

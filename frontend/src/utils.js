@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-export const options = ["about", "gallery", "shop"];
+export const options = ["home", "about", "gallery", "shop"];
 
 export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
 
