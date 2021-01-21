@@ -34,14 +34,6 @@ export const formatName = (name) => {
   }
 };
 
-export const isMobile = () => {
-  if (window.innerWidth < 768) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 export const hide = (el) => {
   $(el).addClass("hide");
   $(el).removeClass("show");

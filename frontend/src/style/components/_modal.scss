@@ -28,7 +28,7 @@
     border-radius: 0;
   }
   .MuiPaper-root {
-    background-color: $background;
+    background-color: $grey-nuance-lighter;
   }
   .show {
     @include fade-in;
