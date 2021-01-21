@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import $ from "jquery";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import Placeholder from "../components/Placeholder";
+import GalleryImage from "../components/GalleryImage";
 import { filters, hide, show } from "../utils";
 
 export default function GalleryScreen(props) {
@@ -30,10 +29,6 @@ export default function GalleryScreen(props) {
       });
       show(images);
     }
-  };
-
-  const imageLoaded = (id) => {
-    $(`#${id}-gallery-img`).addClass("show");
   };
 
   useEffect(() => {
@@ -73,18 +68,10 @@ export default function GalleryScreen(props) {
             (galleryImage) =>
               galleryImage.image &&
               galleryImage.category && (
-                <Placeholder key={galleryImage._id}>
-                  <div
-                    id={`${galleryImage._id}-gallery-img`}
-                    className={`gallery-image ${galleryImage.category}`}
-                  >
-                    <LazyLoadImage
-                      src={galleryImage.image}
-                      alt={galleryImage.image}
-                      afterLoad={() => imageLoaded(galleryImage._id)}
-                    />
-                  </div>
-                </Placeholder>
+                <GalleryImage
+                  key={galleryImage._id}
+                  galleryImage={galleryImage}
+                />
               )
           )}
       </div>
