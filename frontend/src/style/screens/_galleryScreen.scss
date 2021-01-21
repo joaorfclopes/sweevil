@@ -26,6 +26,9 @@
     margin-right: auto;
     margin-left: auto;
     text-align: center;
+    @include sm {
+      column-count: 2;
+    }
     @include md {
       column-count: 3;
     }
