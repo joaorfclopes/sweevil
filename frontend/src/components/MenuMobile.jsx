@@ -27,7 +27,11 @@ export default function MenuMobile() {
         )}
         {options.map((option) => (
           <li onClick={closeMenu} key={option}>
-            <NavLink to={`/${option}`} activeClassName="active">
+            <NavLink
+              to={`/${option === "home" ? "" : option}`}
+              activeClassName="active"
+              exact={option === "home"}
+            >
               {option}
             </NavLink>
           </li>
