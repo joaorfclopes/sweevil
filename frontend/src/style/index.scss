@@ -34,11 +34,11 @@
   box-sizing: border-box;
   outline: none;
 }
-body {
+#root {
   overflow-y: scroll;
 }
 html,
-#root {
+body {
   overflow-y: scroll;
   scrollbar-width: none;
   &::-webkit-scrollbar {
