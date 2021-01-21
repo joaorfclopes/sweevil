@@ -1,8 +1,14 @@
 import React from "react";
 import { Dialog, Backdrop, Fade } from "@material-ui/core";
+import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import Placeholder from "./Placeholder";
 
 export default function Modal(props) {
+  const imageLoaded = (id) => {
+    $(`#${id}-modal-image`).addClass("show");
+  };
+
   return (
     <Dialog
       aria-labelledby="transition-modal-title"
@@ -24,14 +30,25 @@ export default function Modal(props) {
             data-interval="false"
           >
             <div className="carousel-inner">
-              {props.images.map((image) => (
+              {props.images.map((image, index) => (
                 <div
-                  key={image}
-                  className={`carousel-item ${
+                  key={index}
+                  className={`carousel-item modal-image ${
                     image === props.images[props.imgIndex] && "active"
                   }`}
                 >
-                  <LazyLoadImage src={image} alt="img" />
+                  <Placeholder>
+                    <div
+                      id={`${index}-modal-image`}
+                      className="modal-image-inner"
+                    >
+                      <LazyLoadImage
+                        src={image}
+                        alt="img"
+                        afterLoad={() => imageLoaded(index)}
+                      />
+                    </div>
+                  </Placeholder>
                 </div>
               ))}
             </div>
