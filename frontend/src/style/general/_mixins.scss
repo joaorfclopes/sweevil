@@ -38,11 +38,6 @@
     @content;
   }
 }
-@mixin lg-max {
-  @media (max-width: #{$screen-lg-min}) {
-    @content;
-  }
-}
 @mixin margin-center {
   @include md {
     margin-left: 15vw;

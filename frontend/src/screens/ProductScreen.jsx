@@ -108,7 +108,7 @@ export default function ProductScreen(props) {
           <div className="product-images">
             <div
               id="productImageCarousel"
-              className="carousel"
+              className="carousel slide"
               data-interval="false"
             >
               <div className="carousel-inner">

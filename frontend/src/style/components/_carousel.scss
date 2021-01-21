@@ -19,19 +19,14 @@
   margin-right: -100%;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transition: -webkit-transform 0.6s ease-in-out;
-  transition: transform 0.6s ease-in-out;
-  transition: transform 0.6s ease-in-out, -webkit-transform 0.6s ease-in-out;
 }
 .carousel-item-next {
-  display: block;
   &:not(.carousel-item-left) {
     -webkit-transform: translateX(100%);
     transform: translateX(100%);
   }
 }
 .carousel-item-prev {
-  display: block;
   &:not(.carousel-item-right) {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);

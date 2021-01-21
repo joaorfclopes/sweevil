@@ -26,7 +26,7 @@ export default function Modal(props) {
         <div className="modal-images">
           <div
             id="modalImageCarousel"
-            className="carousel"
+            className="carousel slide"
             data-interval="false"
           >
             <div className="carousel-inner">
