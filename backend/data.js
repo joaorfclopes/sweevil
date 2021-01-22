@@ -121,8 +121,8 @@ const data = {
   galleryImages: [
     {
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital3.jpg",
-      category: "Digital",
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting6.jpg",
+      category: "Paintings",
     },
     {
       image:
@@ -176,6 +176,11 @@ const data = {
     },
     {
       image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo9.jpg",
+      category: "Tattoos",
+    },
+    {
+      image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital4.jpg",
       category: "Digital",
     },
@@ -186,8 +191,8 @@ const data = {
     },
     {
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo9.jpg",
-      category: "Tattoos",
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital1.jpg",
+      category: "Digital",
     },
     {
       image:
@@ -211,6 +216,11 @@ const data = {
     },
     {
       image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting7.jpg",
+      category: "Paintings",
+    },
+    {
+      image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting5.jpg",
       category: "Paintings",
     },
@@ -221,23 +231,13 @@ const data = {
     },
     {
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting6.jpg",
-      category: "Paintings",
-    },
-    {
-      image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting7.jpg",
-      category: "Paintings",
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital3.jpg",
+      category: "Digital",
     },
     {
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo8.jpg",
       category: "Tattoos",
-    },
-    {
-      image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital1.jpg",
-      category: "Digital",
     },
   ],
 };
