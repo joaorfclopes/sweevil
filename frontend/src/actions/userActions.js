@@ -155,7 +155,7 @@ export const resetPassword = (user, userId) => async (dispatch) => {
     setTimeout(() => {
       window.close();
       //FIX THIS
-      window.open(`${process.env.HOME_PAGE || "http://localhost:3000"}/signin`);
+      window.open(`${process.env.REACT_APP_HOME_PAGE}/signin`);
     }, 1500);
   } catch (error) {
     dispatch({

@@ -7,9 +7,9 @@ const itemsDetails = (orderItems) =>
           <tr>
             <td width="110" valign="top">
               <a
-                href="${
-                  process.env.HOME_PAGE || "http://localhost:3000"
-                }/shop/product/${item.product}"
+                href="${process.env.REACT_APP_HOME_PAGE}/shop/product/${
+      item.product
+    }"
                 rel="noreferrer"
                 target="_blank"
               >

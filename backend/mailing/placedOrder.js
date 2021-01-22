@@ -74,9 +74,7 @@ export const placedOrder = ({
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${
-                            process.env.HOME_PAGE || "http://localhost:3000"
-                          }"
+                          href="${process.env.REACT_APP_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -265,8 +263,7 @@ export const placedOrder = ({
                                       >
                                         <a
                                           href="${
-                                            process.env.HOME_PAGE ||
-                                            "http://localhost:3000"
+                                            process.env.REACT_APP_HOME_PAGE
                                           }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;

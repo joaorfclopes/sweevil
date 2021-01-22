@@ -1,11 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import dotenv from "dotenv";
 import "notyf/notyf.min.css";
 import "./style/index.scss";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import store from "./store";
+
+dotenv.config();
 
 ReactDOM.render(
   <Provider store={store}>
