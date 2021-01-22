@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import $ from "jquery";
@@ -12,6 +12,8 @@ export default function GalleryScreen(props) {
   const dispatch = useDispatch();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
+
+  const [categories, setCategories] = useState([]);
 
   const handleClick = (e) => {
     const images = ".gallery-images";
@@ -29,6 +31,11 @@ export default function GalleryScreen(props) {
       });
       show(images);
     }
+  };
+
+  const handleLoad = (category) => {
+    setCategories([...categories, category]);
+    console.log(categories);
   };
 
   useEffect(() => {
@@ -56,15 +63,18 @@ export default function GalleryScreen(props) {
                 All
               </div>
             )}
-            {filters.map((filter) => (
-              <div
-                key={filter}
-                className="filter"
-                onClick={() => handleClick(filter)}
-              >
-                {filter}
-              </div>
-            ))}
+            {filters.map(
+              (filter) =>
+                categories.includes(filter) && (
+                  <div
+                    key={filter}
+                    className="filter"
+                    onClick={() => handleClick(filter)}
+                  >
+                    {filter}
+                  </div>
+                )
+            )}
           </div>
           <div className="gallery-images">
             {gallery &&
@@ -72,10 +82,12 @@ export default function GalleryScreen(props) {
                 (galleryImage) =>
                   galleryImage.image &&
                   galleryImage.category && (
-                    <GalleryImage
+                    <div
                       key={galleryImage._id}
-                      galleryImage={galleryImage}
-                    />
+                      onLoad={() => handleLoad(galleryImage.category)}
+                    >
+                      <GalleryImage galleryImage={galleryImage} />
+                    </div>
                   )
               )}
           </div>
