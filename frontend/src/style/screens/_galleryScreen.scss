@@ -16,6 +16,8 @@
   }
   .hidden {
     opacity: 0;
+    position: fixed;
+    z-index: -1;
   }
   @include lg {
     margin-left: 10%;
@@ -59,5 +61,7 @@
   }
   .show {
     @include fade-in;
+    position: relative;
+    z-index: 1;
   }
 }
