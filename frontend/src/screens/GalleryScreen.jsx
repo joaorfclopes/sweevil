@@ -37,6 +37,7 @@ export default function GalleryScreen(props) {
   const handleLoad = (category, id) => {
     setCategories([...categories, category]);
     //Change to env variable
+    console.log(process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID);
     if (id === "600af0832c994b1390ab7b8f") {
       setLargestImageLoaded(true);
       $(".gallery-container").addClass("show");

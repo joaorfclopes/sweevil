@@ -1,7 +1,5 @@
 export const resetPassword = ({ userInfo: { userId, email } }) => {
-  const resetPasswordLink = `${
-    process.env.HOME_PAGE || "http://localhost:3000"
-  }/resetPassword/${userId} ${email}`;
+  const resetPasswordLink = `${process.env.REACT_APP_HOME_PAGE}/resetPassword/${userId} ${email}`;
 
   return `<!DOCTYPE html>
   <html lang="en">
@@ -65,9 +63,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${
-                            process.env.HOME_PAGE || "http://localhost:3000"
-                          }"
+                          href="${process.env.REACT_APP_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -275,11 +271,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                The advice right now is to make your password a combination of three memorable but random words. Obvs, your password has to be personal just to you. But, it’s best not to use anything to do with ${
-                                                  process.env.BRAND_NAME
-                                                }, your family or something about you that can easily be found on social media. Pick something unique for your ${
-    process.env.BRAND_NAME
-  } account and don’t use it anywhere else!
+                                                The advice right now is to make your password a combination of three memorable but random words. Obvs, your password has to be personal just to you. But, it’s best not to use anything to do with ${process.env.BRAND_NAME}, your family or something about you that can easily be found on social media. Pick something unique for your ${process.env.BRAND_NAME} account and don’t use it anywhere else!
                                                 </font>
                                               </td>
                                             </tr>
@@ -610,9 +602,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                                 "
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
-                                  For any questions or information please contact us at: ${
-                                    process.env.SENDER_EMAIL_ADDRESS
-                                  }
+                                  For any questions or information please contact us at: ${process.env.SENDER_EMAIL_ADDRESS}
                                 </font>
                               </td>
                             </tr>
