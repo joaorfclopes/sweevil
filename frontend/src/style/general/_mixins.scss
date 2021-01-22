@@ -99,3 +99,12 @@
   animation-fill-mode: both;
   animation-duration: 0.5s;
 }
+@mixin ellipsis {
+  @keyframes ellipsis {
+    to {
+      width: 0.95em;
+    }
+  }
+  -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+  animation: ellipsis steps(4, end) 900ms infinite;
+}
