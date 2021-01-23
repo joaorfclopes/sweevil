@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notyf } from "notyf";
-import Swipe from "react-easy-swipe";
 import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSwipeable } from "react-swipeable";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
@@ -82,6 +82,13 @@ export default function ProductScreen(props) {
     document.getElementById("carousel-control-prev").click();
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => next(),
+    onSwipedRight: () => previous(),
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
   const imageLoaded = (id) => {
     $(`#${id}-carousel-img`).addClass("show");
   };
@@ -111,7 +118,7 @@ export default function ProductScreen(props) {
               className="carousel slide"
               data-interval="false"
             >
-              <div className="carousel-inner">
+              <div {...swipeHandlers} className="carousel-inner">
                 {product.images.map((image, index) => (
                   <div
                     key={image}
@@ -125,17 +132,11 @@ export default function ProductScreen(props) {
                         id={`${index}-carousel-img`}
                         className="carousel-image product-image-inner"
                       >
-                        <Swipe
-                          onSwipeRight={previous}
-                          onSwipeLeft={next}
-                          tolerance={50}
-                        >
-                          <LazyLoadImage
-                            src={image}
-                            alt="product"
-                            afterLoad={() => imageLoaded(index)}
-                          />
-                        </Swipe>
+                        <LazyLoadImage
+                          src={image}
+                          alt="product"
+                          afterLoad={() => imageLoaded(index)}
+                        />
                       </div>
                     </Placeholder>
                   </div>
