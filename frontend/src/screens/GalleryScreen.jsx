@@ -20,13 +20,20 @@ export default function GalleryScreen(props) {
     const images = ".gallery-images";
     hide(images);
     if (e === "*") {
+      $("#filter-all").addClass("active");
+      filters.forEach((filter) => {
+        $(`#filter-${filter}`).removeClass("active");
+      });
       $(".gallery-image").show();
       show(images);
     } else {
+      $("#filter-all").removeClass("active");
       filters.forEach((filter) => {
         if (e !== filter) {
+          $(`#filter-${filter}`).removeClass("active");
           $(`.${filter}`).hide();
         } else {
+          $(`#filter-${e}`).addClass("active");
           $(`.${filter}`).show();
         }
       });
@@ -66,7 +73,11 @@ export default function GalleryScreen(props) {
         <div className="gallery-container hidden">
           <div className="filters">
             {gallery.length > 0 && (
-              <div className="filter" onClick={() => handleClick("*")}>
+              <div
+                id="filter-all"
+                className="filter active"
+                onClick={() => handleClick("*")}
+              >
                 All
               </div>
             )}
@@ -75,6 +86,7 @@ export default function GalleryScreen(props) {
                 categories.includes(filter) && (
                   <div
                     key={filter}
+                    id={`filter-${filter}`}
                     className="filter"
                     onClick={() => handleClick(filter)}
                   >
