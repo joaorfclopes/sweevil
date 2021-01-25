@@ -2,22 +2,20 @@
   display: block;
   margin: auto;
   .modal-image {
-    .modal-image-inner {
-      img {
-        width: 100%;
-        @include md {
-          height: 80vw;
-          width: auto;
-        }
-        @include md {
-          height: 65vw;
-          width: auto;
-        }
-        @include xl {
-          height: 80vh;
-          width: auto;
-        }
-        display: block;
+    img {
+      display: block;
+      width: 100%;
+      @include md {
+        height: 80vw;
+        width: auto;
+      }
+      @include md {
+        height: 65vw;
+        width: auto;
+      }
+      @include xl {
+        height: 80vh;
+        width: auto;
       }
     }
   }
@@ -26,8 +24,7 @@
     color: white;
     user-select: none;
     padding-top: 5px;
-    a {
-      color: inherit;
+    span {
       cursor: pointer;
       transition: 0.2s;
       &:hover {
