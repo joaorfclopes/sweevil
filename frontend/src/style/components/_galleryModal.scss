@@ -3,7 +3,6 @@
   margin: auto;
   .modal-image {
     .modal-image-inner {
-      opacity: 0;
       img {
         width: 100%;
         @include md {
@@ -26,8 +25,13 @@
     text-align: center;
     color: white;
     user-select: none;
-    span {
+    a {
+      color: inherit;
       cursor: pointer;
+      transition: 0.2s;
+      &:hover {
+        color: $secondaryColor;
+      }
     }
   }
   .MuiDialog-paperWidthSm {
