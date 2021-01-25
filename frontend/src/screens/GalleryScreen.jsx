@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import $ from "jquery";
+import { SRLWrapper } from "simple-react-lightbox";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -53,6 +54,21 @@ export default function GalleryScreen(props) {
     dispatch(listGalleryImages());
   }, [dispatch]);
 
+  const lightboxOptions = {
+    settings: {
+      slideAnimationType: "slide",
+    },
+    caption: {
+      showCaption: false,
+    },
+    thumbnails: {
+      showThumbnails: false,
+    },
+    buttons: {
+      showDownloadButton: false,
+    },
+  };
+
   return loading ? (
     <LoadingBox lineHeight="75vh" width="100px" />
   ) : error ? (
@@ -95,23 +111,25 @@ export default function GalleryScreen(props) {
                 )
             )}
           </div>
-          <div className="gallery-images">
-            {gallery &&
-              gallery.map(
-                (galleryImage, index) =>
-                  galleryImage.image &&
-                  galleryImage.category && (
-                    <div
-                      key={galleryImage._id}
-                      onLoad={() =>
-                        handleLoad(galleryImage.category, galleryImage._id)
-                      }
-                    >
-                      <GalleryImage galleryImage={galleryImage} />
-                    </div>
-                  )
-              )}
-          </div>
+          <SRLWrapper options={lightboxOptions}>
+            <div className="gallery-images">
+              {gallery &&
+                gallery.map(
+                  (galleryImage) =>
+                    galleryImage.image &&
+                    galleryImage.category && (
+                      <div
+                        key={galleryImage._id}
+                        onLoad={() =>
+                          handleLoad(galleryImage.category, galleryImage._id)
+                        }
+                      >
+                        <GalleryImage galleryImage={galleryImage} />
+                      </div>
+                    )
+                )}
+            </div>
+          </SRLWrapper>
         </div>
       </div>
     </motion.section>

@@ -6,13 +6,16 @@ import "./style/index.scss";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
+import SimpleReactLightbox from "simple-react-lightbox";
 import store from "./store";
 
 dotenv.config();
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <SimpleReactLightbox>
+      <App />
+    </SimpleReactLightbox>
   </Provider>,
   document.getElementById("root")
 );
