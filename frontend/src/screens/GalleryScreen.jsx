@@ -6,6 +6,7 @@ import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
+import GalleryModal from "../components/GalleryModal";
 import { filters, hide, show } from "../utils";
 
 export default function GalleryScreen(props) {
@@ -14,7 +15,10 @@ export default function GalleryScreen(props) {
   const { loading, gallery, error } = galleryImageList;
 
   const [categories, setCategories] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [largestImageLoaded, setLargestImageLoaded] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
 
   const handleClick = (e) => {
     const images = ".gallery-images";
@@ -41,7 +45,8 @@ export default function GalleryScreen(props) {
     }
   };
 
-  const handleLoad = (category, id) => {
+  const handleLoad = (image, category, id) => {
+    setGalleryImages([...galleryImages, image]);
     setCategories([...categories, category]);
     if (id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID) {
       setLargestImageLoaded(true);
@@ -52,6 +57,15 @@ export default function GalleryScreen(props) {
   useEffect(() => {
     dispatch(listGalleryImages());
   }, [dispatch]);
+
+  const handleOpenModal = (index) => {
+    setOpenModal(true);
+    setImgIndex(index);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   return loading ? (
     <LoadingBox lineHeight="75vh" width="100px" />
@@ -98,20 +112,31 @@ export default function GalleryScreen(props) {
           <div className="gallery-images">
             {gallery &&
               gallery.map(
-                (galleryImage) =>
+                (galleryImage, index) =>
                   galleryImage.image &&
                   galleryImage.category && (
                     <div
                       key={galleryImage._id}
                       onLoad={() =>
-                        handleLoad(galleryImage.category, galleryImage._id)
+                        handleLoad(
+                          galleryImage.image,
+                          galleryImage.category,
+                          galleryImage._id
+                        )
                       }
+                      onClick={() => handleOpenModal(index)}
                     >
                       <GalleryImage galleryImage={galleryImage} />
                     </div>
                   )
               )}
           </div>
+          <GalleryModal
+            open={openModal}
+            handleClose={handleCloseModal}
+            images={galleryImages}
+            imgIndex={imgIndex}
+          />
         </div>
       </div>
     </motion.section>
