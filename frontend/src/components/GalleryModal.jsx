@@ -1,15 +1,9 @@
 import React from "react";
 import { Dialog, Backdrop, Fade } from "@material-ui/core";
-import $ from "jquery";
 import { useSwipeable } from "react-swipeable";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import Placeholder from "./Placeholder";
 
 export default function GalleryModal(props) {
-  const imageLoaded = (id) => {
-    $(`#${id}-modal-image`).addClass("show");
-  };
-
   const next = () => {
     document.getElementById("carousel-control-next").click();
   };
@@ -58,51 +52,33 @@ export default function GalleryModal(props) {
                       id={`${index}-modal-image`}
                       className="modal-image-inner"
                     >
-                      <LazyLoadImage
-                        src={image}
-                        alt="img"
-                        afterLoad={() => imageLoaded(index)}
-                      />
+                      <img src={image} alt="img" />
                     </div>
                   </Placeholder>
                 </div>
               ))}
             </div>
-            <a
-              id="carousel-control-prev"
-              className="carousel-control-prev"
-              href="#modalImageCarousel"
-              role="button"
-              data-slide="prev"
-            >
-              <span
-                className="carousel-control-prev-icon"
-                aria-hidden="true"
-              ></span>
-            </a>
-            <a
-              id="carousel-control-next"
-              className="carousel-control-next"
-              href="#modalImageCarousel"
-              role="button"
-              data-slide="next"
-            >
-              <span
-                className="carousel-control-next-icon"
-                aria-hidden="true"
-              ></span>
-            </a>
           </div>
         </div>
       </Fade>
       <div className="nav-buttons custom-font">
-        <span className="previous" onClick={previous}>
+        <a
+          id="carousel-control-prev"
+          href="#modalImageCarousel"
+          role="button"
+          data-slide="prev"
+        >
           Previous
-        </span>{" "}
+        </a>{" "}
         /{" "}
-        <span className="next" onClick={next}>
+        <a
+          id="carousel-control-next"
+          href="#modalImageCarousel"
+          role="button"
+          data-slide="next"
+        >
           Next
-        </span>
+        </a>
       </div>
     </Dialog>
   );
