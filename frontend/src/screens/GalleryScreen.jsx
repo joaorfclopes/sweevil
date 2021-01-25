@@ -57,6 +57,7 @@ export default function GalleryScreen(props) {
   const lightboxOptions = {
     settings: {
       slideAnimationType: "slide",
+      disablePanzoom: true,
     },
     caption: {
       showCaption: false,
