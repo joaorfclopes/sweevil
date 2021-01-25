@@ -1,0 +1,36 @@
+.product-modal {
+  display: none;
+  margin: auto;
+  @include md {
+    display: block;
+  }
+  .modal-image {
+    width: 760px;
+    height: 760px;
+    @include lg {
+      width: 900px;
+      height: 900px;
+    }
+    .modal-image-inner {
+      opacity: 0;
+      img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+  }
+  .MuiDialog-paperWidthSm {
+    max-width: none;
+    max-height: none;
+  }
+  .MuiPaper-rounded {
+    border-radius: 0;
+  }
+  .MuiPaper-root {
+    background-color: $grey-nuance-lighter;
+  }
+  .show {
+    @include fade-in;
+  }
+}

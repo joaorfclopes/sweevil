@@ -4,7 +4,7 @@ import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Placeholder from "./Placeholder";
 
-export default function Modal(props) {
+export default function ProductModal(props) {
   const imageLoaded = (id) => {
     $(`#${id}-modal-image`).addClass("show");
   };
@@ -13,7 +13,7 @@ export default function Modal(props) {
     <Dialog
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
-      className="modal"
+      className="product-modal"
       open={props.open}
       onClose={props.handleClose}
       closeAfterTransition

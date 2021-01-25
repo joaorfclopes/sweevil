@@ -8,7 +8,7 @@ import { useSwipeable } from "react-swipeable";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
-import Modal from "../components/Modal";
+import ProductModal from "../components/ProductModal";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import { sizes } from "../utils";
@@ -203,7 +203,7 @@ export default function ProductScreen(props) {
               ))}
             </div>
           </div>
-          <Modal
+          <ProductModal
             open={openModal}
             handleClose={handleCloseModal}
             images={product.images}
