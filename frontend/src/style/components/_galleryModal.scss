@@ -5,8 +5,19 @@
     .modal-image-inner {
       opacity: 0;
       img {
-        height: 90vh;
-        width: auto;
+        width: 100%;
+        @include md {
+          height: 80vw;
+          width: auto;
+        }
+        @include md {
+          height: 65vw;
+          width: auto;
+        }
+        @include xl {
+          height: 80vh;
+          width: auto;
+        }
         display: block;
       }
     }
