@@ -1,5 +1,3 @@
-import $ from "jquery";
-
 export const options = ["home", "about", "gallery", "shop"];
 
 export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
@@ -32,14 +30,4 @@ export const formatName = (name) => {
   } else {
     return name;
   }
-};
-
-export const hide = (el) => {
-  $(el).addClass("hide");
-  $(el).removeClass("show");
-};
-
-export const show = (el) => {
-  $(el).removeClass("hide");
-  $(el).addClass("show");
 };

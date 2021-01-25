@@ -7,7 +7,7 @@ import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
-import { filters, hide, show } from "../utils";
+import { filters } from "../utils";
 
 export default function GalleryScreen(props) {
   const dispatch = useDispatch();
@@ -16,29 +16,24 @@ export default function GalleryScreen(props) {
 
   const [categories, setCategories] = useState([]);
   const [largestImageLoaded, setLargestImageLoaded] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("*");
 
   const handleClick = (e) => {
-    const images = ".gallery-images";
-    hide(images);
+    setSelectedFilter(e);
     if (e === "*") {
       $("#filter-all").addClass("active");
       filters.forEach((filter) => {
         $(`#filter-${filter}`).removeClass("active");
       });
-      $(".gallery-image").show();
-      show(images);
     } else {
       $("#filter-all").removeClass("active");
       filters.forEach((filter) => {
         if (e !== filter) {
           $(`#filter-${filter}`).removeClass("active");
-          $(`.${filter}`).hide();
         } else {
           $(`#filter-${e}`).addClass("active");
-          $(`.${filter}`).show();
         }
       });
-      show(images);
     }
   };
 
@@ -47,7 +42,19 @@ export default function GalleryScreen(props) {
     if (id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID) {
       setLargestImageLoaded(true);
       $(".gallery-container").addClass("show");
+      $(".gallery-container").removeClass("hidden");
     }
+  };
+
+  const galleryImg = (galleryImage) => {
+    return (
+      <div
+        key={galleryImage._id}
+        onLoad={() => handleLoad(galleryImage.category, galleryImage._id)}
+      >
+        <GalleryImage galleryImage={galleryImage} />
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -56,7 +63,8 @@ export default function GalleryScreen(props) {
 
   const lightboxOptions = {
     settings: {
-      slideAnimationType: "slide",
+      lightboxTransitionSpeed: 0.2,
+      slideTransitionSpeed: 0.3,
       disablePanzoom: true,
     },
     caption: {
@@ -115,19 +123,11 @@ export default function GalleryScreen(props) {
           <SRLWrapper options={lightboxOptions}>
             <div className="gallery-images">
               {gallery &&
-                gallery.map(
-                  (galleryImage) =>
-                    galleryImage.image &&
-                    galleryImage.category && (
-                      <div
-                        key={galleryImage._id}
-                        onLoad={() =>
-                          handleLoad(galleryImage.category, galleryImage._id)
-                        }
-                      >
-                        <GalleryImage galleryImage={galleryImage} />
-                      </div>
-                    )
+                gallery.map((galleryImage) =>
+                  galleryImage.image && selectedFilter === "*"
+                    ? galleryImg(galleryImage)
+                    : galleryImage.category === selectedFilter &&
+                      galleryImg(galleryImage)
                 )}
             </div>
           </SRLWrapper>
