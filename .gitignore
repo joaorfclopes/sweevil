@@ -27,3 +27,4 @@ package-lock.json
 .vercel
 debug.log
 .env
+frontend/.env
