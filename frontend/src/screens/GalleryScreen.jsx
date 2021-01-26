@@ -20,6 +20,17 @@ export default function GalleryScreen(props) {
 
   const handleClick = (e) => {
     setSelectedFilter(e);
+    if (e !== selectedFilter) {
+      $(".gallery-images").addClass("invisible");
+      $(".gallery-images").addClass("hide-instant");
+      $(".gallery-images").removeClass("show");
+      setTimeout(() => {
+        $(".gallery-images").removeClass("invisible");
+        setTimeout(() => {
+          $(".gallery-images").addClass("show");
+        }, 100);
+      }, 100);
+    }
     if (e === "*") {
       $("#filter-all").addClass("active");
       filters.forEach((filter) => {
