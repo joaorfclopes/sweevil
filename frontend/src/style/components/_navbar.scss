@@ -8,13 +8,13 @@ header {
     @include md {
       width: 13rem;
     }
-    .cls-18 {
+    .logo-cls-18 {
       fill: $primaryColor;
       transition: 0.2s;
     }
     &:hover {
       @include lg {
-        .cls-18 {
+        .logo-cls-18 {
           fill: $secondaryColor;
           transition: 0.2s;
         }
