@@ -2,7 +2,6 @@
     <defs>
         <style>.play_button{fill:#fff;}</style>
     </defs>
-    <title>Asset 1</title>
     <g id="Layer_2" data-name="Layer 2">
         <g id="Layer_1-2" data-name="Layer 1">
             <rect class="play_button" x="192" y="149.33" width="170.67" height="213.34"/>
