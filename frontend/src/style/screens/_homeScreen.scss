@@ -4,7 +4,13 @@
     .illustration {
       text-align: center;
       svg {
-        width: 400px;
+        width: 250px;
+        @include xs {
+          width: 300px;
+        }
+        @include sm {
+          width: 400px;
+        }
       }
     }
   }
