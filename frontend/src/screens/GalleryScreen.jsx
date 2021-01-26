@@ -65,10 +65,6 @@ export default function GalleryScreen(props) {
     settings: {
       lightboxTransitionSpeed: 0.2,
       slideTransitionSpeed: 0.3,
-      disablePanzoom: true,
-    },
-    caption: {
-      showCaption: false,
     },
     thumbnails: {
       showThumbnails: false,
