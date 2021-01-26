@@ -120,121 +120,169 @@ const data = {
   ],
   galleryImages: [
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting6.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting2.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo4.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo5.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting3.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo6.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting4.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo7.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital2.jpg",
       category: "Digital",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting8.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting1.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo9.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital4.jpg",
       category: "Digital",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting9.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital1.jpg",
       category: "Digital",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting10.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo1.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting11.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo2.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting7.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting5.jpg",
       category: "Paintings",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo3.jpg",
       category: "Tattoos",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital3.jpg",
       category: "Digital",
     },
     {
+      name: "Lorem Ipsum",
+      year: 2020,
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo8.jpg",
       category: "Tattoos",

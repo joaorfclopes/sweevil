@@ -19,7 +19,7 @@ export default function GalleryImage(props) {
         >
           <LazyLoadImage
             src={galleryImage.image}
-            alt={galleryImage.image}
+            alt={`${galleryImage.name} - ${galleryImage.year}`}
             afterLoad={() => imageLoaded(galleryImage._id)}
           />
         </div>
