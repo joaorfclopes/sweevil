@@ -1,5 +1,9 @@
 .home {
   .home-container {
     min-height: 75vh;
+    text-align: center;
+    .home-slider {
+      width: 100%;
+    }
   }
 }
