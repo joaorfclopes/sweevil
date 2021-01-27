@@ -1,0 +1,37 @@
+.illustration {
+  text-align: center;
+  .illustration-lg {
+    display: none;
+    @include md {
+      display: block;
+    }
+    svg {
+      @include md {
+        width: 750px;
+      }
+      @include lg {
+        width: 980px;
+      }
+      @include xl {
+        width: 1150px;
+      }
+    }
+  }
+  .illustration-sm {
+    display: block;
+    @include md {
+      display: none;
+    }
+    svg {
+      @include xxs {
+        width: 200px;
+      }
+      @include xs {
+        width: 300px;
+      }
+      @include sm {
+        width: 400px;
+      }
+    }
+  }
+}

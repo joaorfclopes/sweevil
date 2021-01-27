@@ -1,17 +1,5 @@
 .home {
   .home-container {
     min-height: 75vh;
-    .illustration {
-      text-align: center;
-      svg {
-        width: 250px;
-        @include xs {
-          width: 300px;
-        }
-        @include sm {
-          width: 400px;
-        }
-      }
-    }
   }
 }
