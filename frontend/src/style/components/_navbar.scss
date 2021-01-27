@@ -23,7 +23,7 @@ header {
   }
   @include nav-options;
   .icon {
-    width: $large;
+    width: 1.3rem;
     transition: 0.2s;
     vertical-align: middle;
   }
@@ -38,8 +38,8 @@ header {
     position: relative;
     top: -12px;
     @include lg {
-      margin-left: -15px;
-      top: -16px;
+      margin-left: -12px;
+      top: -14px;
     }
   }
   .nav-desktop {
