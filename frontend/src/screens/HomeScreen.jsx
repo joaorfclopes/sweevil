@@ -13,13 +13,14 @@ import Illustration from "../components/Illustration";
 
 export default function HomeScreen(props) {
   const settings = {
-    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: false,
     speed: 500,
     fade: true,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
+    infinite: true,
     swipe: false,
   };
 
