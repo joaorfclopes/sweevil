@@ -1,5 +1,9 @@
 .shop {
   .shop-container {
     min-height: 75vh;
+    @include scale {
+      zoom: 0.8;
+      min-height: 90vh;
+    }
   }
 }
