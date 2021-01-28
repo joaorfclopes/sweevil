@@ -41,7 +41,9 @@
   overflow-y: hidden;
 }
 body {
-  overflow-y: scroll;
+  &.scroll {
+    overflow-y: scroll;
+  }
 }
 html,
 body,

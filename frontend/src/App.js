@@ -44,6 +44,7 @@ export default function App() {
     setTimeout(() => {
       setLoading(false);
       $(".loading").css({ display: "none" });
+      document.body.classList.add("scroll");
     }, 1200);
   }, []);
 
