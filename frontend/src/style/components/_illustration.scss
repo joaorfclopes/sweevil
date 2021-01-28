@@ -7,13 +7,13 @@
     }
     svg {
       @include md {
-        width: 750px;
+        width: $screen-md-min;
       }
       @include lg {
-        width: 980px;
+        width: $screen-lg-min;
       }
       @include xl {
-        width: 1150px;
+        width: $screen-xl-min;
       }
     }
   }
