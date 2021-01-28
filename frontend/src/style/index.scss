@@ -37,6 +37,12 @@
   box-sizing: border-box;
   outline: none;
 }
+#root {
+  overflow-y: hidden;
+}
+body {
+  overflow-y: scroll;
+}
 html,
 body,
 #root {
@@ -82,4 +88,12 @@ a {
 .swal2-shown {
   overflow-y: hidden;
   padding-right: 0 !important;
+}
+.MuiDialog-root {
+  overflow-y: scroll;
+}
+.SRLOpened {
+  #root {
+    overflow-y: scroll;
+  }
 }
