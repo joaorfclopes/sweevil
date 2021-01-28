@@ -2,6 +2,9 @@
   .home-container {
     min-height: 75vh;
     text-align: center;
+    @include scale {
+      zoom: 0.8;
+    }
     .home-slider {
       width: 100%;
     }
