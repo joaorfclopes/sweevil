@@ -24,13 +24,13 @@
     }
     svg {
       @include xxs {
-        width: 200px;
+        width: 250px;
       }
       @include xs {
-        width: 300px;
+        width: 350px;
       }
       @include sm {
-        width: 400px;
+        width: 450px;
       }
     }
   }
