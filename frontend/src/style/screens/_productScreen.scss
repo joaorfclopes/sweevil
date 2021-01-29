@@ -1,10 +1,6 @@
 .product-screen {
   .product-screen-container {
     min-height: 75vh;
-    @include scale {
-      zoom: 0.8;
-      min-height: 90vh;
-    }
     .product-images {
       @include md {
         margin-right: 2rem;

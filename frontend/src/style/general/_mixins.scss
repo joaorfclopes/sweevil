@@ -38,13 +38,6 @@
     @content;
   }
 }
-@mixin scale {
-  @media (min-resolution: 120dpi) {
-    @include lg {
-      @content;
-    }
-  }
-}
 @mixin margin-center {
   @include md {
     margin-left: 15vw;
