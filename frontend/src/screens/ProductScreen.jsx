@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSwipeable } from "react-swipeable";
+import { SRLWrapper } from "simple-react-lightbox";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
-import ProductModal from "../components/ProductModal";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
 import { sizes } from "../utils";
@@ -21,8 +21,6 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
-  const [openModal, setOpenModal] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -65,15 +63,6 @@ export default function ProductScreen(props) {
       });
   };
 
-  const handleOpenModal = (index) => {
-    setOpenModal(true);
-    setImgIndex(index);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
   const next = () => {
     document.getElementById("carousel-control-next").click();
   };
@@ -97,6 +86,22 @@ export default function ProductScreen(props) {
     $(`#${id}-preview-img`).addClass("show");
   };
 
+  const lightboxOptions = {
+    settings: {
+      lightboxTransitionSpeed: 0.2,
+      slideTransitionSpeed: 0.3,
+      disableWheelControls: true,
+    },
+    buttons: {
+      showDownloadButton: false,
+      showAutoplayButton: false,
+      showFullscreenButton: false,
+    },
+    caption: {
+      showCaption: false,
+    },
+  };
+
   return (
     <motion.section
       className="product-screen"
@@ -118,30 +123,31 @@ export default function ProductScreen(props) {
               className="carousel slide"
               data-interval="false"
             >
-              <div {...swipeHandlers} className="carousel-inner">
-                {product.images.map((image, index) => (
-                  <div
-                    key={image}
-                    className={`carousel-item product-image ${
-                      image === product.images[0] && "active"
-                    }`}
-                    onClick={() => handleOpenModal(index)}
-                  >
-                    <Placeholder height="100%">
-                      <div
-                        id={`${index}-carousel-img`}
-                        className="carousel-image product-image-inner"
-                      >
-                        <LazyLoadImage
-                          src={image}
-                          alt="product"
-                          afterLoad={() => imageLoaded(index)}
-                        />
-                      </div>
-                    </Placeholder>
-                  </div>
-                ))}
-              </div>
+              <SRLWrapper elements={product.images} options={lightboxOptions}>
+                <div {...swipeHandlers} className="carousel-inner">
+                  {product.images.map((image, index) => (
+                    <div
+                      key={image}
+                      className={`carousel-item product-image ${
+                        image === product.images[0] && "active"
+                      }`}
+                    >
+                      <Placeholder height="100%">
+                        <div
+                          id={`${index}-carousel-img`}
+                          className="carousel-image product-image-inner"
+                        >
+                          <LazyLoadImage
+                            src={image}
+                            alt="product"
+                            afterLoad={() => imageLoaded(index)}
+                          />
+                        </div>
+                      </Placeholder>
+                    </div>
+                  ))}
+                </div>
+              </SRLWrapper>
               <div className="arrows">
                 <a
                   id="carousel-control-prev"
@@ -203,12 +209,6 @@ export default function ProductScreen(props) {
               ))}
             </div>
           </div>
-          <ProductModal
-            open={openModal}
-            handleClose={handleCloseModal}
-            images={product.images}
-            imgIndex={imgIndex}
-          />
           <div className="product-details">
             <h2 className="name custom-font">
               <b>{product.name}</b>
