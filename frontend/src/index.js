@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import "notyf/notyf.min.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "react-image-lightbox/style.css";
 import "./style/index.scss";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
