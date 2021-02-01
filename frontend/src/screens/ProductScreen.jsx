@@ -219,6 +219,7 @@ export default function ProductScreen(props) {
                     product.images.length
                 )
               }
+              animationDisabled
             />
           )}
           <div className="product-details">
