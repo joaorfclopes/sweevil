@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSwipeable } from "react-swipeable";
-import { SRLWrapper } from "simple-react-lightbox";
+import Lightbox from "react-image-lightbox";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
@@ -21,6 +21,8 @@ export default function ProductScreen(props) {
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const notyf = new Notyf();
+  const [isOpen, setIsOpen] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     dispatch(detailsProduct(productId));
@@ -86,20 +88,9 @@ export default function ProductScreen(props) {
     $(`#${id}-preview-img`).addClass("show");
   };
 
-  const lightboxOptions = {
-    settings: {
-      lightboxTransitionSpeed: 0.2,
-      slideTransitionSpeed: 0.3,
-      disableWheelControls: true,
-    },
-    buttons: {
-      showDownloadButton: false,
-      showAutoplayButton: false,
-      showFullscreenButton: false,
-    },
-    caption: {
-      showCaption: false,
-    },
+  const openLightbox = (index) => {
+    setImageIndex(index);
+    setIsOpen(true);
   };
 
   return (
@@ -123,31 +114,30 @@ export default function ProductScreen(props) {
               className="carousel slide"
               data-interval="false"
             >
-              <SRLWrapper elements={product.images} options={lightboxOptions}>
-                <div {...swipeHandlers} className="carousel-inner">
-                  {product.images.map((image, index) => (
-                    <div
-                      key={image}
-                      className={`carousel-item product-image ${
-                        image === product.images[0] && "active"
-                      }`}
-                    >
-                      <Placeholder height="100%">
-                        <div
-                          id={`${index}-carousel-img`}
-                          className="carousel-image product-image-inner"
-                        >
-                          <LazyLoadImage
-                            src={image}
-                            alt="product"
-                            afterLoad={() => imageLoaded(index)}
-                          />
-                        </div>
-                      </Placeholder>
-                    </div>
-                  ))}
-                </div>
-              </SRLWrapper>
+              <div {...swipeHandlers} className="carousel-inner">
+                {product.images.map((image, index) => (
+                  <div
+                    key={image}
+                    className={`carousel-item product-image ${
+                      image === product.images[0] && "active"
+                    }`}
+                  >
+                    <Placeholder height="100%">
+                      <div
+                        id={`${index}-carousel-img`}
+                        className="carousel-image product-image-inner"
+                        onClick={() => openLightbox(index)}
+                      >
+                        <LazyLoadImage
+                          src={image}
+                          alt="product"
+                          afterLoad={() => imageLoaded(index)}
+                        />
+                      </div>
+                    </Placeholder>
+                  </div>
+                ))}
+              </div>
               <div className="arrows">
                 <a
                   id="carousel-control-prev"
@@ -209,6 +199,28 @@ export default function ProductScreen(props) {
               ))}
             </div>
           </div>
+          {isOpen && (
+            <Lightbox
+              mainSrc={product.images[imageIndex]}
+              onCloseRequest={() => setIsOpen(false)}
+              nextSrc={product.images[(imageIndex + 1) % product.images.length]}
+              prevSrc={
+                product.images[
+                  (imageIndex + product.images.length - 1) %
+                    product.images.length
+                ]
+              }
+              onMoveNextRequest={() =>
+                setImageIndex((imageIndex + 1) % product.images.length)
+              }
+              onMovePrevRequest={() =>
+                setImageIndex(
+                  (imageIndex + product.images.length - 1) %
+                    product.images.length
+                )
+              }
+            />
+          )}
           <div className="product-details">
             <h2 className="name custom-font">
               <b>{product.name}</b>

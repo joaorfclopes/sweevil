@@ -26,7 +26,6 @@
 @import "./components/placeholder";
 @import "./screens/notFoundScreen";
 @import "./components/galleryImage";
-@import "./components/galleryModal";
 @import "./screens/homeScreen";
 @import "./components/illustration";
 
@@ -92,12 +91,17 @@ a {
 .swal2-shown {
   padding-right: 0 !important;
 }
-.MuiDialog-root {
-  overflow-y: scroll;
-}
 .SRLOpened,
-.swal2-shown {
+.swal2-shown,
+.ReactModal__Body--open {
+  overflow: hidden !important;
   #root {
     overflow-y: scroll;
+  }
+}
+.ril__toolbar {
+  background-color: transparent !important;
+  button {
+    border: none !important;
   }
 }
