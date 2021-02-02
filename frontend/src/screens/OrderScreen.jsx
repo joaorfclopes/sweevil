@@ -143,141 +143,144 @@ export default function OrderScreen(props) {
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <>
-          <h1 className="custom-font">Order {order._id}</h1>
-          {loadingDeliver && <LoadingBox />}
-          {errorDeliver && (
-            <MessageBox variant="error">{errorDeliver}</MessageBox>
-          )}
-          {loadingCancel && <LoadingBox />}
-          {errorCancel && (
-            <MessageBox variant="error">{errorCancel}</MessageBox>
-          )}
-          {order.status === "PAID" && (
-            <div style={{ marginBottom: "0.5rem" }}>
-              <MessageBox variant="success">
-                Order successfully paid! Check your email Inbox (if you can't
-                find it check your Spam) for more information.
-              </MessageBox>
+        <div className="row center order-container">
+          <div className="order-inner">
+            <h1 className="custom-font">Order {order._id}</h1>
+            {loadingDeliver && <LoadingBox />}
+            {errorDeliver && (
+              <MessageBox variant="error">{errorDeliver}</MessageBox>
+            )}
+            {loadingCancel && <LoadingBox />}
+            {errorCancel && (
+              <MessageBox variant="error">{errorCancel}</MessageBox>
+            )}
+            {order.status === "PAID" && (
+              <div style={{ marginBottom: "0.5rem" }}>
+                <MessageBox variant="success">
+                  Order successfully paid! Check your email Inbox (if you can't
+                  find it check your Spam) for more information.
+                </MessageBox>
+              </div>
+            )}
+            {order.status === "CANCELED" && (
+              <div style={{ marginBottom: "0.5rem" }}>
+                <MessageBox variant="error">Order canceled.</MessageBox>
+              </div>
+            )}
+            {order.status === "DELIVERED" && (
+              <div style={{ marginBottom: "0.5rem" }}>
+                <MessageBox variant="success">Order delivered!</MessageBox>
+              </div>
+            )}
+            <div className="card">
+              <h3>Shipping Address</h3>
+              <p>{order.shippingAddress.fullName}</p>
+              <p>{order.shippingAddress.address}</p>
+              <p>{order.shippingAddress.city}</p>
+              <p>{order.shippingAddress.postalCode}</p>
+              <p>{order.shippingAddress.country}</p>
             </div>
-          )}
-          {order.status === "CANCELED" && (
-            <div style={{ marginBottom: "0.5rem" }}>
-              <MessageBox variant="error">Order canceled.</MessageBox>
+            <div className="card">
+              <h3>Contact Information</h3>
+              <p>{order.shippingAddress.email}</p>
+              <p>{order.shippingAddress.phoneNumber}</p>
             </div>
-          )}
-          {order.status === "DELIVERED" && (
-            <div style={{ marginBottom: "0.5rem" }}>
-              <MessageBox variant="success">Order delivered!</MessageBox>
-            </div>
-          )}
-          <div className="card">
-            <h3>Shipping Address</h3>
-            <p>{order.shippingAddress.fullName}</p>
-            <p>{order.shippingAddress.address}</p>
-            <p>{order.shippingAddress.city}</p>
-            <p>{order.shippingAddress.postalCode}</p>
-            <p>{order.shippingAddress.country}</p>
-          </div>
-          <div className="card">
-            <h3>Contact Information</h3>
-            <p>{order.shippingAddress.email}</p>
-            <p>{order.shippingAddress.phoneNumber}</p>
-          </div>
-          <div className="card">
-            <h3>Items</h3>
-            <ul className="cart-items">
-              {order.orderItems.map((item, index) => (
-                <li key={item.product}>
-                  <div className="item-image">
-                    <PlaceHolder height="100%">
-                      <div
-                        id={`${item.product}-order-img`}
-                        className="item-image-inner"
-                      >
-                        <Link to={`/shop/product/${item.product}`}>
-                          <LazyLoadImage
-                            className="small"
-                            src={item.image}
-                            alt={item.name}
-                            afterLoad={() => imageLoaded(item.product)}
-                          />
-                        </Link>
+            <div className="card">
+              <h3>Items</h3>
+              <ul className="cart-items">
+                {order.orderItems.map((item, index) => (
+                  <li key={item.product}>
+                    <div className="item-image">
+                      <PlaceHolder height="100%">
+                        <div
+                          id={`${item.product}-order-img`}
+                          className="item-image-inner"
+                        >
+                          <Link to={`/shop/product/${item.product}`}>
+                            <LazyLoadImage
+                              className="small"
+                              src={item.image}
+                              alt={item.name}
+                              afterLoad={() => imageLoaded(item.product)}
+                            />
+                          </Link>
+                        </div>
+                      </PlaceHolder>
+                    </div>
+                    <div className="item-content">
+                      <div className="item-name">
+                        <p>{item.name}</p>
                       </div>
-                    </PlaceHolder>
-                  </div>
-                  <div className="item-content">
-                    <div className="item-name">
-                      <p>{item.name}</p>
+                      <div className="item-price">
+                        <p>{item.price && item.price.toFixed(2)}€</p>
+                      </div>
                     </div>
-                    <div className="item-price">
-                      <p>{item.price && item.price.toFixed(2)}€</p>
+                    <div className="item-content">
+                      {item.size !== "" && (
+                        <div className="item-size">Size: {item.size}</div>
+                      )}
+                      <div className="item-qty">
+                        <p>Quantity: {item.qty}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="item-content">
-                    {item.size !== "" && (
-                      <div className="item-size">Size: {item.size}</div>
-                    )}
-                    <div className="item-qty">
-                      <p>Quantity: {item.qty}</p>
-                    </div>
-                  </div>
-                  {order.orderItems[index + 1] && <hr />}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="card total-amount">
-            <p>
-              Subtotal ({order.itemsQty} {order.itemsQty > 1 ? "items" : "item"}
-              ) : {order.itemsPrice && order.itemsPrice.toFixed(2)}€
-            </p>
-            <p>
-              Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}
-              €
-            </p>
-            <h3 className="total">
-              Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
-            </h3>
-          </div>
-          {order.status !== "CANCELED" && !order.isPaid && (
-            <div className="paypal-button">
-              {!sdkReady ? (
-                <LoadingBox />
-              ) : (
-                <>
-                  {errorPay && (
-                    <MessageBox variant="error">{errorPay}</MessageBox>
-                  )}
-                  {loadingPay && <LoadingBox />}
-                  <PayPalButton
-                    currency="EUR"
-                    amount={order.totalPrice}
-                    onSuccess={successPaymentHandler}
-                  />
-                </>
-              )}
+                    {order.orderItems[index + 1] && <hr />}
+                  </li>
+                ))}
+              </ul>
             </div>
-          )}
-          {userInfo &&
-            userInfo.isAdmin &&
-            order.isPaid &&
-            !order.isDelivered &&
-            order.status !== "CANCELED" && (
-              <div className="deliver-button full-width">
-                <button className="primary" onClick={deliverHandler}>
-                  Deliver Order
+            <div className="card total-amount">
+              <p>
+                Subtotal ({order.itemsQty}{" "}
+                {order.itemsQty > 1 ? "items" : "item"}) :{" "}
+                {order.itemsPrice && order.itemsPrice.toFixed(2)}€
+              </p>
+              <p>
+                Shipping :{" "}
+                {order.shippingPrice && order.shippingPrice.toFixed(2)}€
+              </p>
+              <h3 className="total">
+                Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
+              </h3>
+            </div>
+            {order.status !== "CANCELED" && !order.isPaid && (
+              <div className="paypal-button">
+                {!sdkReady ? (
+                  <LoadingBox />
+                ) : (
+                  <>
+                    {errorPay && (
+                      <MessageBox variant="error">{errorPay}</MessageBox>
+                    )}
+                    {loadingPay && <LoadingBox />}
+                    <PayPalButton
+                      currency="EUR"
+                      amount={order.totalPrice}
+                      onSuccess={successPaymentHandler}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+            {userInfo &&
+              userInfo.isAdmin &&
+              order.isPaid &&
+              !order.isDelivered &&
+              order.status !== "CANCELED" && (
+                <div className="deliver-button full-width">
+                  <button className="primary" onClick={deliverHandler}>
+                    Deliver Order
+                  </button>
+                </div>
+              )}
+            {order.status !== "CANCELED" && !order.isDelivered && (
+              <div className={`cancel-button ${order.isPaid && "full-width"}`}>
+                <button className="dangerous" onClick={cancelHandler}>
+                  Cancel Order
                 </button>
               </div>
             )}
-          {order.status !== "CANCELED" && !order.isDelivered && (
-            <div className={`cancel-button ${order.isPaid && "full-width"}`}>
-              <button className="dangerous" onClick={cancelHandler}>
-                Cancel Order
-              </button>
-            </div>
-          )}
-        </>
+          </div>
+        </div>
       )}
     </motion.section>
   );

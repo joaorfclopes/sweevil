@@ -38,37 +38,41 @@ export default function SigninScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Sign In</h1>
-      <form className="form admin" onSubmit={submitHandler}>
-        {loading && <LoadingBox />}
-        {error && <MessageBox variant="error">{error}</MessageBox>}
-        <div>
-          <label htmlFor="email">Email address</label>
-          <input
-            type="email"
-            id="email"
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      <div className="row center signin-container">
+        <div className="signin-inner">
+          <h1>Sign In</h1>
+          <form className="form admin" onSubmit={submitHandler}>
+            {loading && <LoadingBox />}
+            {error && <MessageBox variant="error">{error}</MessageBox>}
+            <div>
+              <label htmlFor="email">Email address</label>
+              <input
+                type="email"
+                id="email"
+                required
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <label>
+                <Link to="/forgotPassword">Forgot Password</Link>
+              </label>
+            </div>
+            <div>
+              <button className="primary" type="submit">
+                Sign In
+              </button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <label>
-            <Link to="/forgotPassword">Forgot Password</Link>
-          </label>
-        </div>
-        <div>
-          <button className="primary" type="submit">
-            Sign In
-          </button>
-        </div>
-      </form>
+      </div>
     </motion.section>
   );
 }
