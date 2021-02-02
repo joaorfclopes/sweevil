@@ -45,84 +45,88 @@ export default function ShippingScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1 className="custom-font">Shipping Details</h1>
-      <form className="form" onSubmit={submitHandler}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <div className="row center shipping-container">
+        <div className="shipping-inner">
+          <h1 className="custom-font">Shipping Details</h1>
+          <form className="form" onSubmit={submitHandler}>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="phoneNumber">Phone Number</label>
+              <input
+                type="number"
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="fullName">Full Name</label>
+              <input
+                type="text"
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="address">Address</label>
+              <input
+                type="text"
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="city">City</label>
+              <input
+                type="text"
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="postalCode">Postal Code</label>
+              <input
+                type="text"
+                id="postalCode"
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="country">Country</label>
+              <input
+                type="text"
+                id="country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <button className="primary" type="submit">
+                Continue
+              </button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label htmlFor="phoneNumber">Phone Number</label>
-          <input
-            type="number"
-            id="phoneNumber"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="fullName">Full Name</label>
-          <input
-            type="text"
-            id="fullName"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="address">Address</label>
-          <input
-            type="text"
-            id="address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="city">City</label>
-          <input
-            type="text"
-            id="city"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="postalCode">Postal Code</label>
-          <input
-            type="text"
-            id="postalCode"
-            value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="country">Country</label>
-          <input
-            type="text"
-            id="country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <button className="primary" type="submit">
-            Continue
-          </button>
-        </div>
-      </form>
+      </div>
     </motion.section>
   );
 }

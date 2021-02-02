@@ -2,7 +2,12 @@
   @include lg {
     @include margin-center;
   }
-  margin-bottom: 50px;
+  .order-container {
+    min-height: 75vh;
+    .order-inner {
+      width: 100%;
+    }
+  }
   .paypal-button,
   .cancel-button {
     width: 100%;

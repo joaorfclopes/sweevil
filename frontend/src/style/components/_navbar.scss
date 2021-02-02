@@ -6,7 +6,7 @@ header {
   .brand-logo {
     width: 10rem;
     @include md {
-      width: 13rem;
+      width: 11rem;
     }
     .logo-cls-18 {
       fill: $primaryColor;
@@ -24,22 +24,24 @@ header {
   @include nav-options;
   .icon {
     width: 1.3rem;
+    @include md {
+      width: 1.2rem;
+    }
     transition: 0.2s;
     vertical-align: middle;
   }
   .badge {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.7rem;
+    font-size: 0.5rem;
     background-color: red;
     color: white;
     border-radius: 50%;
-    padding: 0.2rem 0.4rem;
-    margin-left: -13px;
+    padding: 0.2rem 0.35rem;
     position: relative;
-    top: -12px;
+    margin-left: -12px;
+    top: -13px;
     @include lg {
-      margin-left: -12px;
-      top: -14px;
+      margin-left: -10px;
     }
   }
   .nav-desktop {
@@ -48,7 +50,7 @@ header {
       display: block;
     }
     li {
-      font-size: $large;
+      font-size: $largeDesktop;
       margin-left: 1.5rem;
       display: inline;
       transition: 0.2s;

@@ -12,6 +12,9 @@
         font-size: $extraLargeDesktop;
       }
     }
+    p {
+      font-size: 0.95rem;
+    }
     @include xxs {
       width: 250px;
     }

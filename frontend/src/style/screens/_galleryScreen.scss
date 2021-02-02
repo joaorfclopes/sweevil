@@ -29,6 +29,9 @@
     user-select: none;
     padding: 8px;
     text-align: center;
+    @include md {
+      font-size: 0.9rem;
+    }
     .filter {
       text-transform: uppercase;
       display: inline-block;
