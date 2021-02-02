@@ -15,7 +15,7 @@ import Illustration from "../components/Illustration";
 export default function HomeScreen(props) {
   const settings = {
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 1500,
     pauseOnHover: false,
     speed: 500,
     fade: true,
