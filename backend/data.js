@@ -122,145 +122,145 @@ const data = {
     {
       description: "“Against the law’, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting6.jpg",
+        "/images/painting6.jpg",
       category: "Paintings",
     },
     {
       description: "“Isolation”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting2.jpg",
+        "/images/painting2.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo4.jpg",
+        "/images/tattoo4.jpg",
       category: "Tattoos",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo5.jpg",
+        "/images/tattoo5.jpg",
       category: "Tattoos",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting3.jpg",
+        "/images/painting3.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo6.jpg",
+        "/images/tattoo6.jpg",
       category: "Tattoos",
     },
     {
       description: "“Strange box”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting4.jpg",
+        "/images/painting4.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo7.jpg",
+        "/images/tattoo7.jpg",
       category: "Tattoos",
     },
     {
       description: "“It didn’t came from outer space”, 2020. Digital illustration",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital2.jpg",
+        "/images/digital2.jpg",
       category: "Digital",
     },
     {
       description: "“Reality is equilibrium”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting1.jpg",
+        "/images/painting1.jpg",
       category: "Paintings",
     },
     {
       description: "Detail from “Reality is equilibrium”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting8.jpg",
+        "/images/painting8.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo9.jpg",
+        "/images/tattoo9.jpg",
       category: "Tattoos",
     },
     {
       description: "“We’re players”, 2020. Digital illustration",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital4.jpg",
+        "/images/digital4.jpg",
       category: "Digital",
     },
     {
       description: "“Solid gold”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting9.jpg",
+        "/images/painting9.jpg",
       category: "Paintings",
     },
     {
       description: "“Equilibrium is everywhere”, 2020. Digital illustration",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital1.jpg",
+        "/images/digital1.jpg",
       category: "Digital",
     },
     {
       description: "“Illusion”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting10.jpg",
+        "/images/painting10.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo1.jpg",
+        "/images/tattoo1.jpg",
       category: "Tattoos",
     },
     {
       description: "“The new original sin”, 2020. Acrylic on canvas",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting11.jpg",
+        "/images/painting11.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo2.jpg",
+        "/images/tattoo2.jpg",
       category: "Tattoos",
     },
     {
       description: "“Sinking”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting7.jpg",
+        "/images/painting7.jpg",
       category: "Paintings",
     },
     {
       description: "“Wake up call”, 2020. Acrylic on paper",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting5.jpg",
+        "/images/painting5.jpg",
       category: "Paintings",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo3.jpg",
+        "/images/tattoo3.jpg",
       category: "Tattoos",
     },
     {
       description: "“The rebirthing”, 2020. Digital comic",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital3.jpg",
+        "/images/digital3.jpg",
       category: "Digital",
     },
     {
-      description: "",
+      description: "Portugal, 2020",
       image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo8.jpg",
+        "/images/tattoo8.jpg",
       category: "Tattoos",
     },
   ],
