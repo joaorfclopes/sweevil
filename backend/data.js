@@ -174,15 +174,15 @@ const data = {
       category: "Digital",
     },
     {
-      description: "",
-      image:
-        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting8.jpg",
-      category: "Paintings",
-    },
-    {
       description: "“Reality is equilibrium”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting1.jpg",
+      category: "Paintings",
+    },
+    {
+      description: "Detail from “Reality is equilibrium”, 2020. Acrylic on paper",
+      image:
+        "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting8.jpg",
       category: "Paintings",
     },
     {
