@@ -120,169 +120,145 @@ const data = {
   ],
   galleryImages: [
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Against the law’, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting6.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Isolation”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting2.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo4.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo5.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting3.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo6.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Strange box”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting4.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo7.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“It didn’t came from outer space”, 2020. Digital illustration",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital2.jpg",
       category: "Digital",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting8.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Reality is equilibrium”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting1.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo9.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“We’re players”, 2020. Digital illustration",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital4.jpg",
       category: "Digital",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Solid gold”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting9.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Equilibrium is everywhere”, 2020. Digital illustration",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital1.jpg",
       category: "Digital",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Illusion”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting10.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo1.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“The new original sin”, 2020. Acrylic on canvas",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting11.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo2.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Sinking”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting7.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“Wake up call”, 2020. Acrylic on paper",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/painting5.jpg",
       category: "Paintings",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo3.jpg",
       category: "Tattoos",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "“The rebirthing”, 2020. Digital comic",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/digital3.jpg",
       category: "Digital",
     },
     {
-      name: "Lorem Ipsum",
-      year: 2020,
+      description: "",
       image:
         "https://sweevil-bucket.s3.eu-west-3.amazonaws.com/gallery/tattoo8.jpg",
       category: "Tattoos",
