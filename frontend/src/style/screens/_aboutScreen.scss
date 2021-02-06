@@ -91,6 +91,9 @@
   }
   .share-button {
     margin-top: 20px;
+    @include md {
+      margin-top: 10px;
+    }
   }
   .show {
     @include fade-in;
