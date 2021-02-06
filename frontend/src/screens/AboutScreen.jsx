@@ -5,6 +5,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import video from "../assets/video/video.mp4";
 import { ReactComponent as Play } from "../assets/svg/play.svg";
 import Placeholder from "../components/Placeholder";
+import ShareButton from "../components/ShareButton";
 
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
@@ -72,16 +73,14 @@ export default function AboutScreen(props) {
             free from judgments.
           </p>
         </div>
-        <div
-          className="video"
-          onMouseEnter={() => setPlay(true)}
-          onMouseLeave={() => setPlay(false)}
-        >
-          <Placeholder height="100%">
+        <div className="video">
+          <Placeholder>
             <video
               id="video"
               poster={window.location.origin + "/sweevil.jpg"}
               controls={play}
+              onMouseEnter={() => setPlay(true)}
+              onMouseLeave={() => setPlay(false)}
             >
               <source src={video} type="video/mp4" />
               Your browser does not support the video tag.
@@ -98,6 +97,7 @@ export default function AboutScreen(props) {
           </Placeholder>
         </div>
       </div>
+      <ShareButton />
     </motion.section>
   );
 }

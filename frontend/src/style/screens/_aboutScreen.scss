@@ -1,6 +1,6 @@
 .about {
   .about-container {
-    min-height: 75vh;
+    min-height: 70vh;
   }
   .text {
     .title {
@@ -88,6 +88,9 @@
         display: none;
       }
     }
+  }
+  .share-button {
+    margin-top: 20px;
   }
   .show {
     @include fade-in;
