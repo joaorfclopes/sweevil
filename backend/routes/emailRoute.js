@@ -18,7 +18,7 @@ const sendEmail = (res, mailOptions) => {
     service: "gmail",
     auth: {
       type: "OAuth2",
-      user: process.env.SENDER_EMAIL_ADDRESS,
+      user: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
       clientId: process.env.MAILING_SERVICE_CLIENT_ID,
       clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
       refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
@@ -40,7 +40,7 @@ emailRouter.post(
   "/placedOrder",
   expressAsyncHandler((req, res) => {
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: req.body.order.shippingAddress.email,
       subject: "Your order's on its way!",
       html: placedOrder({
@@ -69,8 +69,8 @@ emailRouter.post(
   "/placedOrderAdmin",
   expressAsyncHandler((req, res) => {
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
-      to: process.env.SENDER_EMAIL_ADDRESS,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
       subject: "A new order was placed!",
       html: placedOrderAdmin({
         order: {
@@ -102,7 +102,7 @@ emailRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: req.body.order.shippingAddress.email,
       subject: "Thanks for your order!",
       html: deliveredOrder({
@@ -131,7 +131,7 @@ emailRouter.post(
   "/cancelOrder",
   expressAsyncHandler(async (req, res) => {
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: req.body.order.shippingAddress.email,
       subject: "Order Canceled!",
       html: cancelOrder({
@@ -156,8 +156,8 @@ emailRouter.post(
   "/cancelOrderAdmin",
   expressAsyncHandler((req, res) => {
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
-      to: process.env.SENDER_EMAIL_ADDRESS,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
       subject: "Refund Request",
       html: cancelOrderAdmin({
         order: {
@@ -186,7 +186,7 @@ emailRouter.post(
       const user = await User.findOne({ email: req.body.email });
       try {
         const mailOptions = {
-          from: `${process.env.SENDER_USER_NAME} <${process.env.SENDER_EMAIL_ADDRESS}>`,
+          from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
           to: user.email,
           subject: `Your ${process.env.BRAND_NAME} password reset link is ready`,
           html: resetPassword({

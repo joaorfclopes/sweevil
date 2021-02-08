@@ -1,6 +1,6 @@
 .about {
   .about-container {
-    min-height: 75vh;
+    min-height: 70vh;
   }
   .text {
     .title {
@@ -51,6 +51,37 @@
         display: block;
         width: 100%;
         display: none;
+      }
+    }
+  }
+  .contacts {
+    text-align: center;
+    .line {
+      width: 100%;
+      height: 3px;
+      background-color: black;
+      position: inherit;
+      bottom: 0;
+      margin-top: 20px;
+      @include md {
+        margin-top: 0px;
+      }
+    }
+    .logos-container {
+      margin-top: 20px;
+      @include md {
+        margin-top: 30px;
+      }
+      svg {
+        cursor: pointer;
+        width: 30px;
+        transition: 0.2s;
+        margin-left: 10px;
+        margin-right: 10px;
+        &:hover {
+          fill: $secondaryColor;
+          transition: 0.2s;
+        }
       }
     }
   }

@@ -472,7 +472,7 @@ export const cancelOrder = ({
                                                 >
                                                 For any questions or information please contact us at: ${
                                                   process.env
-                                                    .SENDER_EMAIL_ADDRESS
+                                                    .REACT_APP_SENDER_EMAIL_ADDRESS
                                                 }
                                                 </font>
                                               </td>
@@ -808,7 +808,7 @@ export const cancelOrder = ({
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
                                   For any questions or information please contact us at: ${
-                                    process.env.SENDER_EMAIL_ADDRESS
+                                    process.env.REACT_APP_SENDER_EMAIL_ADDRESS
                                   }
                                 </font>
                               </td>

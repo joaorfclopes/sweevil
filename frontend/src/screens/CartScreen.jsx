@@ -40,6 +40,7 @@ export default function CartScreen(props) {
     notyf.success({
       icon: false,
       message: "Product size updated",
+      dismissible: true,
     });
   };
 
@@ -48,6 +49,7 @@ export default function CartScreen(props) {
     notyf.success({
       icon: false,
       message: "Product quantity updated",
+      dismissible: true,
     });
   };
 
@@ -56,6 +58,7 @@ export default function CartScreen(props) {
     notyf.error({
       icon: false,
       message: "Product removed from cart",
+      dismissible: true,
     });
   };
 
