@@ -602,7 +602,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                                 "
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
-                                  For any questions or information please contact us at: ${process.env.SENDER_EMAIL_ADDRESS}
+                                  For any questions or information please contact us at: ${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}
                                 </font>
                               </td>
                             </tr>

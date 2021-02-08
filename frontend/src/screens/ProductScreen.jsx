@@ -59,6 +59,7 @@ export default function ProductScreen(props) {
       .success({
         icon: false,
         message: `${product.name} added <b>to cart</b>`,
+        dismissible: true,
       })
       .on("click", () => {
         props.history.push("/cart");
