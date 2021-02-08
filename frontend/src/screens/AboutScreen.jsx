@@ -5,7 +5,6 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import video from "../assets/video/video.mp4";
 import { ReactComponent as Play } from "../assets/svg/play.svg";
 import Placeholder from "../components/Placeholder";
-import ShareButton from "../components/ShareButton";
 
 export default function AboutScreen(props) {
   const [play, setPlay] = useState(false);
@@ -41,7 +40,7 @@ export default function AboutScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="row center about-container">
+      <div className="row about-container">
         <div className="text">
           <h1 className="title">Who's Sweevil?</h1>
           <p>
@@ -97,7 +96,6 @@ export default function AboutScreen(props) {
           </Placeholder>
         </div>
       </div>
-      <ShareButton />
     </motion.section>
   );
 }

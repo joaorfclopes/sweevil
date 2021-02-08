@@ -1,6 +1,5 @@
 .product {
-  padding: 0.5rem;
-  margin: 0.5rem;
+  margin: 1rem;
   cursor: pointer;
   text-align: center;
   transition: 0.3s;
@@ -8,8 +7,8 @@
   font-weight: 300;
   .product-image {
     opacity: 0;
-    width: 250px;
-    height: 250px;
+    width: 238px;
+    height: 238px;
     img {
       display: block;
       width: 100%;
