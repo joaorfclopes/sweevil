@@ -177,7 +177,7 @@ const data = {
       category: "Paintings",
     },
     {
-      description: "Portugal, 2020",
+      description: "Portugal, 2019",
       image: "/images/tattoo9.jpg",
       category: "Tattoos",
     },

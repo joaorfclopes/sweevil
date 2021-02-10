@@ -1,0 +1,47 @@
+.video {
+  &.desktop {
+    display: none;
+    @include md {
+      display: block;
+    }
+  }
+  &.mobile {
+    display: block;
+    @include md {
+      display: none;
+    }
+  }
+  position: relative;
+  margin-top: 10px;
+  @include md {
+    margin-top: 0;
+    width: 45%;
+  }
+  video {
+    opacity: 0;
+    width: 100%;
+    display: block;
+  }
+  .play {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    svg {
+      width: 40px;
+    }
+  }
+  .poster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    img {
+      display: block;
+      width: 100%;
+      display: none;
+    }
+  }
+}
