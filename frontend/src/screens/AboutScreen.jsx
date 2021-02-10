@@ -1,44 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import $ from "jquery";
 import { Notyf } from "notyf";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import Tooltip from "@material-ui/core/Tooltip";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import video from "../assets/video/video.mp4";
-import { ReactComponent as Play } from "../assets/svg/play.svg";
 import { ReactComponent as Email } from "../assets/svg/email.svg";
 import { ReactComponent as Instagram } from "../assets/svg/instagram.svg";
 import { ReactComponent as Location } from "../assets/svg/location.svg";
-import Placeholder from "../components/Placeholder";
+import Video from "../components/Video";
+import video from "../assets/video/video.mp4";
 
 export default function AboutScreen(props) {
-  const [play, setPlay] = useState(false);
   const notyf = new Notyf();
 
-  const videoLoaded = () => {
-    $("#video").addClass("show");
-    $(".play").addClass("show");
-  };
-
-  useEffect(() => {
-    const videoElem = document.getElementById("video");
-    videoElem.onplay = () => {
-      $(".play").addClass("hide");
-      $(".play").removeClass("show");
-    };
-    videoElem.onpause = () => {
-      $(".play").addClass("show");
-      $(".play").removeClass("hide");
-    };
-    videoElem.onended = () => {
-      videoElem.pause();
-      videoElem.removeAttribute("src");
-      videoElem.load();
-    };
-  }, []);
-
-  const copied = (id, size) => {
+  const copied = () => {
     notyf.success({
       icon: false,
       message: "Email copied to clipboard!",
@@ -56,6 +30,10 @@ export default function AboutScreen(props) {
       transition={props.pageTransition}
     >
       <div className="row about-container">
+        <Video
+          videoSrc={video}
+          poster={window.location.origin + "/sweevil.jpg"}
+        />
         <div className="text">
           <h1 className="title">Who's Sweevil?</h1>
           <p>
@@ -87,29 +65,11 @@ export default function AboutScreen(props) {
             free from judgments.
           </p>
         </div>
-        <div className="video">
-          <Placeholder>
-            <video
-              id="video"
-              poster={window.location.origin + "/sweevil.jpg"}
-              controls={play}
-              onMouseEnter={() => setPlay(true)}
-              onMouseLeave={() => setPlay(false)}
-            >
-              <source src={video} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <div className="play">
-              <Play />
-            </div>
-            <div className="poster">
-              <LazyLoadImage
-                src={window.location.origin + "/sweevil.jpg"}
-                afterLoad={videoLoaded}
-              />
-            </div>
-          </Placeholder>
-        </div>
+        <Video
+          videoSrc={video}
+          poster={window.location.origin + "/sweevil.jpg"}
+          mobile
+        />
       </div>
       <div className="contacts">
         <div className="line"></div>

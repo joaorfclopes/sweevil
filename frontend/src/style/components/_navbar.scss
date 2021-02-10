@@ -13,11 +13,9 @@ header {
       transition: 0.2s;
     }
     &:hover {
-      @include lg {
-        .logo-cls-18 {
-          fill: $secondaryColor;
-          transition: 0.2s;
-        }
+      .logo-cls-18 {
+        fill: $secondaryColor;
+        transition: 0.2s;
       }
     }
   }

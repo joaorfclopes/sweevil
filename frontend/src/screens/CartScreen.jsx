@@ -64,7 +64,7 @@ export default function CartScreen(props) {
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
   cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
-  cart.shippingPrice = cart.itemsPrice > 50 ? toPrice(0) : toPrice(9.99);
+  cart.shippingPrice = cart.itemsPrice > 0 ? toPrice(0) : toPrice(9.99);
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   const checkoutHandler = () => {
