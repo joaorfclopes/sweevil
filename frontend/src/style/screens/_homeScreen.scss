@@ -12,4 +12,22 @@
   .show {
     @include fade-in;
   }
+  .developed-by {
+    font-size: 0.9rem;
+    text-align: center;
+    @include sm {
+      text-align: right;
+    }
+    a {
+      transition: 0.2s;
+      &:hover {
+        transition: 0.2s;
+        opacity: 0.5;
+      }
+      svg {
+        width: 1.3rem;
+        vertical-align: middle;
+      }
+    }
+  }
 }
