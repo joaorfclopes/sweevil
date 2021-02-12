@@ -10,6 +10,7 @@ import { ReactComponent as Emotion1 } from "../assets/svg/home/emotion1.svg";
 import { ReactComponent as Emotion2 } from "../assets/svg/home/emotion2.svg";
 import { ReactComponent as Emotion3 } from "../assets/svg/home/emotion3.svg";
 import { ReactComponent as Emotion4 } from "../assets/svg/home/emotion4.svg";
+import { ReactComponent as DevLogo } from "../assets/svg/dev-logo.svg";
 import Illustration from "../components/Illustration";
 
 export default function HomeScreen(props) {
@@ -62,6 +63,15 @@ export default function HomeScreen(props) {
             />
           </Slider>
         </div>
+      </div>
+      <div className="developed-by">
+        <a
+          href={process.env.REACT_APP_DEVELOPER_LINK}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Developed by <DevLogo />
+        </a>
       </div>
     </motion.section>
   );
