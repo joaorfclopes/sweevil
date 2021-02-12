@@ -44,4 +44,26 @@
       display: none;
     }
   }
+  .video-subtitle-container {
+    .placeholder {
+      float: right;
+      margin-top: 5px;
+      width: 50%;
+      @include md {
+        width: 40%;
+      }
+      .video-subtitle {
+        opacity: 0;
+        margin: 0;
+        text-align: right;
+        font-size: 10px;
+      }
+    }
+  }
+  .show {
+    @include fade-in;
+  }
+  .hide {
+    @include fade-out;
+  }
 }

@@ -50,10 +50,4 @@
       }
     }
   }
-  .show {
-    @include fade-in;
-  }
-  .hide {
-    @include fade-out;
-  }
 }

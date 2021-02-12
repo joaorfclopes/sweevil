@@ -6,11 +6,14 @@ import { ReactComponent as Play } from "../assets/svg/play.svg";
 
 export default function Video(props) {
   const [play, setPlay] = useState(false);
+  const [hidePlaceholder, setHidePlaceholder] = useState(false);
 
   const videoLoaded = () => {
     $(".video-desktop").addClass("show");
     $(".video-mobile").addClass("show");
+    $(".video-subtitle").addClass("show");
     $(".play").addClass("show");
+    setHidePlaceholder(true);
   };
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function Video(props) {
 
   return (
     <div className={`video ${props.mobile ? "mobile" : "desktop"}`}>
-      <Placeholder>
+      <Placeholder height="100%">
         <video
           id="video"
           className={`video-${props.mobile ? "mobile" : "desktop"}`}
@@ -51,6 +54,11 @@ export default function Video(props) {
           <LazyLoadImage src={props.poster} afterLoad={videoLoaded} />
         </div>
       </Placeholder>
+      <div className="video-subtitle-container">
+        <Placeholder height="100%" text hide={hidePlaceholder}>
+          <p className="video-subtitle">{props.subtitle}</p>
+        </Placeholder>
+      </div>
     </div>
   );
 }
