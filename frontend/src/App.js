@@ -26,6 +26,19 @@ export default function App() {
   const { userInfo } = userSignin;
 
   const [loading, setLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  const scroll = () => {
+    let userScroll = $(document).scrollTop();
+    $(window).on("scroll", function () {
+      let newScroll = $(document).scrollTop();
+      if (userScroll - newScroll > 20 || newScroll - userScroll > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    });
+  };
 
   const pageVariants = {
     in: {
@@ -45,6 +58,7 @@ export default function App() {
       setLoading(false);
       $(".loading").css({ display: "none" });
       document.body.classList.add("scroll");
+      scroll();
     }, 1200);
   }, []);
 
@@ -52,7 +66,7 @@ export default function App() {
     <BrowserRouter>
       <div className="App">
         <div className="grid-container">
-          <Navbar />
+          <Navbar scrolled={scrolled} />
           <MenuMobile />
           {!loading && (
             <main>

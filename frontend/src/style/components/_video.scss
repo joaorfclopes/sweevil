@@ -12,11 +12,6 @@
     }
   }
   position: relative;
-  margin-top: 10px;
-  @include md {
-    margin-top: 0;
-    width: 45%;
-  }
   video {
     opacity: 0;
     width: 100%;

@@ -1,11 +1,6 @@
 .gallery {
   .gallery-loading {
     user-select: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -20px;
-    margin-left: -50px;
     &:after {
       overflow: hidden;
       display: inline-block;
