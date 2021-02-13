@@ -1,7 +1,7 @@
 .loading-box {
   text-align: center;
   position: relative;
-  z-index: 1000;
+  z-index: 1001;
   .spinner {
     @include spin;
     margin: auto !important;

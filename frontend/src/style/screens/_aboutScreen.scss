@@ -1,6 +1,8 @@
 .about {
   .about-container {
-    min-height: 70vh;
+    min-height: 75vh;
+    margin-left: 10%;
+    margin-right: 10%;
   }
   .text {
     .title {
@@ -16,6 +18,13 @@
       font-size: 0.95rem;
     }
     @include md {
+      width: 48%;
+    }
+  }
+  .video {
+    margin-top: 10px;
+    @include md {
+      margin-top: 0;
       width: 48%;
     }
   }

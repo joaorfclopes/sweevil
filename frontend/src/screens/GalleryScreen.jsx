@@ -15,7 +15,6 @@ export default function GalleryScreen(props) {
   const { loading, gallery, error } = galleryImageList;
 
   const [categories, setCategories] = useState([]);
-  const [largestImageLoaded, setLargestImageLoaded] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("*");
 
   const handleClick = (e) => {
@@ -48,20 +47,15 @@ export default function GalleryScreen(props) {
     }
   };
 
-  const handleLoad = (category, id) => {
+  const handleLoad = (category) => {
     setCategories([...categories, category]);
-    if (id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID) {
-      setLargestImageLoaded(true);
-      $(".gallery-container").addClass("show");
-      $(".gallery-container").removeClass("hidden");
-    }
   };
 
   const galleryImg = (galleryImage) => {
     return (
       <div
         key={galleryImage._id}
-        onLoad={() => handleLoad(galleryImage.category, galleryImage._id)}
+        onLoad={() => handleLoad(galleryImage.category)}
       >
         <GalleryImage galleryImage={galleryImage} />
       </div>
@@ -100,10 +94,7 @@ export default function GalleryScreen(props) {
       transition={props.pageTransition}
     >
       <div className="row center">
-        {!largestImageLoaded && (
-          <div className="gallery-loading custom-font">Loading images</div>
-        )}
-        <div className="gallery-container hidden">
+        <div className="gallery-container">
           <div className="filters">
             {gallery.length > 0 && (
               <div

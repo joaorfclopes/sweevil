@@ -7,7 +7,7 @@ import { ReactComponent as Cart } from "../assets/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/svg/menu.svg";
 import { options } from "../utils";
 
-export default function Navbar() {
+export default function Navbar(props) {
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
   const cart = useSelector((state) => state.cart);
@@ -36,7 +36,7 @@ export default function Navbar() {
   }, [userInfo, counter]);
 
   return (
-    <header className="row">
+    <header className={`row ${props.scrolled && "scrolled"}`}>
       <div className="icon-mobile">
         <NavLink to="/cart" activeClassName="active">
           <Cart className="icon fill" />
@@ -46,7 +46,7 @@ export default function Navbar() {
       <div>
         <NavLink exact className="brand" to={!isAdmin ? "/" : "/signin"}>
           <Logo
-            className="brand-logo"
+            className={`brand-logo ${props.scrolled && "scrolled"}`}
             onClick={() => setCounter(counter + 1)}
           />
         </NavLink>

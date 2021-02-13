@@ -3,10 +3,23 @@ header {
   font-family: $font;
   font-weight: bold;
   text-transform: uppercase;
+  position: fixed;
+  z-index: 1000;
+  transition: 0.2s;
+  &.scrolled {
+    background-color: white;
+  }
   .brand-logo {
-    width: 10rem;
-    @include md {
-      width: 11rem;
+    transition: 0.2s;
+    width: 12rem;
+    @include lg {
+      width: 15rem;
+    }
+    &.scrolled {
+      width: 8rem;
+      @include lg {
+        width: 10rem;
+      }
     }
     .logo-cls-18 {
       fill: $primaryColor;
