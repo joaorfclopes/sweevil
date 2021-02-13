@@ -70,7 +70,7 @@ export default function HomeScreen(props) {
           target="_blank"
           rel="noreferrer"
         >
-          Developed by <DevLogo />
+          developed by <DevLogo />
         </a>
       </div>
     </motion.section>

@@ -33,7 +33,7 @@ export default function AboutScreen(props) {
         <Video
           videoSrc={video}
           poster={window.location.origin + "/sweevil.jpg"}
-          subtitle="Produced by João Santana"
+          subtitle="produced by João Santana"
         />
         <div className="text">
           <h1 className="title">Who's Sweevil?</h1>
@@ -69,7 +69,7 @@ export default function AboutScreen(props) {
         <Video
           videoSrc={video}
           poster={window.location.origin + "/sweevil.jpg"}
-          subtitle="Produced by João Santana"
+          subtitle="produced by João Santana"
           mobile
         />
       </div>
