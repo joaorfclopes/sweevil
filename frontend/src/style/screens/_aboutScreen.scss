@@ -1,8 +1,12 @@
 .about {
-  .about-container {
-    min-height: 75vh;
+  margin-bottom: 15vh;
+  @include lg {
     margin-left: 10%;
     margin-right: 10%;
+    margin-bottom: 0;
+  }
+  .about-container {
+    min-height: 75vh;
   }
   .text {
     .title {
