@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
 import $ from "jquery";
 import { SRLWrapper } from "simple-react-lightbox";
 import { listGalleryImages } from "../actions/galleryActions";
@@ -85,14 +84,7 @@ export default function GalleryScreen(props) {
   ) : error ? (
     <MessageBox variant="error">{error}</MessageBox>
   ) : (
-    <motion.section
-      className="gallery"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="gallery">
       <div className="row center">
         <div className="gallery-container">
           <div className="filters">
@@ -132,6 +124,6 @@ export default function GalleryScreen(props) {
           </SRLWrapper>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

@@ -1,4 +1,9 @@
 .product-edit {
+  padding-top: 130px;
+  min-height: 90vh;
+  @include md {
+    padding-top: 150px;
+  }
   @include lg {
     @include margin-center;
   }

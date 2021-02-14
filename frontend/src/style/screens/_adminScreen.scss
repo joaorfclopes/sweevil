@@ -1,4 +1,9 @@
 .admin-screen {
+  padding-top: 130px;
+  min-height: 90vh;
+  @include md {
+    padding-top: 150px;
+  }
   .logout-container {
     text-align: right;
     button {

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import $ from "jquery";
-import { motion } from "framer-motion";
 import Slider from "react-slick";
 import { ReactComponent as Home1 } from "../assets/svg/home/home1.svg";
 import { ReactComponent as Home2 } from "../assets/svg/home/home2.svg";
@@ -11,8 +10,6 @@ import { ReactComponent as Emotion2 } from "../assets/svg/home/emotion2.svg";
 import { ReactComponent as Emotion3 } from "../assets/svg/home/emotion3.svg";
 import { ReactComponent as Emotion4 } from "../assets/svg/home/emotion4.svg";
 import Illustration from "../components/Illustration";
-import AboutScreen from "./AboutScreen";
-import GalleryScreen from "./GalleryScreen";
 
 export default function HomeScreen(props) {
   const settings = {
@@ -34,41 +31,30 @@ export default function HomeScreen(props) {
   }, []);
 
   return (
-    <>
-      <motion.section
-        className="home"
-        initial="out"
-        animate="in"
-        exit="out"
-        variants={props.pageVariants}
-        transition={props.pageTransition}
-      >
-        <div className="row center home-container">
-          <div className="home-slider hidden">
-            <Slider {...settings}>
-              <Illustration
-                active
-                illustrationLg={<Home1 />}
-                illustrationSm={<Emotion1 />}
-              />
-              <Illustration
-                illustrationLg={<Home2 />}
-                illustrationSm={<Emotion2 />}
-              />
-              <Illustration
-                illustrationLg={<Home3 />}
-                illustrationSm={<Emotion3 />}
-              />
-              <Illustration
-                illustrationLg={<Home4 />}
-                illustrationSm={<Emotion4 />}
-              />
-            </Slider>
-          </div>
+    <section className="home">
+      <div className="row center home-container">
+        <div className="home-slider hidden">
+          <Slider {...settings}>
+            <Illustration
+              active
+              illustrationLg={<Home1 />}
+              illustrationSm={<Emotion1 />}
+            />
+            <Illustration
+              illustrationLg={<Home2 />}
+              illustrationSm={<Emotion2 />}
+            />
+            <Illustration
+              illustrationLg={<Home3 />}
+              illustrationSm={<Emotion3 />}
+            />
+            <Illustration
+              illustrationLg={<Home4 />}
+              illustrationSm={<Emotion4 />}
+            />
+          </Slider>
         </div>
-      </motion.section>
-      <AboutScreen />
-      <GalleryScreen />
-    </>
+      </div>
+    </section>
   );
 }

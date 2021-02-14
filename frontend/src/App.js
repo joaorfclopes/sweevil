@@ -16,10 +16,8 @@ import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "./screens/ResetPasswordScreen";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
-import AboutScreen from "./screens/AboutScreen";
-import GalleryScreen from "./screens/GalleryScreen";
 import NotFoundScreen from "./screens/NotFoundScreen";
-import HomeScreen from "./screens/HomeScreen";
+import MainScreen from "./screens/MainScreen";
 
 export default function App() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -76,27 +74,7 @@ export default function App() {
                     exact
                     path="/"
                     render={(props) => (
-                      <HomeScreen
-                        {...props}
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
-                    )}
-                  />
-                  <Route
-                    path="/about"
-                    render={(props) => (
-                      <AboutScreen
-                        {...props}
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
-                    )}
-                  />
-                  <Route
-                    path="/gallery"
-                    render={(props) => (
-                      <GalleryScreen
+                      <MainScreen
                         {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}

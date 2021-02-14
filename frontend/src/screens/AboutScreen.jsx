@@ -1,18 +1,11 @@
 import React from "react";
-import { motion } from "framer-motion";
+
 import Video from "../components/Video";
 import video from "../assets/video/video.mp4";
 
 export default function AboutScreen(props) {
   return (
-    <motion.section
-      className="about"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="about">
       <div className="row about-container">
         <Video
           videoSrc={video}
@@ -57,6 +50,6 @@ export default function AboutScreen(props) {
           mobile
         />
       </div>
-    </motion.section>
+    </section>
   );
 }
