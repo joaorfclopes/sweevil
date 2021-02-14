@@ -31,7 +31,7 @@ export default function HomeScreen(props) {
   }, []);
 
   return (
-    <section className="home">
+    <section className="home" id="home">
       <div className="row center home-container">
         <div className="home-slider hidden">
           <Slider {...settings}>

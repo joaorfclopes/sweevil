@@ -1,7 +1,8 @@
 import React from "react";
 import $ from "jquery";
 import { NavLink } from "react-router-dom";
-import { options } from "../utils";
+import { NavHashLink } from "react-router-hash-link";
+import { mainOptions, scrollTop } from "../utils";
 import { useSelector } from "react-redux";
 
 export default function MenuMobile() {
@@ -10,6 +11,11 @@ export default function MenuMobile() {
 
   const closeMenu = () => {
     $(".nav-mobile").removeClass("show");
+  };
+
+  const homeClick = () => {
+    closeMenu();
+    scrollTop();
   };
 
   return (
@@ -25,17 +31,23 @@ export default function MenuMobile() {
             </NavLink>
           </li>
         )}
-        {options.map((option) => (
-          <li onClick={closeMenu} key={option}>
-            <NavLink
-              to={`/${option === "home" ? "" : option}`}
+        {mainOptions.map((option) => (
+          <li key={option}>
+            <NavHashLink
+              to={`/${option === "home" ? "" : `#${option}`}`}
               activeClassName="active"
               exact={option === "home"}
+              onClick={option === "home" ? homeClick : closeMenu}
             >
               {option}
-            </NavLink>
+            </NavHashLink>
           </li>
         ))}
+        <li>
+          <NavLink to="/shop" activeClassName="active" onClick={closeMenu}>
+            shop
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

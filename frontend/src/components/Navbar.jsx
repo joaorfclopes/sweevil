@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { NavHashLink } from "react-router-hash-link";
 import { useSelector } from "react-redux";
 import $ from "jquery";
 import { ReactComponent as Logo } from "../assets/svg/logo.svg";
 import { ReactComponent as Cart } from "../assets/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/svg/menu.svg";
-import { options } from "../utils";
+import { mainOptions, scrollTop } from "../utils";
 
 export default function Navbar(props) {
   const userSignin = useSelector((state) => state.userSignin);
@@ -60,17 +61,23 @@ export default function Navbar(props) {
               </NavLink>
             </li>
           )}
-          {options.map((option) => (
+          {mainOptions.map((option) => (
             <li key={option}>
-              <NavLink
-                to={`/${option === "home" ? "" : option}`}
+              <NavHashLink
+                to={`/${option === "home" ? "" : `#${option}`}`}
                 activeClassName="active"
                 exact={option === "home"}
+                onClick={option === "home" && scrollTop}
               >
                 {option}
-              </NavLink>
+              </NavHashLink>
             </li>
           ))}
+          <li>
+            <NavLink to="/shop" activeClassName="active">
+              shop
+            </NavLink>
+          </li>
           <li>
             <NavLink to="/cart" activeClassName="active">
               <Cart className="icon" />
