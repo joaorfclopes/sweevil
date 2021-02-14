@@ -28,8 +28,7 @@ export default function App() {
 
   const scroll = () => {
     $(window).on("scroll", function () {
-      let userScroll = $(document).scrollTop();
-      if (userScroll > 20) {
+      if ($(window).scrollTop() >= 20) {
         setScrolled(true);
       } else {
         setScrolled(false);
