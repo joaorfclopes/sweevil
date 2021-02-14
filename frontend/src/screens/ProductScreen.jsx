@@ -11,7 +11,7 @@ import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
 import { detailsProduct } from "../actions/productActions";
 import { addToCart } from "../actions/cartActions";
-import { sizes } from "../utils";
+import { sizes, scrollTop } from "../utils";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -25,6 +25,7 @@ export default function ProductScreen(props) {
   const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
+    scrollTop();
     dispatch(detailsProduct(productId));
   }, [dispatch, productId]);
 
