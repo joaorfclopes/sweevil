@@ -6,7 +6,7 @@ import $ from "jquery";
 import { ReactComponent as Logo } from "../assets/svg/logo.svg";
 import { ReactComponent as Cart } from "../assets/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/svg/menu.svg";
-import { mainOptions, scrollTop } from "../utils";
+import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
 
 export default function Navbar(props) {
   const userSignin = useSelector((state) => state.userSignin);
@@ -69,7 +69,7 @@ export default function Navbar(props) {
           {mainOptions.map((option) => (
             <li key={option}>
               <NavHashLink
-                smooth
+                scroll={(el) => scrollWithOffset(el)}
                 to={`/${option === "home" ? "" : `#${option}`}`}
                 activeClassName="active"
                 exact={option === "home"}
