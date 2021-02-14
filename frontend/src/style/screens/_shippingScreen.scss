@@ -3,7 +3,11 @@
     @include margin-center;
   }
   .shipping-container {
-    min-height: 75vh;
+    padding-top: 130px;
+    min-height: 90vh;
+    @include md {
+      padding-top: 150px;
+    }
     .shipping-inner {
       width: 100%;
     }

@@ -1,6 +1,10 @@
 .product-screen {
   .product-screen-container {
-    min-height: 75vh;
+    padding-top: 130px;
+    min-height: 90vh;
+    @include md {
+      padding-top: 150px;
+    }
     .product-images {
       @include md {
         margin-right: 2rem;
