@@ -2,7 +2,7 @@ export const mainOptions = ["home", "about", "gallery"];
 
 export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
 
-export const filters = ["Tattoos", "Paintings", "Digital", "Tapestry"];
+export const filters = ["Tattoos", "Paintings", "Digital"];
 
 export const formatDateDayHour = (date) => {
   const day = date.substring(8, 10);
