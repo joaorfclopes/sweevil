@@ -1,21 +1,4 @@
 .gallery {
-  .gallery-loading {
-    user-select: none;
-    &:after {
-      overflow: hidden;
-      display: inline-block;
-      vertical-align: bottom;
-      content: "\2026";
-      width: 0px;
-      @include ellipsis;
-    }
-  }
-  .hidden {
-    opacity: 0;
-    position: fixed;
-    visibility: hidden;
-    z-index: -1;
-  }
   @include lg {
     margin-left: 10%;
     margin-right: 10%;
@@ -41,6 +24,14 @@
       }
     }
   }
+  .gallery-loading {
+    text-align: center;
+    line-height: 80vh;
+    svg {
+      width: 100px;
+      @include flip;
+    }
+  }
   .gallery-images {
     line-height: 0;
     -webkit-column-count: 1;
@@ -64,6 +55,19 @@
       -moz-column-count: 4;
       -webkit-column-count: 4;
     }
+  }
+  .gallery-images-container {
+    &.hidden {
+      opacity: 0;
+      visibility: hidden;
+      z-index: -1;
+      height: 0;
+    }
+    &:not(.hidden) {
+      .gallery-image {
+        cursor: pointer;
+      }
+    }
     .gallery-image {
       width: 100% !important;
       height: auto !important;
@@ -78,6 +82,7 @@
       opacity: 0;
     }
   }
+
   .hide {
     @include fade-out;
   }

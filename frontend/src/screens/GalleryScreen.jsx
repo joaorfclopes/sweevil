@@ -7,28 +7,18 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
 import { filters } from "../utils";
+import { ReactComponent as Emotion1 } from "../assets/svg/home/emotion1.svg";
 
 export default function GalleryScreen() {
   const dispatch = useDispatch();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
 
-  const [categories, setCategories] = useState([]);
+  const [largestImageLoaded, setLargestImageLoaded] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("*");
 
   const handleClick = (e) => {
     setSelectedFilter(e);
-    if (e !== selectedFilter) {
-      $(".gallery-images").addClass("invisible");
-      $(".gallery-images").addClass("hide-instant");
-      $(".gallery-images").removeClass("show");
-      setTimeout(() => {
-        $(".gallery-images").removeClass("invisible");
-        setTimeout(() => {
-          $(".gallery-images").addClass("show");
-        }, 100);
-      }, 100);
-    }
     if (e === "*") {
       $("#filter-all").addClass("active");
       filters.forEach((filter) => {
@@ -46,16 +36,17 @@ export default function GalleryScreen() {
     }
   };
 
-  const handleLoad = (category) => {
-    setCategories([...categories, category]);
+  const handleLoad = (id) => {
+    if (id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID) {
+      setLargestImageLoaded(true);
+      $(".gallery-images-container").addClass("show");
+      $(".gallery-images-container").removeClass("hidden");
+    }
   };
 
   const galleryImg = (galleryImage) => {
     return (
-      <div
-        key={galleryImage._id}
-        onLoad={() => handleLoad(galleryImage.category)}
-      >
+      <div key={galleryImage._id} onLoad={() => handleLoad(galleryImage._id)}>
         <GalleryImage galleryImage={galleryImage} />
       </div>
     );
@@ -98,31 +89,35 @@ export default function GalleryScreen() {
                   All
                 </div>
               )}
-              {filters.map(
-                (filter) =>
-                  categories.includes(filter) && (
-                    <div
-                      key={filter}
-                      id={`filter-${filter}`}
-                      className="filter"
-                      onClick={() => handleClick(filter)}
-                    >
-                      {filter}
-                    </div>
-                  )
-              )}
+              {filters.map((filter) => (
+                <div
+                  key={filter}
+                  id={`filter-${filter}`}
+                  className="filter"
+                  onClick={() => handleClick(filter)}
+                >
+                  {filter}
+                </div>
+              ))}
             </div>
-            <SRLWrapper options={lightboxOptions}>
-              <div className="gallery-images">
-                {gallery &&
-                  gallery.map((galleryImage) =>
-                    galleryImage.image && selectedFilter === "*"
-                      ? galleryImg(galleryImage)
-                      : galleryImage.category === selectedFilter &&
-                        galleryImg(galleryImage)
-                  )}
+            {!largestImageLoaded && (
+              <div className="gallery-loading">
+                <Emotion1 />
               </div>
-            </SRLWrapper>
+            )}
+            <div className="gallery-images-container hidden">
+              <SRLWrapper options={lightboxOptions}>
+                <div className="gallery-images">
+                  {gallery &&
+                    gallery.map((galleryImage) =>
+                      galleryImage.image && selectedFilter === "*"
+                        ? galleryImg(galleryImage)
+                        : galleryImage.category === selectedFilter &&
+                          galleryImg(galleryImage)
+                    )}
+                </div>
+              </SRLWrapper>
+            </div>
           </div>
         </div>
       )}

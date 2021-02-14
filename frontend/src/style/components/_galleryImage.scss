@@ -1,16 +1,11 @@
 .gallery-image {
-  cursor: pointer;
   margin-bottom: 10px;
   display: inline-block;
   .gallery-image-inner {
-    opacity: 0;
     img {
       display: block;
       width: 100%;
       height: 100%;
     }
-  }
-  .show {
-    @include fade-in;
   }
 }
