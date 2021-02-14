@@ -1,4 +1,4 @@
-export const options = ["home", "about", "gallery", "shop"];
+export const mainOptions = ["home", "about", "gallery"];
 
 export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
 
@@ -30,4 +30,8 @@ export const formatName = (name) => {
   } else {
     return name;
   }
+};
+
+export const scrollTop = () => {
+  window.scrollTo(0, 0);
 };

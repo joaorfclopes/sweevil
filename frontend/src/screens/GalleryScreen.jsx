@@ -79,51 +79,53 @@ export default function GalleryScreen(props) {
     },
   };
 
-  return loading ? (
-    <LoadingBox lineHeight="100vh" width="100px" />
-  ) : error ? (
-    <MessageBox variant="error">{error}</MessageBox>
-  ) : (
-    <section className="gallery">
-      <div className="row center">
-        <div className="gallery-container">
-          <div className="filters">
-            {gallery.length > 0 && (
-              <div
-                id="filter-all"
-                className="filter active"
-                onClick={() => handleClick("*")}
-              >
-                All
-              </div>
-            )}
-            {filters.map(
-              (filter) =>
-                categories.includes(filter) && (
-                  <div
-                    key={filter}
-                    id={`filter-${filter}`}
-                    className="filter"
-                    onClick={() => handleClick(filter)}
-                  >
-                    {filter}
-                  </div>
-                )
-            )}
-          </div>
-          <SRLWrapper options={lightboxOptions}>
-            <div className="gallery-images">
-              {gallery &&
-                gallery.map((galleryImage) =>
-                  galleryImage.image && selectedFilter === "*"
-                    ? galleryImg(galleryImage)
-                    : galleryImage.category === selectedFilter &&
-                      galleryImg(galleryImage)
-                )}
+  return (
+    <section className="gallery" id="gallery">
+      {loading ? (
+        <LoadingBox lineHeight="100vh" width="100px" />
+      ) : error ? (
+        <MessageBox variant="error">{error}</MessageBox>
+      ) : (
+        <div className="row center">
+          <div className="gallery-container">
+            <div className="filters">
+              {gallery.length > 0 && (
+                <div
+                  id="filter-all"
+                  className="filter active"
+                  onClick={() => handleClick("*")}
+                >
+                  All
+                </div>
+              )}
+              {filters.map(
+                (filter) =>
+                  categories.includes(filter) && (
+                    <div
+                      key={filter}
+                      id={`filter-${filter}`}
+                      className="filter"
+                      onClick={() => handleClick(filter)}
+                    >
+                      {filter}
+                    </div>
+                  )
+              )}
             </div>
-          </SRLWrapper>
+            <SRLWrapper options={lightboxOptions}>
+              <div className="gallery-images">
+                {gallery &&
+                  gallery.map((galleryImage) =>
+                    galleryImage.image && selectedFilter === "*"
+                      ? galleryImg(galleryImage)
+                      : galleryImage.category === selectedFilter &&
+                        galleryImg(galleryImage)
+                  )}
+              </div>
+            </SRLWrapper>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

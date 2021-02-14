@@ -5,7 +5,7 @@ import video from "../assets/video/video.mp4";
 
 export default function AboutScreen(props) {
   return (
-    <section className="about">
+    <section className="about" id="about">
       <div className="row about-container">
         <Video
           videoSrc={video}
