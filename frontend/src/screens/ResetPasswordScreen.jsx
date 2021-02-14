@@ -45,7 +45,7 @@ export default function ResetPasswordScreen(props) {
       transition={props.pageTransition}
     >
       <h1>Reset Password</h1>
-      {loading && <LoadingBox lineHeight="75vh" width="100px" />}
+      {loading && <LoadingBox lineHeight="100vh" width="100px" />}
       {error && <MessageBox variant="error">{error}</MessageBox>}
       {success && (
         <MessageBox variant="success">
