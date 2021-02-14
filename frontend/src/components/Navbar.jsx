@@ -21,6 +21,11 @@ export default function Navbar(props) {
     $(".nav-mobile").addClass("show");
   };
 
+  const logoClick = () => {
+    setCounter(counter + 1);
+    scrollTop();
+  };
+
   useEffect(() => {
     if (!userInfo) {
       $(document).mouseup(function (e) {
@@ -48,7 +53,7 @@ export default function Navbar(props) {
         <NavLink exact className="brand" to={!isAdmin ? "/" : "/signin"}>
           <Logo
             className={`brand-logo ${props.scrolled && "scrolled"}`}
-            onClick={() => setCounter(counter + 1)}
+            onClick={logoClick}
           />
         </NavLink>
       </div>
