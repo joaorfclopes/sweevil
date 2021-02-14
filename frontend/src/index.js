@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import dotenv from "dotenv";
+import smoothscroll from "smoothscroll-polyfill";
 import "notyf/notyf.min.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,6 +14,10 @@ import SimpleReactLightbox from "simple-react-lightbox";
 import store from "./store";
 
 dotenv.config();
+
+smoothscroll.polyfill();
+
+window.__forceSmoothScrollPolyfill__ = true;
 
 ReactDOM.render(
   <Provider store={store}>
