@@ -35,3 +35,9 @@ export const formatName = (name) => {
 export const scrollTop = () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
+
+export const scrollWithOffset = (el) => {
+  const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+  const yOffset = -130;
+  window.scrollTo({ top: yCoordinate + yOffset, behavior: "smooth" });
+};

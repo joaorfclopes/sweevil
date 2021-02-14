@@ -2,7 +2,7 @@ import React from "react";
 import $ from "jquery";
 import { NavLink } from "react-router-dom";
 import { NavHashLink } from "react-router-hash-link";
-import { mainOptions, scrollTop } from "../utils";
+import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
 import { useSelector } from "react-redux";
 
 export default function MenuMobile() {
@@ -34,7 +34,7 @@ export default function MenuMobile() {
         {mainOptions.map((option) => (
           <li key={option}>
             <NavHashLink
-              smooth
+              scroll={(el) => scrollWithOffset(el)}
               to={`/${option === "home" ? "" : `#${option}`}`}
               activeClassName="active"
               exact={option === "home"}
