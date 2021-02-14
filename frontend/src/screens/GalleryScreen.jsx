@@ -8,7 +8,7 @@ import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
 import { filters } from "../utils";
 
-export default function GalleryScreen(props) {
+export default function GalleryScreen() {
   const dispatch = useDispatch();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
