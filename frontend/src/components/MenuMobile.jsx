@@ -34,6 +34,7 @@ export default function MenuMobile() {
         {mainOptions.map((option) => (
           <li key={option}>
             <NavHashLink
+              smooth
               to={`/${option === "home" ? "" : `#${option}`}`}
               activeClassName="active"
               exact={option === "home"}

@@ -69,10 +69,11 @@ export default function Navbar(props) {
           {mainOptions.map((option) => (
             <li key={option}>
               <NavHashLink
+                smooth
                 to={`/${option === "home" ? "" : `#${option}`}`}
                 activeClassName="active"
                 exact={option === "home"}
-                onClick={option === "home" && scrollTop}
+                onClick={() => option === "home" && scrollTop()}
               >
                 {option}
               </NavHashLink>
