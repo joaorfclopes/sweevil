@@ -55,6 +55,10 @@ export default function App() {
       $(".loading").css({ display: "none" });
       document.body.classList.add("scroll");
       scroll();
+      if (window.location.href.indexOf("#") > -1) {
+        window.location.href = `${process.env.REACT_APP_HOME_PAGE}/${window.location.hash}`;
+        window.scrollBy(0, -130);
+      }
     }, 1200);
   }, []);
 
