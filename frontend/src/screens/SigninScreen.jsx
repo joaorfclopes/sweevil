@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { signin } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
+import { scrollTop } from "../utils.js";
 
 export default function SigninScreen(props) {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ export default function SigninScreen(props) {
   };
 
   useEffect(() => {
+    scrollTop();
     if (userInfo) {
       props.history.push(redirect);
     }

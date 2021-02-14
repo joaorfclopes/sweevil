@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import $ from "jquery";
 import MessageBox from "../components/MessageBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { sizes, toPrice } from "../utils";
+import { sizes, toPrice, scrollTop } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
 import { ReactComponent as Remove } from "../assets/svg/remove.svg";
 import PlaceHolder from "../components/Placeholder";
@@ -74,6 +74,10 @@ export default function CartScreen(props) {
   const imageLoaded = (id) => {
     $(`#${id}-cart-img`).addClass("show");
   };
+
+  useEffect(() => {
+    scrollTop();
+  }, []);
 
   return (
     <motion.section

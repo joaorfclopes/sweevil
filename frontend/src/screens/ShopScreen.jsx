@@ -5,6 +5,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { useDispatch, useSelector } from "react-redux";
 import { listProducts } from "../actions/productActions";
+import { scrollTop } from "../utils.js";
 
 export default function ShopScreen(props) {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ export default function ShopScreen(props) {
   const { loading, products, error } = productList;
 
   useEffect(() => {
+    scrollTop();
     dispatch(listProducts());
   }, [dispatch]);
 
