@@ -44,18 +44,18 @@ export default function ResetPasswordScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Reset Password</h1>
-      {loading && <LoadingBox lineHeight="100vh" width="100px" />}
-      {error && <MessageBox variant="error">{error}</MessageBox>}
-      {success && (
-        <MessageBox variant="success">
-          Password changed. You will be redirected, please wait...
-        </MessageBox>
-      )}
-      <div id="passwordError" style={{ display: "none" }}>
-        <MessageBox variant="error">Passwords don't match</MessageBox>
-      </div>
-      <form className="form" onSubmit={submitHandler}>
+      <form className="form signin-container" onSubmit={submitHandler}>
+        <h1>Reset Password</h1>
+        {loading && <LoadingBox lineHeight="100vh" width="100px" />}
+        {error && <MessageBox variant="error">{error}</MessageBox>}
+        {success && (
+          <MessageBox variant="success">
+            Password changed. You will be redirected, please wait...
+          </MessageBox>
+        )}
+        <div id="passwordError" style={{ display: "none" }}>
+          <MessageBox variant="error">Passwords don't match</MessageBox>
+        </div>
         <div>
           <label htmlFor="password">Password</label>
           <input
