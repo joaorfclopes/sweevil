@@ -1,8 +1,9 @@
 import React from "react";
+import { motion } from "framer-motion";
 import HomeScreen from "./HomeScreen";
 import AboutScreen from "./AboutScreen";
 import GalleryScreen from "./GalleryScreen";
-import { motion } from "framer-motion";
+import Footer from "../components/Footer";
 
 export default function MainScreen(props) {
   return (
@@ -17,6 +18,7 @@ export default function MainScreen(props) {
       <HomeScreen />
       <AboutScreen />
       <GalleryScreen />
+      <Footer />
     </motion.section>
   );
 }
