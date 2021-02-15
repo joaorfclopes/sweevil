@@ -25,11 +25,9 @@
     }
   }
   .gallery-loading {
-    text-align: center;
-    line-height: 80vh;
+    height: 80vh;
     svg {
-      width: 100px;
-      @include flip;
+      width: 90px;
     }
   }
   .gallery-images {
