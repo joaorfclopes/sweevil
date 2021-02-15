@@ -19,6 +19,17 @@ export default function GalleryScreen() {
 
   const handleClick = (e) => {
     setSelectedFilter(e);
+    if (e !== selectedFilter) {
+      $(".gallery-images-container").addClass("invisible");
+      $(".gallery-images-container").addClass("hide-instant");
+      $(".gallery-images-container").removeClass("show");
+      setTimeout(() => {
+        $(".gallery-images-container").removeClass("invisible");
+        setTimeout(() => {
+          $(".gallery-images-container").addClass("show");
+        }, 100);
+      }, 100);
+    }
     if (e === "*") {
       $("#filter-all").addClass("active");
       filters.forEach((filter) => {
