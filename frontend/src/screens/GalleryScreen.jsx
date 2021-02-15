@@ -7,7 +7,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
 import { filters } from "../utils";
-import { ReactComponent as Emotion1 } from "../assets/svg/home/emotion1.svg";
+import { ReactComponent as GalleryLoader } from "../assets/svg/gallery-loader.svg";
 
 export default function GalleryScreen() {
   const dispatch = useDispatch();
@@ -101,8 +101,8 @@ export default function GalleryScreen() {
               ))}
             </div>
             {!largestImageLoaded && (
-              <div className="gallery-loading">
-                <Emotion1 />
+              <div className="gallery-loading row center">
+                <GalleryLoader />
               </div>
             )}
             <div className="gallery-images-container hidden">
