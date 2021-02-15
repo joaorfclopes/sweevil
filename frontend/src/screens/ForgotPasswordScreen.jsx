@@ -27,14 +27,17 @@ export default function ForgotPasswordScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <h1>Forgot Password</h1>
       {error && <MessageBox variant="error">{error}</MessageBox>}
       {success && (
         <MessageBox variant="success">
           Reset password link sent to your email
         </MessageBox>
       )}
-      <form className="form forgot-password" onSubmit={submitHandler}>
+      <form
+        className="form forgot-password signin-container"
+        onSubmit={submitHandler}
+      >
+        <h1>Forgot Password</h1>
         <div>
           <label htmlFor="email">Email address</label>
           <input
