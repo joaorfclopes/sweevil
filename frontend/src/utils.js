@@ -38,6 +38,10 @@ export const scrollTop = () => {
 
 export const scrollWithOffset = (el) => {
   const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
-  const yOffset = -130;
+  const width =
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth;
+  const yOffset = width > 576 ? -130 : -100;
   window.scrollTo({ top: yCoordinate + yOffset, behavior: "smooth" });
 };
