@@ -48,10 +48,13 @@
       }
       &.brand {
         svg {
-          width: 150px;
+          width: 8rem;
           .logo-cls-18 {
             fill: $secondaryColor;
           }
+        }
+        p {
+          font-size: 0.9rem;
         }
       }
       .contacts {
