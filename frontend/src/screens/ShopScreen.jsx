@@ -17,11 +17,7 @@ export default function ShopScreen(props) {
     dispatch(listProducts());
   }, [dispatch]);
 
-  return loading ? (
-    <LoadingBox lineHeight="100vh" width="100px" />
-  ) : error ? (
-    <MessageBox variant="error">{error}</MessageBox>
-  ) : (
+  return (
     <motion.section
       className="shop"
       initial="out"
@@ -31,13 +27,19 @@ export default function ShopScreen(props) {
       transition={props.pageTransition}
     >
       <div className="row center shop-container">
-        {products &&
+        {loading ? (
+          <LoadingBox lineHeight="75vh" width="100px" />
+        ) : error ? (
+          <MessageBox variant="error">{error}</MessageBox>
+        ) : (
+          products &&
           products.map(
             (product) =>
               product.images[0] &&
               product.name &&
               product.price && <Product key={product._id} product={product} />
-          )}
+          )
+        )}
       </div>
     </motion.section>
   );
