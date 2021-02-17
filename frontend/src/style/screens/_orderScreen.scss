@@ -2,12 +2,12 @@
   @include lg {
     @include margin-center;
   }
+  padding-top: 130px;
+  min-height: 90vh;
+  @include md {
+    padding-top: 150px;
+  }
   .order-container {
-    padding-top: 130px;
-    min-height: 90vh;
-    @include md {
-      padding-top: 150px;
-    }
     .order-inner {
       width: 100%;
     }

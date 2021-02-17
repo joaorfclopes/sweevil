@@ -84,7 +84,7 @@ export default function GalleryScreen() {
   return (
     <section className="gallery" id="gallery">
       {loading ? (
-        <LoadingBox lineHeight="100vh" width="100px" />
+        <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (

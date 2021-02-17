@@ -46,7 +46,7 @@ export default function ResetPasswordScreen(props) {
     >
       <form className="form signin-container" onSubmit={submitHandler}>
         <h1>Reset Password</h1>
-        {loading && <LoadingBox lineHeight="100vh" width="100px" />}
+        {loading && <LoadingBox lineHeight="75vh" width="100px" />}
         {error && <MessageBox variant="error">{error}</MessageBox>}
         {success && (
           <MessageBox variant="success">
