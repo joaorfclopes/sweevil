@@ -3,6 +3,7 @@ import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 import $ from "jquery";
 import { AnimatePresence } from "framer-motion";
+import CookieConsent from "react-cookie-consent";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import SigninScreen from "./screens/SigninScreen";
@@ -219,6 +220,13 @@ export default function App() {
             </main>
           )}
         </div>
+        <CookieConsent
+          containerClasses="cookie-consent"
+          contentClasses="cookie-consent-content custom-font"
+          buttonClasses="cookie-consent-btn custom-font"
+        >
+          This website uses cookies to enhance the user experience.
+        </CookieConsent>
       </div>
     </BrowserRouter>
   );

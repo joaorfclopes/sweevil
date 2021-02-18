@@ -115,3 +115,14 @@ a {
     display: none !important;
   }
 }
+.cookie-consent {
+  background-color: white !important;
+  color: black !important;
+  background-color: whitesmoke !important;
+  .cookie-consent-content {
+    flex: auto !important;
+  }
+  .cookie-consent-btn {
+    background-color: transparent !important;
+  }
+}

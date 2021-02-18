@@ -17,6 +17,9 @@
     margin-top: 30px;
     margin-bottom: 30px;
     svg {
+      @include md {
+        width: 300px;
+      }
       width: 200px;
       transition: 0.2s;
       &:hover {
