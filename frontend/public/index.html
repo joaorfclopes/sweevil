@@ -32,10 +32,10 @@
   <script>
     const host = "www.sweevil.pt" || "sweevil.pt";
     if (host == window.location.host && window.location.protocol != "https:") {
+      if (window.location.hostname.indexOf("www") == 0) {
+        window.location = window.location.href.replace("www.", "");
+      }
       window.location.protocol = "https";
-    }
-    if (window.location.hostname.indexOf("www") == 0) {
-      window.location = window.location.href.replace("www.", "");
     }
   </script>
 </html>
