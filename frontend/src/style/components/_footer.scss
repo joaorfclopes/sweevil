@@ -1,5 +1,4 @@
 .footer {
-  margin-top: 30px;
   @include lg {
     margin-left: 10%;
     margin-right: 10%;
@@ -13,57 +12,32 @@
   p {
     margin: 0;
   }
-  .row {
-    min-height: 20vh;
-    margin-bottom: 20px;
-    .footer-content {
-      width: 100%;
-      margin-top: 30px;
-      text-align: center;
-      @include sm {
-        margin-top: 20px;
-        text-align: left;
-        &:nth-child(1) {
-          width: 30%;
-        }
-        &:nth-child(2) {
-          width: 40%;
-          text-align: center;
-        }
-        &:nth-child(3) {
-          width: 30%;
-          text-align: right;
-        }
+  .shop-now {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    svg {
+      width: 200px;
+      transition: 0.2s;
+      &:hover {
+        transition: 0.2s;
+        -webkit-filter: grayscale(100%);
+        filter: grayscale(100%);
       }
-      .shop-now {
-        svg {
-          width: 100px;
-          transition: 0.2s;
-          &:hover {
-            transition: 0.2s;
-            -webkit-filter: grayscale(100%);
-            filter: grayscale(100%);
-          }
-        }
-      }
-      &.brand {
-        svg {
-          width: 8rem;
-          .logo-cls-18 {
-            fill: $secondaryColor;
-          }
-        }
-        p {
-          font-size: 0.9rem;
-        }
-      }
-      .contacts {
-        margin-top: 5px;
-        svg {
-          width: 35px;
-          margin: 5px;
-          cursor: pointer;
-        }
+    }
+  }
+  .footer-content {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    .contacts {
+      margin-top: 10px;
+      svg {
+        width: 35px;
+        margin-left: 5px;
+        margin-right: 5px;
+        cursor: pointer;
       }
     }
   }
@@ -82,4 +56,7 @@
       vertical-align: middle;
     }
   }
+}
+.MuiTooltip-popper {
+  margin-top: -10px;
 }
