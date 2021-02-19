@@ -11,10 +11,7 @@
   cursor: pointer;
   text-align: center;
   transition: 0.2s;
-  margin: 10px;
-  @include md {
-    margin: 20px;
-  }
+  margin: 20px;
   svg {
     width: 30px;
     padding: 2px;
