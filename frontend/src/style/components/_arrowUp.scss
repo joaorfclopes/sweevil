@@ -4,7 +4,6 @@
   position: fixed;
   bottom: 0;
   right: 0;
-  margin: 20px;
   z-index: 999;
   background-color: white;
   border: 1.5px solid $darkColor;
@@ -12,6 +11,10 @@
   cursor: pointer;
   text-align: center;
   transition: 0.2s;
+  margin: 10px;
+  @include md {
+    margin: 20px;
+  }
   svg {
     width: 30px;
     padding: 2px;
