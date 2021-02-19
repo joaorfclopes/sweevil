@@ -127,7 +127,7 @@ const data = {
   ],
   galleryImages: [
     {
-      description: "“Against the law’, 2020. Acrylic on paper",
+      description: "“Against the law”, 2020. Acrylic on paper",
       image: "/images/painting6.jpg",
       category: "Paintings",
     },
@@ -222,6 +222,11 @@ const data = {
       description: "Portugal, 2020",
       image: "/images/tattoo2.jpg",
       category: "Tattoos",
+    },
+    {
+      description: "“Your Ego is not your Amigo”, 2021. Digital illustration",
+      image: "/images/digital5.jpg",
+      category: "Digital",
     },
     {
       description: "“Sinking”, 2020. Acrylic on paper",
