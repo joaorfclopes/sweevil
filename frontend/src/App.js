@@ -19,6 +19,7 @@ import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import NotFoundScreen from "./screens/NotFoundScreen";
 import MainScreen from "./screens/MainScreen";
+import ArrowUp from "./components/ArrowUp";
 
 export default function App() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -33,6 +34,13 @@ export default function App() {
         setScrolled(true);
       } else {
         setScrolled(false);
+      }
+      if ($(window).scrollTop() >= 500) {
+        $(".arrow-up").addClass("show");
+        $(".arrow-up").removeClass("hide");
+      } else {
+        $(".arrow-up").addClass("hide");
+        $(".arrow-up").removeClass("show");
       }
     });
   };
@@ -220,6 +228,7 @@ export default function App() {
             </main>
           )}
         </div>
+        <ArrowUp />
         <CookieConsent
           containerClasses="cookie-consent"
           contentClasses="cookie-consent-content custom-font"
