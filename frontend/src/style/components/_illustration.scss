@@ -23,6 +23,10 @@
       display: none;
     }
     svg {
+      &:nth-child(2) {
+        margin-top: 10px;
+        width: 70%;
+      }
       @include xxs {
         width: 250px;
       }
