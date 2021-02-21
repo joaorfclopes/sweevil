@@ -1,4 +1,14 @@
 .home {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  @include xs-height {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  @include sm-height {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
   .home-container {
     min-height: 100vh;
     text-align: center;
