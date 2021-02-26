@@ -122,7 +122,8 @@ export default function PlaceOrderScreen(props) {
               : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </p>
             <p>
-              Shipping : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+              Shipping (free over 40€) :{" "}
+              {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
             </p>
             <h3 className="total">
               Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
