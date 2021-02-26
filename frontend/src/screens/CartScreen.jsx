@@ -199,7 +199,8 @@ export default function CartScreen(props) {
               : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </li>
             <li>
-              Shipping : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+              Shipping (free over 40€) :{" "}
+              {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
             </li>
             <li>
               <h2>Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h2>

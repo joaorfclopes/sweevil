@@ -27,10 +27,10 @@ const data = {
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/bag1%26tshirt4.jpg",
       ],
       price: 20,
-      description: "high quality product",
+      description: "High quality serigraph printing",
       isClothing: false,
       countInStock: {
-        stock: 10,
+        stock: 20,
         xs: null,
         s: null,
         m: null,
@@ -40,7 +40,7 @@ const data = {
       },
     },
     {
-      name: "T-Shirt Sweevil",
+      name: "Sweevil T-Shirt",
       category: "T-Shirts",
       images: [
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/tshirt4.jpg",
@@ -48,7 +48,7 @@ const data = {
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/bag1%26tshirt4.jpg",
       ],
       price: 30,
-      description: "high quality product",
+      description: "High quality serigraph printing",
       countInStock: 10,
       isClothing: true,
       countInStock: {
@@ -62,14 +62,14 @@ const data = {
       },
     },
     {
-      name: "Sweevil Long Sleeve 2020",
+      name: "Sweevil Long Sleeve",
       category: "Hoodies",
       images: [
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/long-sleeve1.jpg",
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/long-sleeve2.jpg",
       ],
       price: 40,
-      description: "high quality product",
+      description: "High quality serigraph printing",
       countInStock: 10,
       isClothing: true,
       countInStock: {
@@ -83,14 +83,14 @@ const data = {
       },
     },
     {
-      name: "T-Shirt Sweevil White",
+      name: "Sweevil White T-Shirt",
       category: "T-Shirts",
       images: [
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/7BFA501E-7846-4E58-9D38-7DFCB98F53E9.jpg",
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/3CE5ADEE-240B-4286-919B-72A5F37E6DC4.jpg",
       ],
       price: 30,
-      description: "high quality product",
+      description: "High quality serigraph printing",
       countInStock: 10,
       isClothing: true,
       countInStock: {
@@ -104,14 +104,14 @@ const data = {
       },
     },
     {
-      name: "T-Shirt Sweevil Black",
+      name: "Sweevil Black T-Shirt",
       category: "T-Shirts",
       images: [
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/tshirt2.jpg",
         "https://sweevil.s3.eu-west-3.amazonaws.com/store/tshirt3%261.jpg",
       ],
       price: 30,
-      description: "high quality product",
+      description: "High quality serigraph printing",
       countInStock: 10,
       isClothing: true,
       countInStock: {
