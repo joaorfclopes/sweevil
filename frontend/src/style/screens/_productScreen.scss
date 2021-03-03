@@ -5,6 +5,7 @@
     padding-top: 150px;
   }
   .product-screen-container {
+    min-height: 80vh;
     .product-images {
       @include md {
         margin-right: 2rem;
