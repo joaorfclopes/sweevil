@@ -1,9 +1,10 @@
 import React from "react";
 import $ from "jquery";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { NavHashLink } from "react-router-hash-link";
 import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
-import { useSelector } from "react-redux";
+import { enableScroll } from "../scroll";
 
 export default function MenuMobile() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -11,7 +12,7 @@ export default function MenuMobile() {
 
   const closeMenu = () => {
     $(".nav-mobile").removeClass("show");
-    $("body").css("overflowY", "auto");
+    enableScroll();
   };
 
   const homeClick = () => {

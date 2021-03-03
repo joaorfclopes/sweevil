@@ -7,6 +7,7 @@ import { ReactComponent as Logo } from "../assets/svg/logo.svg";
 import { ReactComponent as Cart } from "../assets/svg/cart.svg";
 import { ReactComponent as Menu } from "../assets/svg/menu.svg";
 import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
+import { disableScroll } from "../scroll";
 
 export default function Navbar(props) {
   const userSignin = useSelector((state) => state.userSignin);
@@ -19,7 +20,7 @@ export default function Navbar(props) {
 
   const openMenu = () => {
     $(".nav-mobile").addClass("show");
-    $("body").css("overflowY", "hidden");
+    disableScroll();
   };
 
   const logoClick = () => {
