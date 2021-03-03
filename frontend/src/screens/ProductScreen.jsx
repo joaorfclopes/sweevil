@@ -270,24 +270,29 @@ export default function ProductScreen(props) {
             )}
             <div className="qty">
               <b>Quantity:</b>{" "}
-              {product.isClothing && !chosenSize && (
-                <select>
-                  <option value={qty}>{qty}</option>
-                </select>
-              )}
-              {!product.isClothing
-                ? selectQty(product.countInStock.stock)
-                : chosenSize === "xs"
-                ? selectQty(product.countInStock.xs)
-                : chosenSize === "s"
-                ? selectQty(product.countInStock.s)
-                : chosenSize === "m"
-                ? selectQty(product.countInStock.m)
-                : chosenSize === "l"
-                ? selectQty(product.countInStock.l)
-                : chosenSize === "xl"
-                ? selectQty(product.countInStock.xl)
-                : chosenSize === "xxl" && selectQty(product.countInStock.xxl)}
+              {product.isClothing
+                ? !chosenSize
+                  ? product.countInStock.xs +
+                      product.countInStock.s +
+                      product.countInStock.m +
+                      product.countInStock.l +
+                      product.countInStock.xl +
+                      product.countInStock.xxl >
+                    0
+                    ? selectQty(qty)
+                    : selectQty(0)
+                  : chosenSize === "xs"
+                  ? selectQty(product.countInStock.xs)
+                  : chosenSize === "s"
+                  ? selectQty(product.countInStock.s)
+                  : chosenSize === "m"
+                  ? selectQty(product.countInStock.m)
+                  : chosenSize === "l"
+                  ? selectQty(product.countInStock.l)
+                  : chosenSize === "xl"
+                  ? selectQty(product.countInStock.xl)
+                  : chosenSize === "xxl" && selectQty(product.countInStock.xxl)
+                : selectQty(product.countInStock.stock)}
             </div>
             <div className="add-to-cart">
               <button
