@@ -50,7 +50,7 @@ export default function ProductScreen(props) {
         </select>
       </>
     ) : (
-      <span style={{ color: "red" }}>Out of Stock</span>
+      <span style={{ color: "red", textTransform: "uppercase" }}>Sold Out</span>
     );
   };
 
