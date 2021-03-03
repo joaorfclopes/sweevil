@@ -49,16 +49,16 @@ export default function ProductEditScreen(props) {
 
   const fileInput = useRef();
 
-  const artworkOptions = ["Prints", "Pinturas", "Tapetes"];
+  const artworkOptions = ["Prints", "Paintings", "Carpets"];
 
   const clothingOptions = ["T-Shirts", "Hoodies"];
 
   const accessoriesOptions = [
-    "Carteiras",
+    "Wallets",
     "Diskettes",
-    "Jóias",
+    "Jewelry",
     "Bags",
-    "Lenços",
+    "Scarves",
   ];
 
   useEffect(() => {
