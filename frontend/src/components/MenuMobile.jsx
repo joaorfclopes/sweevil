@@ -11,6 +11,7 @@ export default function MenuMobile() {
 
   const closeMenu = () => {
     $(".nav-mobile").removeClass("show");
+    $("body").css("overflowY", "auto");
   };
 
   const homeClick = () => {

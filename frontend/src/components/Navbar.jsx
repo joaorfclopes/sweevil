@@ -19,6 +19,7 @@ export default function Navbar(props) {
 
   const openMenu = () => {
     $(".nav-mobile").addClass("show");
+    $("body").css("overflowY", "hidden");
   };
 
   const logoClick = () => {
