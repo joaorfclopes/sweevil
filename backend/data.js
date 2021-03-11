@@ -127,6 +127,11 @@ const data = {
   ],
   galleryImages: [
     {
+      description: "“Mithya”, 2021. Digital comic",
+      image: "/images/digital6.jpg",
+      category: "Digital",
+    },
+    {
       description: "“Against the law”, 2020. Acrylic on paper",
       image: "/images/painting6.jpg",
       category: "Paintings",
@@ -214,6 +219,11 @@ const data = {
       category: "Tattoos",
     },
     {
+      description: "Transparency is all I see, 2021. Digital comic",
+      image: "/images/digital7.jpg",
+      category: "Digital",
+    },
+    {
       description: "“The new original sin”, 2020. Acrylic on canvas",
       image: "/images/painting11.jpg",
       category: "Paintings",
@@ -244,6 +254,7 @@ const data = {
       category: "Tattoos",
     },
     {
+      _id: "602fd06f89d75f4b18e88975",
       description: "“The rebirthing”, 2020. Digital comic",
       image: "/images/digital3.jpg",
       category: "Digital",

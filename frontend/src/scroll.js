@@ -20,6 +20,7 @@ try {
     "test",
     null,
     Object.defineProperty({}, "passive", {
+      // eslint-disable-next-line getter-return
       get: function () {
         supportsPassive = true;
       },
