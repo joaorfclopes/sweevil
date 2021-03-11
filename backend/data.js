@@ -219,7 +219,7 @@ const data = {
       category: "Tattoos",
     },
     {
-      description: "Transparency is all I see, 2021. Digital comic",
+      description: "“Transparency is all I see”, 2021. Digital comic",
       image: "/images/digital7.jpg",
       category: "Digital",
     },
