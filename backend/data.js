@@ -254,7 +254,7 @@ const data = {
       category: "Tattoos",
     },
     {
-      _id: "602fd06f89d75f4b18e88975",
+      _id: "602fd1e74704f500045ffc8d",
       description: "“The rebirthing”, 2020. Digital comic",
       image: "/images/digital3.jpg",
       category: "Digital",
