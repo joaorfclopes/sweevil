@@ -63,6 +63,7 @@ export default function App() {
       setLoading(false);
       $(".loading").css({ display: "none" });
       document.body.classList.add("scroll");
+      document.getElementById("root").classList.add("show");
       scroll();
       if (window.location.href.indexOf("#") > -1) {
         window.location.href = `${process.env.REACT_APP_HOME_PAGE}/${window.location.hash}`;
