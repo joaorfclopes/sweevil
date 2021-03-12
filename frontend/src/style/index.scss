@@ -62,6 +62,11 @@ body,
     display: block;
   }
 }
+#root {
+  &.show {
+    @include show-root;
+  }
+}
 a {
   text-decoration: none;
   color: inherit;
