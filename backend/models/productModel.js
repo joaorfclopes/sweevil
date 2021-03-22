@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema(
       xl: { type: Number },
       xxl: { type: Number },
     },
+    visible: { type: Boolean },
   },
   {
     timestamps: true,
