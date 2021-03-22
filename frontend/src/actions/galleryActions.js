@@ -9,9 +9,7 @@ export const listGalleryImages = () => async (dispatch) => {
   dispatch({ type: GALLERY_IMAGE_LIST_REQUEST });
   try {
     const { data } = await Axios.get("/api/gallery");
-    setTimeout(() => {
-      dispatch({ type: GALLERY_IMAGE_LIST_SUCCESS, payload: data });
-    }, 300);
+    dispatch({ type: GALLERY_IMAGE_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: GALLERY_IMAGE_LIST_FAIL, payload: error.message });
   }

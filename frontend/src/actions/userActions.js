@@ -154,9 +154,8 @@ export const resetPassword = (user, userId) => async (dispatch) => {
 
     setTimeout(() => {
       window.close();
-      //FIX THIS
       window.open(`${process.env.REACT_APP_HOME_PAGE}/signin`);
-    }, 1500);
+    }, 1200);
   } catch (error) {
     dispatch({
       type: USER_RESET_PASS_FAIL,

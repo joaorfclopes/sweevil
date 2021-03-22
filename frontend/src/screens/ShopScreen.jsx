@@ -35,6 +35,7 @@ export default function ShopScreen(props) {
           products &&
           products.map(
             (product) =>
+              product.visible &&
               product.images[0] &&
               product.name &&
               product.price && <Product key={product._id} product={product} />

@@ -25,9 +25,7 @@ export default function HomeScreen(props) {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      $(".home-slider").addClass("show");
-    }, 50);
+    $(".home-slider").addClass("show");
   }, []);
 
   return (

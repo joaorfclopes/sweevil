@@ -46,6 +46,7 @@ export default function ProductEditScreen(props) {
   const [errorUpload, setErrorUpload] = useState("");
   const [taxPrice, setTaxPrice] = useState("");
   const [finalPrice, setFinalPrice] = useState("");
+  const [visible, setVisible] = useState(false);
 
   const fileInput = useRef();
 
@@ -99,6 +100,7 @@ export default function ProductEditScreen(props) {
       setDescription(product.description);
       setTaxPrice(product.taxPrice);
       setFinalPrice(product.finalPrice);
+      setVisible(product.visible);
     }
   }, [dispatch, product, productId, successUpdate, props]);
 
@@ -125,6 +127,7 @@ export default function ProductEditScreen(props) {
           description,
           taxPrice,
           finalPrice,
+          visible,
         })
       );
     }
@@ -369,6 +372,16 @@ export default function ProductEditScreen(props) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+              </div>
+              <div className="no-flex">
+                <input
+                  type="checkbox"
+                  id="visible"
+                  name="visible"
+                  checked={visible}
+                  onChange={() => setVisible(!visible)}
+                />
+                <label htmlFor="visible">Visible</label>
               </div>
               <div>
                 <label />
