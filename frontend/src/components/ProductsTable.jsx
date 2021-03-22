@@ -147,6 +147,9 @@ export default function ProductsTable({ props }) {
                     <TableCell align="center">
                       <b>Category</b>
                     </TableCell>
+                    <TableCell align="center">
+                      <b>Visible</b>
+                    </TableCell>
                     <TableCell align="right">
                       <b>Actions</b>
                     </TableCell>
@@ -170,6 +173,9 @@ export default function ProductsTable({ props }) {
                           {product.price && product.price.toFixed(2)}€
                         </TableCell>
                         <TableCell align="center">{product.category}</TableCell>
+                        <TableCell align="center">
+                          {product.visible ? "Yes" : "No"}
+                        </TableCell>
                         <TableCell align="right">
                           <button
                             className="secondary"
