@@ -1,7 +1,7 @@
 import itemsDetails from "./itemsDetails.js";
 import { formatName } from "../utils.js";
 
-export const placedOrder = ({
+export const sendOrder = ({
   order: {
     orderId,
     orderDate,
@@ -140,9 +140,7 @@ export const placedOrder = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Thanks for purchasing at ${
-                                    process.env.BRAND_NAME
-                                  }!
+                                  We’ve sent it!
                                 </font>
                               </td>
                             </tr>
@@ -171,7 +169,8 @@ export const placedOrder = ({
                                 >
                                   Hi ${formatName(
                                     fullName
-                                  )}, we recieved your order request and will notify you as soon as the order is on it's way!
+                                  )}, your parcel is on its way and it
+                                  should be with you soon!
                                 </font>
                               </td>
                             </tr>

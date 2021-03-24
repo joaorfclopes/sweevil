@@ -25,6 +25,9 @@ import {
   ORDER_CANCEL_REQUEST,
   ORDER_CANCEL_SUCCESS,
   ORDER_CANCEL_FAIL,
+  ORDER_SEND_REQUEST,
+  ORDER_SEND_SUCCESS,
+  ORDER_SEND_FAIL,
 } from "../constants/orderConstants";
 
 export const createOrder = (order) => async (dispatch) => {
@@ -80,6 +83,43 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_PAY_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const sendOrder = (orderId) => async (dispatch, getState) => {
+  dispatch({ type: ORDER_SEND_REQUEST, payload: orderId });
+  const {
+    userSignin: { userInfo },
+  } = getState();
+  try {
+    const { data } = await Axios.put(
+      `/api/orders/${orderId}/send`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
+    dispatch({ type: ORDER_SEND_SUCCESS, payload: data });
+    // eslint-disable-next-line no-unused-vars
+    const { sendEmail } = await Axios.post(
+      "/api/email/sentOrder",
+      { order: data.order },
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
+  } catch (error) {
+    dispatch({
+      type: ORDER_SEND_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
