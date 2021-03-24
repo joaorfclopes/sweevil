@@ -6,6 +6,7 @@ import User from "../models/userModel.js";
 import { isAuth, formatDate, isAdmin } from "../utils.js";
 import { placedOrder } from "../mailing/placedOrder.js";
 import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
+import { sendOrder } from "../mailing/sendOrder.js";
 import { deliveredOrder } from "../mailing/deliveredOrder.js";
 import { resetPassword } from "../mailing/resetPassword.js";
 import { cancelOrder } from "../mailing/cancelOrder.js";
@@ -42,7 +43,7 @@ emailRouter.post(
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: req.body.order.shippingAddress.email,
-      subject: "Your order's on its way!",
+      subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
       html: placedOrder({
         order: {
           orderId: req.body.order._id,
@@ -79,6 +80,35 @@ emailRouter.post(
           shippingAddress: {
             email: req.body.order.shippingAddress.email,
             phoneNumber: req.body.order.shippingAddress.phoneNumber,
+            fullName: req.body.order.shippingAddress.fullName,
+            address: req.body.order.shippingAddress.address,
+            country: req.body.order.shippingAddress.country,
+            postalCode: req.body.order.shippingAddress.postalCode,
+            city: req.body.order.shippingAddress.city,
+          },
+          orderItems: req.body.order.orderItems,
+          itemsPrice: req.body.order.itemsPrice,
+          shippingPrice: req.body.order.shippingPrice,
+          totalPrice: req.body.order.totalPrice,
+        },
+      }),
+    };
+    sendEmail(res, mailOptions);
+  })
+);
+
+emailRouter.post(
+  "/sentOrder",
+  expressAsyncHandler((req, res) => {
+    const mailOptions = {
+      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      to: req.body.order.shippingAddress.email,
+      subject: "Your order's on its way!",
+      html: sendOrder({
+        order: {
+          orderId: req.body.order._id,
+          orderDate: formatDate(req.body.order.createdAt),
+          shippingAddress: {
             fullName: req.body.order.shippingAddress.fullName,
             address: req.body.order.shippingAddress.address,
             country: req.body.order.shippingAddress.country,

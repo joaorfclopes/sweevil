@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import $ from "jquery";
 import {
   cancelOrder,
+  sendOrder,
   deliverOrder,
   detailsOrder,
   payOrder,
@@ -19,6 +20,7 @@ import {
   ORDER_CANCEL_RESET,
   ORDER_DELIVER_RESET,
   ORDER_PAY_RESET,
+  ORDER_SEND_RESET,
 } from "../constants/orderConstants";
 import PlaceHolder from "../components/Placeholder";
 
@@ -38,6 +40,12 @@ export default function OrderScreen(props) {
   } = orderPay;
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
+  const orderSend = useSelector((state) => state.orderSend);
+  const {
+    loading: loadingSend,
+    success: successSend,
+    error: errorSend,
+  } = orderSend;
   const orderDeliver = useSelector((state) => state.orderDeliver);
   const {
     loading: loadingDeliver,
@@ -66,11 +74,13 @@ export default function OrderScreen(props) {
     if (
       !order ||
       successPay ||
+      successSend ||
       successDeliver ||
       successCancel ||
       (order && order._id !== orderId)
     ) {
       dispatch({ type: ORDER_PAY_RESET });
+      dispatch({ type: ORDER_SEND_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
       dispatch(detailsOrder(orderId));
@@ -89,6 +99,7 @@ export default function OrderScreen(props) {
     order,
     sdkReady,
     successPay,
+    successSend,
     successDeliver,
     successCancel,
   ]);
@@ -97,9 +108,22 @@ export default function OrderScreen(props) {
     dispatch(payOrder(order, paymentResult));
   };
 
+  const sendHandler = () => {
+    Swal.fire({
+      title: "Send Order?",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(sendOrder(order._id));
+        Swal.fire("Sent!", "", "success");
+      }
+    });
+  };
+
   const deliverHandler = () => {
     Swal.fire({
-      title: `Deliver Order?`,
+      title: "Deliver Order?",
       showCancelButton: true,
       confirmButtonText: "Yes",
     }).then((result) => {
@@ -146,6 +170,8 @@ export default function OrderScreen(props) {
         <div className="row center order-container">
           <div className="order-inner">
             <h1 className="custom-font">Order {order._id}</h1>
+            {loadingSend && <LoadingBox />}
+            {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
             {loadingDeliver && <LoadingBox />}
             {errorDeliver && (
               <MessageBox variant="error">{errorDeliver}</MessageBox>
@@ -165,6 +191,11 @@ export default function OrderScreen(props) {
             {order.status === "CANCELED" && (
               <div style={{ marginBottom: "0.5rem" }}>
                 <MessageBox variant="error">Order canceled.</MessageBox>
+              </div>
+            )}
+            {order.status === "SENT" && (
+              <div style={{ marginBottom: "0.5rem" }}>
+                <MessageBox variant="success">Order sent!</MessageBox>
               </div>
             )}
             {order.status === "DELIVERED" && (
@@ -262,16 +293,26 @@ export default function OrderScreen(props) {
               </div>
             )}
             {userInfo &&
-              userInfo.isAdmin &&
-              order.isPaid &&
-              !order.isDelivered &&
-              order.status !== "CANCELED" && (
+            userInfo.isAdmin &&
+            order.isPaid &&
+            order.status !== "CANCELED" &&
+            !order.isSent &&
+            !order.isDelivered ? (
+              <div className="deliver-button full-width">
+                <button className="primary" onClick={sendHandler}>
+                  Send Order
+                </button>
+              </div>
+            ) : (
+              order.isSent &&
+              !order.isDelivered && (
                 <div className="deliver-button full-width">
                   <button className="primary" onClick={deliverHandler}>
                     Deliver Order
                   </button>
                 </div>
-              )}
+              )
+            )}
             {order.status !== "CANCELED" && !order.isDelivered && (
               <div className={`cancel-button ${order.isPaid && "full-width"}`}>
                 <button className="dangerous" onClick={cancelHandler}>
