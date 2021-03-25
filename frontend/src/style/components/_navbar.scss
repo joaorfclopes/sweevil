@@ -10,10 +10,10 @@ header {
     background-color: white;
   }
   .brand-logo {
-    transition: 0.2s;
-    width: 12rem;
+    transition: 0.1s;
+    width: 11rem;
     @include lg {
-      width: 15rem;
+      width: 14rem;
     }
     &.scrolled {
       width: 8rem;
