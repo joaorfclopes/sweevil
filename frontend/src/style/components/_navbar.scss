@@ -5,7 +5,7 @@ header {
   text-transform: uppercase;
   position: fixed;
   z-index: 1000;
-  transition: 0.2s;
+  transition: 0.1s;
   &.scrolled {
     background-color: white;
   }
@@ -23,12 +23,12 @@ header {
     }
     .logo-cls-18 {
       fill: $primaryColor;
-      transition: 0.2s;
+      transition: 0.1s;
     }
     &:hover {
       .logo-cls-18 {
         fill: $secondaryColor;
-        transition: 0.2s;
+        transition: 0.1s;
       }
     }
   }
@@ -46,7 +46,7 @@ header {
   @include nav-options;
   .icon {
     width: 1.4rem;
-    transition: 0.2s;
+    transition: 0.1s;
     vertical-align: middle;
   }
   .nav-desktop {
@@ -58,11 +58,11 @@ header {
       font-size: $largeDesktop;
       margin-left: 1.5rem;
       display: inline;
-      transition: 0.2s;
+      transition: 0.1s;
       &:hover {
         color: $primaryColor;
         fill: $primaryColor;
-        transition: 0.2s;
+        transition: 0.1s;
       }
     }
   }
