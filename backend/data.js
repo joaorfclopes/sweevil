@@ -182,6 +182,46 @@ const data = {
   ],
   galleryImages: [
     {
+      description: "Portugal, 2021",
+      image: "/images/tattoo15.jpg",
+      category: "Tattoos",
+    },
+    {
+      description: "“Vampira”, 2021. Digital comic",
+      image: "/images/digital8.jpg",
+      category: "Digital",
+    },
+    {
+      description: "Portugal, 2021",
+      image: "/images/tattoo10.jpg",
+      category: "Tattoos",
+    },
+    {
+      description: "Portugal, 2021",
+      image: "/images/tattoo11.jpg",
+      category: "Tattoos",
+    },
+    {
+      description: "“It’s always you”, 2021. Digital comic",
+      image: "/images/digital9.jpg",
+      category: "Digital",
+    },
+    {
+      description: "Portugal, 2021",
+      image: "/images/tattoo12.jpg",
+      category: "Tattoos",
+    },
+    {
+      description: "Portugal, 2021",
+      image: "/images/tattoo13.jpg",
+      category: "Tattoos",
+    },
+    {
+      description: "Portugal, 2021",
+      image: "/images/tattoo14.jpg",
+      category: "Tattoos",
+    },
+    {
       description: "“Mithya”, 2021. Digital comic",
       image: "/images/digital6.jpg",
       category: "Digital",
