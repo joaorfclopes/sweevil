@@ -182,183 +182,296 @@ const data = {
   ],
   galleryImages: [
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo15.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo9.jpg",
+      "description": "Portugal, 2019",
+      "category": "Tattoos"
     },
     {
-      description: "“Vampira”, 2021. Digital comic",
-      image: "/images/digital8.jpg",
-      category: "Digital",
+      "image": "/images/tattoo19.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo10.jpg",
-      category: "Tattoos",
+      "image": "/images/digital18.jpg",
+      "description": "“The fruit of love”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo11.jpg",
-      category: "Tattoos",
+      "image": "/images/digital20.jpg",
+      "description": "“Love is freedom”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "“It’s always you”, 2021. Digital comic",
-      image: "/images/digital9.jpg",
-      category: "Digital",
+      "image": "/images/painting1.jpg",
+      "description": "“Reality is equilibrium”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo12.jpg",
-      category: "Tattoos",
+      "image": "/images/digital10.jpg",
+      "description": "“Fuel”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo13.jpg",
-      category: "Tattoos",
+      "image": "/images/digital6.jpg",
+      "description": "“Mithya”, 2021. Digital comic",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2021",
-      image: "/images/tattoo14.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo12.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Mithya”, 2021. Digital comic",
-      image: "/images/digital6.jpg",
-      category: "Digital",
+      "image": "/images/tattoo26.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Against the law”, 2020. Acrylic on paper",
-      image: "/images/painting6.jpg",
-      category: "Paintings",
+      "image": "/images/tattoo7.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
     },
     {
-      description: "“Isolation”, 2020. Acrylic on paper",
-      image: "/images/painting2.jpg",
-      category: "Paintings",
+      "image": "/images/painting5.jpg",
+      "description": "“Wake up call”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo4.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo14.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo5.jpg",
-      category: "Tattoos",
+      "image": "/images/painting4.jpg",
+      "description": "“Strange box”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description: "“The system”, 2020. Pencil ",
-      image: "/images/painting3.jpg",
-      category: "Paintings",
+      "image": "/images/tattoo10.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo6.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo23.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Strange box”, 2020. Acrylic on paper",
-      image: "/images/painting4.jpg",
-      category: "Paintings",
+      "image": "/images/tattoo18.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo7.jpg",
-      category: "Tattoos",
+      "image": "/images/painting8.jpg",
+      "description": "Detail from “Reality is equilibrium”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description:
-        "“It didn’t came from outer space”, 2020. Digital illustration",
-      image: "/images/digital2.jpg",
-      category: "Digital",
+      "image": "/images/digital17.jpg",
+      "description": "“Muerde la manzana” or “The forbidden fruit season”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "“Reality is equilibrium”, 2020. Acrylic on paper",
-      image: "/images/painting1.jpg",
-      category: "Paintings",
+      "image": "/images/tattoo20.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description:
-        "Detail from “Reality is equilibrium”, 2020. Acrylic on paper",
-      image: "/images/painting8.jpg",
-      category: "Paintings",
+      "image": "/images/digital1.jpg",
+      "description": "“Equilibrium is everywhere”, 2020. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2019",
-      image: "/images/tattoo9.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo3.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
     },
     {
-      description: "“We’re players”, 2020. Digital illustration",
-      image: "/images/digital4.jpg",
-      category: "Digital",
+      "image": "/images/tattoo15.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Solid gold”, 2020. Acrylic on paper",
-      image: "/images/painting9.jpg",
-      category: "Paintings",
+      "image": "/images/painting9.jpg",
+      "description": "“Solid gold”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description: "“Equilibrium is everywhere”, 2020. Digital illustration",
-      image: "/images/digital1.jpg",
-      category: "Digital",
+      "image": "/images/tattoo25.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Illusion”, 2020. Acrylic on paper",
-      image: "/images/painting10.jpg",
-      category: "Paintings",
+      "image": "/images/painting11.jpg",
+      "description": "“The new original sin”, 2020. Acrylic on canvas",
+      "category": "Paintings"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo1.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo2.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
     },
     {
-      description: "“Transparency is all I see”, 2021. Digital comic",
-      image: "/images/digital7.jpg",
-      category: "Digital",
+      "image": "/images/painting2.jpg",
+      "description": "“Isolation”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      description: "“The new original sin”, 2020. Acrylic on canvas",
-      image: "/images/painting11.jpg",
-      category: "Paintings",
+      "image": "/images/digital13.jpg",
+      "description": "“Traveling shapes”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo2.jpg",
-      category: "Tattoos",
+      "image": "/images/digital19.jpg",
+      "description": "“The forbidden fruit season”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "“Your Ego is not your Amigo”, 2021. Digital illustration",
-      image: "/images/digital5.jpg",
-      category: "Digital",
+      "image": "/images/tattoo22.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
     {
-      description: "“Sinking”, 2020. Acrylic on paper",
-      image: "/images/painting7.jpg",
-      category: "Paintings",
+      "image": "/images/digital16.jpg",
+      "description": "“There is no hell”, 2021. Digital illustration",
+      "category": "Digital"
     },
     {
-      description: "“Wake up call”, 2020. Acrylic on paper",
-      image: "/images/painting5.jpg",
-      category: "Paintings",
+      "image": "/images/digital7.jpg",
+      "description": "“Transparency is all I see”, 2021. Digital comic",
+      "category": "Digital"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo3.jpg",
-      category: "Tattoos",
+      "image": "/images/painting6.jpg",
+      "description": "“Against the law”, 2020. Acrylic on paper",
+      "category": "Paintings"
     },
     {
-      _id: "602fd1e74704f500045ffc8d",
-      description: "“The rebirthing”, 2020. Digital comic",
-      image: "/images/digital3.jpg",
-      category: "Digital",
+      "image": "/images/painting3.jpg",
+      "description": "“The system”, 2020. Pencil",
+      "category": "Paintings"
     },
     {
-      description: "Portugal, 2020",
-      image: "/images/tattoo8.jpg",
-      category: "Tattoos",
+      "image": "/images/tattoo27.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
     },
+    {
+      "image": "/images/painting10.jpg",
+      "description": "“Illusion”, 2020. Acrylic on paper",
+      "category": "Paintings"
+    },
+    {
+      "image": "/images/tattoo21.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/tattoo6.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/tattoo5.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/tattoo17.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "_id": "602fd1e74704f500045ffc8d",
+      "image": "/images/digital3.jpg",
+      "description": "“The rebirthing”, 2020. Digital comic",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/tattoo8.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/digital15.jpg",
+      "description": "“Nothing’s permanent”, 2021. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/tattoo16.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/painting7.jpg",
+      "description": "“Sinking”, 2020. Acrylic on paper",
+      "category": "Paintings"
+    },
+    {
+      "image": "/images/tattoo4.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/digital11.jpg",
+      "description": "“Breaking samsara”, 2021. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/digital14.jpg",
+      "description": "“Infinite contemplation of limitless love”, 2021. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/digital9.jpg",
+      "description": "“It’s always you”, 2021. Digital comic",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/digital12.jpg",
+      "description": "“Neo renascence”, 2021. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/digital2.jpg",
+      "description": "“It didn’t came from outer space”, 2020. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/tattoo24.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/digital8.jpg",
+      "description": "“Vampira”, 2021. Digital comic",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/tattoo13.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/digital4.jpg",
+      "description": "“We’re players”, 2020. Digital illustration",
+      "category": "Digital"
+    },
+    {
+      "image": "/images/tattoo11.jpg",
+      "description": "Portugal, 2021",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/tattoo1.jpg",
+      "description": "Portugal, 2020",
+      "category": "Tattoos"
+    },
+    {
+      "image": "/images/digital5.jpg",
+      "description": "“Your Ego is not your Amigo”, 2021. Digital illustration",
+      "category": "Digital"
+    }
   ],
 };
 
