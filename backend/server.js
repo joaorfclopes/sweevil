@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import express from 'express'
 import mongoose from 'mongoose'
 import path from 'path'
@@ -9,6 +9,7 @@ import productRoute from './routes/productRoute.js'
 import uploadRoute from './routes/uploadRoute.js'
 import userRoute from './routes/userRoute.js'
 
+dotenv.config()
 const app = express()
 const port = process.env.PORT || 5000
 
