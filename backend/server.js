@@ -24,11 +24,10 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-mongoose.connect(process.env.MONGODB_URL || "mongodb://localhost/sweevil", {
+mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
+  useUnifiedTopology: true
+})
 
 app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);
