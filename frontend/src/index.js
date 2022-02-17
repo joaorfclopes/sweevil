@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import dotenv from "dotenv";
 import smoothscroll from "smoothscroll-polyfill";
 import "notyf/notyf.min.css";
 import "slick-carousel/slick/slick.css";
@@ -12,8 +11,6 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import SimpleReactLightbox from "simple-react-lightbox";
 import store from "./store";
-
-dotenv.config();
 
 smoothscroll.polyfill();
 

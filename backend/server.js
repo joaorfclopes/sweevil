@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import path from "path";
 import userRoute from "./routes/userRoute.js";
 import productRoute from "./routes/productRoute.js";
@@ -8,8 +7,6 @@ import orderRoute from "./routes/orderRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
 import emailRoute from "./routes/emailRoute.js";
 import galleryImageRoute from "./routes/galleryImageRoute.js";
-
-dotenv.config();
 
 const app = express();
 
