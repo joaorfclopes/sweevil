@@ -1,21 +1,21 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Swal from "sweetalert2";
-import LoadingBox from "./LoadingBox";
-import MessageBox from "./MessageBox";
+import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
-import Paper from "@material-ui/core/Paper";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import { deleteOrder, listOrders } from "../actions/orderActions";
 import { ORDER_DELETE_RESET } from "../constants/orderConstants";
 import { formatDateDay, formatName } from "../utils";
+import LoadingBox from "./LoadingBox";
+import MessageBox from "./MessageBox";
 
 export default function OrdersTable({ props }) {
   const dispatch = useDispatch();
@@ -186,8 +186,8 @@ export default function OrdersTable({ props }) {
               count={orders ? orders.length : 0}
               rowsPerPage={rowsPerPage}
               page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </>
         )}
