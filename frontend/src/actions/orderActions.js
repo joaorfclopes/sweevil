@@ -226,7 +226,7 @@ export const listOrders = () => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     });
-    dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
+    dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data.reverse() });
   } catch (error) {
     dispatch({
       type: ORDER_ADMIN_LIST_FAIL,
