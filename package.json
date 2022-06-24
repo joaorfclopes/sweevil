@@ -6,8 +6,10 @@
   "main": "index.js",
   "scripts": {
     "backend": "nodemon --watch backend --exec node backend/server.js",
+    "backend:debug": "nodemon --inspect backend/server.js",
     "frontend": "cd frontend && npm start",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "start:debug": "concurrently \"npm run backend:debug\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
     "deploy": "git commit --allow-empty -m \"Trigger Heroku deploy\" && npm run build && git push heroku"
