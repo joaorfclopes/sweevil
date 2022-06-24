@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate as Redirect,
+  Route,
+  Routes as Switch
+} from 'react-router-dom'
 import { useSelector } from "react-redux";
 import $ from "jquery";
 import { AnimatePresence } from "framer-motion";
