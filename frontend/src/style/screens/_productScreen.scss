@@ -49,8 +49,28 @@
           }
         }
       }
+      .image-preview-container {
+        @include xxs {
+          max-width: 250px;
+        }
+        @include xs {
+          max-width: 350px;
+        }
+        @include sm {
+          max-width: 500px;
+        }
+        @include md {
+          max-width: 400px;
+        }
+        @include lg {
+          max-width: 450px;
+        }
+        @include xl {
+          max-width: 500px;
+        }
+      }
       .image-preview {
-        margin-right: 5px;
+        margin: 0 5px 3px 0;
         display: none;
         cursor: pointer;
         &:nth-child(5),
@@ -109,6 +129,9 @@
       }
       .price {
         color: $primaryColor;
+      }
+      .description {
+        white-space: pre-line;
       }
       .size {
         margin-top: 1.5rem;

@@ -234,7 +234,7 @@ export default function ProductScreen(props) {
             <p>
               <b>Category:</b> {product.category}
             </p>
-            <p>
+            <p className="description">
               <b>Description:</b> {product.description}
             </p>
             {product.isClothing && (
