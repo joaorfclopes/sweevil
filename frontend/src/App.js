@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
-  Navigate as Redirect,
+  Redirect,
   Route,
-  Routes as Switch
+  Switch
 } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import $ from "jquery";
