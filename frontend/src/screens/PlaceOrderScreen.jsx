@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import $ from "jquery";
@@ -11,14 +11,17 @@ import Placeholder from "../components/Placeholder";
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
   const orderCreate = useSelector((state) => state.orderCreate);
   const { success, order } = orderCreate;
 
-  if (cartItems.length <= 0) {
-    props.history.push("/cart");
-  }
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      navigate("/cart");
+    }
+  }, [cartItems, navigate]);
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
   cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
@@ -37,10 +40,10 @@ export default function PlaceOrderScreen(props) {
 
   useEffect(() => {
     if (success) {
-      props.history.push(`/cart/order/${order._id}`);
+      navigate(`/cart/order/${order._id}`);
       dispatch({ type: ORDER_CREATE_RESET });
     }
-  }, [success, props, order, dispatch]);
+  }, [success, navigate, order, dispatch]);
 
   const imageLoaded = (id) => {
     $(`#${id}-place-order-img`).addClass("show");

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resetPassword } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
@@ -7,8 +8,7 @@ import MessageBox from "../components/MessageBox";
 
 export default function ResetPasswordScreen(props) {
   const dispatch = useDispatch();
-
-  const userId = props.match.params.id;
+  const { id: userId } = useParams();
 
   const userResetPassword = useSelector((state) => state.userResetPassword);
   const { loading, success, error } = userResetPassword;

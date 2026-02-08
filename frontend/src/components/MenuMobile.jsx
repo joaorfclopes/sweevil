@@ -1,14 +1,15 @@
 import React from "react";
 import $ from "jquery";
 import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
-import { NavHashLink } from "react-router-hash-link";
+import { NavLink, useLocation } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
 import { enableScroll } from "../scroll";
 
 export default function MenuMobile() {
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
+  const location = useLocation();
 
   const closeMenu = () => {
     $(".nav-mobile").removeClass("show");
@@ -28,26 +29,31 @@ export default function MenuMobile() {
       <ul>
         {userInfo && (
           <li>
-            <NavLink to="/admin" activeClassName="active" onClick={closeMenu}>
+            <NavLink to="/admin" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>
               admin
             </NavLink>
           </li>
         )}
-        {mainOptions.map((option) => (
-          <li key={option}>
-            <NavHashLink
-              scroll={(el) => scrollWithOffset(el)}
-              to={`/${option === "home" ? "" : `#${option}`}`}
-              activeClassName="active"
-              exact={option === "home"}
-              onClick={option === "home" ? homeClick : closeMenu}
-            >
-              {option}
-            </NavHashLink>
-          </li>
-        ))}
+        {mainOptions.map((option) => {
+          const isHome = option === "home";
+          const isActive =
+            location.pathname === "/" &&
+            (isHome ? !location.hash || location.hash === "#" : location.hash === `#${option}`);
+          return (
+            <li key={option}>
+              <HashLink
+                scroll={(el) => scrollWithOffset(el)}
+                to={isHome ? "/" : `/#${option}`}
+                className={isActive ? "active" : ""}
+                onClick={isHome ? homeClick : closeMenu}
+              >
+                {option}
+              </HashLink>
+            </li>
+          );
+        })}
         <li>
-          <NavLink to="/shop" activeClassName="active" onClick={closeMenu}>
+          <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>
             shop
           </NavLink>
         </li>

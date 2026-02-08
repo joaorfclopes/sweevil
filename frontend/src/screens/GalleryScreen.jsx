@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
-import { SRLWrapper } from "simple-react-lightbox";
+import Lightbox from "yet-another-react-lightbox";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -16,6 +16,8 @@ export default function GalleryScreen() {
 
   const [largestImageLoaded, setLargestImageLoaded] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("*");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const handleClick = (e) => {
     setSelectedFilter(e);
@@ -55,9 +57,17 @@ export default function GalleryScreen() {
     }
   };
 
-  const galleryImg = (galleryImage) => {
+  const galleryImg = (galleryImage, index) => {
     return (
-      <div key={galleryImage._id} onLoad={() => handleLoad(galleryImage._id)}>
+      <div
+        key={galleryImage._id}
+        onLoad={() => handleLoad(galleryImage._id)}
+        onClick={() => {
+          setLightboxIndex(index);
+          setLightboxOpen(true);
+        }}
+        style={{ cursor: 'pointer' }}
+      >
         <GalleryImage galleryImage={galleryImage} />
       </div>
     );
@@ -67,19 +77,15 @@ export default function GalleryScreen() {
     dispatch(listGalleryImages());
   }, [dispatch]);
 
-  const lightboxOptions = {
-    settings: {
-      lightboxTransitionSpeed: 0.2,
-      slideTransitionSpeed: 0.3,
-      disableWheelControls: true,
-    },
-    thumbnails: {
-      showThumbnails: false,
-    },
-    buttons: {
-      showDownloadButton: false,
-    },
+  const getFilteredGallery = () => {
+    if (!gallery) return [];
+    if (selectedFilter === "*") {
+      return gallery.filter(img => img.image);
+    }
+    return gallery.filter(img => img.category === selectedFilter);
   };
+
+  const filteredGallery = getFilteredGallery();
 
   return (
     <section className="gallery" id="gallery">
@@ -117,17 +123,20 @@ export default function GalleryScreen() {
               </div>
             )}
             <div className="gallery-images-container hidden">
-              <SRLWrapper options={lightboxOptions}>
-                <div className="gallery-images">
-                  {gallery &&
-                    gallery.map((galleryImage) =>
-                      galleryImage.image && selectedFilter === "*"
-                        ? galleryImg(galleryImage)
-                        : galleryImage.category === selectedFilter &&
-                          galleryImg(galleryImage)
-                    )}
-                </div>
-              </SRLWrapper>
+              <div className="gallery-images">
+                {filteredGallery.map((galleryImage, index) =>
+                  galleryImg(galleryImage, index)
+                )}
+              </div>
+              <Lightbox
+                open={lightboxOpen}
+                close={() => setLightboxOpen(false)}
+                slides={filteredGallery.map((img) => ({ src: img.image }))}
+                index={lightboxIndex}
+                on={{
+                  view: ({ index }) => setLightboxIndex(index),
+                }}
+              />
             </div>
           </div>
         </div>

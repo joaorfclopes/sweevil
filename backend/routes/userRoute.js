@@ -7,13 +7,16 @@ import { generateToken, isAuth } from "../utils.js";
 
 const userRouter = express.Router();
 
-userRouter.get(
-  "/seed",
-  expressAsyncHandler(async (req, res) => {
-    const createdUsers = await User.insertMany(data.users);
-    res.send({ createdUsers });
-  })
-);
+// Seed route - only available in development
+if (process.env.NODE_ENV !== 'production') {
+  userRouter.get(
+    "/seed",
+    expressAsyncHandler(async (req, res) => {
+      const createdUsers = await User.insertMany(data.users);
+      res.send({ createdUsers });
+    })
+  );
+}
 
 userRouter.post(
   "/signin",
@@ -63,8 +66,14 @@ userRouter.post(
 
 userRouter.get(
   "/:id",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    // Check if user is requesting their own profile or is an admin
+    if (req.params.id !== req.user._id && !req.user.isAdmin) {
+      return res.status(403).send({ message: "Access denied" });
+    }
+
+    const user = await User.findById(req.params.id).select('-password');
     if (user) {
       res.send(user);
     } else {

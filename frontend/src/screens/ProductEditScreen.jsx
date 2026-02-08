@@ -1,6 +1,7 @@
 import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -15,8 +16,8 @@ import { PRODUCT_UPDATE_RESET } from "../constants/productConstants";
 
 export default function ProductEditScreen(props) {
   const dispatch = useDispatch();
-
-  const productId = props.match.params.id;
+  const navigate = useNavigate();
+  const { id: productId } = useParams();
 
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -66,7 +67,7 @@ export default function ProductEditScreen(props) {
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET });
       dispatch(listProducts());
-      props.history.push("/admin");
+      navigate("/admin");
     }
     if (!product || product._id !== productId || successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET });

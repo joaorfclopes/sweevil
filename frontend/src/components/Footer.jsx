@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import Tooltip from "@material-ui/core/Tooltip";
+import Tooltip from "@mui/material/Tooltip";
 import { ReactComponent as ShopNow } from "../assets/svg/shop-now.svg";
 import { ReactComponent as Instagram } from "../assets/svg/instagram.svg";
 import { ReactComponent as Email } from "../assets/svg/email.svg";

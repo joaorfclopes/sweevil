@@ -13,12 +13,15 @@ galleryImageRouter.get(
   })
 );
 
-galleryImageRouter.get(
-  "/seed",
-  expressAsyncHandler(async (req, res) => {
-    const createdGallery = await GalleryImage.insertMany(data.galleryImages);
-    res.send({ createdGallery });
-  })
-);
+// Seed route - only available in development
+if (process.env.NODE_ENV !== 'production') {
+  galleryImageRouter.get(
+    "/seed",
+    expressAsyncHandler(async (req, res) => {
+      const createdGallery = await GalleryImage.insertMany(data.galleryImages);
+      res.send({ createdGallery });
+    })
+  );
+}
 
 export default galleryImageRouter;
