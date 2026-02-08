@@ -14,13 +14,16 @@ productRouter.get(
   })
 );
 
-productRouter.get(
-  "/seed",
-  expressAsyncHandler(async (req, res) => {
-    const createdProducts = await Product.insertMany(data.products);
-    res.send({ createdProducts });
-  })
-);
+// Seed route - only available in development
+if (process.env.NODE_ENV !== 'production') {
+  productRouter.get(
+    "/seed",
+    expressAsyncHandler(async (req, res) => {
+      const createdProducts = await Product.insertMany(data.products);
+      res.send({ createdProducts });
+    })
+  );
+}
 
 productRouter.get(
   "/:id",

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
 import { Notyf } from "notyf";
 import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSwipeable } from "react-swipeable";
-import Lightbox from "react-image-lightbox";
+import Lightbox from "yet-another-react-lightbox";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
@@ -15,7 +16,8 @@ import { sizes, scrollTop } from "../utils";
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
-  const productId = props.match.params.id;
+  const navigate = useNavigate();
+  const { id: productId } = useParams();
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error } = productDetails;
   const [qty, setQty] = useState(1);
@@ -63,7 +65,7 @@ export default function ProductScreen(props) {
         dismissible: true,
       })
       .on("click", () => {
-        props.history.push("/cart");
+        navigate("/cart");
       });
   };
 
@@ -201,29 +203,15 @@ export default function ProductScreen(props) {
               ))}
             </div>
           </div>
-          {isOpen && (
-            <Lightbox
-              mainSrc={product.images[imageIndex]}
-              onCloseRequest={() => setIsOpen(false)}
-              nextSrc={product.images[(imageIndex + 1) % product.images.length]}
-              prevSrc={
-                product.images[
-                  (imageIndex + product.images.length - 1) %
-                    product.images.length
-                ]
-              }
-              onMoveNextRequest={() =>
-                setImageIndex((imageIndex + 1) % product.images.length)
-              }
-              onMovePrevRequest={() =>
-                setImageIndex(
-                  (imageIndex + product.images.length - 1) %
-                    product.images.length
-                )
-              }
-              animationDisabled
-            />
-          )}
+          <Lightbox
+            open={isOpen}
+            close={() => setIsOpen(false)}
+            slides={product.images.map((image) => ({ src: image }))}
+            index={imageIndex}
+            on={{
+              view: ({ index }) => setImageIndex(index),
+            }}
+          />
           <div className="product-details">
             <h2 className="name custom-font">
               <b>{product.name}</b>

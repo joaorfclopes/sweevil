@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { signin } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
@@ -8,14 +8,16 @@ import MessageBox from "../components/MessageBox";
 
 export default function SigninScreen(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const userSignin = useSelector((state) => state.userSignin);
   const { loading, userInfo, error } = userSignin;
 
-  const redirect = props.location.search
-    ? props.location.search.split("=")[1]
+  const redirect = location.search
+    ? location.search.split("=")[1]
     : "/admin";
 
   const submitHandler = (e) => {
@@ -25,9 +27,9 @@ export default function SigninScreen(props) {
 
   useEffect(() => {
     if (userInfo) {
-      props.history.push(redirect);
+      navigate(redirect);
     }
-  }, [userInfo, props, redirect]);
+  }, [userInfo, navigate, redirect]);
 
   return (
     <motion.section

@@ -1,6 +1,6 @@
 import React from "react";
 import $ from "jquery";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function MessageBox(props) {
   const hide = () => {

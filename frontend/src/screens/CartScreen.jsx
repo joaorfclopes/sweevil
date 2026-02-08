@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Notyf } from "notyf";
 import { motion } from "framer-motion";
 import $ from "jquery";
@@ -13,6 +13,7 @@ import PlaceHolder from "../components/Placeholder";
 
 export default function CartScreen(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
   const notyf = new Notyf();
@@ -68,7 +69,7 @@ export default function CartScreen(props) {
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   const checkoutHandler = () => {
-    props.history.push("/cart/shipping");
+    navigate("/cart/shipping");
   };
 
   const imageLoaded = (id) => {

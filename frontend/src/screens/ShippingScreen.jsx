@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { saveShippingAddress } from "../actions/cartActions";
 
 export default function ShippingScreen(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
 
@@ -16,9 +18,11 @@ export default function ShippingScreen(props) {
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
   const [country, setCountry] = useState(shippingAddress.country);
 
-  if (cartItems.length <= 0) {
-    props.history.push("/cart");
-  }
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      navigate("/cart");
+    }
+  }, [cartItems, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -33,7 +37,7 @@ export default function ShippingScreen(props) {
         country,
       })
     );
-    props.history.push("/cart/placeorder");
+    navigate("/cart/placeorder");
   };
 
   return (

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
-  Redirect,
+  Navigate,
   Route,
-  Switch
+  Routes
 } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import $ from "jquery";
@@ -78,7 +78,7 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
         <div className="grid-container">
           <Navbar scrolled={scrolled} />
@@ -86,150 +86,133 @@ export default function App() {
           {!loading && (
             <main>
               <AnimatePresence>
-                <Switch>
+                <Routes>
                   <Route
-                    exact
                     path="/"
-                    render={(props) => (
+                    element={
                       <MainScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
-                    exact
                     path="/shop"
-                    render={(props) => (
+                    element={
                       <ShopScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
-                    exact
                     path="/shop/product/:id"
-                    render={(props) => (
+                    element={
                       <ProductScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
-                    exact
                     path="/cart"
-                    render={(props) => (
+                    element={
                       <CartScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
                     path="/cart/shipping"
-                    render={(props) => (
+                    element={
                       <ShippingScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
                     path="/cart/placeorder"
-                    render={(props) => (
+                    element={
                       <PlaceOrderScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
                     path="/cart/order/:id"
-                    render={(props) => (
+                    element={
                       <OrderScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
                     path="/signin"
-                    render={(props) => (
+                    element={
                       <SigninScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
-                    exact
                     path="/admin"
-                    render={(props) =>
+                    element={
                       userInfo ? (
                         <AdminScreen
-                          {...props}
                           pageVariants={pageVariants}
                           pageTransition={pageTransition}
                         />
                       ) : (
-                        <Redirect to="/signin" />
+                        <Navigate to="/signin" replace />
                       )
                     }
                   />
                   <Route
                     path="/admin/product/:id/edit"
-                    render={(props) =>
+                    element={
                       userInfo ? (
                         <ProductEditScreen
-                          {...props}
                           pageVariants={pageVariants}
                           pageTransition={pageTransition}
                         />
                       ) : (
-                        <Redirect to="/signin" />
+                        <Navigate to="/signin" replace />
                       )
                     }
                   />
                   <Route
                     path="/forgotPassword"
-                    render={(props) => (
+                    element={
                       <ForgotPasswordScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
                     path="/resetPassword/:id"
-                    render={(props) => (
+                    element={
                       <ResetPasswordScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
                   <Route
-                    render={(props) => (
+                    path="*"
+                    element={
                       <NotFoundScreen
-                        {...props}
                         pageVariants={pageVariants}
                         pageTransition={pageTransition}
                       />
-                    )}
+                    }
                   />
-                </Switch>
+                </Routes>
               </AnimatePresence>
             </main>
           )}

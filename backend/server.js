@@ -10,14 +10,16 @@ import uploadRoute from './routes/uploadRoute.js'
 import userRoute from './routes/userRoute.js'
 
 dotenv.config()
+
+// Critical environment variable check
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL ERROR: JWT_SECRET is not defined in environment variables')
+}
+
 const app = express()
 const port = process.env.PORT || 5000
 
-mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true
-})
+mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil')
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
@@ -27,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-app.use(express.json())
+app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/api/users', userRoute)
@@ -51,8 +53,14 @@ app.get('*', (req, res) =>
   res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
 )
 
-app.use((err, req, res) => {
-  res.status(500).send({ message: err.message })
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message)
+  console.error(err.stack)
+  const statusCode = err.statusCode || 500
+  res.status(statusCode).send({
+    message: err.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  })
 })
 
 app.listen(port, () => {

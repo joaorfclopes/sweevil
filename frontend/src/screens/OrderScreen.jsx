@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { PayPalButton } from "react-paypal-button-v2";
+import { Link, useParams } from "react-router-dom";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import $ from "jquery";
@@ -26,9 +26,9 @@ import PlaceHolder from "../components/Placeholder";
 
 export default function OrderScreen(props) {
   const dispatch = useDispatch();
-  const orderId = props.match.params.id;
+  const { id: orderId } = useParams();
 
-  const [sdkReady, setSdkReady] = useState(false);
+  const [paypalClientId, setPaypalClientId] = useState("");
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { loading, order, error } = orderDetails;
@@ -60,17 +60,11 @@ export default function OrderScreen(props) {
   } = orderCancel;
 
   useEffect(() => {
-    const addPaypalScript = async () => {
+    const loadPaypalClientId = async () => {
       const { data } = await Axios.get("/api/config/paypal");
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = `https://www.paypal.com/sdk/js?client-id=${data}&currency=EUR`;
-      script.async = true;
-      script.onload = () => {
-        setSdkReady(true);
-      };
-      document.body.appendChild(script);
+      setPaypalClientId(data);
     };
+
     if (
       !order ||
       successPay ||
@@ -85,27 +79,42 @@ export default function OrderScreen(props) {
       dispatch({ type: ORDER_CANCEL_RESET });
       dispatch(detailsOrder(orderId));
     } else {
-      if (!order.isPaid) {
-        if (!window.paypal) {
-          addPaypalScript();
-        } else {
-          setSdkReady(true);
-        }
+      if (!order.isPaid && !paypalClientId) {
+        loadPaypalClientId();
       }
     }
   }, [
     dispatch,
     orderId,
     order,
-    sdkReady,
+    paypalClientId,
     successPay,
     successSend,
     successDeliver,
     successCancel,
   ]);
 
-  const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(order, paymentResult));
+  const createOrder = (data, actions) => {
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            value: order.totalPrice.toFixed(2),
+            currency_code: "EUR",
+          },
+        },
+      ],
+    });
+  };
+
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then((details) => {
+      dispatch(payOrder(order, details));
+    });
+  };
+
+  const onError = (err) => {
+    console.error("PayPal Error:", err);
   };
 
   const sendHandler = () => {
@@ -275,7 +284,7 @@ export default function OrderScreen(props) {
             </div>
             {order.status !== "CANCELED" && !order.isPaid && (
               <div className="paypal-button">
-                {!sdkReady ? (
+                {!paypalClientId ? (
                   <LoadingBox />
                 ) : (
                   <>
@@ -283,11 +292,19 @@ export default function OrderScreen(props) {
                       <MessageBox variant="error">{errorPay}</MessageBox>
                     )}
                     {loadingPay && <LoadingBox />}
-                    <PayPalButton
-                      currency="EUR"
-                      amount={order.totalPrice}
-                      onSuccess={successPaymentHandler}
-                    />
+                    <PayPalScriptProvider
+                      options={{
+                        "client-id": paypalClientId,
+                        currency: "EUR",
+                      }}
+                    >
+                      <PayPalButtons
+                        createOrder={createOrder}
+                        onApprove={onApprove}
+                        onError={onError}
+                        style={{ layout: "vertical" }}
+                      />
+                    </PayPalScriptProvider>
                   </>
                 )}
               </div>
