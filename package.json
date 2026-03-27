@@ -35,7 +35,7 @@
     "mongoose": "^8.9.6",
     "multer": "^2.0.2",
     "multer-s3": "^3.0.1",
-    "nodemailer": "^8.0.1"
+    "nodemailer": "^8.0.4"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
