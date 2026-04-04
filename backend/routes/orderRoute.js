@@ -92,6 +92,7 @@ orderRouter.post(
           shippingPrice: req.body.shippingPrice,
           totalPrice: req.body.totalPrice,
           status: req.body.status,
+          user: req.user._id,
         });
         const createdOrder = await order.save();
         res
