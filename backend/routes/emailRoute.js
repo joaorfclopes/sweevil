@@ -1,14 +1,11 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import nodemailer from "nodemailer";
-import bcrypt from "bcryptjs";
-import User from "../models/userModel.js";
 import { isAuth, formatDate, isAdmin } from "../utils.js";
 import { placedOrder } from "../mailing/placedOrder.js";
 import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
 import { sendOrder } from "../mailing/sendOrder.js";
 import { deliveredOrder } from "../mailing/deliveredOrder.js";
-import { resetPassword } from "../mailing/resetPassword.js";
 import { cancelOrder } from "../mailing/cancelOrder.js";
 import { cancelOrderAdmin } from "../mailing/cancelOrderAdmin.js";
 
@@ -39,6 +36,7 @@ const sendEmail = (res, mailOptions) => {
 
 emailRouter.post(
   "/placedOrder",
+  isAuth,
   expressAsyncHandler((req, res) => {
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
@@ -68,6 +66,7 @@ emailRouter.post(
 
 emailRouter.post(
   "/placedOrderAdmin",
+  isAuth,
   expressAsyncHandler((req, res) => {
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
@@ -99,6 +98,7 @@ emailRouter.post(
 
 emailRouter.post(
   "/sentOrder",
+  isAuth,
   expressAsyncHandler((req, res) => {
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
@@ -159,6 +159,7 @@ emailRouter.post(
 
 emailRouter.post(
   "/cancelOrder",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
@@ -184,6 +185,7 @@ emailRouter.post(
 
 emailRouter.post(
   "/cancelOrderAdmin",
+  isAuth,
   expressAsyncHandler((req, res) => {
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
@@ -206,33 +208,6 @@ emailRouter.post(
       }),
     };
     sendEmail(res, mailOptions);
-  })
-);
-
-emailRouter.post(
-  "/forgotPassword",
-  expressAsyncHandler(async (req, res) => {
-    if (req.body.email) {
-      const user = await User.findOne({ email: req.body.email });
-      try {
-        const mailOptions = {
-          from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-          to: user.email,
-          subject: `Your ${process.env.BRAND_NAME} password reset link is ready`,
-          html: resetPassword({
-            userInfo: {
-              userId: user._id,
-              email: bcrypt.hashSync(user.email, 8),
-            },
-          }),
-        };
-        sendEmail(res, mailOptions);
-      } catch (error) {
-        res.status(404).send({ message: "User doesn't exist" });
-      }
-    } else {
-      res.status(404).send({ message: "Error sending reset password link" });
-    }
   })
 );
 

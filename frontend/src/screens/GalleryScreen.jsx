@@ -61,14 +61,16 @@ export default function GalleryScreen() {
     return (
       <div
         key={galleryImage._id}
-        onLoad={() => handleLoad(galleryImage._id)}
         onClick={() => {
           setLightboxIndex(index);
           setLightboxOpen(true);
         }}
         style={{ cursor: 'pointer' }}
       >
-        <GalleryImage galleryImage={galleryImage} />
+        <GalleryImage
+          galleryImage={galleryImage}
+          onLoad={() => handleLoad(galleryImage._id)}
+        />
       </div>
     );
   };
@@ -76,6 +78,21 @@ export default function GalleryScreen() {
   useEffect(() => {
     dispatch(listGalleryImages());
   }, [dispatch]);
+
+  // Fallback: show gallery if the target image ID doesn't exist in the data,
+  // or if images were already cached and onLoad never fires.
+  useEffect(() => {
+    if (!loading && gallery && gallery.length > 0 && !largestImageLoaded) {
+      const targetExists = gallery.some(
+        (img) => img._id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID
+      );
+      if (!targetExists) {
+        setLargestImageLoaded(true);
+        $(".gallery-images-container").addClass("show");
+        $(".gallery-images-container").removeClass("hidden");
+      }
+    }
+  }, [gallery, loading, largestImageLoaded]);
 
   const getFilteredGallery = () => {
     if (!gallery) return [];

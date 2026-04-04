@@ -1,9 +1,18 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
+import rateLimit from "express-rate-limit";
 import bcrypt from "bcryptjs";
 import data from "../data.js";
 import User from "../models/userModel.js";
 import { generateToken, isAuth } from "../utils.js";
+
+const signinLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { message: "Too many signin attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const userRouter = express.Router();
 
@@ -20,6 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 userRouter.post(
   "/signin",
+  signinLimiter,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -75,9 +85,9 @@ userRouter.get(
 
     const user = await User.findById(req.params.id).select('-password');
     if (user) {
-      res.send(user);
+      res.json(user);
     } else {
-      res.status(404).send({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
     }
   })
 );
@@ -104,28 +114,6 @@ userRouter.put(
           isAdmin: updatedUser.isAdmin,
           token: generateToken(updatedUser),
         });
-      } else {
-        res.status(404).send({ message: "User not found" });
-      }
-    } catch (error) {
-      res.status(404).send({ message: "Error updating user" });
-    }
-  })
-);
-
-userRouter.put(
-  "/resetPassword/:id",
-  expressAsyncHandler(async (req, res) => {
-    const params = req.params.id;
-    const id = params.substring(0, params.indexOf(" "));
-    try {
-      const user = await User.findById(id);
-      if (user) {
-        if (req.body.password) {
-          user.password = bcrypt.hashSync(req.body.password, 8);
-        }
-        const updatedUser = await user.save();
-        res.send(updatedUser);
       } else {
         res.status(404).send({ message: "User not found" });
       }

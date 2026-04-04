@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "snyk": {
+      "command": "npx",
+      "args": ["-y", "snyk@latest", "mcp", "-t", "stdio"],
+      "env": {
+        "SNYK_TOKEN": "${SNYK_TOKEN}"
+      }
+    }
+  }
+}

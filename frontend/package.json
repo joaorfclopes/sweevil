@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "proxy": "http://127.0.0.1:5000",
+  "proxy": "http://127.0.0.1:8080",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -29,7 +29,7 @@
     "react-swipeable": "^7.0.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "sass": "^1.84.0",
+    "sass": "1.64.2",
     "slick-carousel": "^1.8.1",
     "smoothscroll-polyfill": "^0.4.4",
     "styled-components": "^6.1.15",
@@ -38,7 +38,7 @@
     "yet-another-react-lightbox": "^3.28.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "NODE_OPTIONS=--no-deprecation react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -48,6 +48,10 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "overrides": {
+    "serialize-javascript": ">=6.0.2",
+    "sass": "1.64.2"
   },
   "browserslist": {
     "production": [

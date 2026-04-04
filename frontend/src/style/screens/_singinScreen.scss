@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .signin {
   @include lg {
     @include margin-center;

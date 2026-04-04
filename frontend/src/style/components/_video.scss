@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .video {
   &.desktop {
     display: none;

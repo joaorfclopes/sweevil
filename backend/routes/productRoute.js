@@ -30,9 +30,9 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
-      res.send(product);
+      res.json(product);
     } else {
-      res.status(404).send({ message: "Product not Found" });
+      res.status(404).json({ message: "Product not Found" });
     }
   })
 );

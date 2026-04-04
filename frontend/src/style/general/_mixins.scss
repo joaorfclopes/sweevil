@@ -1,3 +1,6 @@
+@use 'variables' as *;
+@use 'breakpoints' as *;
+
 @mixin xxs {
   @media (min-width: #{$screen-xxs-min}) {
     @content;

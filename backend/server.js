@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import express from 'express'
+import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
 import emailRoute from './routes/emailRoute.js'
@@ -23,12 +24,20 @@ mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil')
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https')
-      res.redirect(`https://${req.header('host')}${req.url}`)
-    else next()
+    if (req.header('x-forwarded-proto') !== 'https') {
+      // Use APP_DOMAIN env var instead of the Host header to prevent open redirect
+      const appDomain = process.env.APP_DOMAIN
+      if (!appDomain) {
+        return next()
+      }
+      res.redirect(301, `https://${appDomain}${req.url}`)
+    } else {
+      next()
+    }
   })
 }
 
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
 

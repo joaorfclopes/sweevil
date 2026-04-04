@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .about {
   margin-bottom: 20vh;
   @include lg {
