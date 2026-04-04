@@ -34,8 +34,8 @@ export default function AdminScreen(props) {
           </button>
         </Link>
       </div>
-      <OrdersTable props={props} />
-      <ProductsTable props={props} />
+      <OrdersTable />
+      <ProductsTable />
     </motion.section>
   );
 }

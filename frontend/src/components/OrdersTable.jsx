@@ -10,6 +10,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { deleteOrder, listOrders } from "../actions/orderActions";
 import { ORDER_DELETE_RESET } from "../constants/orderConstants";
@@ -17,8 +18,9 @@ import { formatDateDay, formatName } from "../utils";
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
 
-export default function OrdersTable({ props }) {
+export default function OrdersTable() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const orderAdminList = useSelector((state) => state.orderAdminList);
   const { loading, orders, error } = orderAdminList;
   const orderDelete = useSelector((state) => state.orderDelete);
@@ -158,7 +160,7 @@ export default function OrdersTable({ props }) {
                           <button
                             className="secondary"
                             onClick={() =>
-                              props.history.push(`/cart/order/${order._id}`)
+                              navigate(`/cart/order/${order._id}`)
                             }
                           >
                             Details

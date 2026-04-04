@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
   createProduct,
@@ -26,8 +27,9 @@ import {
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
 
-export default function ProductsTable({ props }) {
+export default function ProductsTable() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
@@ -59,10 +61,10 @@ export default function ProductsTable({ props }) {
     }
     if (successCreate) {
       dispatch({ type: PRODUCT_CREATE_RESET });
-      props.history.push(`/admin/product/${createdProduct._id}/edit`);
+      navigate(`/admin/product/${createdProduct._id}/edit`);
       dispatch(listProducts());
     }
-  }, [dispatch, successDelete, successCreate, props, createdProduct]);
+  }, [dispatch, successDelete, successCreate, navigate, createdProduct]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -180,9 +182,7 @@ export default function ProductsTable({ props }) {
                           <button
                             className="secondary"
                             onClick={() =>
-                              props.history.push(
-                                `/admin/product/${product._id}/edit`
-                              )
+                              navigate(`/admin/product/${product._id}/edit`)
                             }
                           >
                             Edit
