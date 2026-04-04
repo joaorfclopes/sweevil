@@ -18,8 +18,6 @@ import CartScreen from "./screens/CartScreen";
 import ShippingScreen from "./screens/ShippingScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
-import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
-import ResetPasswordScreen from "./screens/ResetPasswordScreen";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import NotFoundScreen from "./screens/NotFoundScreen";
@@ -183,24 +181,6 @@ export default function App() {
                       ) : (
                         <Navigate to="/signin" replace />
                       )
-                    }
-                  />
-                  <Route
-                    path="/forgotPassword"
-                    element={
-                      <ForgotPasswordScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/resetPassword/:id"
-                    element={
-                      <ResetPasswordScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
                     }
                   />
                   <Route

@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .shipping {
   @include lg {
     @include margin-center;

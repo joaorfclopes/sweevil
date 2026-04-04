@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .gallery {
   @include lg {
     margin-left: 10%;

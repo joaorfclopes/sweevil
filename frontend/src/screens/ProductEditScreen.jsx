@@ -103,7 +103,7 @@ export default function ProductEditScreen(props) {
       setFinalPrice(product.finalPrice);
       setVisible(product.visible);
     }
-  }, [dispatch, product, productId, successUpdate, props]);
+  }, [dispatch, navigate, product, productId, successUpdate, props]);
 
   const submitHandler = (e) => {
     e.preventDefault();

@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .footer {
   @include lg {
     margin-left: 10%;

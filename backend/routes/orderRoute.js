@@ -78,9 +78,10 @@ orderRouter.get(
 
 orderRouter.post(
   "/",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      if (req.body.orderItems.length === 0) {
+      if (!Array.isArray(req.body.orderItems) || req.body.orderItems.length === 0) {
         res.status(400).send({ message: "Cart is empty" });
       } else {
         const order = new Order({
@@ -105,18 +106,20 @@ orderRouter.post(
 
 orderRouter.get(
   "/:id",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
-      res.send(order);
+      res.json(order);
     } else {
-      res.status(404).send({ message: "Order not found" });
+      res.status(404).json({ message: "Order not found" });
     }
   })
 );
 
 orderRouter.put(
   "/:id/pay",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
@@ -162,6 +165,7 @@ orderRouter.put(
 
 orderRouter.put(
   "/:id/cancel",
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {

@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function GalleryImage(props) {
-  const { galleryImage } = props;
+  const { galleryImage, onLoad } = props;
 
   return (
     <div className={`gallery-image ${galleryImage.category}`}>
@@ -9,7 +9,7 @@ export default function GalleryImage(props) {
         id={`${galleryImage._id}-gallery-img`}
         className="gallery-image-inner"
       >
-        <img src={galleryImage.image} alt={`${galleryImage.description}`} />
+        <img src={galleryImage.image} alt={`${galleryImage.description}`} onLoad={onLoad} />
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+@use '../general/globals' as *;
+
 .order {
   @include lg {
     @include margin-center;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { signin } from "../actions/userActions";
 import LoadingBox from "../components/LoadingBox";
@@ -63,9 +63,6 @@ export default function SigninScreen(props) {
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <label>
-                <Link to="/forgotPassword">Forgot Password</Link>
-              </label>
             </div>
             <div>
               <button className="primary" type="submit">
