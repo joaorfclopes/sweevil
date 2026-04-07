@@ -64,7 +64,8 @@ export default function App() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      $(".loading").css({ display: "none" });
+      const loadingEl = document.querySelector(".loading");
+      if (loadingEl) loadingEl.style.display = "none";
       document.body.classList.add("scroll");
       document.getElementById("root").classList.add("show");
       scroll();
