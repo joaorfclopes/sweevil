@@ -8,7 +8,9 @@ import {
 import { useSelector } from "react-redux";
 import $ from "jquery";
 import { AnimatePresence } from "framer-motion";
-import CookieConsent from "react-cookie-consent";
+const CookieConsent = React.lazy(() =>
+  import("react-cookie-consent").catch(() => ({ default: () => null }))
+);
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import SigninScreen from "./screens/SigninScreen";
@@ -199,13 +201,15 @@ export default function App() {
           )}
         </div>
         <ArrowUp />
-        <CookieConsent
-          containerClasses="cookie-consent"
-          contentClasses="cookie-consent-content custom-font"
-          buttonClasses="cookie-consent-btn custom-font"
-        >
-          This website uses cookies to enhance the user experience.
-        </CookieConsent>
+        <React.Suspense fallback={null}>
+          <CookieConsent
+            containerClasses="cookie-consent"
+            contentClasses="cookie-consent-content custom-font"
+            buttonClasses="cookie-consent-btn custom-font"
+          >
+            This website uses cookies to enhance the user experience.
+          </CookieConsent>
+        </React.Suspense>
       </div>
     </BrowserRouter>
   );
