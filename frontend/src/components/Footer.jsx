@@ -37,7 +37,7 @@ export default function Footer() {
             rel="noreferrer"
           >
             <Tooltip title="Instagram" placement="bottom">
-              <Instagram />
+              <span><Instagram /></span>
             </Tooltip>
           </a>
           <CopyToClipboard
@@ -45,7 +45,7 @@ export default function Footer() {
             onCopy={copied}
           >
             <Tooltip title="Email" placement="bottom">
-              <Email />
+              <span><Email /></span>
             </Tooltip>
           </CopyToClipboard>
           <a
@@ -54,7 +54,7 @@ export default function Footer() {
             rel="noreferrer"
           >
             <Tooltip title="Location" placement="bottom">
-              <Location />
+              <span><Location /></span>
             </Tooltip>
           </a>
         </div>
