@@ -19,7 +19,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express()
-const port = process.env.BACKEND_PORT || 5000
+const port = process.env.BACKEND_PORT || process.env.PORT || 5000
 
 mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil')
 
