@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as Lettering } from "../assets/svg/home/lettering.svg";
+import Lettering from "../assets/svg/home/lettering.svg?react";
 
 export default function Illustration(props) {
   return (

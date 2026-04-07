@@ -3,9 +3,9 @@ import { NavLink, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { useSelector } from "react-redux";
 import $ from "jquery";
-import { ReactComponent as Logo } from "../assets/svg/logo.svg";
-import { ReactComponent as Cart } from "../assets/svg/cart.svg";
-import { ReactComponent as Menu } from "../assets/svg/menu.svg";
+import Logo from "../assets/svg/logo.svg?react";
+import Cart from "../assets/svg/cart.svg?react";
+import Menu from "../assets/svg/menu.svg?react";
 import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
 import { disableScroll } from "../scroll";
 

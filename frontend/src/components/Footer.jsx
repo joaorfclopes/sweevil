@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Notyf } from "notyf";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Tooltip from "@mui/material/Tooltip";
-import { ReactComponent as ShopNow } from "../assets/svg/shop-now.svg";
-import { ReactComponent as Instagram } from "../assets/svg/instagram.svg";
-import { ReactComponent as Email } from "../assets/svg/email.svg";
-import { ReactComponent as Location } from "../assets/svg/location.svg";
-import { ReactComponent as DevLogo } from "../assets/svg/dev-logo.svg";
+import ShopNow from "../assets/svg/shop-now.svg?react";
+import Instagram from "../assets/svg/instagram.svg?react";
+import Email from "../assets/svg/email.svg?react";
+import Location from "../assets/svg/location.svg?react";
+import DevLogo from "../assets/svg/dev-logo.svg?react";
 
 export default function Footer() {
   const notyf = new Notyf();
@@ -32,7 +32,7 @@ export default function Footer() {
         <h1>Contacts</h1>
         <div className="contacts">
           <a
-            href={process.env.REACT_APP_INSTAGRAM_LINK}
+            href={import.meta.env.VITE_INSTAGRAM_LINK}
             target="_blank"
             rel="noreferrer"
           >
@@ -41,7 +41,7 @@ export default function Footer() {
             </Tooltip>
           </a>
           <CopyToClipboard
-            text={process.env.REACT_APP_SENDER_EMAIL_ADDRESS}
+            text={import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
             onCopy={copied}
           >
             <Tooltip title="Email" placement="bottom">
@@ -49,7 +49,7 @@ export default function Footer() {
             </Tooltip>
           </CopyToClipboard>
           <a
-            href={process.env.REACT_APP_LOCATION_LINK}
+            href={import.meta.env.VITE_LOCATION_LINK}
             target="_blank"
             rel="noreferrer"
           >
@@ -62,7 +62,7 @@ export default function Footer() {
       <p className="joao-lopes">
         developed by{" "}
         <a
-          href={process.env.REACT_APP_DEVELOPER_LINK}
+          href={import.meta.env.VITE_DEVELOPER_LINK}
           target="_blank"
           rel="noreferrer"
         >

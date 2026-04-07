@@ -7,7 +7,7 @@ import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
 import { filters } from "../utils";
-import { ReactComponent as GalleryLoader } from "../assets/svg/gallery-loader.svg";
+import GalleryLoader from "../assets/svg/gallery-loader.svg?react";
 
 export default function GalleryScreen() {
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ export default function GalleryScreen() {
   };
 
   const handleLoad = (id) => {
-    if (id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID) {
+    if (id === import.meta.env.VITE_LARGEST_GALLERY_IMAGE_ID) {
       setLargestImageLoaded(true);
       $(".gallery-images-container").addClass("show");
       $(".gallery-images-container").removeClass("hidden");
@@ -84,7 +84,7 @@ export default function GalleryScreen() {
   useEffect(() => {
     if (!loading && gallery && gallery.length > 0 && !largestImageLoaded) {
       const targetExists = gallery.some(
-        (img) => img._id === process.env.REACT_APP_LARGEST_GALLERY_IMAGE_ID
+        (img) => img._id === import.meta.env.VITE_LARGEST_GALLERY_IMAGE_ID
       );
       if (!targetExists) {
         setLargestImageLoaded(true);

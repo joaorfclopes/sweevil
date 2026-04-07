@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Placeholder from "../components/Placeholder";
-import { ReactComponent as Play } from "../assets/svg/play.svg";
+import Play from "../assets/svg/play.svg?react";
 
 export default function Video(props) {
   const [play, setPlay] = useState(false);
