@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import $ from "jquery";
 import Slider from "react-slick";
-import { ReactComponent as Home1 } from "../assets/svg/home/home1.svg";
-import { ReactComponent as Home2 } from "../assets/svg/home/home2.svg";
-import { ReactComponent as Home3 } from "../assets/svg/home/home3.svg";
-import { ReactComponent as Home4 } from "../assets/svg/home/home4.svg";
-import { ReactComponent as Emotion1 } from "../assets/svg/home/emotion1.svg";
-import { ReactComponent as Emotion2 } from "../assets/svg/home/emotion2.svg";
-import { ReactComponent as Emotion3 } from "../assets/svg/home/emotion3.svg";
-import { ReactComponent as Emotion4 } from "../assets/svg/home/emotion4.svg";
+import Home1 from "../assets/svg/home/home1.svg?react";
+import Home2 from "../assets/svg/home/home2.svg?react";
+import Home3 from "../assets/svg/home/home3.svg?react";
+import Home4 from "../assets/svg/home/home4.svg?react";
+import Emotion1 from "../assets/svg/home/emotion1.svg?react";
+import Emotion2 from "../assets/svg/home/emotion2.svg?react";
+import Emotion3 from "../assets/svg/home/emotion3.svg?react";
+import Emotion4 from "../assets/svg/home/emotion4.svg?react";
 import Illustration from "../components/Illustration";
 
 export default function HomeScreen(props) {

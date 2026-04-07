@@ -69,7 +69,7 @@ export default function App() {
       document.getElementById("root").classList.add("show");
       scroll();
       if (window.location.href.indexOf("#") > -1) {
-        window.location.href = `${process.env.REACT_APP_HOME_PAGE}/${window.location.hash}`;
+        window.location.href = `${import.meta.env.VITE_HOME_PAGE}/${window.location.hash}`;
         window.scrollBy(0, -130);
       }
     }, 1200);

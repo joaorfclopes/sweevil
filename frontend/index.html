@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Sweevil signature comes up from bounding sweet and evil, representing her work mainly based on the concept of duality and opposites, their equilibrium and interpretation of freedom. Her work is an invitation to embrace life observing both parts of every coin free from judgments."
+    />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Sweevil</title>
+    <style>
+      *,
+      ::after,
+      ::before {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        outline: none;
+      }
+      #root {
+        overflow-y: hidden;
+        overflow-x: hidden;
+      }
+      body.scroll {
+        overflow-y: scroll;
+      }
+      html,
+      body,
+      #root {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+      .loading {
+        position: fixed;
+        background-color: white;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100vh;
+        z-index: 1001;
+      }
+      .loading div {
+        width: 9rem;
+      }
+      @media (min-width: 768px) {
+        .loading div {
+          width: 13rem;
+        }
+      }
+      .loading div img {
+        width: 100%;
+      }
+      .loading .loading-box {
+        text-align: center;
+        position: relative;
+        z-index: 1001;
+      }
+      .loading .loading-box .spinner {
+        animation-name: spin;
+        animation-duration: 6000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        margin: auto !important;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div class="loading">
+      <div class="loading-box">
+        <img class="spinner" src="/icon.svg" alt="spinner" />
+      </div>
+    </div>
+    <div id="root"></div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+  <script>
+    const host = "www.sweevil.pt" || "sweevil.pt";
+    if (host == window.location.host && window.location.protocol != "https:") {
+      window.location.protocol = "https";
+    }
+  </script>
+</html>

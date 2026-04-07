@@ -1,6 +1,6 @@
 import React from "react";
 import { scrollTop } from "../utils.js";
-import { ReactComponent as Up } from "../assets/svg/up-arrow.svg";
+import Up from "../assets/svg/up-arrow.svg?react";
 
 export default function ArrowUp() {
   return (

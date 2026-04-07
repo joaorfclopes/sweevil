@@ -8,7 +8,7 @@ import MessageBox from "../components/MessageBox";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { sizes, toPrice, scrollTop } from "../utils";
 import { addToCart, removeFromCart } from "../actions/cartActions";
-import { ReactComponent as Remove } from "../assets/svg/remove.svg";
+import Remove from "../assets/svg/remove.svg?react";
 import PlaceHolder from "../components/Placeholder";
 
 export default function CartScreen(props) {
