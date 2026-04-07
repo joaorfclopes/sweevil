@@ -1,4 +1,4 @@
-const {
+import {
   GALLERY_IMAGE_LIST_FAIL,
   GALLERY_IMAGE_LIST_REQUEST,
   GALLERY_IMAGE_LIST_SUCCESS,
@@ -10,7 +10,7 @@ const {
   GALLERY_IMAGE_DELETE_SUCCESS,
   GALLERY_IMAGE_DELETE_FAIL,
   GALLERY_IMAGE_DELETE_RESET,
-} = require("../constants/galleryConstants");
+} from "../constants/galleryConstants";
 
 export const galleryImageListReducer = (state = { gallery: [] }, action) => {
   switch (action.type) {

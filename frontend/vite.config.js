@@ -20,6 +20,13 @@ export default defineConfig(({ mode }) => {
     },
     envDir: '../',
     envPrefix: 'VITE_',
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
     build: {
       outDir: 'build',
     },

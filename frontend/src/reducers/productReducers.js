@@ -1,4 +1,4 @@
-const {
+import {
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
   PRODUCT_LIST_FAIL,
@@ -17,7 +17,7 @@ const {
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_DELETE_RESET,
-} = require("../constants/productConstants");
+} from "../constants/productConstants";
 
 export const productListReducer = (state = { products: [] }, action) => {
   switch (action.type) {
