@@ -11,17 +11,17 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const products = await Product.find({});
     res.send(products);
-  })
+  }),
 );
 
 // Seed route - only available in development
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   productRouter.get(
     "/seed",
     expressAsyncHandler(async (req, res) => {
       const createdProducts = await Product.insertMany(data.products);
       res.send({ createdProducts });
-    })
+    }),
   );
 }
 
@@ -34,7 +34,7 @@ productRouter.get(
     } else {
       res.status(404).json({ message: "Product not Found" });
     }
-  })
+  }),
 );
 
 productRouter.post(
@@ -47,7 +47,7 @@ productRouter.post(
     });
     const createdProduct = await product.save();
     res.send({ message: "Product created", product: createdProduct });
-  })
+  }),
 );
 
 productRouter.put(
@@ -70,7 +70,7 @@ productRouter.put(
     } else {
       res.status(404).send({ message: "Product not Found" });
     }
-  })
+  }),
 );
 
 productRouter.delete(
@@ -80,12 +80,12 @@ productRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
-      const deletedProduct = await product.remove();
-      res.send({ message: "Product deleted", product: deletedProduct });
+      await product.deleteOne();
+      res.send({ message: "Product deleted", product });
     } else {
       res.status(404).send({ message: "Product not Found" });
     }
-  })
+  }),
 );
 
 export default productRouter;

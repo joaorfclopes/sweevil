@@ -23,8 +23,8 @@ orderRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
-      const deleteOrder = await order.remove();
-      res.send({ message: "Order deleted", order: deleteOrder });
+      await order.deleteOne();
+      res.send({ message: "Order deleted", order });
     } else {
       res.status(404).send({ message: "Order not found" });
     }
@@ -111,6 +111,10 @@ orderRouter.get(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
+      // Only the order owner or an admin may view the order
+      if (!req.user.isAdmin && order.user?.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
       res.json(order);
     } else {
       res.status(404).json({ message: "Order not found" });
@@ -124,6 +128,10 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
+      // Only the order owner may mark it as paid
+      if (order.user?.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
       order.isPaid = true;
       order.paidAt = Date.now();
       order.status = "PAID";
@@ -170,6 +178,10 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
+      // Only the order owner or an admin may cancel the order
+      if (!req.user.isAdmin && order.user?.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
       order.status = "CANCELED";
       if (order.isPaid) {
         order.orderItems.forEach(async (item) => {

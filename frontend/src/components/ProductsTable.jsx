@@ -54,14 +54,13 @@ export default function ProductsTable() {
     Math.min(rowsPerPage, (products && products.length) - page * rowsPerPage);
 
   useEffect(() => {
-    dispatch(listProducts());
     if (successDelete) {
       dispatch({ type: PRODUCT_DELETE_RESET });
       dispatch(listProducts());
-    }
-    if (successCreate) {
+    } else if (successCreate) {
       dispatch({ type: PRODUCT_CREATE_RESET });
       navigate(`/admin/product/${createdProduct._id}/edit`);
+    } else {
       dispatch(listProducts());
     }
   }, [dispatch, successDelete, successCreate, navigate, createdProduct]);

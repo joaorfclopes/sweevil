@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
@@ -18,7 +19,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express()
-const port = process.env.PORT || 5000
+const port = process.env.BACKEND_PORT || 5000
 
 mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/sweevil')
 
@@ -40,6 +41,14 @@ if (process.env.NODE_ENV === 'production') {
 app.use(helmet({ contentSecurityPolicy: false }))
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+app.use(globalLimiter)
 
 app.use('/api/users', userRoute)
 app.use('/api/products', productRoute)
