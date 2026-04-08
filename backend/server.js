@@ -48,7 +48,7 @@ const globalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 })
-app.use(globalLimiter)
+app.use('/api', globalLimiter)
 
 app.use('/api/users', userRoute)
 app.use('/api/products', productRoute)
