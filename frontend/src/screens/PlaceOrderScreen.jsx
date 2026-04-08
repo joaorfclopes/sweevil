@@ -31,9 +31,8 @@ export default function PlaceOrderScreen(props) {
   const placeOrderHandler = () => {
     dispatch(
       createOrder({
-        ...cart,
-        orderItems: cartItems,
-        status: "IN PROGRESS",
+        orderItems: cartItems.map(({ product, qty, size }) => ({ product, qty, size })),
+        shippingAddress,
       })
     );
   };
