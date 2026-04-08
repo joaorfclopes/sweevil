@@ -3,7 +3,13 @@
 header {
   padding: 1rem 3vw;
 }
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 main {
+  flex: 1;
   padding: 1rem 3vw;
 }
 section {
