@@ -80,28 +80,50 @@ orderRouter.post(
   "/",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    try {
-      if (!Array.isArray(req.body.orderItems) || req.body.orderItems.length === 0) {
-        res.status(400).send({ message: "Cart is empty" });
-      } else {
-        const order = new Order({
-          orderItems: req.body.orderItems,
-          shippingAddress: req.body.shippingAddress,
-          itemsQty: req.body.itemsQty,
-          itemsPrice: req.body.itemsPrice,
-          shippingPrice: req.body.shippingPrice,
-          totalPrice: req.body.totalPrice,
-          status: req.body.status,
-          user: req.user._id,
-        });
-        const createdOrder = await order.save();
-        res
-          .status(201)
-          .send({ message: "New order created", order: createdOrder });
-      }
-    } catch (error) {
-      res.status(401).send({ message: "Error creating order" });
+    const { orderItems, shippingAddress } = req.body;
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+      return res.status(400).send({ message: "Cart is empty" });
     }
+    const builtItems = [];
+    for (const item of orderItems) {
+      const qty = item.qty;
+      if (!Number.isInteger(qty) || qty <= 0) {
+        return res.status(400).send({ message: "Invalid quantity" });
+      }
+      const product = await Product.findById(item.product);
+      if (!product) {
+        return res.status(400).send({ message: "Product not found" });
+      }
+      builtItems.push({
+        product: product._id,
+        name: product.name,
+        image: product.images?.[0],
+        price: product.price,
+        isClothing: product.isClothing,
+        qty,
+        size: item.size,
+      });
+    }
+    const itemsPrice = parseFloat(
+      builtItems.reduce((a, c) => a + c.price * c.qty, 0).toFixed(2)
+    );
+    const shippingPrice = parseFloat(
+      (itemsPrice >= 40 ? 0 : 9.99).toFixed(2)
+    );
+    const totalPrice = parseFloat((itemsPrice + shippingPrice).toFixed(2));
+    const itemsQty = builtItems.reduce((a, c) => a + c.qty, 0);
+    const order = new Order({
+      orderItems: builtItems,
+      shippingAddress,
+      itemsQty,
+      itemsPrice,
+      shippingPrice,
+      totalPrice,
+      status: "IN PROGRESS",
+      user: req.user._id,
+    });
+    const createdOrder = await order.save();
+    res.status(201).send({ message: "New order created", order: createdOrder });
   })
 );
 
@@ -142,9 +164,7 @@ orderRouter.put(
         email_address: req.body.email_address,
       };
       order.orderItems.forEach(async (item) => {
-        const product = await Product.findOne({
-          name: item.name,
-        });
+        const product = await Product.findById(item.product);
         if (!product.isClothing) {
           product.countInStock.stock = product.countInStock.stock - item.qty;
         } else {
@@ -185,9 +205,7 @@ orderRouter.put(
       order.status = "CANCELED";
       if (order.isPaid) {
         order.orderItems.forEach(async (item) => {
-          const product = await Product.findOne({
-            name: item.name,
-          });
+          const product = await Product.findById(item.product);
           if (!product.isClothing) {
             product.countInStock.stock = product.countInStock.stock + item.qty;
           } else {
