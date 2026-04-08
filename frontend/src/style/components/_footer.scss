@@ -1,6 +1,7 @@
 @use '../general/globals' as *;
 
 .footer {
+  border-top: 1px solid #e0e0e0;
   @include lg {
     margin-left: 10%;
     margin-right: 10%;
@@ -8,7 +9,7 @@
   .line {
     width: 100%;
     height: 1px;
-    background-color: black;
+    background-color: #e0e0e0;
   }
   h1,
   p {
@@ -46,19 +47,20 @@
       }
     }
   }
-  .joao-lopes {
+  .legal-links {
     text-align: center;
-    font-size: 0.9rem;
+    padding: 16px 10px;
+    border-top: 1px solid #e0e0e0;
     a {
-      transition: 0.2s;
+      display: inline-block;
+      color: #999;
+      font-size: 0.75rem;
+      text-decoration: none;
+      margin: 4px 8px;
+      transition: color 0.2s;
       &:hover {
-        opacity: 0.4;
-        transition: 0.2s;
+        color: #555;
       }
-    }
-    svg {
-      width: 0.9rem;
-      vertical-align: middle;
     }
   }
 }

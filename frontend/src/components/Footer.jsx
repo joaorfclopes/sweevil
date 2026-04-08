@@ -7,9 +7,8 @@ import ShopNow from "../assets/svg/shop-now.svg?react";
 import Instagram from "../assets/svg/instagram.svg?react";
 import Email from "../assets/svg/email.svg?react";
 import Location from "../assets/svg/location.svg?react";
-import DevLogo from "../assets/svg/dev-logo.svg?react";
 
-export default function Footer() {
+export default function Footer({ showShopNow = false }) {
   const notyf = new Notyf();
 
   const copied = () => {
@@ -22,12 +21,16 @@ export default function Footer() {
 
   return (
     <footer className="footer custom-font">
-      <div className="shop-now">
-        <Link to="/shop">
-          <ShopNow />
-        </Link>
-      </div>
-      <div className="line"></div>
+      {showShopNow && (
+        <>
+          <div className="shop-now">
+            <Link to="/shop">
+              <ShopNow />
+            </Link>
+          </div>
+          <div className="line"></div>
+        </>
+      )}
       <div className="footer-content">
         <h1>Contacts</h1>
         <div className="contacts">
@@ -59,16 +62,15 @@ export default function Footer() {
           </a>
         </div>
       </div>
-      <p className="joao-lopes">
-        developed by{" "}
-        <a
-          href={import.meta.env.VITE_DEVELOPER_LINK}
-          target="_blank"
-          rel="noreferrer"
-        >
-          João Lopes <DevLogo />
-        </a>
-      </p>
+      <div className="legal-links">
+        <a href="/termos-e-condicoes">Termos e Condições</a>
+        <a href="/politica-de-privacidade">Política de Privacidade</a>
+        <a href="/politica-de-cookies">Política de Cookies</a>
+        <a href="/direito-de-arrependimento">Direito de Arrependimento</a>
+        <a href="/politica-de-devolucoes">Devoluções e Reembolsos</a>
+        <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">Livro de Reclamações</a>
+        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">Resolução de Litígios</a>
+      </div>
     </footer>
   );
 }

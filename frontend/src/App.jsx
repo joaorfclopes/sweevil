@@ -3,7 +3,8 @@ import {
   BrowserRouter,
   Navigate,
   Route,
-  Routes
+  Routes,
+  useLocation
 } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import $ from "jquery";
@@ -13,6 +14,7 @@ const CookieConsent = React.lazy(() =>
 );
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
+import Footer from "./components/Footer";
 import SigninScreen from "./screens/SigninScreen";
 import ShopScreen from "./screens/ShopScreen";
 import ProductScreen from "./screens/ProductScreen";
@@ -23,15 +25,24 @@ import OrderScreen from "./screens/OrderScreen";
 import AdminScreen from "./screens/AdminScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
 import NotFoundScreen from "./screens/NotFoundScreen";
+import TermosCondicoesScreen from "./screens/TermosCondicoesScreen";
+import PoliticaPrivacidadeScreen from "./screens/PoliticaPrivacidadeScreen";
+import PoliticaCookiesScreen from "./screens/PoliticaCookiesScreen";
+import DireitoArrependimentoScreen from "./screens/DireitoArrependimentoScreen";
+import PoliticaDevolucoes from "./screens/PoliticaDevolucoes";
 import MainScreen from "./screens/MainScreen";
 import ArrowUp from "./components/ArrowUp";
 
-export default function App() {
+function AppContent() {
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
+  const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+
+  const isAdmin = location.pathname.startsWith('/admin');
+  const isMain = location.pathname === '/';
 
   const scroll = () => {
     $(window).on("scroll", function () {
@@ -79,12 +90,12 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="App">
-        <div className="grid-container">
-          <Navbar scrolled={scrolled} />
-          <MenuMobile />
-          {!loading && (
+    <div className="App">
+      <div className="grid-container">
+        <Navbar scrolled={scrolled} />
+        <MenuMobile />
+        {!loading && (
+          <>
             <main>
               <AnimatePresence>
                 <Routes>
@@ -186,6 +197,11 @@ export default function App() {
                       )
                     }
                   />
+                  <Route path="/termos-e-condicoes" element={<TermosCondicoesScreen />} />
+                  <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadeScreen />} />
+                  <Route path="/politica-de-cookies" element={<PoliticaCookiesScreen />} />
+                  <Route path="/direito-de-arrependimento" element={<DireitoArrependimentoScreen />} />
+                  <Route path="/politica-de-devolucoes" element={<PoliticaDevolucoes />} />
                   <Route
                     path="*"
                     element={
@@ -198,19 +214,28 @@ export default function App() {
                 </Routes>
               </AnimatePresence>
             </main>
-          )}
-        </div>
-        <ArrowUp />
-        <React.Suspense fallback={null}>
-          <CookieConsent
-            containerClasses="cookie-consent"
-            contentClasses="cookie-consent-content custom-font"
-            buttonClasses="cookie-consent-btn custom-font"
-          >
-            This website uses cookies to enhance the user experience.
-          </CookieConsent>
-        </React.Suspense>
+            {!isAdmin && <Footer showShopNow={isMain} />}
+          </>
+        )}
       </div>
+      <ArrowUp />
+      <React.Suspense fallback={null}>
+        <CookieConsent
+          containerClasses="cookie-consent"
+          contentClasses="cookie-consent-content custom-font"
+          buttonClasses="cookie-consent-btn custom-font"
+        >
+          This website uses cookies to enhance the user experience.
+        </CookieConsent>
+      </React.Suspense>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppContent />
     </BrowserRouter>
   );
 }
