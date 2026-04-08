@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend": "nodemon --watch backend --signal SIGKILL --exec node backend/server.js",
+    "backend": "nodemon --watch backend --exec node backend/server.js",
     "backend:debug": "nodemon --inspect backend/server.js",
     "frontend": "node scripts/start-frontend.mjs",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
