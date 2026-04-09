@@ -5,6 +5,7 @@ import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { listGalleryImages } from "../actions/galleryActions";
+import useScrollLock from "../hooks/useScrollLock";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
@@ -20,6 +21,8 @@ export default function GalleryScreen() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [galleryExpanded, setGalleryExpanded] = useState(false);
+
+  useScrollLock(lightboxOpen);
 
   // Derive category list from the images that actually exist
   const categories = gallery
@@ -165,6 +168,7 @@ export default function GalleryScreen() {
                     view: ({ index }) => setLightboxIndex(index),
                   }}
                   plugins={[Captions]}
+                  noScroll={{ disabled: true }}
                 />
               </div>
             </div>
