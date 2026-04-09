@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
+import categoryRoute from './routes/categoryRoute.js'
 import emailRoute from './routes/emailRoute.js'
 import galleryImageRoute from './routes/galleryImageRoute.js'
 import orderRoute from './routes/orderRoute.js'
@@ -56,6 +57,7 @@ app.use('/api/orders', orderRoute)
 app.use('/api/uploads', uploadRoute)
 app.use('/api/email', emailRoute)
 app.use('/api/gallery', galleryImageRoute)
+app.use('/api/categories', categoryRoute)
 
 app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || 'sb')

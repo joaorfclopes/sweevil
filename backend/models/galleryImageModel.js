@@ -5,6 +5,7 @@ const galleryImageSchema = new mongoose.Schema(
     description: { type: String },
     image: { type: String, required: true, unique: true },
     category: { type: String, required: true },
+    order: { type: Number, default: 0 },
   },
   {
     timestamps: true,

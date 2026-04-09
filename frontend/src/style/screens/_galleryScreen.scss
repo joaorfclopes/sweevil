@@ -1,4 +1,4 @@
-@use '../general/globals' as *;
+@use "../general/globals" as *;
 
 .gallery {
   @include lg {
@@ -96,4 +96,56 @@
 .SRLCaptionText {
   font-family: $font !important;
   font-weight: bold !important;
+}
+
+:root {
+  --yarl__slide_description_text_align: center;
+}
+
+@include lg {
+  :root {
+    --yarl__slide_captions_container_padding: 16px 16px 30px;
+  }
+}
+
+.gallery-collapse-wrapper {
+  position: relative;
+  max-height: 750px;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, white);
+    pointer-events: none;
+  }
+
+  &.gallery-collapse-expanded {
+    max-height: none;
+    overflow: visible;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.gallery-collapse-toggle {
+  text-align: center;
+  padding: 16px 8px 8px;
+  cursor: pointer;
+  font-family: $font;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $secondaryColor;
+  }
 }

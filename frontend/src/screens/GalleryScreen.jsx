@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import Lightbox from "yet-another-react-lightbox";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import "yet-another-react-lightbox/plugins/captions.css";
 import { listGalleryImages } from "../actions/galleryActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
-import { filters } from "../utils";
 import GalleryLoader from "../assets/svg/gallery-loader.svg?react";
 
 export default function GalleryScreen() {
@@ -18,6 +19,12 @@ export default function GalleryScreen() {
   const [selectedFilter, setSelectedFilter] = useState("*");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [galleryExpanded, setGalleryExpanded] = useState(false);
+
+  // Derive category list from the images that actually exist
+  const categories = gallery
+    ? [...new Set(gallery.map((img) => img.category).filter(Boolean))]
+    : [];
 
   const handleClick = (e) => {
     setSelectedFilter(e);
@@ -34,12 +41,12 @@ export default function GalleryScreen() {
     }
     if (e === "*") {
       $("#filter-all").addClass("active");
-      filters.forEach((filter) => {
+      categories.forEach((filter) => {
         $(`#filter-${filter}`).removeClass("active");
       });
     } else {
       $("#filter-all").removeClass("active");
-      filters.forEach((filter) => {
+      categories.forEach((filter) => {
         if (e !== filter) {
           $(`#filter-${filter}`).removeClass("active");
         } else {
@@ -123,14 +130,14 @@ export default function GalleryScreen() {
                   All
                 </div>
               )}
-              {filters.map((filter) => (
+              {categories.map((cat) => (
                 <div
-                  key={filter}
-                  id={`filter-${filter}`}
+                  key={cat}
+                  id={`filter-${cat}`}
                   className="filter"
-                  onClick={() => handleClick(filter)}
+                  onClick={() => handleClick(cat)}
                 >
-                  {filter}
+                  {cat}
                 </div>
               ))}
             </div>
@@ -139,22 +146,36 @@ export default function GalleryScreen() {
                 <GalleryLoader />
               </div>
             )}
-            <div className="gallery-images-container hidden">
-              <div className="gallery-images">
-                {filteredGallery.map((galleryImage, index) =>
-                  galleryImg(galleryImage, index)
-                )}
+            <div className={`gallery-collapse-wrapper${galleryExpanded ? " gallery-collapse-expanded" : ""}`}>
+              <div className="gallery-images-container hidden">
+                <div className="gallery-images">
+                  {filteredGallery.map((galleryImage, index) =>
+                    galleryImg(galleryImage, index)
+                  )}
+                </div>
+                <Lightbox
+                  open={lightboxOpen}
+                  close={() => setLightboxOpen(false)}
+                  slides={filteredGallery.map((img) => ({
+                    src: img.image,
+                    description: img.description || undefined,
+                  }))}
+                  index={lightboxIndex}
+                  on={{
+                    view: ({ index }) => setLightboxIndex(index),
+                  }}
+                  plugins={[Captions]}
+                />
               </div>
-              <Lightbox
-                open={lightboxOpen}
-                close={() => setLightboxOpen(false)}
-                slides={filteredGallery.map((img) => ({ src: img.image }))}
-                index={lightboxIndex}
-                on={{
-                  view: ({ index }) => setLightboxIndex(index),
-                }}
-              />
             </div>
+            {largestImageLoaded && (
+              <div
+                className="gallery-collapse-toggle"
+                onClick={() => setGalleryExpanded((v) => !v)}
+              >
+                {galleryExpanded ? "Show less ↑" : "Show all ↓"}
+              </div>
+            )}
           </div>
         </div>
       )}

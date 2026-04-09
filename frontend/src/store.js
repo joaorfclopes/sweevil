@@ -25,7 +25,17 @@ import {
   userSigninReducer,
   userUpdateReducer,
 } from "./reducers/userReducers";
-import { galleryImageListReducer } from "./reducers/galleryReducers";
+import {
+  galleryImageListReducer,
+  galleryImageCreateReducer,
+  galleryImageUpdateReducer,
+  galleryImageDeleteReducer,
+} from "./reducers/galleryReducers";
+import {
+  categoryListReducer,
+  categoryCreateReducer,
+  categoryDeleteReducer,
+} from "./reducers/categoryReducers";
 
 const initialState = {
   userSignin: {
@@ -64,6 +74,12 @@ const reducer = combineReducers({
   orderDeliver: orderDeliverReducer,
   orderCancel: orderCancelReducer,
   galleryImageList: galleryImageListReducer,
+  galleryImageCreate: galleryImageCreateReducer,
+  galleryImageUpdate: galleryImageUpdateReducer,
+  galleryImageDelete: galleryImageDeleteReducer,
+  categoryList: categoryListReducer,
+  categoryCreate: categoryCreateReducer,
+  categoryDelete: categoryDeleteReducer,
 });
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
