@@ -75,7 +75,7 @@ export default function OrdersTable() {
 
   return (
     <div className="orders-table" style={{ marginBottom: "50px" }}>
-      <Paper className="paper">
+      <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
         {loading ? (

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { signout } from "../actions/userActions";
 import ProductsTable from "../components/ProductsTable";
 import OrdersTable from "../components/OrdersTable";
+import GalleryAdminTab from "../components/GalleryAdminTab";
 import { scrollTop } from "../utils.js";
 
 export default function AdminScreen(props) {
@@ -36,6 +37,7 @@ export default function AdminScreen(props) {
       </div>
       <OrdersTable />
       <ProductsTable />
+      <GalleryAdminTab />
     </motion.section>
   );
 }

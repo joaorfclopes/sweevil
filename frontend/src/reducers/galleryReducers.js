@@ -6,6 +6,10 @@ import {
   GALLERY_IMAGE_CREATE_SUCCESS,
   GALLERY_IMAGE_CREATE_FAIL,
   GALLERY_IMAGE_CREATE_RESET,
+  GALLERY_IMAGE_UPDATE_REQUEST,
+  GALLERY_IMAGE_UPDATE_SUCCESS,
+  GALLERY_IMAGE_UPDATE_FAIL,
+  GALLERY_IMAGE_UPDATE_RESET,
   GALLERY_IMAGE_DELETE_REQUEST,
   GALLERY_IMAGE_DELETE_SUCCESS,
   GALLERY_IMAGE_DELETE_FAIL,
@@ -34,6 +38,21 @@ export const galleryImageCreateReducer = (state = {}, action) => {
     case GALLERY_IMAGE_CREATE_FAIL:
       return { loading: false, error: action.payload };
     case GALLERY_IMAGE_CREATE_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const galleryImageUpdateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case GALLERY_IMAGE_UPDATE_REQUEST:
+      return { loading: true };
+    case GALLERY_IMAGE_UPDATE_SUCCESS:
+      return { loading: false, success: true, galleryImage: action.payload };
+    case GALLERY_IMAGE_UPDATE_FAIL:
+      return { loading: false, error: action.payload };
+    case GALLERY_IMAGE_UPDATE_RESET:
       return {};
     default:
       return state;
