@@ -30,10 +30,15 @@ import {
   ORDER_SEND_FAIL,
 } from "../constants/orderConstants";
 
-export const createOrder = (order) => async (dispatch) => {
+export const createOrder = (order) => async (dispatch, getState) => {
   dispatch({ type: ORDER_CREATE_REQUEST, payload: order });
+  const {
+    userSignin: { userInfo },
+  } = getState();
   try {
-    const { data } = await Axios.post("/api/orders", order);
+    const { data } = await Axios.post("/api/orders", order, {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    });
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: data.order });
     dispatch({ type: CART_EMPTY });
     localStorage.removeItem("cartItems");
@@ -71,12 +76,16 @@ export const detailsOrder = (orderId) => async (dispatch, getState) => {
   }
 };
 
-export const payOrder = (order, paymentResult) => async (dispatch) => {
+export const payOrder = (order, paymentResult) => async (dispatch, getState) => {
   dispatch({ type: ORDER_PAY_REQUEST, payload: { order, paymentResult } });
+  const {
+    userSignin: { userInfo },
+  } = getState();
   try {
     const { data } = await Axios.put(
       `/api/orders/${order._id}/pay`,
-      paymentResult
+      paymentResult,
+      { headers: { Authorization: `Bearer ${userInfo.token}` } }
     );
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
     // eslint-disable-next-line no-unused-vars
@@ -172,10 +181,15 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
   }
 };
 
-export const cancelOrder = (orderId) => async (dispatch) => {
+export const cancelOrder = (orderId) => async (dispatch, getState) => {
   dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
+  const {
+    userSignin: { userInfo },
+  } = getState();
   try {
-    const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, {});
+    const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, {}, {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    });
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
     if (data.order.isPaid) {
       // eslint-disable-next-line no-unused-vars
