@@ -76,7 +76,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = Axios.put(`/api/products/${product._id}`, product, {
+    const { data } = await Axios.put(`/api/products/${product._id}`, product, {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
@@ -100,7 +100,7 @@ export const deleteProduct = (productId) => async (dispatch, getState) => {
   } = getState();
   try {
     // eslint-disable-next-line no-unused-vars
-    const { data } = Axios.delete(`/api/products/${productId}`, {
+    const { data } = await Axios.delete(`/api/products/${productId}`, {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },

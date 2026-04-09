@@ -2,15 +2,38 @@ import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import data from "../data.js";
 import Product from "../models/productModel.js";
-import { isAuth, isAdmin } from "../utils.js";
+import { isAuth, isAdmin, optionalAuth } from "../utils.js";
 
 const productRouter = express.Router();
 
+// Cap each stock value at 5 and strip internal fields from public responses
+const toPublic = (product) => {
+  const { __v, createdAt, updatedAt, visible, countInStock, ...rest } =
+    product.toObject();
+  const cap = (val) => Math.min(val ?? 0, 5);
+  const stock = rest.isClothing
+    ? {
+        xs: cap(countInStock?.xs),
+        s: cap(countInStock?.s),
+        m: cap(countInStock?.m),
+        l: cap(countInStock?.l),
+        xl: cap(countInStock?.xl),
+        xxl: cap(countInStock?.xxl),
+      }
+    : { stock: cap(countInStock?.stock) };
+  return { ...rest, countInStock: stock };
+};
+
 productRouter.get(
   "/",
+  optionalAuth,
   expressAsyncHandler(async (req, res) => {
-    const products = await Product.find({});
-    res.send(products);
+    if (req.user?.isAdmin) {
+      const products = await Product.find({});
+      return res.send(products);
+    }
+    const products = await Product.find({ visible: true });
+    res.send(products.map(toPublic));
   }),
 );
 
@@ -27,13 +50,19 @@ if (process.env.NODE_ENV !== "production") {
 
 productRouter.get(
   "/:id",
+  optionalAuth,
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).json({ message: "Product not Found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not Found" });
     }
+    if (req.user?.isAdmin) {
+      return res.json(product);
+    }
+    if (!product.visible) {
+      return res.status(404).json({ message: "Product not Found" });
+    }
+    res.json(toPublic(product));
   }),
 );
 

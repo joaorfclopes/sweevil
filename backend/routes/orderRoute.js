@@ -101,7 +101,7 @@ orderRouter.post(
         price: product.price,
         isClothing: product.isClothing,
         qty,
-        size: item.size,
+        ...(product.isClothing && { size: item.size }),
       });
     }
     const itemsPrice = parseFloat(
