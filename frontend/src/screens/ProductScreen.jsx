@@ -7,6 +7,7 @@ import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSwipeable } from "react-swipeable";
 import Lightbox from "yet-another-react-lightbox";
+import useScrollLock from "../hooks/useScrollLock";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import Placeholder from "../components/Placeholder";
@@ -25,6 +26,8 @@ export default function ProductScreen(props) {
   const notyf = new Notyf();
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
+
+  useScrollLock(isOpen);
 
   useEffect(() => {
     scrollTop();
@@ -211,6 +214,7 @@ export default function ProductScreen(props) {
             on={{
               view: ({ index }) => setImageIndex(index),
             }}
+            noScroll={{ disabled: true }}
           />
           <div className="product-details">
             <h2 className="name custom-font">
