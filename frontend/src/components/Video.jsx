@@ -33,6 +33,12 @@ export default function Video(props) {
     };
   }, []);
 
+  const handlePlayClick = () => {
+    const videoElem = document.getElementById("video");
+    setPlay(true);
+    videoElem.play();
+  };
+
   return (
     <div className={`video ${props.mobile ? "mobile" : "desktop"}`}>
       <Placeholder height="100%">
@@ -47,7 +53,7 @@ export default function Video(props) {
           <source src={props.videoSrc} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="play">
+        <div className="play" onClick={handlePlayClick}>
           <Play />
         </div>
         <div className="poster">
