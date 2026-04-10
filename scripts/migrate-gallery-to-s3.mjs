@@ -43,11 +43,12 @@ const GalleryImage = mongoose.model("Gallery", gallerySchema);
 // ── S3 ───────────────────────────────────────────────────────────────────────
 
 const s3 = new S3Client({
-  region: process.env.AWS_REGION || "eu-west-3",
+  region: process.env.AWS_REGION || "us-east-1",
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
+  followRegionRedirects: true,
 });
 
 async function uploadToS3(filePath, filename) {
@@ -65,7 +66,7 @@ async function uploadToS3(filePath, filename) {
     })
   );
 
-  return `https://${S3_BUCKET}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${key}`;
+  return `https://${S3_BUCKET}.s3.eu-west-3.amazonaws.com/${key}`;
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
