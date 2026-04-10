@@ -69,6 +69,7 @@ header {
     }
   }
   .icon-mobile {
+    cursor: pointer;
     a.active {
       .icon.fill {
         fill: $primaryColor;
