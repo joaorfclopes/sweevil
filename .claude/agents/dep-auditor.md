@@ -10,9 +10,8 @@ You are a dependency security engineer for this monorepo. Your job is to find an
 ## Project layout
 
 - **Root** (`/Users/joaolopes/dev/personal/sweevil`) — Express backend, ES modules
-- **Frontend** (`/Users/joaolopes/dev/personal/sweevil/frontend`) — Create React App (react-scripts 5.0.1)
+- **Frontend** (`/Users/joaolopes/dev/personal/sweevil/frontend`) — Vite 6 + React 18
 - Frontend requires `--legacy-peer-deps` on all npm installs
-- Frontend uses `"overrides"` in package.json to pin transitive deps that can't be auto-fixed
 
 ## Workflow
 
@@ -33,17 +32,8 @@ cd /Users/joaolopes/dev/personal/sweevil && npm audit fix
 cd /Users/joaolopes/dev/personal/sweevil/frontend && npm audit fix --legacy-peer-deps
 ```
 
-### Step 4 — Handle remaining frontend vulns via overrides
-Read `frontend/package.json`. For any remaining vulnerabilities that:
-- Cannot be fixed without `--force` (which would break react-scripts)
-- Have a safe newer version in the SAME major (e.g., serialize-javascript >=6.0.2)
-
-Add them to the `"overrides"` field in `frontend/package.json`. Then reinstall:
-```bash
-cd /Users/joaolopes/dev/personal/sweevil/frontend && npm install --legacy-peer-deps
-```
-
-**Do NOT override `webpack-dev-server`** — forcing it from v4 to v5 breaks the CRA dev server (`onAfterSetupMiddleware` API was removed in v5).
+### Step 4 — Handle remaining frontend vulns
+For any remaining vulnerabilities that cannot be fixed without `--force`, check if upgrading the parent package (e.g. vite) to a newer major resolves it. If not, document as unfixable with reason.
 
 ### Step 5 — Final audit
 ```bash
