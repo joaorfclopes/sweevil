@@ -5,6 +5,7 @@ import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { listGalleryImages } from "../actions/galleryActions";
+import { listCategories } from "../actions/categoryActions";
 import useScrollLock from "../hooks/useScrollLock";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -15,6 +16,7 @@ export default function GalleryScreen() {
   const dispatch = useDispatch();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
+  const { categories: dbCategories = [] } = useSelector((state) => state.categoryList);
 
   const [largestImageLoaded, setLargestImageLoaded] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("*");
@@ -26,10 +28,11 @@ export default function GalleryScreen() {
 
   useScrollLock(lightboxOpen);
 
-  // Derive category list from the images that actually exist
-  const categories = gallery
-    ? [...new Set(gallery.map((img) => img.category).filter(Boolean))]
-    : [];
+  // Use ordered DB categories; fall back to image-derived names for any not yet synced
+  const dbCatNames = dbCategories.map((c) => c.name);
+  const imageCatNames = gallery ? [...new Set(gallery.map((img) => img.category).filter(Boolean))] : [];
+  const extras = imageCatNames.filter((n) => !dbCatNames.includes(n));
+  const categories = [...dbCatNames, ...extras];
 
   const handleClick = (e) => {
     setSelectedFilter(e);
@@ -89,6 +92,7 @@ export default function GalleryScreen() {
 
   useEffect(() => {
     dispatch(listGalleryImages());
+    dispatch(listCategories());
   }, [dispatch]);
 
   // Fallback: show gallery if the target image ID doesn't exist in the data,

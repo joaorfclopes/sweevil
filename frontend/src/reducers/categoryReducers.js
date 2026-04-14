@@ -6,6 +6,10 @@ import {
   CATEGORY_CREATE_SUCCESS,
   CATEGORY_CREATE_FAIL,
   CATEGORY_CREATE_RESET,
+  CATEGORY_UPDATE_REQUEST,
+  CATEGORY_UPDATE_SUCCESS,
+  CATEGORY_UPDATE_FAIL,
+  CATEGORY_UPDATE_RESET,
   CATEGORY_DELETE_REQUEST,
   CATEGORY_DELETE_SUCCESS,
   CATEGORY_DELETE_FAIL,
@@ -34,6 +38,21 @@ export const categoryCreateReducer = (state = {}, action) => {
     case CATEGORY_CREATE_FAIL:
       return { loading: false, error: action.payload };
     case CATEGORY_CREATE_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const categoryUpdateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case CATEGORY_UPDATE_REQUEST:
+      return { loading: true };
+    case CATEGORY_UPDATE_SUCCESS:
+      return { loading: false, success: true, category: action.payload };
+    case CATEGORY_UPDATE_FAIL:
+      return { loading: false, error: action.payload };
+    case CATEGORY_UPDATE_RESET:
       return {};
     default:
       return state;
