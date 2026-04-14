@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -64,6 +64,26 @@ import {
 } from "../constants/categoryConstants";
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
+
+// ─── Column layout helpers ────────────────────────────────────────────────────
+
+function getColCount() {
+  const w = window.innerWidth;
+  if (w >= 992) return 4;
+  if (w >= 768) return 3;
+  if (w >= 576) return 2;
+  return 1;
+}
+
+function useColCount() {
+  const [colCount, setColCount] = useState(getColCount);
+  useEffect(() => {
+    const onResize = () => setColCount(getColCount());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return colCount;
+}
 
 // ─── Sortable category chip ───────────────────────────────────────────────────
 
@@ -221,6 +241,9 @@ export default function GalleryAdminTab() {
   const [editDescription, setEditDescription] = useState("");
   const [editCategory, setEditCategory] = useState("");
 
+  // Gallery filter
+  const [filterCategory, setFilterCategory] = useState("*");
+
   // Category management
   const [catItems, setCatItems] = useState([]);
   const [activeCatId, setActiveCatId] = useState(null);
@@ -230,6 +253,21 @@ export default function GalleryAdminTab() {
   const syncedRef = useRef(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
+  const colCount = useColCount();
+
+  // Filtered view (display-only; doesn't affect drag-reorder order)
+  const displayItems = filterCategory === "*"
+    ? items
+    : items.filter((img) => img.category === filterCategory);
+
+  // Round-robin distribute items across columns for stable visual order
+  const adminColumns = useMemo(() => {
+    return Array.from({ length: colCount }, (_, ci) => {
+      const col = [];
+      for (let i = ci; i < displayItems.length; i += colCount) col.push(displayItems[i]);
+      return col;
+    });
+  }, [displayItems, colCount]);
 
   useEffect(() => {
     setItems(gallery);
@@ -552,6 +590,30 @@ export default function GalleryAdminTab() {
           />
         </div>
 
+        {/* ── Category filter ── */}
+        {allCategoryNames.length > 0 && (
+          <div style={{ padding: "4px 16px 12px", display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+            <span style={{ fontSize: "0.75rem", color: "#888", marginRight: 4, fontFamily: "inherit" }}>Filter:</span>
+            {[{ label: "All", value: "*" }, ...allCategoryNames.map((n) => ({ label: n, value: n }))].map(({ label, value }) => (
+              <div
+                key={value}
+                onClick={() => setFilterCategory(value)}
+                style={{
+                  display: "inline-flex", alignItems: "center",
+                  border: "1px solid rgba(0,0,0,0.12)", borderRadius: 16,
+                  padding: "2px 10px", fontSize: "0.8rem", fontFamily: "inherit",
+                  cursor: "pointer", userSelect: "none",
+                  background: filterCategory === value ? "#555" : "#e0e0e0",
+                  color: filterCategory === value ? "#fff" : "inherit",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+        )}
+
         <div style={{ padding: "0 16px 16px" }}>
           {loading ? (
             <LoadingBox lineHeight="30vh" />
@@ -565,16 +627,20 @@ export default function GalleryAdminTab() {
               onDragEnd={handleDragEnd}
               onDragCancel={() => setActiveId(null)}
             >
-              <SortableContext items={items.map((i) => i._id)} strategy={rectSortingStrategy}>
-                <div className="gallery-admin-masonry">
-                  {items.map((item) => (
-                    <SortableCard
-                      key={item._id}
-                      item={item}
-                      onEdit={openEdit}
-                      onDelete={handleDelete}
-                      isActive={item._id === activeId}
-                    />
+              <SortableContext items={displayItems.map((i) => i._id)} strategy={rectSortingStrategy}>
+                <div className="gallery-admin-flex">
+                  {adminColumns.map((col, ci) => (
+                    <div key={ci} className="gallery-admin-col">
+                      {col.map((item) => (
+                        <SortableCard
+                          key={item._id}
+                          item={item}
+                          onEdit={openEdit}
+                          onDelete={handleDelete}
+                          isActive={item._id === activeId}
+                        />
+                      ))}
+                    </div>
                   ))}
                 </div>
               </SortableContext>
@@ -583,9 +649,9 @@ export default function GalleryAdminTab() {
               </DragOverlay>
             </DndContext>
           )}
-          {!loading && !error && items.length === 0 && (
+          {!loading && !error && displayItems.length === 0 && (
             <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>
-              No images yet. Click + to add one.
+              {filterCategory === "*" ? "No images yet. Click + to add one." : `No images in "${filterCategory}".`}
             </p>
           )}
         </div>

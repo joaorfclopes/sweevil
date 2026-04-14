@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import Lightbox from "yet-another-react-lightbox";
@@ -10,7 +10,27 @@ import useScrollLock from "../hooks/useScrollLock";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import GalleryImage from "../components/GalleryImage";
-import GalleryLoader from "../assets/svg/gallery-loader.svg?react";
+
+const INITIAL_ROWS = 3;
+const ROWS_INCREMENT = 3;
+
+function getColCount() {
+  const w = window.innerWidth;
+  if (w >= 992) return 4;
+  if (w >= 768) return 3;
+  if (w >= 576) return 2;
+  return 1;
+}
+
+function useColCount() {
+  const [colCount, setColCount] = useState(getColCount);
+  useEffect(() => {
+    const onResize = () => setColCount(getColCount());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return colCount;
+}
 
 export default function GalleryScreen() {
   const dispatch = useDispatch();
@@ -18,13 +38,12 @@ export default function GalleryScreen() {
   const { loading, gallery, error } = galleryImageList;
   const { categories: dbCategories = [] } = useSelector((state) => state.categoryList);
 
-  const [largestImageLoaded, setLargestImageLoaded] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("*");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [galleryExpanded, setGalleryExpanded] = useState(false);
-  const [needsCollapse, setNeedsCollapse] = useState(false);
-  const galleryContentRef = useRef(null);
+  const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
+
+  const colCount = useColCount();
 
   useScrollLock(lightboxOpen);
 
@@ -64,73 +83,37 @@ export default function GalleryScreen() {
     }
   };
 
-  const handleLoad = (id) => {
-    if (id === import.meta.env.VITE_LARGEST_GALLERY_IMAGE_ID) {
-      setLargestImageLoaded(true);
-      $(".gallery-images-container").addClass("show");
-      $(".gallery-images-container").removeClass("hidden");
-    }
-  };
-
-  const galleryImg = (galleryImage, index) => {
-    return (
-      <div
-        key={galleryImage._id}
-        onClick={() => {
-          setLightboxIndex(index);
-          setLightboxOpen(true);
-        }}
-        style={{ cursor: 'pointer' }}
-      >
-        <GalleryImage
-          galleryImage={galleryImage}
-          onLoad={() => handleLoad(galleryImage._id)}
-        />
-      </div>
-    );
-  };
-
   useEffect(() => {
     dispatch(listGalleryImages());
     dispatch(listCategories());
   }, [dispatch]);
 
-  // Fallback: show gallery if the target image ID doesn't exist in the data,
-  // or if images were already cached and onLoad never fires.
+  // Reset pagination when filter changes
   useEffect(() => {
-    if (!loading && gallery && gallery.length > 0 && !largestImageLoaded) {
-      const targetExists = gallery.some(
-        (img) => img._id === import.meta.env.VITE_LARGEST_GALLERY_IMAGE_ID
-      );
-      if (!targetExists) {
-        setLargestImageLoaded(true);
-        $(".gallery-images-container").addClass("show");
-        $(".gallery-images-container").removeClass("hidden");
-      }
-    }
-  }, [gallery, loading, largestImageLoaded]);
+    setVisibleRows(INITIAL_ROWS);
+  }, [selectedFilter]);
 
   const getFilteredGallery = () => {
     if (!gallery) return [];
-    if (selectedFilter === "*") {
-      return gallery.filter(img => img.image);
-    }
-    return gallery.filter(img => img.category === selectedFilter);
+    if (selectedFilter === "*") return gallery.filter((img) => img.image);
+    return gallery.filter((img) => img.category === selectedFilter);
   };
 
   const filteredGallery = getFilteredGallery();
+  // visibleCount is always a multiple of colCount → every column gets the same number of images
+  const visibleCount = visibleRows * colCount;
+  const visibleGallery = filteredGallery.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredGallery.length;
 
-  // Check if content actually overflows the max-height, re-evaluate on filter change
-  useEffect(() => {
-    const el = galleryContentRef.current;
-    if (!el) return;
-    const COLLAPSE_MAX_HEIGHT = 750;
-    const check = () => setNeedsCollapse(el.scrollHeight > COLLAPSE_MAX_HEIGHT);
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [largestImageLoaded, filteredGallery]);
+  // Round-robin distribute images across columns so position is stable
+  // regardless of how many images are currently visible
+  const columns = Array.from({ length: colCount }, (_, ci) => {
+    const col = [];
+    for (let i = ci; i < visibleGallery.length; i += colCount) {
+      col.push({ img: visibleGallery[i], idx: i });
+    }
+    return col;
+  });
 
   return (
     <section className="gallery" id="gallery">
@@ -162,40 +145,58 @@ export default function GalleryScreen() {
                 </div>
               ))}
             </div>
-            {!largestImageLoaded && (
-              <div className="gallery-loading row center">
-                <GalleryLoader />
+            <div className="gallery-images-container show">
+              <div className="gallery-images-flex">
+                {columns.map((col, ci) => (
+                  <div key={ci} className="gallery-images-col">
+                    {col.map(({ img, idx }) => (
+                      <div
+                        key={img._id}
+                        onClick={() => {
+                          setLightboxIndex(idx);
+                          setLightboxOpen(true);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <GalleryImage galleryImage={img} />
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-            )}
-            <div className={`gallery-collapse-wrapper${galleryExpanded ? " gallery-collapse-expanded" : ""}`}>
-              <div className="gallery-images-container hidden" ref={galleryContentRef}>
-                <div className="gallery-images">
-                  {filteredGallery.map((galleryImage, index) =>
-                    galleryImg(galleryImage, index)
-                  )}
-                </div>
-                <Lightbox
-                  open={lightboxOpen}
-                  close={() => setLightboxOpen(false)}
-                  slides={filteredGallery.map((img) => ({
-                    src: img.image,
-                    description: img.description || undefined,
-                  }))}
-                  index={lightboxIndex}
-                  on={{
-                    view: ({ index }) => setLightboxIndex(index),
-                  }}
-                  plugins={[Captions]}
-                  noScroll={{ disabled: true }}
-                />
-              </div>
+              <Lightbox
+                open={lightboxOpen}
+                close={() => setLightboxOpen(false)}
+                slides={visibleGallery.map((img) => ({
+                  src: img.image,
+                  description: img.description || undefined,
+                }))}
+                index={lightboxIndex}
+                on={{
+                  view: ({ index }) => setLightboxIndex(index),
+                }}
+                plugins={[Captions]}
+                noScroll={{ disabled: true }}
+              />
             </div>
-            {largestImageLoaded && needsCollapse && (
-              <div
-                className="gallery-collapse-toggle"
-                onClick={() => setGalleryExpanded((v) => !v)}
-              >
-                {galleryExpanded ? "Show less ↑" : "Show all ↓"}
+            {(hasMore || visibleRows > INITIAL_ROWS) && (
+              <div className="gallery-collapse-toggle-row">
+                {visibleRows > INITIAL_ROWS && (
+                  <div
+                    className="gallery-collapse-toggle"
+                    onClick={() => setVisibleRows(INITIAL_ROWS)}
+                  >
+                    Show less ↑
+                  </div>
+                )}
+                {hasMore && (
+                  <div
+                    className="gallery-collapse-toggle"
+                    onClick={() => setVisibleRows((prev) => prev + ROWS_INCREMENT)}
+                  >
+                    Show more ↓
+                  </div>
+                )}
               </div>
             )}
           </div>
