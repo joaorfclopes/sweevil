@@ -1,8 +1,28 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import data from "../data.js";
 import GalleryImage from "../models/galleryImageModel.js";
 import { isAdmin, isAuth } from "../utils.js";
+
+function createS3Client() {
+  const config = { region: process.env.AWS_REGION || "us-east-1" };
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+    config.credentials = {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    };
+  }
+  return new S3Client(config);
+}
+
+function s3KeyFromUrl(url) {
+  try {
+    return new URL(url).pathname.slice(1); // strips leading "/"
+  } catch {
+    return null;
+  }
+}
 
 const galleryImageRouter = express.Router();
 
@@ -20,12 +40,12 @@ galleryImageRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const { image, description, category } = req.body;
-    const count = await GalleryImage.countDocuments();
+    await GalleryImage.updateMany({}, { $inc: { order: 1 } });
     const galleryImage = new GalleryImage({
       image,
       description: description || "",
       category,
-      order: count,
+      order: 0,
     });
     const created = await galleryImage.save();
     res.status(201).json(created);
@@ -80,6 +100,14 @@ galleryImageRouter.delete(
       return;
     }
     await galleryImage.deleteOne();
+
+    const key = s3KeyFromUrl(galleryImage.image);
+    if (key && process.env.AWS_S3_BUCKET) {
+      await createS3Client().send(
+        new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key })
+      );
+    }
+
     res.json({ message: "Image deleted" });
   })
 );

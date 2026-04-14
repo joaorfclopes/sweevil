@@ -8,7 +8,7 @@
  *   node scripts/migrate-gallery-to-s3.mjs --dry-run
  *
  * Requires the same .env as the backend (MONGODB_URL, AWS_REGION,
- * AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY).
+ * AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET).
  */
 
 import dotenv from "dotenv";
@@ -24,7 +24,6 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DRY_RUN = process.argv.includes("--dry-run");
 const IMAGES_DIR = path.join(__dirname, "../frontend/public/images");
-const S3_BUCKET = "sweevil";
 const S3_PREFIX = "store/";
 
 // ── MongoDB ──────────────────────────────────────────────────────────────────
@@ -36,20 +35,22 @@ const gallerySchema = new mongoose.Schema(
     category: String,
     order: Number,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 const GalleryImage = mongoose.model("Gallery", gallerySchema);
 
 // ── S3 ───────────────────────────────────────────────────────────────────────
 
-const s3 = new S3Client({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
+const s3ClientConfig = {
+  region: process.env.AWS_REGION || "eu-west-3",
+};
+if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+  s3ClientConfig.credentials = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-  followRegionRedirects: true,
-});
+  };
+}
+const s3 = new S3Client(s3ClientConfig);
 
 async function uploadToS3(filePath, filename) {
   const fileBuffer = fs.readFileSync(filePath);
@@ -58,21 +59,25 @@ async function uploadToS3(filePath, filename) {
 
   await s3.send(
     new PutObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: process.env.AWS_S3_BUCKET,
       Key: key,
       Body: fileBuffer,
       ContentType: contentType,
       ACL: "public-read",
-    })
+    }),
   );
 
-  return `https://${S3_BUCKET}.s3.eu-west-3.amazonaws.com/${key}`;
+  return `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${key}`;
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(DRY_RUN ? "🔍  DRY RUN — no changes will be made\n" : "🚀  Starting migration\n");
+  console.log(
+    DRY_RUN
+      ? "🔍  DRY RUN — no changes will be made\n"
+      : "🚀  Starting migration\n",
+  );
 
   await mongoose.connect(process.env.MONGODB_URL);
   console.log("✅  Connected to MongoDB\n");
@@ -118,16 +123,26 @@ async function main() {
     }
   }
 
-  console.log("\n── Summary ──────────────────────────────────────────────────");
+  console.log(
+    "\n── Summary ──────────────────────────────────────────────────",
+  );
   console.log(`  Migrated : ${results.success.length}`);
-  console.log(`  Missing  : ${results.missing.length}${results.missing.length ? " → " + results.missing.join(", ") : ""}`);
-  console.log(`  Failed   : ${results.failed.length}${results.failed.length ? " → " + results.failed.join(", ") : ""}`);
+  console.log(
+    `  Missing  : ${results.missing.length}${results.missing.length ? " → " + results.missing.join(", ") : ""}`,
+  );
+  console.log(
+    `  Failed   : ${results.failed.length}${results.failed.length ? " → " + results.failed.join(", ") : ""}`,
+  );
 
   if (!DRY_RUN && results.success.length > 0) {
     console.log("\n✅  Migration complete.");
-    console.log("   You can now safely delete frontend/public/images/ and remove it from git:");
+    console.log(
+      "   You can now safely delete frontend/public/images/ and remove it from git:",
+    );
     console.log("   git rm -r frontend/public/images/");
-    console.log("   git commit -m 'chore: remove local gallery images (migrated to S3)'");
+    console.log(
+      "   git commit -m 'chore: remove local gallery images (migrated to S3)'",
+    );
   }
 
   await mongoose.disconnect();

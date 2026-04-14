@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import Lightbox from "yet-another-react-lightbox";
@@ -21,6 +21,8 @@ export default function GalleryScreen() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [galleryExpanded, setGalleryExpanded] = useState(false);
+  const [needsCollapse, setNeedsCollapse] = useState(false);
+  const galleryContentRef = useRef(null);
 
   useScrollLock(lightboxOpen);
 
@@ -114,6 +116,18 @@ export default function GalleryScreen() {
 
   const filteredGallery = getFilteredGallery();
 
+  // Check if content actually overflows the max-height, re-evaluate on filter change
+  useEffect(() => {
+    const el = galleryContentRef.current;
+    if (!el) return;
+    const COLLAPSE_MAX_HEIGHT = 750;
+    const check = () => setNeedsCollapse(el.scrollHeight > COLLAPSE_MAX_HEIGHT);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [largestImageLoaded, filteredGallery]);
+
   return (
     <section className="gallery" id="gallery">
       {loading ? (
@@ -150,7 +164,7 @@ export default function GalleryScreen() {
               </div>
             )}
             <div className={`gallery-collapse-wrapper${galleryExpanded ? " gallery-collapse-expanded" : ""}`}>
-              <div className="gallery-images-container hidden">
+              <div className="gallery-images-container hidden" ref={galleryContentRef}>
                 <div className="gallery-images">
                   {filteredGallery.map((galleryImage, index) =>
                     galleryImg(galleryImage, index)
@@ -172,7 +186,7 @@ export default function GalleryScreen() {
                 />
               </div>
             </div>
-            {largestImageLoaded && (
+            {largestImageLoaded && needsCollapse && (
               <div
                 className="gallery-collapse-toggle"
                 onClick={() => setGalleryExpanded((v) => !v)}
