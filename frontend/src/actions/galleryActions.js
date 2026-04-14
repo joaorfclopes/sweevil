@@ -95,6 +95,9 @@ export const reorderGalleryImages = (items) => async (dispatch, getState) => {
       { headers: { Authorization: `Bearer ${userInfo.token}` } }
     );
     dispatch({ type: GALLERY_IMAGE_REORDER_SUCCESS });
+    // Sync Redux state with the new DB order
+    const { data } = await Axios.get("/api/gallery");
+    dispatch({ type: GALLERY_IMAGE_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: GALLERY_IMAGE_REORDER_FAIL,

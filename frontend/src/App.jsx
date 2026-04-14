@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 const CookieConsent = React.lazy(() =>
   import("react-cookie-consent").catch(() => ({ default: () => null }))
 );
+import { scrollWithOffset } from "./utils";
 import Navbar from "./components/Navbar";
 import MenuMobile from "./components/MenuMobile";
 import Footer from "./components/Footer";
@@ -82,12 +83,17 @@ function AppContent() {
       document.body.classList.add("scroll");
       document.getElementById("root").classList.add("show");
       scroll();
-      if (window.location.href.indexOf("#") > -1) {
-        window.location.href = `${import.meta.env.VITE_HOME_PAGE}/${window.location.hash}`;
-        window.scrollBy(0, -130);
-      }
     }, 1200);
   }, []);
+
+  // Scroll to hash section once content is rendered
+  useEffect(() => {
+    if (!loading && window.location.hash) {
+      const id = window.location.hash.slice(1);
+      const el = document.getElementById(id);
+      if (el) scrollWithOffset(el);
+    }
+  }, [loading]);
 
   return (
     <div className="App">
