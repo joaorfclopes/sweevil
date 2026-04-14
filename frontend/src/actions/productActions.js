@@ -17,20 +17,26 @@ import {
   PRODUCT_DETAILS_REQUEST,
 } from "../constants/productConstants";
 
-export const listProducts = () => async (dispatch) => {
+export const listProducts = () => async (dispatch, getState) => {
   dispatch({ type: PRODUCT_LIST_REQUEST });
+  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.get("/api/products");
+    const { data } = await Axios.get("/api/products", {
+      headers: userInfo ? { Authorization: `Bearer ${userInfo.token}` } : {},
+    });
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data.reverse() });
   } catch (error) {
     dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }
 };
 
-export const detailsProduct = (productId) => async (dispatch) => {
+export const detailsProduct = (productId) => async (dispatch, getState) => {
   dispatch({ type: PRODUCT_DETAILS_REQUEST });
+  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.get(`/api/products/${productId}`);
+    const { data } = await Axios.get(`/api/products/${productId}`, {
+      headers: userInfo ? { Authorization: `Bearer ${userInfo.token}` } : {},
+    });
     dispatch({ type: PRODUCT_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -43,21 +49,17 @@ export const detailsProduct = (productId) => async (dispatch) => {
   }
 };
 
-export const createProduct = () => async (dispatch, getState) => {
+export const createProduct = (product) => async (dispatch, getState) => {
   dispatch({ type: PRODUCT_CREATE_REQUEST });
   const {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = await Axios.post(
-      "/api/products",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-    );
+    const { data } = await Axios.post("/api/products", product, {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
     dispatch({ type: PRODUCT_CREATE_SUCCESS, payload: data.product });
   } catch (error) {
     dispatch({

@@ -99,9 +99,6 @@ export default function OrdersTable() {
               <Table className="table" aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>
-                      <b>ID</b>
-                    </TableCell>
                     <TableCell align="center">
                       <b>User</b>
                     </TableCell>
@@ -135,9 +132,6 @@ export default function OrdersTable() {
                       : orders
                     ).map((order) => (
                       <TableRow key={order._id}>
-                        <TableCell component="th" scope="row">
-                          {order._id}
-                        </TableCell>
                         <TableCell align="center">
                           {formatName(order.shippingAddress.fullName)}
                         </TableCell>
@@ -176,7 +170,7 @@ export default function OrdersTable() {
                     ))}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 69 * emptyRows }}>
-                      <TableCell colSpan={6} />
+                      <TableCell colSpan={7} />
                     </TableRow>
                   )}
                 </TableBody>

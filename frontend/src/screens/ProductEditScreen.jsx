@@ -1,18 +1,80 @@
 import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  createProduct,
   detailsProduct,
   listProducts,
   updateProduct,
 } from "../actions/productActions";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
-import { PRODUCT_UPDATE_RESET } from "../constants/productConstants";
+import { PRODUCT_CREATE_RESET, PRODUCT_DETAILS_RESET, PRODUCT_UPDATE_RESET } from "../constants/productConstants";
+
+function ImageCard({ item, isCover }) {
+  const src = item.type === "saved" ? item.url : item.preview;
+  return (
+    <div className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
+      <img src={src} alt="" style={{ opacity: item.type === "pending" ? 0.6 : 1 }} />
+    </div>
+  );
+}
+
+function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isActive ? 0 : 1 };
+  const src = item.type === "saved" ? item.url : item.preview;
+  const stop = (e) => e.stopPropagation();
+  return (
+    <div ref={setNodeRef} style={style} className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
+      <img src={src} alt="" style={{ opacity: item.type === "pending" ? 0.6 : 1 }} />
+      <div className="product-image-card-overlay">
+        <Tooltip title={isCover ? "Cover image" : "Set as cover"}>
+          <IconButton size="small" className={`product-image-icon-btn${isCover ? " product-image-icon-btn--star" : ""}`}
+            onPointerDown={stop} onClick={(e) => { stop(e); onSetCover(item); }}>
+            {isCover ? <StarIcon fontSize="small" /> : <StarBorderIcon fontSize="small" />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton size="small" className="product-image-icon-btn product-image-icon-btn--danger"
+            onPointerDown={stop} onClick={(e) => { stop(e); onDelete(item); }}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Drag to reorder">
+          <IconButton size="small" className="product-image-icon-btn product-image-drag-handle"
+            {...attributes} {...listeners}>
+            <DragIndicatorIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </div>
+    </div>
+  );
+}
 
 export default function ProductEditScreen(props) {
   const dispatch = useDispatch();
@@ -29,10 +91,26 @@ export default function ProductEditScreen(props) {
     success: successUpdate,
     error: errorUpdate,
   } = productUpdate;
+  const productCreate = useSelector((state) => state.productCreate);
+  const {
+    loading: loadingCreate,
+    success: successCreate,
+    error: errorCreate,
+  } = productCreate;
+
+  const isNew = productId === "new";
+
+  // Clear stale product from Redux on mount so we always fetch fresh data
+  useEffect(() => {
+    if (!isNew) dispatch({ type: PRODUCT_DETAILS_RESET });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId]);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [images, setImages] = useState([]);
+  // Each item: { id, type: 'saved', url } | { id, type: 'pending', file, preview }
+  const [imageItems, setImageItems] = useState([]);
+  const [activeImageId, setActiveImageId] = useState(null);
   const [category, setCategory] = useState("");
   const [isClothing, setIsClothing] = useState("");
   const [countInStock, setCountInStock] = useState("");
@@ -49,7 +127,8 @@ export default function ProductEditScreen(props) {
   const [finalPrice, setFinalPrice] = useState("");
   const [visible, setVisible] = useState(false);
 
-  const fileInput = useRef();
+  const fileInputRef = useRef();
+  const sensors = useSensors(useSensor(PointerSensor));
 
   const artworkOptions = ["Prints", "Paintings", "Carpets"];
 
@@ -64,18 +143,25 @@ export default function ProductEditScreen(props) {
   ];
 
   useEffect(() => {
+    if (successCreate) {
+      dispatch({ type: PRODUCT_CREATE_RESET });
+      dispatch(listProducts());
+      navigate("/admin");
+      return;
+    }
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET });
       dispatch(listProducts());
       navigate("/admin");
+      return;
     }
-    if (!product || product._id !== productId || successUpdate) {
-      dispatch({ type: PRODUCT_UPDATE_RESET });
+    if (isNew) return;
+    if (!product || product._id !== productId) {
       dispatch(detailsProduct(productId));
     } else {
       setName(product.name);
       setPrice(product.price);
-      setImages(product.images);
+      setImageItems((product.images || []).map((url) => ({ id: url, type: "saved", url })));
       setCategory(product.category || "Prints");
       if (product.category === "T-Shirts" || product.category === "Hoodies") {
         setIsClothing(true);
@@ -103,74 +189,106 @@ export default function ProductEditScreen(props) {
       setFinalPrice(product.finalPrice);
       setVisible(product.visible);
     }
-  }, [dispatch, navigate, product, productId, successUpdate, props]);
+  }, [dispatch, navigate, product, productId, successUpdate, successCreate, isNew, props]);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    if (!loadingUpload) {
-      dispatch(
-        updateProduct({
-          _id: productId,
-          name,
-          price,
-          images,
-          category,
-          isClothing,
-          countInStock: {
-            stock: countInStock,
-            xs: countInStockXS,
-            s: countInStockS,
-            m: countInStockM,
-            l: countInStockL,
-            xl: countInStockXL,
-            xxl: countInStockXXL,
-          },
-          description,
-          taxPrice,
-          finalPrice,
-          visible,
-        })
-      );
-    }
-  };
-
-  const uploadFileHandler = async (e) => {
+    if (loadingUpload) return;
     setLoadingUpload(true);
-    const files = fileInput.current.files;
-    const imagesArray = [...images];
+    setErrorUpload("");
+    const finalUrls = [];
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = e.target.files[i];
-        const bodyFormData = new FormData();
-        bodyFormData.append("image", file);
-        const { data } = await Axios.post("/api/uploads/s3", bodyFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        });
-        imagesArray.push(data);
+      for (const item of imageItems) {
+        if (item.type === "saved") {
+          finalUrls.push(item.url);
+        } else {
+          const formData = new FormData();
+          formData.append("image", item.file);
+          const { data } = await Axios.post("/api/uploads/s3", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          });
+          finalUrls.push(data.location);
+        }
       }
-      setImages(imagesArray);
+    } catch (err) {
+      setErrorUpload(err.response?.data?.message || err.message);
       setLoadingUpload(false);
-    } catch (error) {
-      setErrorUpload(error.message);
-      setLoadingUpload(false);
+      return;
+    }
+    setLoadingUpload(false);
+    const productData = {
+      name,
+      price,
+      images: finalUrls,
+      category,
+      isClothing,
+      countInStock: {
+        stock: countInStock,
+        xs: countInStockXS,
+        s: countInStockS,
+        m: countInStockM,
+        l: countInStockL,
+        xl: countInStockXL,
+        xxl: countInStockXXL,
+      },
+      description,
+      taxPrice,
+      finalPrice,
+      visible,
+    };
+    if (isNew) {
+      dispatch(createProduct(productData));
+    } else {
+      dispatch(updateProduct({ _id: productId, ...productData }));
     }
   };
 
-  const clearImages = () => {
-    Swal.fire({
-      title: `Clear Product Images?`,
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setImages([]);
-        Swal.fire("Cleared!", "", "success");
-      }
-    });
+  const handleFileInput = (files) => {
+    const newItems = Array.from(files).map((file) => ({
+      id: `pending-${Date.now()}-${Math.random()}`,
+      type: "pending",
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImageItems((prev) => [...prev, ...newItems]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    handleFileInput(e.dataTransfer.files);
+  };
+
+  const handleDeleteImage = (item) => {
+    if (item.type === "saved") {
+      Axios.delete("/api/uploads/s3", {
+        data: { url: item.url },
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      }).catch(() => {});
+    }
+    setImageItems((prev) => prev.filter((i) => i.id !== item.id));
+  };
+
+  const handleImageDragEnd = useCallback(({ active, over }) => {
+    setActiveImageId(null);
+    if (!over || active.id === over.id) return;
+    setImageItems((prev) => {
+      const oldIndex = prev.findIndex((i) => i.id === active.id);
+      const newIndex = prev.findIndex((i) => i.id === over.id);
+      return arrayMove(prev, oldIndex, newIndex);
+    });
+  }, []);
+
+  const handleSetCover = useCallback((item) => {
+    setImageItems((prev) => {
+      const idx = prev.findIndex((i) => i.id === item.id);
+      if (idx === 0) return prev;
+      return arrayMove(prev, idx, 0);
+    });
+  }, []);
 
   const setPriceAndTax = (val) => {
     setPrice(val);
@@ -203,17 +321,20 @@ export default function ProductEditScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      {loading ? (
+      {!isNew && loading ? (
         <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
+      ) : !isNew && error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <>
-          <h1>Edit {product && product.name ? product.name : "New Product"}</h1>
+          <h1>{isNew ? "New Product" : `Edit ${product?.name || ""}`}</h1>
           <form className="form" onSubmit={submitHandler}>
-            {loadingUpdate && <LoadingBox lineHeight="100vh" width="100px" />}
+            {(loadingUpdate || loadingCreate) && <LoadingBox lineHeight="100vh" width="100px" />}
             {errorUpdate && (
               <MessageBox variant="error">{errorUpdate}</MessageBox>
+            )}
+            {errorCreate && (
+              <MessageBox variant="error">{errorCreate}</MessageBox>
             )}
             <>
               <div>
@@ -238,38 +359,62 @@ export default function ProductEditScreen(props) {
                 />
               </div>
               <div>
-                <label htmlFor="imageFile">Image File</label>
+                <label>Images</label>
                 <input
-                  ref={fileInput}
+                  ref={fileInputRef}
                   type="file"
-                  id="imageFile"
-                  label="Choose image"
-                  onChange={uploadFileHandler}
+                  accept="image/*"
                   multiple
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFileInput(e.target.files)}
                 />
-                <button
-                  type="button"
-                  className="secondary clear-images-btn"
-                  onClick={clearImages}
-                >
-                  Clear Images
-                </button>
                 {loadingUpload && <LoadingBox />}
-                {errorUpload && !images && (
-                  <MessageBox variant="danger">{errorUpload}</MessageBox>
-                )}
-                <div className="preview">
-                  {images &&
-                    images.map((image) => (
-                      <LazyLoadImage
-                        key={image}
-                        src={image}
-                        alt="imagePreview"
-                        effect="blur"
-                        placeholderSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPcvQkAAi4Bb27G3QcAAAAASUVORK5CYII="
+                {errorUpload && <MessageBox variant="danger">{errorUpload}</MessageBox>}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={({ active }) => setActiveImageId(active.id)}
+                  onDragEnd={handleImageDragEnd}
+                  onDragCancel={() => setActiveImageId(null)}
+                >
+                  <div
+                    className="product-dropzone"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleDrop}
+                  >
+                    {imageItems.length === 0 ? (
+                      <span className="product-dropzone-placeholder" onClick={() => fileInputRef.current?.click()}>
+                        Click or drop images here
+                      </span>
+                    ) : (
+                      <SortableContext items={imageItems.map((i) => i.id)} strategy={rectSortingStrategy}>
+                        <div className="product-images-row">
+                          {imageItems.map((item, idx) => (
+                            <SortableImageCard
+                              key={item.id}
+                              item={item}
+                              isCover={idx === 0}
+                              onDelete={handleDeleteImage}
+                              onSetCover={handleSetCover}
+                              isActive={item.id === activeImageId}
+                            />
+                          ))}
+                          <div className="product-images-add-tile" onClick={() => fileInputRef.current?.click()}>
+                            <span>+</span>
+                          </div>
+                        </div>
+                      </SortableContext>
+                    )}
+                  </div>
+                  <DragOverlay>
+                    {activeImageId ? (
+                      <ImageCard
+                        item={imageItems.find((i) => i.id === activeImageId)}
+                        isCover={imageItems.findIndex((i) => i.id === activeImageId) === 0}
                       />
-                    ))}
-                </div>
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
               </div>
               <div>
                 <label htmlFor="category">Category</label>
@@ -386,9 +531,14 @@ export default function ProductEditScreen(props) {
               </div>
               <div>
                 <label />
-                <button className="primary" type="submit">
-                  Update
-                </button>
+                <div className="no-flex" style={{ display: "flex", gap: "8px" }}>
+                  <button className="secondary" type="button" onClick={() => navigate("/admin")} style={{ flex: 1 }}>
+                    Cancel
+                  </button>
+                  <button className="primary" type="submit" style={{ flex: 1 }}>
+                    {isNew ? "Create" : "Update"}
+                  </button>
+                </div>
               </div>
             </>
           </form>
