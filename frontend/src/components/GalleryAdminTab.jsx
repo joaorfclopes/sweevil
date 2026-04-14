@@ -246,7 +246,7 @@ export default function GalleryAdminTab() {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const { data } = await Axios.post("/api/uploads/s3", formData, {
+      const { data } = await Axios.post("/api/uploads/s3?folder=gallery", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userInfo.token}`,
