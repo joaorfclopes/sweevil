@@ -16,12 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
-  createProduct,
   deleteProduct,
   listProducts,
 } from "../actions/productActions";
 import {
-  PRODUCT_CREATE_RESET,
   PRODUCT_DELETE_RESET,
 } from "../constants/productConstants";
 import LoadingBox from "./LoadingBox";
@@ -39,14 +37,6 @@ export default function ProductsTable() {
     success: successDelete,
     error: errorDelete,
   } = productDelete;
-  const productCreate = useSelector((state) => state.productCreate);
-  const {
-    loading: loadingCreate,
-    success: successCreate,
-    product: createdProduct,
-    error: errorCreate,
-  } = productCreate;
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const emptyRows =
@@ -56,14 +46,9 @@ export default function ProductsTable() {
   useEffect(() => {
     if (successDelete) {
       dispatch({ type: PRODUCT_DELETE_RESET });
-      dispatch(listProducts());
-    } else if (successCreate) {
-      dispatch({ type: PRODUCT_CREATE_RESET });
-      navigate(`/admin/product/${createdProduct._id}/edit`);
-    } else {
-      dispatch(listProducts());
     }
-  }, [dispatch, successDelete, successCreate, navigate, createdProduct]);
+    dispatch(listProducts());
+  }, [dispatch, successDelete]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -96,7 +81,7 @@ export default function ProductsTable() {
   };
 
   const createHandler = () => {
-    dispatch(createProduct());
+    navigate("/admin/product/new/edit");
   };
 
   return (
@@ -104,12 +89,6 @@ export default function ProductsTable() {
       <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
-        {loadingCreate && <LoadingBox />}
-        {errorCreate && (
-          <MessageBox variant="error" dismissible>
-            {errorCreate}
-          </MessageBox>
-        )}
         {loading ? (
           <LoadingBox lineHeight="60vh" />
         ) : error ? (
@@ -136,9 +115,6 @@ export default function ProductsTable() {
               <Table className="table" aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>
-                      <b>ID</b>
-                    </TableCell>
                     <TableCell align="center">
                       <b>Name</b>
                     </TableCell>
@@ -166,9 +142,6 @@ export default function ProductsTable() {
                       : products
                     ).map((product) => (
                       <TableRow key={product._id}>
-                        <TableCell component="th" scope="row">
-                          {product._id}
-                        </TableCell>
                         <TableCell align="center">{product.name}</TableCell>
                         <TableCell align="center">
                           {product.price && product.price.toFixed(2)}€
@@ -197,7 +170,7 @@ export default function ProductsTable() {
                     ))}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 69 * emptyRows }}>
-                      <TableCell colSpan={6} />
+                      <TableCell colSpan={5} />
                     </TableRow>
                   )}
                 </TableBody>

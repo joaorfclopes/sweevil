@@ -159,7 +159,7 @@ export default function GalleryAdminTab() {
   // Upload dialog
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadPreview, setUploadPreview] = useState("");
-  const [uploadS3Url, setUploadS3Url] = useState("");
+  const [uploadFile, setUploadFile] = useState(null);
   const [uploadDescription, setUploadDescription] = useState("");
   const [uploadCategory, setUploadCategory] = useState("");
   const [uploadingToS3, setUploadingToS3] = useState(false);
@@ -230,34 +230,19 @@ export default function GalleryAdminTab() {
 
   const resetUploadForm = () => {
     setUploadPreview("");
-    setUploadS3Url("");
+    setUploadFile(null);
     setUploadDescription("");
     setUploadCategory(categories[0]?.name || "");
     setUploadS3Error("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0] || e.dataTransfer?.files?.[0];
     if (!file) return;
     setUploadPreview(URL.createObjectURL(file));
+    setUploadFile(file);
     setUploadS3Error("");
-    setUploadS3Url("");
-    setUploadingToS3(true);
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const { data } = await Axios.post("/api/uploads/s3?folder=gallery", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
-      setUploadS3Url(data.location);
-    } catch (err) {
-      setUploadS3Error(err.response?.data?.message || err.message);
-    } finally {
-      setUploadingToS3(false);
-    }
   };
 
   const handleDrop = (e) => {
@@ -265,9 +250,25 @@ export default function GalleryAdminTab() {
     handleFileChange({ target: { files: [e.dataTransfer.files[0]] } });
   };
 
-  const handleUploadSubmit = () => {
-    if (!uploadS3Url || !uploadCategory) return;
-    dispatch(createGalleryImage({ image: uploadS3Url, description: uploadDescription, category: uploadCategory }));
+  const handleUploadSubmit = async () => {
+    if (!uploadFile || !uploadCategory) return;
+    setUploadingToS3(true);
+    setUploadS3Error("");
+    try {
+      const formData = new FormData();
+      formData.append("image", uploadFile);
+      const { data } = await Axios.post("/api/uploads/s3?folder=gallery", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+      dispatch(createGalleryImage({ image: data.location, description: uploadDescription, category: uploadCategory }));
+    } catch (err) {
+      setUploadS3Error(err.response?.data?.message || err.message);
+    } finally {
+      setUploadingToS3(false);
+    }
   };
 
   // ── Edit ──
@@ -490,7 +491,7 @@ export default function GalleryAdminTab() {
         </DialogContent>
         <DialogActions>
           <button className="secondary" onClick={() => { setUploadOpen(false); resetUploadForm(); }}>Cancel</button>
-          <button className="primary" onClick={handleUploadSubmit} disabled={!uploadS3Url || uploadingToS3 || loadingCreate || !uploadCategory}>
+          <button className="primary" onClick={handleUploadSubmit} disabled={!uploadFile || uploadingToS3 || loadingCreate || !uploadCategory}>
             Add to Gallery
           </button>
         </DialogActions>

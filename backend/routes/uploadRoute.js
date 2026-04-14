@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { isAuth, isAdmin } from "../utils.js";
 import path from "path";
 
@@ -47,9 +47,30 @@ function createUpload() {
 uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
   createUpload().single("image")(req, res, (err) => {
     if (err) return next(err);
-    // Wrap in JSON so the response is never served as text/html
     res.json({ location: req.file.location });
   });
+});
+
+uploadRouter.delete("/s3", isAuth, isAdmin, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ message: "url is required" });
+  try {
+    const key = new URL(url).pathname.slice(1);
+    const s3ClientConfig = {
+      region: process.env.AWS_REGION || "us-east-1",
+    };
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+      s3ClientConfig.credentials = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      };
+    }
+    const s3 = new S3Client(s3ClientConfig);
+    await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 export default uploadRouter;
