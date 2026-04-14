@@ -6,6 +6,9 @@ import {
   CATEGORY_CREATE_REQUEST,
   CATEGORY_CREATE_SUCCESS,
   CATEGORY_CREATE_FAIL,
+  CATEGORY_UPDATE_REQUEST,
+  CATEGORY_UPDATE_SUCCESS,
+  CATEGORY_UPDATE_FAIL,
   CATEGORY_DELETE_REQUEST,
   CATEGORY_DELETE_SUCCESS,
   CATEGORY_DELETE_FAIL,
@@ -34,6 +37,35 @@ export const createCategory = (name) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: CATEGORY_CREATE_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const reorderCategories = (items) => async (dispatch, getState) => {
+  const { userSignin: { userInfo } } = getState();
+  try {
+    await Axios.patch("/api/categories/reorder", { items }, {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    });
+  } catch (error) {
+    // best-effort
+  }
+};
+
+export const updateCategory = (id, name) => async (dispatch, getState) => {
+  dispatch({ type: CATEGORY_UPDATE_REQUEST });
+  const { userSignin: { userInfo } } = getState();
+  try {
+    const { data } = await Axios.put(
+      `/api/categories/${id}`,
+      { name },
+      { headers: { Authorization: `Bearer ${userInfo.token}` } }
+    );
+    dispatch({ type: CATEGORY_UPDATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: CATEGORY_UPDATE_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }

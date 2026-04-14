@@ -34,6 +34,7 @@ import {
 import {
   categoryListReducer,
   categoryCreateReducer,
+  categoryUpdateReducer,
   categoryDeleteReducer,
 } from "./reducers/categoryReducers";
 
@@ -79,6 +80,7 @@ const reducer = combineReducers({
   galleryImageDelete: galleryImageDeleteReducer,
   categoryList: categoryListReducer,
   categoryCreate: categoryCreateReducer,
+  categoryUpdate: categoryUpdateReducer,
   categoryDelete: categoryDeleteReducer,
 });
 
