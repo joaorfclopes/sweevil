@@ -105,15 +105,28 @@ export default function GalleryScreen() {
   const visibleGallery = filteredGallery.slice(0, visibleCount);
   const hasMore = visibleCount < filteredGallery.length;
 
-  // Round-robin distribute images across columns so position is stable
-  // regardless of how many images are currently visible
-  const columns = Array.from({ length: colCount }, (_, ci) => {
-    const col = [];
-    for (let i = ci; i < visibleGallery.length; i += colCount) {
-      col.push({ img: visibleGallery[i], idx: i });
+  // Full rows round-robin, last partial row right-aligned so the gap falls on the left
+  const columns = (() => {
+    const n = visibleGallery.length;
+    const fullRows = Math.floor(n / colCount);
+    const extra = n % colCount;
+    const cols = Array.from({ length: colCount }, () => []);
+
+    for (let row = 0; row < fullRows; row++) {
+      for (let ci = 0; ci < colCount; ci++) {
+        const idx = row * colCount + ci;
+        cols[ci].push({ img: visibleGallery[idx], idx });
+      }
     }
-    return col;
-  });
+
+    const startCol = colCount - extra;
+    for (let i = 0; i < extra; i++) {
+      const idx = fullRows * colCount + i;
+      cols[startCol + i].push({ img: visibleGallery[idx], idx });
+    }
+
+    return cols;
+  })();
 
   return (
     <section className="gallery" id="gallery">

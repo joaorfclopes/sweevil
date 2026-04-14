@@ -260,13 +260,28 @@ export default function GalleryAdminTab() {
     ? items
     : items.filter((img) => img.category === filterCategory);
 
-  // Round-robin distribute items across columns for stable visual order
+  // Distribute items across columns: full rows round-robin, last partial row right-aligned
+  // so the visual gap (if any) is spread from the left rather than piling on col 0
   const adminColumns = useMemo(() => {
-    return Array.from({ length: colCount }, (_, ci) => {
-      const col = [];
-      for (let i = ci; i < displayItems.length; i += colCount) col.push(displayItems[i]);
-      return col;
-    });
+    const n = displayItems.length;
+    const fullRows = Math.floor(n / colCount);
+    const extra = n % colCount;
+    const cols = Array.from({ length: colCount }, () => []);
+
+    // Fill complete rows the same way as the public gallery
+    for (let row = 0; row < fullRows; row++) {
+      for (let ci = 0; ci < colCount; ci++) {
+        cols[ci].push(displayItems[row * colCount + ci]);
+      }
+    }
+
+    // Place remaining items right-aligned so they end in the rightmost columns
+    const startCol = colCount - extra;
+    for (let i = 0; i < extra; i++) {
+      cols[startCol + i].push(displayItems[fullRows * colCount + i]);
+    }
+
+    return cols;
   }, [displayItems, colCount]);
 
   useEffect(() => {
