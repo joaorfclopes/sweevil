@@ -2,11 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Start",
-      "type": "node-terminal",
+      "name": "Launch via NPM",
+      "type": "node",
       "request": "launch",
-      "command": "lsof -ti:3000,4040,5000,8080 2>/dev/null | xargs kill -9 2>/dev/null; npm start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "start:debug"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Backend",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
