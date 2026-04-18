@@ -41,6 +41,10 @@ categoryRouter.patch(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const { items } = req.body; // [{ _id, order }]
+    if (!Array.isArray(items)) {
+      res.status(400).json({ message: "Items must be an array" });
+      return;
+    }
     await Promise.all(
       items.map(({ _id, order }) => Category.findByIdAndUpdate(_id, { order }))
     );
