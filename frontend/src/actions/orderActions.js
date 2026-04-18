@@ -89,13 +89,17 @@ export const payOrder = (order, paymentResult) => async (dispatch, getState) => 
     );
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
     // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post("/api/email/placedOrder", {
-      order: order,
-    });
+    const { sendEmail } = await Axios.post(
+      "/api/email/placedOrder",
+      { order: order },
+      { headers: { Authorization: `Bearer ${userInfo.token}` } }
+    );
     // eslint-disable-next-line no-unused-vars
-    const { sendEmailAdmin } = await Axios.post("/api/email/placedOrderAdmin", {
-      order: order,
-    });
+    const { sendEmailAdmin } = await Axios.post(
+      "/api/email/placedOrderAdmin",
+      { order: order },
+      { headers: { Authorization: `Bearer ${userInfo.token}` } }
+    );
   } catch (error) {
     dispatch({
       type: ORDER_PAY_FAIL,
@@ -193,13 +197,16 @@ export const cancelOrder = (orderId) => async (dispatch, getState) => {
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
     if (data.order.isPaid) {
       // eslint-disable-next-line no-unused-vars
-      const { sendEmail } = await Axios.post("/api/email/cancelOrder", {
-        order: data.order,
-      });
+      const { sendEmail } = await Axios.post(
+        "/api/email/cancelOrder",
+        { order: data.order },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
       // eslint-disable-next-line no-unused-vars
       const { sendEmailAdmin } = await Axios.post(
         "/api/email/cancelOrderAdmin",
-        { order: data.order }
+        { order: data.order },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
     }
   } catch (error) {

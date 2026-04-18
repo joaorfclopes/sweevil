@@ -108,9 +108,7 @@ export default function OrderScreen(props) {
   };
 
   const onApprove = (data, actions) => {
-    return actions.order.capture().then((details) => {
-      dispatch(payOrder(order, details));
-    });
+    dispatch(payOrder(order, { orderID: data.orderID }));
   };
 
   const onError = (err) => {

@@ -6,6 +6,25 @@ import { isAdmin, isAuth } from "../utils.js";
 
 const orderRouter = express.Router();
 
+const getPayPalAccessToken = async () => {
+  const base = process.env.PAYPAL_API_BASE || "https://api-m.sandbox.paypal.com";
+  const resp = await fetch(`${base}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization:
+        "Basic " +
+        Buffer.from(
+          `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
+        ).toString("base64"),
+    },
+    body: "grant_type=client_credentials",
+  });
+  if (!resp.ok) throw new Error("PayPal auth failed");
+  const { access_token } = await resp.json();
+  return access_token;
+};
+
 orderRouter.get(
   "/",
   isAuth,
@@ -149,46 +168,81 @@ orderRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
-    if (order) {
-      // Only the order owner may mark it as paid
-      if (order.user?.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-      order.isPaid = true;
-      order.paidAt = Date.now();
-      order.status = "PAID";
-      order.paymentResult = {
-        id: req.body.id,
-        status: req.body.status,
-        update_time: req.body.update_time,
-        email_address: req.body.email_address,
-      };
-      order.orderItems.forEach(async (item) => {
-        const product = await Product.findById(item.product);
-        if (!product.isClothing) {
-          product.countInStock.stock = product.countInStock.stock - item.qty;
-        } else {
-          item.size === "XS"
-            ? (product.countInStock.xs = product.countInStock.xs - item.qty)
-            : item.size === "S"
-            ? (product.countInStock.s = product.countInStock.s - item.qty)
-            : item.size === "M"
-            ? (product.countInStock.m = product.countInStock.m - item.qty)
-            : item.size === "L"
-            ? (product.countInStock.l = product.countInStock.l - item.qty)
-            : item.size === "XL"
-            ? (product.countInStock.xl = product.countInStock.xl - item.qty)
-            : item.size === "XXL" &&
-              (product.countInStock.xxl = product.countInStock.xxl - item.qty);
-        }
-        // eslint-disable-next-line no-unused-vars
-        const updatedProduct = await product.save();
-      });
-      const updatedOrder = await order.save();
-      res.send({ message: "Order paid", order: updatedOrder });
-    } else {
-      res.status(404).send({ message: "Order not found" });
+    if (!order) return res.status(404).send({ message: "Order not found" });
+
+    if (order.user?.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Access denied" });
     }
+
+    const { orderID } = req.body;
+    if (!orderID || typeof orderID !== "string") {
+      return res.status(400).json({ message: "PayPal orderID is required" });
+    }
+
+    const base = process.env.PAYPAL_API_BASE || "https://api-m.sandbox.paypal.com";
+    const accessToken = await getPayPalAccessToken();
+    const captureResp = await fetch(
+      `${base}/v2/checkout/orders/${orderID}/capture`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!captureResp.ok) {
+      const err = await captureResp.json().catch(() => ({}));
+      return res.status(402).json({ message: "Payment capture failed", details: err });
+    }
+
+    const capture = await captureResp.json();
+    if (capture.status !== "COMPLETED") {
+      return res.status(402).json({ message: `Payment not completed: ${capture.status}` });
+    }
+
+    const capturedAmount = parseFloat(
+      capture.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ?? "0"
+    );
+    if (Math.abs(capturedAmount - order.totalPrice) > 0.01) {
+      return res.status(402).json({ message: "Captured amount does not match order total" });
+    }
+
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.status = "PAID";
+    order.paymentResult = {
+      id: capture.id,
+      status: capture.status,
+      update_time: capture.update_time,
+      email_address: capture.payer?.email_address,
+    };
+
+    order.orderItems.forEach(async (item) => {
+      const product = await Product.findById(item.product);
+      if (!product.isClothing) {
+        product.countInStock.stock = product.countInStock.stock - item.qty;
+      } else {
+        item.size === "XS"
+          ? (product.countInStock.xs = product.countInStock.xs - item.qty)
+          : item.size === "S"
+          ? (product.countInStock.s = product.countInStock.s - item.qty)
+          : item.size === "M"
+          ? (product.countInStock.m = product.countInStock.m - item.qty)
+          : item.size === "L"
+          ? (product.countInStock.l = product.countInStock.l - item.qty)
+          : item.size === "XL"
+          ? (product.countInStock.xl = product.countInStock.xl - item.qty)
+          : item.size === "XXL" &&
+            (product.countInStock.xxl = product.countInStock.xxl - item.qty);
+      }
+      // eslint-disable-next-line no-unused-vars
+      const updatedProduct = await product.save();
+    });
+
+    const updatedOrder = await order.save();
+    res.send({ message: "Order paid", order: updatedOrder });
   })
 );
 
