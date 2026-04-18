@@ -56,6 +56,9 @@ uploadRouter.delete("/s3", isAuth, isAdmin, async (req, res) => {
   if (!url) return res.status(400).json({ message: "url is required" });
   try {
     const key = new URL(url).pathname.slice(1);
+    if (!key.startsWith("store/") && !key.startsWith("gallery/")) {
+      return res.status(400).json({ message: "Invalid key" });
+    }
     const s3ClientConfig = {
       region: process.env.AWS_REGION || "us-east-1",
     };

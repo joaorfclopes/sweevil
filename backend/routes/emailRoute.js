@@ -8,27 +8,52 @@ import { sendOrder } from "../mailing/sendOrder.js";
 import { deliveredOrder } from "../mailing/deliveredOrder.js";
 import { cancelOrder } from "../mailing/cancelOrder.js";
 import { cancelOrderAdmin } from "../mailing/cancelOrderAdmin.js";
+import Order from "../models/orderModel.js";
 
 const emailRouter = express.Router();
 
-const sendEmail = (res, mailOptions) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
-      clientId: process.env.MAILING_SERVICE_CLIENT_ID,
-      clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
-      refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
-      accessToken: process.env.MAILING_SERVICE_ACCESS_TOKEN,
-    },
-  });
+let _etherealAccount = null;
 
+const getTransporter = async () => {
+  if (process.env.MAILING_SERVICE_CLIENT_ID) {
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
+        clientId: process.env.MAILING_SERVICE_CLIENT_ID,
+        clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
+        refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
+        accessToken: process.env.MAILING_SERVICE_ACCESS_TOKEN,
+      },
+    });
+  }
+
+  if (!_etherealAccount) {
+    _etherealAccount = await nodemailer.createTestAccount();
+    console.log(
+      `[email] Ethereal test account: ${_etherealAccount.user} / ${_etherealAccount.pass}`
+    );
+    console.log("[email] View sent emails at: https://ethereal.email/messages");
+  }
+
+  return nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: { user: _etherealAccount.user, pass: _etherealAccount.pass },
+  });
+};
+
+const sendEmail = async (res, mailOptions) => {
+  const transporter = await getTransporter();
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       res.send({ yo: "error" });
       console.log(error);
     } else {
+      const previewUrl = nodemailer.getTestMessageUrl(info);
+      if (previewUrl) console.log(`[email] Preview: ${previewUrl}`);
       res.send({ yo: info.response });
     }
   });
@@ -37,26 +62,31 @@ const sendEmail = (res, mailOptions) => {
 emailRouter.post(
   "/placedOrder",
   isAuth,
-  expressAsyncHandler((req, res) => {
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.user?.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: req.body.order.shippingAddress.email,
+      to: order.shippingAddress.email,
       subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
       html: placedOrder({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            fullName: req.body.order.shippingAddress.fullName,
-            address: req.body.order.shippingAddress.address,
-            country: req.body.order.shippingAddress.country,
-            postalCode: req.body.order.shippingAddress.postalCode,
-            city: req.body.order.shippingAddress.city,
+            fullName: order.shippingAddress.fullName,
+            address: order.shippingAddress.address,
+            country: order.shippingAddress.country,
+            postalCode: order.shippingAddress.postalCode,
+            city: order.shippingAddress.city,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };
@@ -67,28 +97,33 @@ emailRouter.post(
 emailRouter.post(
   "/placedOrderAdmin",
   isAuth,
-  expressAsyncHandler((req, res) => {
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
       subject: "A new order was placed!",
       html: placedOrderAdmin({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            email: req.body.order.shippingAddress.email,
-            phoneNumber: req.body.order.shippingAddress.phoneNumber,
-            fullName: req.body.order.shippingAddress.fullName,
-            address: req.body.order.shippingAddress.address,
-            country: req.body.order.shippingAddress.country,
-            postalCode: req.body.order.shippingAddress.postalCode,
-            city: req.body.order.shippingAddress.city,
+            email: order.shippingAddress.email,
+            phoneNumber: order.shippingAddress.phoneNumber,
+            fullName: order.shippingAddress.fullName,
+            address: order.shippingAddress.address,
+            country: order.shippingAddress.country,
+            postalCode: order.shippingAddress.postalCode,
+            city: order.shippingAddress.city,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };
@@ -99,26 +134,29 @@ emailRouter.post(
 emailRouter.post(
   "/sentOrder",
   isAuth,
-  expressAsyncHandler((req, res) => {
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: req.body.order.shippingAddress.email,
+      to: order.shippingAddress.email,
       subject: "Your order's on its way!",
       html: sendOrder({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            fullName: req.body.order.shippingAddress.fullName,
-            address: req.body.order.shippingAddress.address,
-            country: req.body.order.shippingAddress.country,
-            postalCode: req.body.order.shippingAddress.postalCode,
-            city: req.body.order.shippingAddress.city,
+            fullName: order.shippingAddress.fullName,
+            address: order.shippingAddress.address,
+            country: order.shippingAddress.country,
+            postalCode: order.shippingAddress.postalCode,
+            city: order.shippingAddress.city,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };
@@ -131,25 +169,27 @@ emailRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: req.body.order.shippingAddress.email,
+      to: order.shippingAddress.email,
       subject: "Thanks for your order!",
       html: deliveredOrder({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            fullName: req.body.order.shippingAddress.fullName,
-            address: req.body.order.shippingAddress.address,
-            country: req.body.order.shippingAddress.country,
-            postalCode: req.body.order.shippingAddress.postalCode,
-            city: req.body.order.shippingAddress.city,
+            fullName: order.shippingAddress.fullName,
+            address: order.shippingAddress.address,
+            country: order.shippingAddress.country,
+            postalCode: order.shippingAddress.postalCode,
+            city: order.shippingAddress.city,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };
@@ -161,21 +201,26 @@ emailRouter.post(
   "/cancelOrder",
   isAuth,
   expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: req.body.order.shippingAddress.email,
+      to: order.shippingAddress.email,
       subject: "Order Canceled!",
       html: cancelOrder({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            fullName: req.body.order.shippingAddress.fullName,
+            fullName: order.shippingAddress.fullName,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };
@@ -186,24 +231,29 @@ emailRouter.post(
 emailRouter.post(
   "/cancelOrderAdmin",
   isAuth,
-  expressAsyncHandler((req, res) => {
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.body.order?._id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({ message: "Access denied" });
+    }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
       subject: "Refund Request",
       html: cancelOrderAdmin({
         order: {
-          orderId: req.body.order._id,
-          orderDate: formatDate(req.body.order.createdAt),
+          orderId: order._id,
+          orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
-            fullName: req.body.order.shippingAddress.fullName,
-            email: req.body.order.shippingAddress.email,
-            phoneNumber: req.body.order.shippingAddress.phoneNumber,
+            fullName: order.shippingAddress.fullName,
+            email: order.shippingAddress.email,
+            phoneNumber: order.shippingAddress.phoneNumber,
           },
-          orderItems: req.body.order.orderItems,
-          itemsPrice: req.body.order.itemsPrice,
-          shippingPrice: req.body.order.shippingPrice,
-          totalPrice: req.body.order.totalPrice,
+          orderItems: order.orderItems,
+          itemsPrice: order.itemsPrice,
+          shippingPrice: order.shippingPrice,
+          totalPrice: order.totalPrice,
         },
       }),
     };

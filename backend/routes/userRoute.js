@@ -31,6 +31,9 @@ userRouter.post(
   "/signin",
   signinLimiter,
   expressAsyncHandler(async (req, res) => {
+    if (typeof req.body.email !== "string" || typeof req.body.password !== "string") {
+      return res.status(401).send({ message: "Invalid user email or password" });
+    }
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
