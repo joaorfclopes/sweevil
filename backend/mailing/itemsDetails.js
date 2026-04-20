@@ -7,7 +7,7 @@ const itemsDetails = (orderItems) =>
           <tr>
             <td width="110" valign="top">
               <a
-                href="${process.env.REACT_APP_HOME_PAGE}/shop/product/${
+                href="${process.env.VITE_HOME_PAGE}/shop/product/${
       item.product
     }"
                 rel="noreferrer"
@@ -71,7 +71,7 @@ const itemsDetails = (orderItems) =>
                     </td>
                   </tr>
                   ${
-                    item.size !== "" &&
+                    item.size && item.size !== "" &&
                     `<tr>
                   <td align="left">
                     <span

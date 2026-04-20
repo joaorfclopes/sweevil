@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import $ from "jquery";
@@ -24,11 +30,56 @@ import {
 } from "../constants/orderConstants";
 import PlaceHolder from "../components/Placeholder";
 
+function StripeCheckoutForm({ order, dispatch }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [paying, setPaying] = useState(false);
+  const [stripeError, setStripeError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    setPaying(true);
+    setStripeError("");
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: window.location.href },
+      redirect: "if_required",
+    });
+    if (error) {
+      setStripeError(error.message);
+      setPaying(false);
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      dispatch(payOrder(order, { paymentIntentId: paymentIntent.id }));
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement />
+      {stripeError && (
+        <MessageBox variant="error">{stripeError}</MessageBox>
+      )}
+      <button
+        type="submit"
+        disabled={!stripe || paying}
+        className="primary"
+        style={{ marginTop: "1rem", width: "100%" }}
+      >
+        {paying ? "Processing..." : `Pay €${order.totalPrice.toFixed(2)}`}
+      </button>
+    </form>
+  );
+}
+
 export default function OrderScreen(props) {
   const dispatch = useDispatch();
   const { id: orderId } = useParams();
+  const [searchParams] = useSearchParams();
 
-  const [paypalClientId, setPaypalClientId] = useState("");
+  const [stripePromise, setStripePromise] = useState(null);
+  const [clientSecret, setClientSecret] = useState("");
+  const handledRedirect = useRef(false);
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { loading, order, error } = orderDetails;
@@ -60,11 +111,6 @@ export default function OrderScreen(props) {
   } = orderCancel;
 
   useEffect(() => {
-    const loadPaypalClientId = async () => {
-      const { data } = await Axios.get("/api/config/paypal");
-      setPaypalClientId(data);
-    };
-
     if (
       !order ||
       successPay ||
@@ -78,42 +124,55 @@ export default function OrderScreen(props) {
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
       dispatch(detailsOrder(orderId));
-    } else {
-      if (!order.isPaid && !paypalClientId) {
-        loadPaypalClientId();
-      }
+      setClientSecret("");
     }
   }, [
     dispatch,
     orderId,
     order,
-    paypalClientId,
     successPay,
     successSend,
     successDeliver,
     successCancel,
   ]);
 
-  const createOrder = (data, actions) => {
-    return actions.order.create({
-      purchase_units: [
-        {
-          amount: {
-            value: order.totalPrice.toFixed(2),
-            currency_code: "EUR",
-          },
-        },
-      ],
-    });
-  };
+  useEffect(() => {
+    if (!order || order.isPaid || order.status === "CANCELED") return;
 
-  const onApprove = (data, actions) => {
-    dispatch(payOrder(order, { orderID: data.orderID }));
-  };
+    let cancelled = false;
+    const setupStripe = async () => {
+      const { data: publishableKey } = await Axios.get("/api/config/stripe");
+      if (cancelled) return;
+      setStripePromise(loadStripe(publishableKey));
+      const { data } = await Axios.post(
+        `/api/orders/${order._id}/create-payment-intent`,
+        {},
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      if (cancelled) return;
+      setClientSecret(data.clientSecret);
+    };
+    setupStripe();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order?._id]);
 
-  const onError = (err) => {
-    console.error("PayPal Error:", err);
-  };
+  useEffect(() => {
+    if (handledRedirect.current) return;
+    const paymentIntentId = searchParams.get("payment_intent");
+    const redirectStatus = searchParams.get("redirect_status");
+    if (
+      paymentIntentId &&
+      redirectStatus === "succeeded" &&
+      order &&
+      !order.isPaid
+    ) {
+      handledRedirect.current = true;
+      dispatch(payOrder(order, { paymentIntentId }));
+    }
+  }, [searchParams, order, dispatch]);
 
   const sendHandler = () => {
     Swal.fire({
@@ -281,8 +340,8 @@ export default function OrderScreen(props) {
               </h3>
             </div>
             {order.status !== "CANCELED" && !order.isPaid && (
-              <div className="paypal-button">
-                {!paypalClientId ? (
+              <div className="stripe-payment">
+                {!clientSecret || !stripePromise ? (
                   <LoadingBox />
                 ) : (
                   <>
@@ -290,19 +349,9 @@ export default function OrderScreen(props) {
                       <MessageBox variant="error">{errorPay}</MessageBox>
                     )}
                     {loadingPay && <LoadingBox />}
-                    <PayPalScriptProvider
-                      options={{
-                        "client-id": paypalClientId,
-                        currency: "EUR",
-                      }}
-                    >
-                      <PayPalButtons
-                        createOrder={createOrder}
-                        onApprove={onApprove}
-                        onError={onError}
-                        style={{ layout: "vertical" }}
-                      />
-                    </PayPalScriptProvider>
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <StripeCheckoutForm order={order} dispatch={dispatch} />
+                    </Elements>
                   </>
                 )}
               </div>

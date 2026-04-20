@@ -74,7 +74,7 @@ export const deliveredOrder = ({
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${process.env.REACT_APP_HOME_PAGE}"
+                          href="${process.env.VITE_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -262,7 +262,7 @@ export const deliveredOrder = ({
                                       >
                                         <a
                                           href="${
-                                            process.env.REACT_APP_HOME_PAGE
+                                            process.env.VITE_HOME_PAGE
                                           }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
@@ -871,7 +871,7 @@ export const deliveredOrder = ({
                                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
                                                 For more information please contact us at: ${
                                                   process.env
-                                                    .REACT_APP_SENDER_EMAIL_ADDRESS
+                                                    .VITE_SENDER_EMAIL_ADDRESS
                                                 }
                                                 </font>
                                               </td>
@@ -999,7 +999,7 @@ export const deliveredOrder = ({
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
                                   For any questions or information please contact us at: ${
-                                    process.env.REACT_APP_SENDER_EMAIL_ADDRESS
+                                    process.env.VITE_SENDER_EMAIL_ADDRESS
                                   }
                                 </font>
                               </td>

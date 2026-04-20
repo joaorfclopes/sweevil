@@ -35,7 +35,7 @@ export default function TermosCondicoesScreen() {
       <h2>4. Métodos de Pagamento</h2>
       <p>São aceites os seguintes métodos de pagamento:</p>
       <ul>
-        <li>PayPal</li>
+        <li>Cartão de crédito/débito (Stripe)</li>
         <li>Cartão de débito</li>
         <li>MB Way</li>
         <li>Revolut</li>

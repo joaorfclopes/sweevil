@@ -81,7 +81,7 @@ export const placedOrderAdmin = ({
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${process.env.REACT_APP_HOME_PAGE}"
+                          href="${process.env.VITE_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -269,7 +269,7 @@ export const placedOrderAdmin = ({
                                       >
                                         <a
                                           href="${
-                                            process.env.REACT_APP_HOME_PAGE
+                                            process.env.VITE_HOME_PAGE
                                           }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;

@@ -1,5 +1,5 @@
 export const resetPassword = ({ userInfo: { userId, email } }) => {
-  const resetPasswordLink = `${process.env.REACT_APP_HOME_PAGE}/resetPassword/${userId} ${email}`;
+  const resetPasswordLink = `${process.env.VITE_HOME_PAGE}/resetPassword/${userId} ${email}`;
 
   return `<!DOCTYPE html>
   <html lang="en">
@@ -63,7 +63,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${process.env.REACT_APP_HOME_PAGE}"
+                          href="${process.env.VITE_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -602,7 +602,7 @@ export const resetPassword = ({ userInfo: { userId, email } }) => {
                                 "
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
-                                  For any questions or information please contact us at: ${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}
+                                  For any questions or information please contact us at: ${process.env.VITE_SENDER_EMAIL_ADDRESS}
                                 </font>
                               </td>
                             </tr>

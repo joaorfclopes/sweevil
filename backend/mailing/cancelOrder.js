@@ -74,7 +74,7 @@ export const cancelOrder = ({
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${process.env.REACT_APP_HOME_PAGE}"
+                          href="${process.env.VITE_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -262,7 +262,7 @@ export const cancelOrder = ({
                                       >
                                         <a
                                           href="${
-                                            process.env.REACT_APP_HOME_PAGE
+                                            process.env.VITE_HOME_PAGE
                                           }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
@@ -402,7 +402,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                We have processed your refund and it should reflect in your PayPal account in the 2-3 business days!
+                                                We have processed your refund and it should reflect in your original payment method in 5-10 business days!
                                                 </font>
                                               </td>
                                             </tr>
@@ -472,7 +472,7 @@ export const cancelOrder = ({
                                                 >
                                                 For any questions or information please contact us at: ${
                                                   process.env
-                                                    .REACT_APP_SENDER_EMAIL_ADDRESS
+                                                    .VITE_SENDER_EMAIL_ADDRESS
                                                 }
                                                 </font>
                                               </td>
@@ -808,7 +808,7 @@ export const cancelOrder = ({
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
                                   For any questions or information please contact us at: ${
-                                    process.env.REACT_APP_SENDER_EMAIL_ADDRESS
+                                    process.env.VITE_SENDER_EMAIL_ADDRESS
                                   }
                                 </font>
                               </td>

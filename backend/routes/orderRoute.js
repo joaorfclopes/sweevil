@@ -1,28 +1,16 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
+import Stripe from "stripe";
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
 import { isAdmin, isAuth } from "../utils.js";
 
 const orderRouter = express.Router();
 
-const getPayPalAccessToken = async () => {
-  const base = process.env.PAYPAL_API_BASE || "https://api-m.sandbox.paypal.com";
-  const resp = await fetch(`${base}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization:
-        "Basic " +
-        Buffer.from(
-          `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
-        ).toString("base64"),
-    },
-    body: "grant_type=client_credentials",
-  });
-  if (!resp.ok) throw new Error("PayPal auth failed");
-  const { access_token } = await resp.json();
-  return access_token;
+let _stripe;
+const getStripe = () => {
+  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  return _stripe;
 };
 
 orderRouter.get(
@@ -163,6 +151,28 @@ orderRouter.get(
   })
 );
 
+orderRouter.post(
+  "/:id/create-payment-intent",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).send({ message: "Order not found" });
+    if (order.user?.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    if (order.isPaid) {
+      return res.status(400).json({ message: "Order already paid" });
+    }
+    const paymentIntent = await getStripe().paymentIntents.create({
+      amount: Math.round(order.totalPrice * 100),
+      currency: "eur",
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      metadata: { orderId: order._id.toString() },
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  })
+);
+
 orderRouter.put(
   "/:id/pay",
   isAuth,
@@ -174,49 +184,28 @@ orderRouter.put(
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const { orderID } = req.body;
-    if (!orderID || typeof orderID !== "string") {
-      return res.status(400).json({ message: "PayPal orderID is required" });
+    const { paymentIntentId } = req.body;
+    if (!paymentIntentId || typeof paymentIntentId !== "string") {
+      return res.status(400).json({ message: "paymentIntentId is required" });
     }
 
-    const base = process.env.PAYPAL_API_BASE || "https://api-m.sandbox.paypal.com";
-    const accessToken = await getPayPalAccessToken();
-    const captureResp = await fetch(
-      `${base}/v2/checkout/orders/${orderID}/capture`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (!captureResp.ok) {
-      const err = await captureResp.json().catch(() => ({}));
-      return res.status(402).json({ message: "Payment capture failed", details: err });
+    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
+    if (paymentIntent.status !== "succeeded") {
+      return res.status(402).json({ message: `Payment not succeeded: ${paymentIntent.status}` });
     }
 
-    const capture = await captureResp.json();
-    if (capture.status !== "COMPLETED") {
-      return res.status(402).json({ message: `Payment not completed: ${capture.status}` });
-    }
-
-    const capturedAmount = parseFloat(
-      capture.purchase_units?.[0]?.payments?.captures?.[0]?.amount?.value ?? "0"
-    );
-    if (Math.abs(capturedAmount - order.totalPrice) > 0.01) {
-      return res.status(402).json({ message: "Captured amount does not match order total" });
+    if (Math.abs(paymentIntent.amount_received - Math.round(order.totalPrice * 100)) > 1) {
+      return res.status(402).json({ message: "Payment amount does not match order total" });
     }
 
     order.isPaid = true;
     order.paidAt = Date.now();
     order.status = "PAID";
     order.paymentResult = {
-      id: capture.id,
-      status: capture.status,
-      update_time: capture.update_time,
-      email_address: capture.payer?.email_address,
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      update_time: new Date(paymentIntent.created * 1000).toISOString(),
+      email_address: paymentIntent.receipt_email || "",
     };
 
     order.orderItems.forEach(async (item) => {
