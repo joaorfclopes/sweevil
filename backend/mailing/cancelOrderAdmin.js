@@ -74,7 +74,7 @@ export const cancelOrderAdmin = ({
                     <tr>
                       <td width="640" height="64" align="center">
                         <a
-                          href="${process.env.REACT_APP_HOME_PAGE}"
+                          href="${process.env.VITE_HOME_PAGE}"
                           rel="noreferrer"
                           target="_blank"
                         >
@@ -264,7 +264,7 @@ export const cancelOrderAdmin = ({
                                       >
                                         <a
                                           href="${
-                                            process.env.REACT_APP_HOME_PAGE
+                                            process.env.VITE_HOME_PAGE
                                           }/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
@@ -472,16 +472,12 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Access your PayPal Business account and refund ${totalPrice.toFixed(
+                                                  Access your Stripe Dashboard and refund ${totalPrice.toFixed(
                                                     2
                                                   )}€ to ${formatName(
     fullName
-  )} here: 
-                                                  ${
-                                                    process.env
-                                                      .PAYPAL_BUSINESS_LINK ||
-                                                    "https://www.sandbox.paypal.com/activities"
-                                                  }
+  )} here:
+                                                  https://dashboard.stripe.com/payments
                                                 </font>
                                               </td>
                                           </tr>

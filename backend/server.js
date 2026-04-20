@@ -59,8 +59,8 @@ app.use('/api/email', emailRoute)
 app.use('/api/gallery', galleryImageRoute)
 app.use('/api/categories', categoryRoute)
 
-app.get('/api/config/paypal', (req, res) => {
-  res.send(process.env.PAYPAL_CLIENT_ID || 'sb')
+app.get('/api/config/stripe', (req, res) => {
+  res.send(process.env.STRIPE_PUBLISHABLE_KEY || '')
 })
 
 const __dirname = path.resolve()

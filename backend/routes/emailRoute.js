@@ -20,7 +20,7 @@ const getTransporter = async () => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
+        user: process.env.VITE_SENDER_EMAIL_ADDRESS,
         clientId: process.env.MAILING_SERVICE_CLIENT_ID,
         clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
         refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
@@ -69,7 +69,7 @@ emailRouter.post(
       return res.status(403).json({ message: "Access denied" });
     }
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
       subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
       html: placedOrder({
@@ -104,8 +104,8 @@ emailRouter.post(
       return res.status(403).json({ message: "Access denied" });
     }
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
       subject: "A new order was placed!",
       html: placedOrderAdmin({
         order: {
@@ -139,7 +139,7 @@ emailRouter.post(
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: "Order not found" });
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
       subject: "Your order's on its way!",
       html: sendOrder({
@@ -172,7 +172,7 @@ emailRouter.post(
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: "Order not found" });
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
       subject: "Thanks for your order!",
       html: deliveredOrder({
@@ -207,7 +207,7 @@ emailRouter.post(
       return res.status(403).json({ message: "Access denied" });
     }
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
       subject: "Order Canceled!",
       html: cancelOrder({
@@ -238,8 +238,8 @@ emailRouter.post(
       return res.status(403).json({ message: "Access denied" });
     }
     const mailOptions = {
-      from: `${process.env.SENDER_USER_NAME} <${process.env.REACT_APP_SENDER_EMAIL_ADDRESS}>`,
-      to: process.env.REACT_APP_SENDER_EMAIL_ADDRESS,
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
       subject: "Refund Request",
       html: cancelOrderAdmin({
         order: {

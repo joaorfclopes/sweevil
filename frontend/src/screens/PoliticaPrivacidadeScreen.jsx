@@ -41,7 +41,7 @@ export default function PoliticaPrivacidadeScreen() {
       <p>
         Os dados pessoais poderão ser partilhados com as transportadoras (CTT,
         DPD, DHL, GLS) exclusivamente para efeitos de entrega da encomenda, e
-        com o processador de pagamentos (PayPal) para processamento da
+        com o processador de pagamentos (Stripe) para processamento da
         transação. Não partilhamos dados com terceiros para fins de marketing
         ou publicidade.
       </p>

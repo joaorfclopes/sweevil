@@ -46,7 +46,7 @@ export default function PoliticaDevolucoes() {
         original:
       </p>
       <ul>
-        <li>PayPal — reembolso para a conta PayPal utilizada</li>
+        <li>Cartão de crédito/débito (Stripe) — reembolso para o cartão utilizado</li>
         <li>Cartão de débito — reembolso para o cartão utilizado</li>
         <li>MB Way — reembolso para o número de telefone associado</li>
         <li>Revolut — reembolso para a conta Revolut utilizada</li>
