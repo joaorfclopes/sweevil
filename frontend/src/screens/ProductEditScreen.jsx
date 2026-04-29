@@ -116,7 +116,7 @@ export default function ProductEditScreen(props) {
   const [imageItems, setImageItems] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
   const [category, setCategory] = useState("");
-  const [isClothing, setIsClothing] = useState("");
+  const [isClothing, setIsClothing] = useState(false);
   const [countInStock, setCountInStock] = useState("");
   const [countInStockXS, setCountInStockXS] = useState("");
   const [countInStockS, setCountInStockS] = useState("");
