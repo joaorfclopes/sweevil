@@ -6,9 +6,12 @@ import { signout } from "../actions/userActions";
 import ProductsTable from "../components/ProductsTable";
 import OrdersTable from "../components/OrdersTable";
 import GalleryAdminTab from "../components/GalleryAdminTab";
+import BookingsAdminTab from "../components/BookingsAdminTab";
 import { scrollTop } from "../utils.js";
+import { useFeatures } from "../FeaturesContext";
 
 export default function AdminScreen(props) {
+  const { bookingEnabled } = useFeatures();
   const dispatch = useDispatch();
 
   const signoutHandler = () => {
@@ -35,8 +38,9 @@ export default function AdminScreen(props) {
           </button>
         </Link>
       </div>
-      <OrdersTable />
+      {bookingEnabled && <BookingsAdminTab />}
       <ProductsTable />
+      <OrdersTable />
       <GalleryAdminTab />
     </motion.section>
   );

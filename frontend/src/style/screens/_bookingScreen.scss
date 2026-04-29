@@ -1,0 +1,105 @@
+@use "../general/globals" as *;
+
+.booking-screen {
+  padding-top: 130px;
+  min-height: 90vh;
+
+  @include md {
+    padding-top: 150px;
+  }
+
+  .booking-container {
+    @include lg {
+      @include margin-center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .booking-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    color: #444;
+
+    .booking-back {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.95rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  .booking-step {
+    h2 {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .booking-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .booking-slot-btn {
+      min-width: 90px;
+    }
+  }
+
+  .booking-price {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 480px;
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+      color: #555;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  .booking-confirmed {
+    text-align: center;
+    padding: 3rem 1rem;
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.bookings-admin {
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  padding-top: 1rem;
+}
