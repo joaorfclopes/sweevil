@@ -4,8 +4,18 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import $ from "jquery";
 import Placeholder from "./Placeholder";
 
+function isSoldOut(product) {
+  const s = product.countInStock;
+  if (!s) return true;
+  if (product.isClothing) {
+    return ["xs", "s", "m", "l", "xl", "xxl"].every((sz) => !s[sz] || s[sz] <= 0);
+  }
+  return !s.stock || s.stock <= 0;
+}
+
 export default function Product(props) {
   const { product } = props;
+  const soldOut = isSoldOut(product);
 
   const [hidePlaceholder, setHidePlaceholder] = useState(false);
 
@@ -19,6 +29,7 @@ export default function Product(props) {
     <div className="product" key={product._id}>
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
+          {soldOut && <span className="sold-out-pill">Sold Out</span>}
           <Placeholder>
             <div id={`${product._id}-product-img`} className="product-image">
               <LazyLoadImage
