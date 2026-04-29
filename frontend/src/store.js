@@ -37,6 +37,15 @@ import {
   categoryUpdateReducer,
   categoryDeleteReducer,
 } from "./reducers/categoryReducers";
+import {
+  bookingListReducer,
+  bookingCancelReducer,
+  bookingDeleteReducer,
+  availabilityListReducer,
+  availabilityCreateReducer,
+  availabilityUpdateReducer,
+  availabilityDeleteReducer,
+} from "./reducers/bookingReducers";
 
 const initialState = {
   userSignin: {
@@ -82,6 +91,13 @@ const reducer = combineReducers({
   categoryCreate: categoryCreateReducer,
   categoryUpdate: categoryUpdateReducer,
   categoryDelete: categoryDeleteReducer,
+  bookingList: bookingListReducer,
+  bookingCancel: bookingCancelReducer,
+  bookingDelete: bookingDeleteReducer,
+  availabilityList: availabilityListReducer,
+  availabilityCreate: availabilityCreateReducer,
+  availabilityUpdate: availabilityUpdateReducer,
+  availabilityDelete: availabilityDeleteReducer,
 });
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -32,7 +32,9 @@ import PoliticaCookiesScreen from "./screens/PoliticaCookiesScreen";
 import DireitoArrependimentoScreen from "./screens/DireitoArrependimentoScreen";
 import PoliticaDevolucoes from "./screens/PoliticaDevolucoes";
 import MainScreen from "./screens/MainScreen";
+import BookingScreen from "./screens/BookingScreen";
 import ArrowUp from "./components/ArrowUp";
+import { FeaturesProvider } from "./FeaturesContext";
 
 function AppContent() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -203,6 +205,15 @@ function AppContent() {
                       )
                     }
                   />
+                  <Route
+                    path="/booking"
+                    element={
+                      <BookingScreen
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    }
+                  />
                   <Route path="/termos-e-condicoes" element={<TermosCondicoesScreen />} />
                   <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadeScreen />} />
                   <Route path="/politica-de-cookies" element={<PoliticaCookiesScreen />} />
@@ -241,7 +252,9 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <AppContent />
+      <FeaturesProvider>
+        <AppContent />
+      </FeaturesProvider>
     </BrowserRouter>
   );
 }

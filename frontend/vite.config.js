@@ -20,6 +20,9 @@ export default defineConfig(({ mode }) => {
     },
     envDir: '../',
     envPrefix: 'VITE_',
+    resolve: {
+      mainFields: ['module', 'browser', 'main'],
+    },
     css: {
       preprocessorOptions: {
         scss: {

@@ -4,6 +4,8 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
+import availabilityRoute from './routes/availabilityRoute.js'
+import bookingRoute from './routes/bookingRoute.js'
 import categoryRoute from './routes/categoryRoute.js'
 import emailRoute from './routes/emailRoute.js'
 import galleryImageRoute from './routes/galleryImageRoute.js'
@@ -58,9 +60,15 @@ app.use('/api/uploads', uploadRoute)
 app.use('/api/email', emailRoute)
 app.use('/api/gallery', galleryImageRoute)
 app.use('/api/categories', categoryRoute)
+app.use('/api/availability', availabilityRoute)
+app.use('/api/bookings', bookingRoute)
 
 app.get('/api/config/stripe', (req, res) => {
   res.send(process.env.STRIPE_PUBLISHABLE_KEY || '')
+})
+
+app.get('/api/config/features', (req, res) => {
+  res.json({ bookingEnabled: process.env.ENABLE_BOOKING === 'true' })
 })
 
 const __dirname = path.resolve()

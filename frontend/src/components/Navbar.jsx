@@ -7,9 +7,11 @@ import Logo from "../assets/svg/logo.svg?react";
 import Cart from "../assets/svg/cart.svg?react";
 import Menu from "../assets/svg/menu.svg?react";
 import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
+import { useFeatures } from "../FeaturesContext";
 import { disableScroll } from "../scroll";
 
 export default function Navbar(props) {
+  const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
   const cart = useSelector((state) => state.cart);
@@ -47,7 +49,10 @@ export default function Navbar(props) {
   return (
     <header className={`row ${props.scrolled && "scrolled"}`}>
       <div className="icon-mobile">
-        <NavLink to="/cart" className={({ isActive }) => isActive ? "active" : ""}>
+        <NavLink
+          to="/cart"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
           <Cart className="icon fill" />
           <span className="badge">{cartItems.length}</span>
         </NavLink>
@@ -64,7 +69,10 @@ export default function Navbar(props) {
         <ul className="nav-desktop">
           {userInfo && (
             <li>
-              <NavLink to="/admin" className={({ isActive }) => isActive ? "active" : ""}>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
                 admin
               </NavLink>
             </li>
@@ -73,7 +81,9 @@ export default function Navbar(props) {
             const isHome = option === "home";
             const isActive =
               location.pathname === "/" &&
-              (isHome ? !location.hash || location.hash === "#" : location.hash === `#${option}`);
+              (isHome
+                ? !location.hash || location.hash === "#"
+                : location.hash === `#${option}`);
             return (
               <li key={option}>
                 <HashLink
@@ -88,12 +98,28 @@ export default function Navbar(props) {
             );
           })}
           <li>
-            <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""}>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               shop
             </NavLink>
           </li>
+          {bookingEnabled && (
+            <li>
+              <NavLink
+                to="/booking"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                booking
+              </NavLink>
+            </li>
+          )}
           <li>
-            <NavLink to="/cart" className={({ isActive }) => isActive ? "active" : ""}>
+            <NavLink
+              to="/cart"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               <Cart className="icon" />
               <span className="badge">{cartItems.length}</span>
             </NavLink>
