@@ -17,18 +17,19 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-function createUpload() {
-  const s3ClientConfig = {
-    region: process.env.AWS_REGION || "us-east-1",
-  };
+function makeS3Client() {
+  const cfg = { region: process.env.AWS_REGION || "us-east-1" };
   if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-    s3ClientConfig.credentials = {
+    cfg.credentials = {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     };
   }
-  const s3 = new S3Client(s3ClientConfig);
+  return new S3Client(cfg);
+}
 
+function createUpload() {
+  const s3 = makeS3Client();
   const storageS3 = multerS3({
     s3,
     bucket: process.env.AWS_S3_BUCKET,
@@ -40,14 +41,41 @@ function createUpload() {
       cb(null, folder + "/" + sanitized);
     },
   });
-
   return multer({ storage: storageS3, fileFilter });
+}
+
+function createBookingUpload() {
+  const s3 = makeS3Client();
+  const storageS3 = multerS3({
+    s3,
+    bucket: process.env.AWS_S3_BUCKET,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key(req, file, cb) {
+      const sanitized = path.basename(file.originalname).replace(/[^a-zA-Z0-9._-]/g, "_");
+      cb(null, `bookings/${Date.now()}_${sanitized}`);
+    },
+  });
+  return multer({
+    storage: storageS3,
+    fileFilter,
+    limits: { files: 10, fileSize: 5 * 1024 * 1024 },
+  });
 }
 
 uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
   createUpload().single("image")(req, res, (err) => {
     if (err) return next(err);
     res.json({ location: req.file.location });
+  });
+});
+
+uploadRouter.post("/booking-images", (req, res, next) => {
+  createBookingUpload().array("images", 10)(req, res, (err) => {
+    if (err) return next(err);
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
+    res.json({ urls: req.files.map((f) => f.location) });
   });
 });
 
@@ -59,16 +87,7 @@ uploadRouter.delete("/s3", isAuth, isAdmin, async (req, res) => {
     if (!key.startsWith("store/") && !key.startsWith("gallery/")) {
       return res.status(400).json({ message: "Invalid key" });
     }
-    const s3ClientConfig = {
-      region: process.env.AWS_REGION || "us-east-1",
-    };
-    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-      s3ClientConfig.credentials = {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      };
-    }
-    const s3 = new S3Client(s3ClientConfig);
+    const s3 = makeS3Client();
     await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
     res.json({ message: "Deleted" });
   } catch (err) {

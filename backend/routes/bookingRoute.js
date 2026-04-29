@@ -7,6 +7,7 @@ import Availability from "../models/availabilityModel.js";
 import { isAdmin, isAuth } from "../utils.js";
 import { bookingConfirmation } from "../mailing/bookingConfirmation.js";
 import { bookingAdmin } from "../mailing/bookingAdmin.js";
+import { generateICS } from "../mailing/calendarInvite.js";
 
 const bookingRouter = express.Router();
 
@@ -68,7 +69,7 @@ bookingRouter.get(
 bookingRouter.post(
   "/",
   expressAsyncHandler(async (req, res) => {
-    const { date, slot, guestInfo } = req.body;
+    const { date, slot, guestInfo, images } = req.body;
     if (!date || !slot || !guestInfo?.name || !guestInfo?.email || !guestInfo?.phone) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -88,7 +89,8 @@ bookingRouter.post(
     if (existing) {
       return res.status(409).json({ message: "This slot is already booked" });
     }
-    const booking = new Booking({ date: new Date(date), slot, price: avail.price, guestInfo });
+    const safeImages = Array.isArray(images) ? images.slice(0, 10) : [];
+    const booking = new Booking({ date: new Date(date), slot, price: avail.price, guestInfo, images: safeImages });
     const created = await booking.save();
     res.status(201).json(created);
   })
@@ -150,17 +152,26 @@ bookingRouter.put(
     const updated = await booking.save();
 
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
+    const icsContent = generateICS({ booking: updated, adminEmail });
+    const icsAttachment = {
+      filename: "booking.ics",
+      content: icsContent,
+      contentType: "text/calendar; charset=utf-8; method=REQUEST",
+    };
     sendMail({
       from,
       to: booking.guestInfo.email,
       subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString("pt-PT")}`,
       html: bookingConfirmation({ booking: updated }),
+      attachments: [icsAttachment],
     });
     sendMail({
       from,
-      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+      to: adminEmail,
       subject: `New booking — ${booking.guestInfo.name}`,
       html: bookingAdmin({ booking: updated }),
+      attachments: [icsAttachment],
     });
 
     res.json({ message: "Booking confirmed", booking: updated });
