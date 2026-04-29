@@ -6,6 +6,7 @@ import { signout } from "../actions/userActions";
 import ProductsTable from "../components/ProductsTable";
 import OrdersTable from "../components/OrdersTable";
 import GalleryAdminTab from "../components/GalleryAdminTab";
+import AboutAdminTab from "../components/AboutAdminTab";
 import BookingsAdminTab from "../components/BookingsAdminTab";
 import { scrollTop } from "../utils.js";
 import { useFeatures } from "../FeaturesContext";
@@ -41,6 +42,7 @@ export default function AdminScreen(props) {
       {bookingEnabled && <BookingsAdminTab />}
       <ProductsTable />
       <OrdersTable />
+      <AboutAdminTab />
       <GalleryAdminTab />
     </motion.section>
   );

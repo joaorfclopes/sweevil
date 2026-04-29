@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
+import aboutRoute from './routes/aboutRoute.js'
 import availabilityRoute from './routes/availabilityRoute.js'
 import bookingRoute from './routes/bookingRoute.js'
 import categoryRoute from './routes/categoryRoute.js'
@@ -60,6 +61,7 @@ app.use('/api/uploads', uploadRoute)
 app.use('/api/email', emailRoute)
 app.use('/api/gallery', galleryImageRoute)
 app.use('/api/categories', categoryRoute)
+app.use('/api/about', aboutRoute)
 app.use('/api/availability', availabilityRoute)
 app.use('/api/bookings', bookingRoute)
 
