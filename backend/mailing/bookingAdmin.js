@@ -20,7 +20,9 @@ export const bookingAdmin = ({ booking }) => {
     <tbody>
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
-          <span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand} — New Booking</span>
+          ${process.env.BRAND_LOGO
+            ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
+            : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`}
         </td>
       </tr>
       <tr>
@@ -69,6 +71,14 @@ export const bookingAdmin = ({ booking }) => {
                 <td style="padding:8px 20px;">
                   <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Notes</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.guestInfo.notes}</span>
+                </td>
+              </tr>` : ""}
+              ${booking.images && booking.images.length > 0 ? `<tr>
+                <td style="padding:8px 20px;">
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Photos (${booking.images.length})</strong><br/>
+                  <table cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;"><tbody><tr>
+                    ${booking.images.map((url) => `<td style="padding:4px;"><a href="${url}" target="_blank"><img src="${url}" width="100" style="display:block;border-radius:4px;border:1px solid #e0e0e0;" /></a></td>`).join("")}
+                  </tr></tbody></table>
                 </td>
               </tr>` : ""}
             </tbody>

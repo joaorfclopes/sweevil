@@ -95,6 +95,9 @@ export default function BookingScreen(props) {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [guestInfo, setGuestInfo] = useState({ name: "", email: "", phone: "", notes: "" });
 
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+
   const [booking, setBooking] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [stripePromise, setStripePromise] = useState(null);
@@ -144,16 +147,41 @@ export default function BookingScreen(props) {
     setStep(STEPS.FORM);
   };
 
+  const handleImageChange = (e) => {
+    const selected = Array.from(e.target.files);
+    const combined = [...imageFiles, ...selected].slice(0, 10);
+    setImageFiles(combined);
+    setImagePreviews(combined.map((f) => URL.createObjectURL(f)));
+    e.target.value = "";
+  };
+
+  const removeImage = (index) => {
+    URL.revokeObjectURL(imagePreviews[index]);
+    const files = imageFiles.filter((_, i) => i !== index);
+    const previews = imagePreviews.filter((_, i) => i !== index);
+    setImageFiles(files);
+    setImagePreviews(previews);
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setSubmitError("");
     try {
+      let uploadedUrls = [];
+      if (imageFiles.length > 0) {
+        const formData = new FormData();
+        imageFiles.forEach((f) => formData.append("images", f));
+        const { data } = await Axios.post("/api/uploads/booking-images", formData);
+        uploadedUrls = data.urls;
+      }
+
       const dateKey = dayjs(selectedDate).format("YYYY-MM-DD");
       const { data: createdBooking } = await Axios.post("/api/bookings", {
         date: dateKey,
         slot: selectedSlot,
         guestInfo,
+        images: uploadedUrls,
       });
       setBooking(createdBooking);
 
@@ -330,6 +358,43 @@ export default function BookingScreen(props) {
                         setGuestInfo({ ...guestInfo, notes: e.target.value })
                       }
                     />
+                  </div>
+                  <div>
+                    <label>
+                      Photos{" "}
+                      <span style={{ fontWeight: 400, color: "#888" }}>
+                        (optional, max 10)
+                      </span>
+                    </label>
+                    {imagePreviews.length > 0 && (
+                      <div className="booking-image-previews">
+                        {imagePreviews.map((src, i) => (
+                          <div key={i} className="booking-image-preview">
+                            <img src={src} alt="" />
+                            <button
+                              type="button"
+                              className="booking-image-remove"
+                              onClick={() => removeImage(i)}
+                              aria-label="Remove photo"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {imageFiles.length < 10 && (
+                      <label className="booking-image-add">
+                        + Add photos
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          style={{ display: "none" }}
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    )}
                   </div>
                   <button
                     type="submit"

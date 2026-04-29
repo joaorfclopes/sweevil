@@ -9,7 +9,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Toolbar,
   Tooltip,
+  Typography,
   IconButton,
   Dialog,
   DialogTitle,
@@ -17,11 +19,13 @@ import {
   DialogActions,
   TextField,
   Chip,
+  Divider,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BlockIcon from "@mui/icons-material/Block";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import Swal from "sweetalert2";
 import { LocalizationProvider, DateCalendar, PickersDay } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -94,6 +98,8 @@ export default function BookingsAdminTab() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [photosDialog, setPhotosDialog] = useState({ open: false, images: [], name: "" });
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAvail, setEditingAvail] = useState(null);
@@ -204,104 +210,166 @@ export default function BookingsAdminTab() {
   };
 
   return (
-    <div className="bookings-admin">
-      <h2>Availability</h2>
-      <p style={{ color: "#666", fontSize: 14 }}>
-        Click any date to set availability and price for that day.
-      </p>
-      {loadingAvail ? (
-        <LoadingBox />
-      ) : errorAvail ? (
-        <MessageBox variant="error">{errorAvail}</MessageBox>
-      ) : (
-        <Paper sx={{ background: "#F4F4F4", display: "inline-block" }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              onChange={handleDayClick}
-              slots={{ day: AvailableDay }}
-              slotProps={{ day: { availableDates } }}
-            />
-          </LocalizationProvider>
-        </Paper>
-      )}
+    <div className="bookings-admin" style={{ marginBottom: "50px" }}>
+      <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
+        <Toolbar>
+          <Typography style={{ width: "100%" }} className="title" variant="h6" component="div">
+            <b>Bookings</b>
+          </Typography>
+        </Toolbar>
 
-      <h2 style={{ marginTop: "2rem" }}>Bookings</h2>
-      {loadingBookings ? (
-        <LoadingBox />
-      ) : errorBookings ? (
-        <MessageBox variant="error">{errorBookings}</MessageBox>
-      ) : (
-        <Paper sx={{ background: "#F4F4F4" }}>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Time</TableCell>
-                  <TableCell>Guest</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {bookings
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((b) => (
-                    <TableRow key={b._id}>
-                      <TableCell>{formatDateDay(b.date)}</TableCell>
-                      <TableCell>{b.slot}</TableCell>
-                      <TableCell>{b.guestInfo?.name}</TableCell>
-                      <TableCell>{b.guestInfo?.email}</TableCell>
-                      <TableCell>{b.guestInfo?.phone}</TableCell>
-                      <TableCell>{b.price?.toFixed(2)}€</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={b.status}
-                          color={statusColor(b.status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        {b.status === "CONFIRMED" && (
-                          <Tooltip title="Cancel">
+        <div style={{ padding: "0 16px 16px" }}>
+          <Typography variant="subtitle2" style={{ color: "#555", marginBottom: 8 }}>
+            <b>Availability</b>
+          </Typography>
+          <Typography variant="body2" style={{ color: "#666", marginBottom: 12 }}>
+            Click any date to set availability and price for that day.
+          </Typography>
+          {loadingAvail ? (
+            <LoadingBox />
+          ) : errorAvail ? (
+            <MessageBox variant="error">{errorAvail}</MessageBox>
+          ) : (
+            <Paper sx={{ background: "#fff", display: "inline-block" }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar
+                  onChange={handleDayClick}
+                  disablePast
+                  slots={{ day: AvailableDay }}
+                  slotProps={{ day: { availableDates } }}
+                />
+              </LocalizationProvider>
+            </Paper>
+          )}
+        </div>
+
+        <Divider />
+
+        <Typography
+          variant="subtitle2"
+          style={{ color: "#555", padding: "16px 16px 8px" }}
+        >
+          <b>Bookings</b>
+        </Typography>
+        {loadingBookings ? (
+          <LoadingBox />
+        ) : errorBookings ? (
+          <MessageBox variant="error">{errorBookings}</MessageBox>
+        ) : (
+          <>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Time</TableCell>
+                    <TableCell>Guest</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Phone</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Photos</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {bookings
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((b) => (
+                      <TableRow key={b._id}>
+                        <TableCell>{formatDateDay(b.date)}</TableCell>
+                        <TableCell>{b.slot}</TableCell>
+                        <TableCell>{b.guestInfo?.name}</TableCell>
+                        <TableCell>{b.guestInfo?.email}</TableCell>
+                        <TableCell>{b.guestInfo?.phone}</TableCell>
+                        <TableCell>{b.price?.toFixed(2)}€</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={b.status}
+                            color={statusColor(b.status)}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {b.images?.length > 0 && (
+                            <Tooltip title={`${b.images.length} photo(s)`}>
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  setPhotosDialog({ open: true, images: b.images, name: b.guestInfo?.name })
+                                }
+                              >
+                                <PhotoLibraryIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {b.status === "CONFIRMED" && (
+                            <Tooltip title="Cancel">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleCancelBooking(b._id)}
+                              >
+                                <BlockIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          <Tooltip title="Delete">
                             <IconButton
                               size="small"
-                              onClick={() => handleCancelBooking(b._id)}
+                              onClick={() => handleDeleteBooking(b._id)}
                             >
-                              <BlockIcon fontSize="small" />
+                              <DeleteOutlineIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                        )}
-                        <Tooltip title="Delete">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteBooking(b._id)}
-                          >
-                            <DeleteOutlineIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={bookings.length}
-            page={page}
-            onPageChange={(_, p) => setPage(p)}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-          />
-        </Paper>
-      )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              component="div"
+              count={bookings.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+            />
+          </>
+        )}
+      </Paper>
+
+      <Dialog
+        open={photosDialog.open}
+        onClose={() => setPhotosDialog({ open: false, images: [], name: "" })}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Photos — {photosDialog.name}</DialogTitle>
+        <DialogContent>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {photosDialog.images.map((url, i) => (
+              <a key={i} href={url} target="_blank" rel="noreferrer">
+                <img
+                  src={url}
+                  alt=""
+                  style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 4, border: "1px solid #e0e0e0", display: "block" }}
+                />
+              </a>
+            ))}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <button className="secondary" onClick={() => setPhotosDialog({ open: false, images: [], name: "" })}>
+            Close
+          </button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>

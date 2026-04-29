@@ -22,8 +22,10 @@ export const bookingConfirmation = ({ booking }) => {
     <tbody>
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
-          <a href="${homeUrl}" style="color:#ffffff;font-size:22px;font-weight:700;text-decoration:none;letter-spacing:2px;">
-            ${brand}
+          <a href="${homeUrl}" style="text-decoration:none;">
+            ${process.env.BRAND_LOGO
+              ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
+              : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`}
           </a>
         </td>
       </tr>
@@ -56,6 +58,13 @@ export const bookingConfirmation = ({ booking }) => {
               </tr>
             </tbody>
           </table>
+          ${booking.images && booking.images.length > 0 ? `
+          <div style="margin-top:24px;">
+            <p style="margin:0 0 10px;color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;font-weight:bold;">Your Photos</p>
+            <table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr>
+              ${booking.images.map((url) => `<td style="padding:4px;width:25%;vertical-align:top;"><a href="${url}" target="_blank"><img src="${url}" width="100" style="display:block;max-width:100%;border-radius:4px;border:1px solid #e0e0e0;" /></a></td>`).join("")}
+            </tr></tbody></table>
+          </div>` : ""}
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
             If you have any questions, please contact us at
             <a href="mailto:${contactEmail}" style="color:#1a1a1a;">${contactEmail}</a>.
