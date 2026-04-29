@@ -31,6 +31,7 @@ import {
   listProducts,
   updateProduct,
 } from "../actions/productActions";
+import { listProductCategories } from "../actions/productCategoryActions";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 import LoadingBox from "../components/LoadingBox";
@@ -95,6 +96,7 @@ export default function ProductEditScreen(props) {
     success: successUpdate,
     error: errorUpdate,
   } = productUpdate;
+  const { categories: productCategories = [] } = useSelector((state) => state.productCategoryList);
   const productCreate = useSelector((state) => state.productCreate);
   const {
     loading: loadingCreate,
@@ -134,17 +136,9 @@ export default function ProductEditScreen(props) {
   const fileInputRef = useRef();
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const artworkOptions = ["Prints", "Paintings", "Carpets"];
-
-  const clothingOptions = ["T-Shirts", "Hoodies"];
-
-  const accessoriesOptions = [
-    "Wallets",
-    "Diskettes",
-    "Jewelry",
-    "Bags",
-    "Scarves",
-  ];
+  useEffect(() => {
+    dispatch(listProductCategories());
+  }, [dispatch]);
 
   useEffect(() => {
     if (successCreate) {
@@ -166,8 +160,9 @@ export default function ProductEditScreen(props) {
       setName(product.name);
       setPrice(product.price);
       setImageItems((product.images || []).map((url) => ({ id: url, type: "saved", url })));
-      setCategory(product.category || "Prints");
-      if (product.category === "T-Shirts" || product.category === "Hoodies") {
+      setCategory(product.category || "");
+      const cat = productCategories.find((c) => c.name === product.category);
+      if (cat?.isClothing) {
         setIsClothing(true);
         setCountInStock("");
       } else {
@@ -301,8 +296,10 @@ export default function ProductEditScreen(props) {
   };
 
   const setCategoryAndClothing = (e) => {
-    setCategory(e.target.value);
-    if (e.target.value === "T-Shirts" || e.target.value === "Hoodies") {
+    const selected = e.target.value;
+    setCategory(selected);
+    const cat = productCategories.find((c) => c.name === selected);
+    if (cat?.isClothing) {
       setIsClothing(true);
       setCountInStock("");
     } else {
@@ -422,34 +419,21 @@ export default function ProductEditScreen(props) {
               </div>
               <div>
                 <label htmlFor="category">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategoryAndClothing(e)}
-                >
-                  <optgroup label="Artwork">
-                    {artworkOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </optgroup>
+                <select value={category} onChange={(e) => setCategoryAndClothing(e)}>
+                  {category === "" && <option value="">Select a category</option>}
                   <optgroup label="Clothing">
-                    {clothingOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
+                    {productCategories.filter((c) => c.isClothing).map((c) => (
+                      <option key={c._id} value={c.name}>{c.name}</option>
                     ))}
                   </optgroup>
-                  <optgroup label="Accessories">
-                    {accessoriesOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
+                  <optgroup label="Other">
+                    {productCategories.filter((c) => !c.isClothing).map((c) => (
+                      <option key={c._id} value={c.name}>{c.name}</option>
                     ))}
                   </optgroup>
                 </select>
               </div>
-              {category === "T-Shirts" || category === "Hoodies" ? (
+              {isClothing ? (
                 <div>
                   <label>Count In Stock</label>
                   <input

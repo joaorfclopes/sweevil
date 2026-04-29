@@ -5,6 +5,7 @@ import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
 import aboutRoute from './routes/aboutRoute.js'
+import productCategoryRoute from './routes/productCategoryRoute.js'
 import availabilityRoute from './routes/availabilityRoute.js'
 import bookingRoute from './routes/bookingRoute.js'
 import categoryRoute from './routes/categoryRoute.js'
@@ -62,6 +63,7 @@ app.use('/api/email', emailRoute)
 app.use('/api/gallery', galleryImageRoute)
 app.use('/api/categories', categoryRoute)
 app.use('/api/about', aboutRoute)
+app.use('/api/product-categories', productCategoryRoute)
 app.use('/api/availability', availabilityRoute)
 app.use('/api/bookings', bookingRoute)
 

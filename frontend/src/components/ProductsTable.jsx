@@ -1,4 +1,5 @@
 import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,11 +8,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import React, { useEffect } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -20,8 +23,17 @@ import {
   listProducts,
 } from "../actions/productActions";
 import {
+  listProductCategories,
+  createProductCategory,
+  deleteProductCategory,
+} from "../actions/productCategoryActions";
+import {
   PRODUCT_DELETE_RESET,
 } from "../constants/productConstants";
+import {
+  PRODUCT_CATEGORY_CREATE_RESET,
+  PRODUCT_CATEGORY_DELETE_RESET,
+} from "../constants/productCategoryConstants";
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
 
@@ -37,8 +49,16 @@ export default function ProductsTable() {
     success: successDelete,
     error: errorDelete,
   } = productDelete;
+
+  const { categories = [] } = useSelector((state) => state.productCategoryList);
+  const { loading: loadingCatCreate, success: successCatCreate, error: errorCatCreate } = useSelector((state) => state.productCategoryCreate);
+  const { loading: loadingCatDelete, success: successCatDelete, error: errorCatDelete } = useSelector((state) => state.productCategoryDelete);
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatIsClothing, setNewCatIsClothing] = useState(false);
+
   const emptyRows =
     rowsPerPage -
     Math.min(rowsPerPage, (products && products.length) - page * rowsPerPage);
@@ -49,6 +69,36 @@ export default function ProductsTable() {
     }
     dispatch(listProducts());
   }, [dispatch, successDelete]);
+
+  useEffect(() => {
+    if (successCatCreate) {
+      dispatch({ type: PRODUCT_CATEGORY_CREATE_RESET });
+      setNewCatName("");
+      setNewCatIsClothing(false);
+    }
+    if (successCatDelete) {
+      dispatch({ type: PRODUCT_CATEGORY_DELETE_RESET });
+    }
+    dispatch(listProductCategories());
+  }, [dispatch, successCatCreate, successCatDelete]);
+
+  const handleAddCategory = () => {
+    const name = newCatName.trim();
+    if (!name) return;
+    dispatch(createProductCategory(name, newCatIsClothing));
+  };
+
+  const handleDeleteCategory = (cat) => {
+    Swal.fire({
+      title: `Delete "${cat.name}"?`,
+      text: "Products using this category will keep their current value.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      confirmButtonColor: "#d33",
+    }).then((result) => {
+      if (result.isConfirmed) dispatch(deleteProductCategory(cat._id));
+    });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -111,6 +161,55 @@ export default function ProductsTable() {
                 </IconButton>
               </Tooltip>
             </Toolbar>
+            <div style={{ padding: "0 16px 16px", borderBottom: "1px solid #e0e0e0" }}>
+              <Typography variant="subtitle2" style={{ color: "#555", marginBottom: 8 }}>
+                <b>Categories</b>
+              </Typography>
+              {(loadingCatCreate || loadingCatDelete) && <LoadingBox />}
+              {errorCatCreate && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
+              {errorCatDelete && <MessageBox variant="error">{errorCatDelete}</MessageBox>}
+              {[{ label: "Clothing", items: categories.filter((c) => c.isClothing) }, { label: "Other", items: categories.filter((c) => !c.isClothing) }].map(({ label, items }) => (
+                <div key={label} style={{ marginBottom: 10 }}>
+                  <Typography variant="caption" style={{ color: "#888" }}>{label}</Typography>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+                    {items.map((cat) => (
+                      <div key={cat._id} style={{ display: "flex", alignItems: "center", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 16, padding: "2px 4px 2px 10px", background: "#e0e0e0", fontSize: "0.8rem", fontFamily: "inherit" }}>
+                        <span style={{ userSelect: "none" }}>{cat.name}</span>
+                        <Tooltip title="Delete">
+                          <IconButton size="small" sx={{ padding: "2px" }} onClick={() => handleDeleteCategory(cat)}>
+                            <DeleteIcon sx={{ fontSize: 13 }} />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    ))}
+                    {items.length === 0 && <span style={{ color: "#aaa", fontSize: "0.85rem" }}>None</span>}
+                  </div>
+                </div>
+              ))}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
+                <TextField
+                  size="small"
+                  placeholder="New category name"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={handleAddCategory} disabled={!newCatName.trim() || loadingCatCreate}>
+                          <AddIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  style={{ width: 220 }}
+                />
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem", cursor: "pointer" }}>
+                  <input type="checkbox" checked={newCatIsClothing} onChange={(e) => setNewCatIsClothing(e.target.checked)} />
+                  Size-based stock (clothing)
+                </label>
+              </div>
+            </div>
             <TableContainer>
               <Table className="table" aria-label="simple table">
                 <TableHead>

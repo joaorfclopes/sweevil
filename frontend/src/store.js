@@ -38,6 +38,11 @@ import {
   categoryDeleteReducer,
 } from "./reducers/categoryReducers";
 import {
+  productCategoryListReducer,
+  productCategoryCreateReducer,
+  productCategoryDeleteReducer,
+} from "./reducers/productCategoryReducers";
+import {
   bookingListReducer,
   bookingCancelReducer,
   bookingDeleteReducer,
@@ -91,6 +96,9 @@ const reducer = combineReducers({
   categoryCreate: categoryCreateReducer,
   categoryUpdate: categoryUpdateReducer,
   categoryDelete: categoryDeleteReducer,
+  productCategoryList: productCategoryListReducer,
+  productCategoryCreate: productCategoryCreateReducer,
+  productCategoryDelete: productCategoryDeleteReducer,
   bookingList: bookingListReducer,
   bookingCancel: bookingCancelReducer,
   bookingDelete: bookingDeleteReducer,
