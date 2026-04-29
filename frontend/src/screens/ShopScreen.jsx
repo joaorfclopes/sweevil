@@ -37,7 +37,8 @@ export default function ShopScreen(props) {
             (product) =>
               product.images[0] &&
               product.name &&
-              product.price && <Product key={product._id} product={product} />
+              product.price &&
+              product.visible !== false && <Product key={product._id} product={product} />
           )
         )}
       </div>
