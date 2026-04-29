@@ -97,24 +97,11 @@ bookingRouter.post(
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     if (booking.isPaid) return res.status(400).json({ message: "Already paid" });
-    const customer = await getStripe().customers.create({
-      email: booking.guestInfo.email,
-      name: booking.guestInfo.name,
-    });
-    const bookingDateStr = new Date(booking.date).toLocaleDateString("pt-PT");
     const paymentIntent = await getStripe().paymentIntents.create({
       amount: Math.round(booking.price * 100),
       currency: "eur",
-      customer: customer.id,
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       receipt_email: booking.guestInfo.email,
-      invoice_creation: {
-        enabled: true,
-        invoice_data: {
-          description: `Session — ${booking.slot} on ${bookingDateStr}`,
-          metadata: { bookingId: booking._id.toString() },
-        },
-      },
       metadata: { bookingId: booking._id.toString() },
     });
     res.json({ clientSecret: paymentIntent.client_secret });
