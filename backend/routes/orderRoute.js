@@ -167,6 +167,7 @@ orderRouter.post(
       amount: Math.round(order.totalPrice * 100),
       currency: "eur",
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      receipt_email: order.shippingAddress.email,
       metadata: { orderId: order._id.toString() },
     });
     res.json({ clientSecret: paymentIntent.client_secret });
@@ -182,6 +183,9 @@ orderRouter.put(
 
     if (order.user?.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Access denied" });
+    }
+    if (order.isPaid) {
+      return res.status(400).json({ message: "Order already paid" });
     }
 
     const { paymentIntentId } = req.body;
@@ -208,27 +212,22 @@ orderRouter.put(
       email_address: paymentIntent.receipt_email || "",
     };
 
-    order.orderItems.forEach(async (item) => {
+    for (const item of order.orderItems) {
       const product = await Product.findById(item.product);
-      if (!product.isClothing) {
-        product.countInStock.stock = product.countInStock.stock - item.qty;
-      } else {
-        item.size === "XS"
-          ? (product.countInStock.xs = product.countInStock.xs - item.qty)
-          : item.size === "S"
-          ? (product.countInStock.s = product.countInStock.s - item.qty)
-          : item.size === "M"
-          ? (product.countInStock.m = product.countInStock.m - item.qty)
-          : item.size === "L"
-          ? (product.countInStock.l = product.countInStock.l - item.qty)
-          : item.size === "XL"
-          ? (product.countInStock.xl = product.countInStock.xl - item.qty)
-          : item.size === "XXL" &&
-            (product.countInStock.xxl = product.countInStock.xxl - item.qty);
+      if (product) {
+        if (!product.isClothing) {
+          product.countInStock.stock -= item.qty;
+        } else {
+          if (item.size === "XS") product.countInStock.xs -= item.qty;
+          else if (item.size === "S") product.countInStock.s -= item.qty;
+          else if (item.size === "M") product.countInStock.m -= item.qty;
+          else if (item.size === "L") product.countInStock.l -= item.qty;
+          else if (item.size === "XL") product.countInStock.xl -= item.qty;
+          else if (item.size === "XXL") product.countInStock.xxl -= item.qty;
+        }
+        await product.save();
       }
-      // eslint-disable-next-line no-unused-vars
-      const updatedProduct = await product.save();
-    });
+    }
 
     const updatedOrder = await order.save();
     res.send({ message: "Order paid", order: updatedOrder });
@@ -247,28 +246,22 @@ orderRouter.put(
       }
       order.status = "CANCELED";
       if (order.isPaid) {
-        order.orderItems.forEach(async (item) => {
+        for (const item of order.orderItems) {
           const product = await Product.findById(item.product);
-          if (!product.isClothing) {
-            product.countInStock.stock = product.countInStock.stock + item.qty;
-          } else {
-            item.size === "XS"
-              ? (product.countInStock.xs = product.countInStock.xs + item.qty)
-              : item.size === "S"
-              ? (product.countInStock.s = product.countInStock.s + item.qty)
-              : item.size === "M"
-              ? (product.countInStock.m = product.countInStock.m + item.qty)
-              : item.size === "L"
-              ? (product.countInStock.l = product.countInStock.l + item.qty)
-              : item.size === "XL"
-              ? (product.countInStock.xl = product.countInStock.xl + item.qty)
-              : item.size === "XXL" &&
-                (product.countInStock.xxl =
-                  product.countInStock.xxl + item.qty);
+          if (product) {
+            if (!product.isClothing) {
+              product.countInStock.stock += item.qty;
+            } else {
+              if (item.size === "XS") product.countInStock.xs += item.qty;
+              else if (item.size === "S") product.countInStock.s += item.qty;
+              else if (item.size === "M") product.countInStock.m += item.qty;
+              else if (item.size === "L") product.countInStock.l += item.qty;
+              else if (item.size === "XL") product.countInStock.xl += item.qty;
+              else if (item.size === "XXL") product.countInStock.xxl += item.qty;
+            }
+            await product.save();
           }
-          // eslint-disable-next-line no-unused-vars
-          const updatedProduct = await product.save();
-        });
+        }
       }
       const updatedOrder = await order.save();
       res.send({ message: "Order canceled", order: updatedOrder });

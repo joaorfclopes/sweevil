@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
+import webhookRoute from './routes/webhookRoute.js'
 import aboutRoute from './routes/aboutRoute.js'
 import productCategoryRoute from './routes/productCategoryRoute.js'
 import availabilityRoute from './routes/availabilityRoute.js'
@@ -21,6 +22,12 @@ dotenv.config()
 // Critical environment variable check
 if (!process.env.JWT_SECRET) {
   throw new Error('FATAL ERROR: JWT_SECRET is not defined in environment variables')
+}
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('FATAL ERROR: STRIPE_SECRET_KEY is not defined in environment variables')
+}
+if (!process.env.MONGODB_URL) {
+  throw new Error('FATAL ERROR: MONGODB_URL is not defined in environment variables')
 }
 
 const app = express()
@@ -44,6 +51,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(helmet({ contentSecurityPolicy: false }))
+
+// Webhook must receive raw body — register before express.json()
+app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRoute)
+
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
 

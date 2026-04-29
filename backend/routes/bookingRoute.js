@@ -1,6 +1,6 @@
+import crypto from "crypto";
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
-import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import Booking from "../models/bookingModel.js";
 import Availability from "../models/availabilityModel.js";
@@ -8,6 +8,7 @@ import { isAdmin, isAuth } from "../utils.js";
 import { bookingConfirmation } from "../mailing/bookingConfirmation.js";
 import { bookingAdmin } from "../mailing/bookingAdmin.js";
 import { generateICS } from "../mailing/calendarInvite.js";
+import { sendMail } from "../mailing/sendMail.js";
 
 const bookingRouter = express.Router();
 
@@ -17,43 +18,29 @@ const getStripe = () => {
   return _stripe;
 };
 
-let _etherealAccount = null;
-const getTransporter = async () => {
-  if (process.env.MAILING_SERVICE_CLIENT_ID) {
-    return nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: process.env.VITE_SENDER_EMAIL_ADDRESS,
-        clientId: process.env.MAILING_SERVICE_CLIENT_ID,
-        clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
-        refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
-        accessToken: process.env.MAILING_SERVICE_ACCESS_TOKEN,
-      },
-    });
-  }
-  if (!_etherealAccount) {
-    _etherealAccount = await nodemailer.createTestAccount();
-    console.log(`[booking email] Ethereal test account: ${_etherealAccount.user}`);
-    console.log("[booking email] View sent emails at: https://ethereal.email/messages");
-  }
-  return nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: { user: _etherealAccount.user, pass: _etherealAccount.pass },
+export const sendBookingEmails = (booking) => {
+  const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+  const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
+  const icsContent = generateICS({ booking, adminEmail });
+  const icsAttachment = {
+    filename: "booking.ics",
+    content: icsContent,
+    contentType: "text/calendar; charset=utf-8; method=REQUEST",
+  };
+  sendMail({
+    from,
+    to: booking.guestInfo.email,
+    subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString("pt-PT")}`,
+    html: bookingConfirmation({ booking }),
+    attachments: [icsAttachment],
   });
-};
-
-const sendMail = async (mailOptions) => {
-  try {
-    const transporter = await getTransporter();
-    const info = await transporter.sendMail(mailOptions);
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) console.log(`[booking email] Preview: ${previewUrl}`);
-  } catch (err) {
-    console.error("[booking email] ERROR:", err.message);
-  }
+  sendMail({
+    from,
+    to: adminEmail,
+    subject: `New booking — ${booking.guestInfo.name}`,
+    html: bookingAdmin({ booking }),
+    attachments: [icsAttachment],
+  });
 };
 
 bookingRouter.get(
@@ -90,7 +77,15 @@ bookingRouter.post(
       return res.status(409).json({ message: "This slot is already booked" });
     }
     const safeImages = Array.isArray(images) ? images.slice(0, 10) : [];
-    const booking = new Booking({ date: new Date(date), slot, price: avail.price, guestInfo, images: safeImages });
+    const confirmToken = crypto.randomBytes(32).toString("hex");
+    const booking = new Booking({
+      date: new Date(date),
+      slot,
+      price: avail.price,
+      guestInfo,
+      images: safeImages,
+      confirmToken,
+    });
     const created = await booking.save();
     res.status(201).json(created);
   })
@@ -106,6 +101,7 @@ bookingRouter.post(
       amount: Math.round(booking.price * 100),
       currency: "eur",
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      receipt_email: booking.guestInfo.email,
       metadata: { bookingId: booking._id.toString() },
     });
     res.json({ clientSecret: paymentIntent.client_secret });
@@ -117,10 +113,14 @@ bookingRouter.put(
   expressAsyncHandler(async (req, res) => {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+    if (booking.isPaid) return res.status(400).json({ message: "Already paid" });
 
-    const { paymentIntentId } = req.body;
+    const { paymentIntentId, confirmToken } = req.body;
     if (!paymentIntentId) {
       return res.status(400).json({ message: "paymentIntentId is required" });
+    }
+    if (!confirmToken || confirmToken !== booking.confirmToken) {
+      return res.status(403).json({ message: "Invalid confirm token" });
     }
 
     const conflict = await Booking.findOne({
@@ -151,28 +151,7 @@ bookingRouter.put(
     };
     const updated = await booking.save();
 
-    const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
-    const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
-    const icsContent = generateICS({ booking: updated, adminEmail });
-    const icsAttachment = {
-      filename: "booking.ics",
-      content: icsContent,
-      contentType: "text/calendar; charset=utf-8; method=REQUEST",
-    };
-    sendMail({
-      from,
-      to: booking.guestInfo.email,
-      subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString("pt-PT")}`,
-      html: bookingConfirmation({ booking: updated }),
-      attachments: [icsAttachment],
-    });
-    sendMail({
-      from,
-      to: adminEmail,
-      subject: `New booking — ${booking.guestInfo.name}`,
-      html: bookingAdmin({ booking: updated }),
-      attachments: [icsAttachment],
-    });
+    sendBookingEmails(updated);
 
     res.json({ message: "Booking confirmed", booking: updated });
   })

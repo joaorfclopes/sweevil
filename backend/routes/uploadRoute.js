@@ -1,9 +1,18 @@
 import express from "express";
 import multer from "multer";
 import multerS3 from "multer-s3";
+import rateLimit from "express-rate-limit";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { isAuth, isAdmin } from "../utils.js";
 import path from "path";
+
+const bookingUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many upload requests, please try again later." },
+});
 
 const uploadRouter = express.Router();
 
@@ -69,7 +78,7 @@ uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
   });
 });
 
-uploadRouter.post("/booking-images", (req, res, next) => {
+uploadRouter.post("/booking-images", bookingUploadLimiter, (req, res, next) => {
   createBookingUpload().array("images", 10)(req, res, (err) => {
     if (err) return next(err);
     if (!req.files || req.files.length === 0) {
