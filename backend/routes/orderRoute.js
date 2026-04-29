@@ -163,26 +163,11 @@ orderRouter.post(
     if (order.isPaid) {
       return res.status(400).json({ message: "Order already paid" });
     }
-    const customer = await getStripe().customers.create({
-      email: order.shippingAddress.email,
-      name: order.shippingAddress.fullName,
-    });
-    const itemsSummary = order.orderItems
-      .map((i) => `${i.name} x${i.qty}`)
-      .join(", ");
     const paymentIntent = await getStripe().paymentIntents.create({
       amount: Math.round(order.totalPrice * 100),
       currency: "eur",
-      customer: customer.id,
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       receipt_email: order.shippingAddress.email,
-      invoice_creation: {
-        enabled: true,
-        invoice_data: {
-          description: itemsSummary,
-          metadata: { orderId: order._id.toString() },
-        },
-      },
       metadata: { orderId: order._id.toString() },
     });
     res.json({ clientSecret: paymentIntent.client_secret });
