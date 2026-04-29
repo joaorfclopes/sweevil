@@ -7,5 +7,26 @@
     @include md {
       padding-top: 150px;
     }
+
+    .filters {
+      user-select: none;
+      padding: 8px;
+      text-align: center;
+
+      .filter {
+        text-transform: uppercase;
+        display: inline-block;
+        margin: 5px;
+        font-family: $font;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &.active,
+        &:hover {
+          color: $secondaryColor;
+        }
+      }
+    }
   }
 }
