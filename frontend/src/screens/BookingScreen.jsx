@@ -203,7 +203,10 @@ export default function BookingScreen(props) {
 
   const handlePaymentSuccess = async (paymentIntentId) => {
     try {
-      await Axios.put(`/api/bookings/${booking._id}/pay`, { paymentIntentId });
+      await Axios.put(`/api/bookings/${booking._id}/pay`, {
+        paymentIntentId,
+        confirmToken: booking.confirmToken,
+      });
       setStep(STEPS.CONFIRMED);
     } catch (err) {
       setSubmitError(err.response?.data?.message || "Payment verification failed.");

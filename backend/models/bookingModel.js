@@ -23,6 +23,7 @@ const bookingSchema = new mongoose.Schema(
       update_time: String,
     },
     images: [{ type: String }],
+    confirmToken: { type: String },
     isPaid: { type: Boolean, default: false },
     paidAt: Date,
   },
