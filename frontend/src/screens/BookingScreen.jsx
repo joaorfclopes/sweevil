@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import MessageBox from "../components/MessageBox";
 import LoadingBox from "../components/LoadingBox";
 
-function StripeCheckoutForm({ price, onSuccess }) {
+function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -36,6 +36,8 @@ function StripeCheckoutForm({ price, onSuccess }) {
       setPaying(false);
     } else if (paymentIntent?.status === "succeeded") {
       onSuccess(paymentIntent.id);
+    } else if (paymentIntent?.status === "processing") {
+      onProcessing(paymentIntent.id);
     }
   };
 
@@ -103,6 +105,7 @@ export default function BookingScreen(props) {
   const [stripePromise, setStripePromise] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [awaitingMbway, setAwaitingMbway] = useState(false);
 
   const handledRedirect = useRef(false);
 
@@ -211,6 +214,30 @@ export default function BookingScreen(props) {
     } catch (err) {
       setSubmitError(err.response?.data?.message || "Payment verification failed.");
     }
+  };
+
+  const handleProcessing = (paymentIntentId) => {
+    setAwaitingMbway(true);
+    const POLL_INTERVAL = 3000;
+    const TIMEOUT = 5 * 60 * 1000;
+    const start = Date.now();
+
+    const interval = setInterval(async () => {
+      if (Date.now() - start > TIMEOUT) {
+        clearInterval(interval);
+        setAwaitingMbway(false);
+        setSubmitError("Payment confirmation timed out. Please contact support.");
+        return;
+      }
+      try {
+        const { data } = await Axios.get(`/api/bookings/${booking._id}/payment-status`);
+        if (data.isPaid) {
+          clearInterval(interval);
+          setAwaitingMbway(false);
+          setStep(STEPS.CONFIRMED);
+        }
+      } catch {}
+    }, POLL_INTERVAL);
   };
 
   useEffect(() => {
@@ -414,13 +441,21 @@ export default function BookingScreen(props) {
               <div className="booking-step">
                 <h2>Payment</h2>
                 {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                {!clientSecret || !stripePromise ? (
+                {awaitingMbway ? (
+                  <div style={{ textAlign: "center", padding: "2rem 0" }}>
+                    <LoadingBox />
+                    <p style={{ marginTop: "1rem" }}>
+                      Waiting for MBWay confirmation in your app…
+                    </p>
+                  </div>
+                ) : !clientSecret || !stripePromise ? (
                   <LoadingBox />
                 ) : (
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
                     <StripeCheckoutForm
                       price={dayAvailability?.price}
                       onSuccess={handlePaymentSuccess}
+                      onProcessing={handleProcessing}
                     />
                   </Elements>
                 )}

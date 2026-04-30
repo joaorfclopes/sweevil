@@ -108,12 +108,21 @@ bookingRouter.post(
   })
 );
 
+bookingRouter.get(
+  "/:id/payment-status",
+  expressAsyncHandler(async (req, res) => {
+    const booking = await Booking.findById(req.params.id).select("isPaid status");
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    res.json({ isPaid: booking.isPaid, status: booking.status });
+  })
+);
+
 bookingRouter.put(
   "/:id/pay",
   expressAsyncHandler(async (req, res) => {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
-    if (booking.isPaid) return res.status(400).json({ message: "Already paid" });
+    if (booking.isPaid) return res.json({ message: "Booking confirmed", booking });
 
     const { paymentIntentId, confirmToken } = req.body;
     if (!paymentIntentId) {
