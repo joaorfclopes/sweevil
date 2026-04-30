@@ -52,11 +52,27 @@ import {
   availabilityDeleteReducer,
 } from "./reducers/bookingReducers";
 
+const storedUserInfo = (() => {
+  try {
+    const raw = localStorage.getItem("userInfo");
+    if (!raw) return null;
+    const info = JSON.parse(raw);
+    if (!info?.token) return null;
+    const payload = JSON.parse(atob(info.token.split(".")[1]));
+    if (payload.exp * 1000 < Date.now()) {
+      localStorage.removeItem("userInfo");
+      return null;
+    }
+    return info;
+  } catch {
+    localStorage.removeItem("userInfo");
+    return null;
+  }
+})();
+
 const initialState = {
   userSignin: {
-    userInfo: localStorage.getItem("userInfo")
-      ? JSON.parse(localStorage.getItem("userInfo"))
-      : null,
+    userInfo: storedUserInfo,
   },
   cart: {
     cartItems: localStorage.getItem("cartItems")
