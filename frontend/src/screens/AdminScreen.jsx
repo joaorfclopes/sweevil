@@ -8,6 +8,7 @@ import OrdersTable from "../components/OrdersTable";
 import GalleryAdminTab from "../components/GalleryAdminTab";
 import AboutAdminTab from "../components/AboutAdminTab";
 import BookingsAdminTab from "../components/BookingsAdminTab";
+import PasskeyRegister from "../components/PasskeyRegister";
 import { scrollTop } from "../utils.js";
 import { useFeatures } from "../FeaturesContext";
 
@@ -33,6 +34,7 @@ export default function AdminScreen(props) {
       transition={props.pageTransition}
     >
       <div className="logout-container">
+        <PasskeyRegister />
         <Link to="/">
           <button className="primary" onClick={signoutHandler}>
             Log Out

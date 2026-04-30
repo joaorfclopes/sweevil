@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import path from 'path'
+import passkeyRoute from './routes/passkeyRoute.js'
 import webhookRoute from './routes/webhookRoute.js'
 import aboutRoute from './routes/aboutRoute.js'
 import productCategoryRoute from './routes/productCategoryRoute.js'
@@ -67,6 +68,7 @@ const globalLimiter = rateLimit({
 app.use('/api', globalLimiter)
 
 app.use('/api/users', userRoute)
+app.use('/api/passkey', passkeyRoute)
 app.use('/api/products', productRoute)
 app.use('/api/orders', orderRoute)
 app.use('/api/uploads', uploadRoute)
