@@ -108,6 +108,7 @@ export default function BookingsAdminTab() {
   const [dialogDate, setDialogDate] = useState(null);
   const [slotsInput, setSlotsInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
+  const [priceEditing, setPriceEditing] = useState(false);
   const [dialogError, setDialogError] = useState("");
 
   useEffect(() => {
@@ -145,7 +146,8 @@ export default function BookingsAdminTab() {
     setEditingAvail(existing || null);
     setDialogDate(date);
     setSlotsInput(existing ? existing.slots.map((s) => s.time).join(", ") : "");
-    setPriceInput(existing ? String(existing.price) : "");
+    setPriceInput(existing ? String(existing.price) : "50");
+    setPriceEditing(false);
     setDialogError("");
     setDialogOpen(true);
   };
@@ -407,7 +409,7 @@ export default function BookingsAdminTab() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog open={dialogOpen} onClose={() => { setDialogOpen(false); setPriceEditing(false); }} maxWidth="xs" fullWidth>
         <DialogTitle>
           {editingAvail ? "Edit" : "Set"} Availability —{" "}
           {dialogDate ? dayjs(dialogDate).format("DD/MM/YYYY") : ""}
@@ -434,6 +436,17 @@ export default function BookingsAdminTab() {
             value={priceInput}
             onChange={(e) => setPriceInput(e.target.value)}
             inputProps={{ min: 0, step: 0.01 }}
+            InputProps={{
+              readOnly: !priceEditing,
+              endAdornment: !priceEditing && (
+                <Tooltip title="Edit price">
+                  <IconButton size="small" onClick={() => setPriceEditing(true)}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              ),
+            }}
+            sx={!priceEditing ? { "& .MuiInputBase-input": { color: "#555" } } : {}}
           />
         </DialogContent>
         <DialogActions>
@@ -442,7 +455,7 @@ export default function BookingsAdminTab() {
               Remove date
             </button>
           )}
-          <button className="secondary" onClick={() => setDialogOpen(false)}>
+          <button className="secondary" onClick={() => { setDialogOpen(false); setPriceEditing(false); }}>
             Cancel
           </button>
           <button className="primary" onClick={handleDialogSave}>
