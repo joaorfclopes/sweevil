@@ -208,7 +208,10 @@ function AppContent() {
                           pageTransition={pageTransition}
                         />
                       ) : (
-                        <Navigate to="/signin" replace />
+                        <NotFoundScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
                       )
                     }
                   />
@@ -221,7 +224,10 @@ function AppContent() {
                           pageTransition={pageTransition}
                         />
                       ) : (
-                        <Navigate to="/signin" replace />
+                        <NotFoundScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
                       )
                     }
                   />

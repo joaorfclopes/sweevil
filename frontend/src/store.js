@@ -1,3 +1,4 @@
+import Axios from "axios";
 import { applyMiddleware, combineReducers, compose, createStore } from "redux";
 import { thunk } from "redux-thunk";
 import { cartReducer } from "./reducers/cartReducers";
@@ -130,6 +131,17 @@ const store = createStore(
   reducer,
   initialState,
   composeEnhancer(applyMiddleware(thunk))
+);
+
+Axios.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("userInfo");
+      store.dispatch({ type: "USER_SIGNOUT" });
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default store;
