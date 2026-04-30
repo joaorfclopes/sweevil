@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Architecture — Sweevil Platform</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap");
+
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --surface2: #1a1a1a;
+        --border: #2a2a2a;
+        --border-bright: #3a3a3a;
+        --text: #e8e8e8;
+        --muted: #666;
+        --accent: #c8f542;
+        --accent2: #42f5c8;
+        --accent3: #f542a8;
+        --accent4: #f5a842;
+        --accent5: #4287f5;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        min-height: 100vh;
+        padding: 48px 32px;
+      }
+
+      /* noise overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.4;
+      }
+
+      .wrapper {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* HEADER */
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 56px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-left h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .header-left h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1.1;
+      }
+
+      .header-right {
+        text-align: right;
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .header-right span {
+        display: block;
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* LEGEND */
+      .legend {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+        padding: 16px 20px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      /* DIAGRAM GRID */
+      .diagram {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto auto auto auto;
+        gap: 2px;
+        background: var(--border);
+      }
+
+      /* LAYER LABELS */
+      .layer-label {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 8px;
+        background: var(--surface);
+      }
+
+      /* SECTION TITLES */
+      .section-title {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-bright);
+      }
+
+      /* CARDS */
+      .card {
+        background: var(--surface);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+
+      .card.green::after {
+        background: var(--accent);
+      }
+      .card.teal::after {
+        background: var(--accent2);
+      }
+      .card.pink::after {
+        background: var(--accent3);
+      }
+      .card.orange::after {
+        background: var(--accent4);
+      }
+      .card.blue::after {
+        background: var(--accent5);
+      }
+
+      /* spans */
+      .span2 {
+        grid-column: span 2;
+      }
+      .span3 {
+        grid-column: span 3;
+      }
+
+      /* TECH PILLS */
+      .tech-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .tech {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: 1px solid var(--border-bright);
+        background: var(--surface2);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .tech .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .tech .sub {
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 2px;
+      }
+
+      .tech.highlight {
+        border-color: currentColor;
+      }
+
+      .tech.green {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .tech.teal {
+        color: var(--accent2);
+        border-color: var(--accent2);
+      }
+      .tech.pink {
+        color: var(--accent3);
+        border-color: var(--accent3);
+      }
+      .tech.orange {
+        color: var(--accent4);
+        border-color: var(--accent4);
+      }
+      .tech.blue {
+        color: var(--accent5);
+        border-color: var(--accent5);
+      }
+
+      /* ARROWS / FLOW */
+      .flow-row {
+        grid-column: span 3;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .flow-arrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .arrow-line {
+        width: 60px;
+        height: 1px;
+        background: var(--border-bright);
+        position: relative;
+      }
+
+      .arrow-line::after {
+        content: "▶";
+        position: absolute;
+        right: -8px;
+        top: -6px;
+        font-size: 8px;
+        color: var(--border-bright);
+      }
+
+      /* SUBDOMAINS ROW */
+      .subdomain-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        background: var(--surface2);
+        border: 1px solid var(--border-bright);
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 6px;
+        margin-right: 4px;
+        letter-spacing: 0.05em;
+      }
+
+      /* COST BADGE */
+      .cost-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        background: var(--surface2);
+        border: 1px solid var(--border-bright);
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+
+      .cost-badge.free {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .cost-badge.paid {
+        color: var(--accent4);
+        border-color: var(--accent4);
+      }
+
+      /* DESC */
+      .desc {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-top: 10px;
+      }
+
+      /* FULL WIDTH BOTTOM */
+      .bottom-row {
+        grid-column: span 3;
+        background: var(--surface);
+        padding: 24px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        margin: 0 -2px;
+      }
+
+      .bottom-item {
+        padding: 16px;
+        background: var(--surface2);
+        position: relative;
+      }
+
+      .bottom-item::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+
+      .bottom-item.green::after {
+        background: var(--accent);
+      }
+      .bottom-item.teal::after {
+        background: var(--accent2);
+      }
+      .bottom-item.pink::after {
+        background: var(--accent3);
+      }
+      .bottom-item.orange::after {
+        background: var(--accent4);
+      }
+
+      .bottom-item .label {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 10px;
+      }
+
+      /* SEPARATOR */
+      .sep {
+        grid-column: span 3;
+        background: var(--surface);
+        padding: 8px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .sep-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        white-space: nowrap;
+      }
+
+      .sep-line {
+        flex: 1;
+        height: 1px;
+        background: var(--border-bright);
+      }
+
+      /* FOOTER */
+      footer {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      footer .total {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      @media (max-width: 800px) {
+        body {
+          padding: 24px 16px;
+        }
+        .diagram {
+          grid-template-columns: 1fr;
+        }
+        .card.span2,
+        .card.span3,
+        .flow-row,
+        .sep,
+        .bottom-row {
+          grid-column: 1;
+        }
+        .bottom-row {
+          grid-template-columns: 1fr 1fr;
+        }
+        header {
+          flex-direction: column;
+          gap: 16px;
+        }
+        .header-right {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- HEADER -->
+      <header>
+        <div class="header-left">
+          <h1>System Architecture</h1>
+          <h2>Sweevil Platform<br />v2.0</h2>
+        </div>
+        <div class="header-right">
+          <span>Stack Decision — 2026</span>
+          Full Stack Refactor<br />
+          Next.js · Supabase · Stripe<br />
+          Payload CMS · Vercel · Resend
+        </div>
+      </header>
+
+      <!-- LEGEND -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--accent)"></div>
+          Frontend / Hosting
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--accent2)"></div>
+          Data & Auth
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--accent3)"></div>
+          Payments & Booking
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--accent4)"></div>
+          Communication
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--accent5)"></div>
+          Design & CMS
+        </div>
+      </div>
+
+      <!-- DIAGRAM -->
+      <div class="diagram">
+        <!-- ROW 1: SEP -->
+        <div class="sep span3">
+          <div class="sep-label">01 · Client Layer</div>
+          <div class="sep-line"></div>
+        </div>
+
+        <!-- ROW 1: User-facing -->
+        <div class="card green span3">
+          <div class="section-title">User Entry Points</div>
+          <div class="cost-badge free">FREE · Vercel</div>
+          <div class="tech-grid">
+            <div class="tech green">
+              <div class="dot" style="background: var(--accent)"></div>
+              yourdomain.com
+              <span class="sub">Main Site · Next.js SSR</span>
+            </div>
+            <div class="tech green">
+              <div class="dot" style="background: var(--accent)"></div>
+              admin.yourdomain.com
+              <span class="sub">Payload CMS</span>
+            </div>
+            <div class="tech green">
+              <div class="dot" style="background: var(--accent)"></div>
+              storybook.yourdomain.com
+              <span class="sub">Design System</span>
+            </div>
+          </div>
+          <p class="desc" style="margin-top: 12px">
+            All subdomains point to Vercel. Custom domain via CNAME/A records.
+            Auto HTTPS via Let's Encrypt.
+          </p>
+        </div>
+
+        <!-- FLOW -->
+        <div class="flow-row">
+          <div class="flow-arrow">
+            Next.js App Router
+            <div class="arrow-line"></div>
+            SSR + API Routes
+            <div class="arrow-line"></div>
+            Server Components
+          </div>
+        </div>
+
+        <!-- ROW 2: SEP -->
+        <div class="sep">
+          <div class="sep-label">02 · Application Layer</div>
+          <div class="sep-line"></div>
+        </div>
+        <div class="sep span2" style="padding-left: 0">
+          <div class="sep-line"></div>
+        </div>
+
+        <!-- ROW 2: Frontend -->
+        <div class="card green">
+          <div class="section-title">Frontend</div>
+          <div class="tech-grid">
+            <div class="tech green">
+              Next.js 15<span class="sub">App Router</span>
+            </div>
+            <div class="tech">TypeScript</div>
+            <div class="tech">Tailwind CSS</div>
+            <div class="tech blue">
+              shadcn/ui<span class="sub">Components</span>
+            </div>
+            <div class="tech blue">
+              Radix UI<span class="sub">Primitives</span>
+            </div>
+            <div class="tech blue">
+              Storybook<span class="sub">Design System</span>
+            </div>
+          </div>
+          <p class="desc">
+            Portfolio pages, shop, booking flow, order status. RSC for static
+            content, client components for interactions.
+          </p>
+        </div>
+
+        <!-- ROW 2: Backend -->
+        <div class="card teal">
+          <div class="section-title">Backend (Next.js API Routes)</div>
+          <div class="tech-grid">
+            <div class="tech teal">
+              API Routes<span class="sub">/app/api/*</span>
+            </div>
+            <div class="tech">Prisma ORM</div>
+            <div class="tech teal">
+              Supabase Auth<span class="sub">OAuth + Sessions</span>
+            </div>
+            <div class="tech">Sharp<span class="sub">Image compress</span></div>
+            <div class="tech">Zod<span class="sub">Validation</span></div>
+          </div>
+          <p class="desc">
+            All server logic lives here. No separate backend service needed at
+            this scale.
+          </p>
+        </div>
+
+        <!-- ROW 2: CMS -->
+        <div class="card blue">
+          <div class="section-title">Content Management</div>
+          <div class="tech-grid">
+            <div class="tech blue">
+              Payload CMS<span class="sub">Self-hosted</span>
+            </div>
+            <div class="tech">TypeScript<span class="sub">Config</span></div>
+            <div class="tech">
+              REST API<span class="sub">Auto-generated</span>
+            </div>
+          </div>
+          <p class="desc">
+            Client manages products, portfolio, pages. Connects directly to
+            Postgres. Deployed at admin subdomain.
+          </p>
+        </div>
+
+        <!-- FLOW -->
+        <div class="flow-row">
+          <div class="flow-arrow">
+            Read / Write
+            <div class="arrow-line"></div>
+            Supabase Client + Prisma
+            <div class="arrow-line"></div>
+            Webhook Events
+          </div>
+        </div>
+
+        <!-- ROW 3: SEP -->
+        <div class="sep">
+          <div class="sep-label">03 · Services Layer</div>
+          <div class="sep-line"></div>
+        </div>
+        <div class="sep span2" style="padding-left: 0">
+          <div class="sep-line"></div>
+        </div>
+
+        <!-- ROW 3: Database -->
+        <div class="card teal">
+          <div class="section-title">Database & Auth</div>
+          <div class="cost-badge free">FREE · Supabase</div>
+          <div class="tech-grid">
+            <div class="tech teal">
+              Supabase<span class="sub">Postgres</span>
+            </div>
+            <div class="tech teal">
+              Supabase Auth<span class="sub">OAuth / Sessions</span>
+            </div>
+            <div class="tech teal">
+              Supabase Storage<span class="sub">Portfolio Images</span>
+            </div>
+            <div class="tech">Row-Level Security</div>
+            <div class="tech">Prisma<span class="sub">Migrations</span></div>
+          </div>
+          <p class="desc">
+            Single Supabase project. Free tier kept alive via Vercel cron job
+            pinging DB weekly. 500MB DB + 1GB storage.
+          </p>
+        </div>
+
+        <!-- ROW 3: Payments -->
+        <div class="card pink">
+          <div class="section-title">Payments & Booking</div>
+          <div class="cost-badge paid">% per txn · Stripe</div>
+          <div class="tech-grid">
+            <div class="tech pink">
+              Stripe Checkout<span class="sub">Hosted Page</span>
+            </div>
+            <div class="tech pink">
+              Stripe Webhooks<span class="sub">Order fulfillment</span>
+            </div>
+            <div class="tech pink">
+              Cal.com<span class="sub">Booking widget</span>
+            </div>
+            <div class="tech">Deposit flow</div>
+          </div>
+          <p class="desc">
+            Checkout Session created server-side. Redirect to Stripe, back to
+            success URL. Webhook confirms order in DB.
+          </p>
+        </div>
+
+        <!-- ROW 3: Comms -->
+        <div class="card orange">
+          <div class="section-title">Communication</div>
+          <div class="cost-badge free">FREE</div>
+          <div class="tech-grid">
+            <div class="tech orange">
+              Resend<span class="sub">Transactional email</span>
+            </div>
+            <div class="tech orange">
+              Zoho Mail<span class="sub">Corporate email</span>
+            </div>
+            <div class="tech">→ Gmail Forward</div>
+            <div class="tech">
+              React Email<span class="sub">Templates</span>
+            </div>
+          </div>
+          <p class="desc">
+            Order confirmations + booking reminders via Resend. Corporate domain
+            email forwarded to client's Gmail.
+          </p>
+        </div>
+
+        <!-- FLOW -->
+        <div class="flow-row">
+          <div class="flow-arrow">
+            CI/CD
+            <div class="arrow-line"></div>
+            Git Push → Vercel Deploy
+            <div class="arrow-line"></div>
+            Preview Environments
+          </div>
+        </div>
+
+        <!-- ROW 4: SEP -->
+        <div class="sep">
+          <div class="sep-label">04 · Dev & Infra</div>
+          <div class="sep-line"></div>
+        </div>
+        <div class="sep span2" style="padding-left: 0">
+          <div class="sep-line"></div>
+        </div>
+
+        <!-- BOTTOM ROW: Dev Tooling -->
+        <div class="card span3" style="padding: 0">
+          <div class="bottom-row">
+            <div class="bottom-item green">
+              <div class="label">Hosting</div>
+              <div class="tech-grid">
+                <div class="tech green">
+                  Vercel<span class="sub">All services</span>
+                </div>
+                <div class="tech">
+                  Cron Jobs<span class="sub">Keep-alive</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-item teal">
+              <div class="label">Testing</div>
+              <div class="tech-grid">
+                <div class="tech teal">Vitest<span class="sub">Unit</span></div>
+                <div class="tech teal">
+                  Playwright<span class="sub">E2E</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-item pink">
+              <div class="label">Code Quality</div>
+              <div class="tech-grid">
+                <div class="tech pink">ESLint</div>
+                <div class="tech pink">Prettier</div>
+                <div class="tech pink">
+                  TypeScript<span class="sub">strict</span>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-item orange">
+              <div class="label">Domain & DNS</div>
+              <div class="tech-grid">
+                <div class="tech orange">
+                  yourdomain.com<span class="sub">~€30/yr</span>
+                </div>
+                <div class="tech">CNAME → Vercel</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end diagram -->
+
+      <!-- FOOTER -->
+      <footer>
+        <div>
+          Architecture designed for performance, security & scalability<br />
+          <span style="color: var(--muted); font-size: 10px"
+            >Single dev · Small business · Low traffic · Zero operational
+            overhead</span
+          >
+        </div>
+        <div style="text-align: right">
+          Monthly infrastructure cost<br />
+          <span class="total">~€0 / month</span>
+          <span
+            style="
+              display: block;
+              font-size: 10px;
+              color: var(--muted);
+              margin-top: 2px;
+            "
+            >+ ~€30/yr domain + Stripe % per transaction</span
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
