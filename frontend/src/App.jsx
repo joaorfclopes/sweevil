@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -6,7 +6,8 @@ import {
   Routes,
   useLocation
 } from 'react-router-dom'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { signout } from "./actions/userActions";
 import $ from "jquery";
 import { AnimatePresence } from "framer-motion";
 const CookieConsent = React.lazy(() =>
@@ -36,10 +37,14 @@ import BookingScreen from "./screens/BookingScreen";
 import ArrowUp from "./components/ArrowUp";
 import { FeaturesProvider } from "./FeaturesContext";
 
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+
 function AppContent() {
+  const dispatch = useDispatch();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
   const location = useLocation();
+  const idleTimer = useRef(null);
 
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -76,6 +81,21 @@ function AppContent() {
   const pageTransition = {
     transition: "linear",
   };
+
+  useEffect(() => {
+    if (!userInfo) return;
+    const reset = () => {
+      clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => dispatch(signout()), IDLE_TIMEOUT_MS);
+    };
+    const events = ["mousemove", "keydown", "click", "touchstart", "scroll"];
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    reset();
+    return () => {
+      clearTimeout(idleTimer.current);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [userInfo, dispatch]);
 
   useEffect(() => {
     setTimeout(() => {

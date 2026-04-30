@@ -4,7 +4,12 @@ import rateLimit from "express-rate-limit";
 import bcrypt from "bcryptjs";
 import data from "../data.js";
 import User from "../models/userModel.js";
-import { generateToken, isAuth } from "../utils.js";
+import { generateToken, isAuth, isAdmin } from "../utils.js";
+
+const ALLOWED_EMAILS = (process.env.ALLOWED_EMAILS || "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 const signinLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -34,9 +39,16 @@ userRouter.post(
     if (typeof req.body.email !== "string" || typeof req.body.password !== "string") {
       return res.status(401).send({ message: "Invalid user email or password" });
     }
-    const user = await User.findOne({ email: req.body.email });
+    const emailLower = req.body.email.toLowerCase();
+    if (ALLOWED_EMAILS.length > 0 && !ALLOWED_EMAILS.includes(emailLower)) {
+      return res.status(403).send({ message: "Access denied" });
+    }
+    const user = await User.findOne({ email: emailLower });
     if (user) {
-      if (bcrypt.compareSync(req.body.password, user.password)) {
+      if (user.passkeys && user.passkeys.length > 0) {
+        return res.status(401).send({ message: "Password sign-in is disabled. Use your passkey." });
+      }
+      if (user.password && bcrypt.compareSync(req.body.password, user.password)) {
         res.send({
           _id: user._id,
           name: user.name,
@@ -55,12 +67,19 @@ userRouter.post(
 userRouter.post(
   "/register",
   expressAsyncHandler(async (req, res) => {
-    const user = new User({
+    const emailLower = (req.body.email || "").toLowerCase();
+    if (ALLOWED_EMAILS.length > 0 && !ALLOWED_EMAILS.includes(emailLower)) {
+      return res.status(403).send({ message: "Registration not allowed for this email" });
+    }
+    const userFields = {
       name: req.body.name,
-      email: req.body.email,
+      email: emailLower,
       phoneNumber: req.body.phoneNumber,
-      password: bcrypt.hashSync(req.body.password, 8),
-    });
+    };
+    if (req.body.password) {
+      userFields.password = bcrypt.hashSync(req.body.password, 8);
+    }
+    const user = new User(userFields);
     try {
       const createdUser = await user.save();
       res.send({
@@ -74,6 +93,16 @@ userRouter.post(
     } catch (error) {
       res.status(401).send({ message: "Email or Phone Number already in use" });
     }
+  })
+);
+
+userRouter.post(
+  "/remove-passwords",
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const result = await User.updateMany({}, { $unset: { password: "" } });
+    res.send({ message: `Passwords removed from ${result.modifiedCount} user(s)` });
   })
 );
 
