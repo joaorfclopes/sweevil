@@ -14,6 +14,14 @@
   }
 }
 
+// Override MUI focused blue → black
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #1a1a1a !important;
+}
+.MuiInputLabel-root.Mui-focused {
+  color: #1a1a1a !important;
+}
+
 // SweetAlert2 must appear above MUI Dialog (z-index 1300)
 .swal2-container {
   z-index: 1400 !important;
