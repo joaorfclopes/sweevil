@@ -26,6 +26,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import Swal from "sweetalert2";
 import { LocalizationProvider, DateCalendar, PickersDay } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -100,6 +101,7 @@ export default function BookingsAdminTab() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [photosDialog, setPhotosDialog] = useState({ open: false, images: [], name: "" });
+  const [notesDialog, setNotesDialog] = useState({ open: false, notes: "", name: "" });
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAvail, setEditingAvail] = useState(null);
@@ -268,6 +270,7 @@ export default function BookingsAdminTab() {
                     <TableCell>Phone</TableCell>
                     <TableCell>Price</TableCell>
                     <TableCell>Status</TableCell>
+                    <TableCell>Notes</TableCell>
                     <TableCell>Photos</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
@@ -289,6 +292,20 @@ export default function BookingsAdminTab() {
                             color={statusColor(b.status)}
                             size="small"
                           />
+                        </TableCell>
+                        <TableCell>
+                          {b.guestInfo?.notes && (
+                            <Tooltip title="View notes">
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  setNotesDialog({ open: true, notes: b.guestInfo.notes, name: b.guestInfo?.name })
+                                }
+                              >
+                                <NoteAltIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </TableCell>
                         <TableCell>
                           {b.images?.length > 0 && (
@@ -366,6 +383,25 @@ export default function BookingsAdminTab() {
         </DialogContent>
         <DialogActions>
           <button className="secondary" onClick={() => setPhotosDialog({ open: false, images: [], name: "" })}>
+            Close
+          </button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={notesDialog.open}
+        onClose={() => setNotesDialog({ open: false, notes: "", name: "" })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Notes — {notesDialog.name}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" style={{ whiteSpace: "pre-wrap" }}>
+            {notesDialog.notes}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <button className="secondary" onClick={() => setNotesDialog({ open: false, notes: "", name: "" })}>
             Close
           </button>
         </DialogActions>
