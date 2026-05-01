@@ -16,6 +16,10 @@
     h1 {
       margin-bottom: 1.5rem;
     }
+
+    .booking-calendar-content h1 {
+      margin-bottom: 0;
+    }
   }
 
   .booking-breadcrumb {
@@ -40,6 +44,67 @@
   .booking-step {
     h2 {
       margin-bottom: 1rem;
+    }
+  }
+
+  .booking-calendar-content {
+    .MuiDateCalendar-root {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .MuiYearCalendar-root {
+      .MuiPickersYear-yearButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .booking-calendar-outer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .booking-hero-img {
+      width: 90%;
+      max-width: 380px;
+      object-fit: contain;
+      order: 1;
+    }
+
+    .booking-calendar-content {
+      order: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    @include lg {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 30%;
+      min-height: 70vh;
+
+      .booking-hero-img {
+        flex: 0 0 auto;
+        width: 380px;
+        max-width: 380px;
+        order: 0;
+      }
+
+      .booking-calendar-content {
+        flex: 0 0 auto;
+        order: 1;
+        align-items: flex-start;
+        text-align: left;
+        width: auto;
+      }
     }
   }
 
