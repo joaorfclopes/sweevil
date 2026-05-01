@@ -40,7 +40,7 @@
     "sass": "^1.99.0",
     "slick-carousel": "^1.8.1",
     "smoothscroll-polyfill": "^0.4.4",
-    "styled-components": "^6.1.15",
+    "styled-components": "^6.4.1",
     "sweetalert2": "^11.15.10",
     "web-vitals": "^4.2.4",
     "yet-another-react-lightbox": "^3.28.0"
