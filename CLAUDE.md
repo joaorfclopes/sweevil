@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Critical rules
+
+- **Never commit or push** without the user explicitly asking to commit or push. Make all code changes, then wait.
+- **This site has no client-facing login.** The only users are admins (João and the studio account). There is no public registration flow and never will be. All auth decisions must be made with this in mind — do not design for a general user base.
+
 ## Commands
 
 ### Development
@@ -43,7 +48,7 @@ Entry point: `backend/server.js`
 
 - **Framework:** Express.js with ES module imports
 - **Database:** MongoDB via Mongoose 8
-- **Auth:** JWT (Bearer tokens, 30-day expiry). `JWT_SECRET` env var is required — the app refuses to start without it.
+- **Auth:** better-auth with passkey plugin (`@better-auth/passkey`). Cookie-based server-side sessions (8h expiry, 30 min idle timeout on frontend). `BETTER_AUTH_SECRET` env var is required. All auth routes are under `/api/auth/*`. No passwords, no JWTs. User creation is done via the better-auth admin plugin API after which the user registers their passkey from the admin panel.
 - **File uploads:** AWS S3 via `@aws-sdk/client-s3` v3 + multer-s3
 - **Email:** Nodemailer with Gmail OAuth2; templates in `backend/mailing/`
 

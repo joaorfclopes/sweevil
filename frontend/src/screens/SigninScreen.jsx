@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import Axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { startAuthentication } from "@simplewebauthn/browser";
-import Axios from "axios";
+import { authClient } from "../lib/authClient";
 import { USER_SIGNIN_SUCCESS } from "../constants/userConstants";
 import MessageBox from "../components/MessageBox";
 
@@ -11,36 +11,51 @@ export default function SigninScreen(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [passkeyLoading, setPasskeyLoading] = useState(false);
-  const [passkeyError, setPasskeyError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const userSignin = useSelector((state) => state.userSignin);
-  const { userInfo } = userSignin;
+  const { userInfo } = useSelector((state) => state.userSignin);
 
-  const redirect = location.search
-    ? location.search.split("=")[1]
-    : "/admin";
+  const redirect = location.search ? location.search.split("=")[1] : "/admin";
 
   const handlePasskeySignin = async () => {
-    setPasskeyLoading(true);
-    setPasskeyError("");
+    setLoading(true);
+    setError("");
     try {
-      const { data: options } = await Axios.post("/api/passkey/auth-options");
-      const authResponse = await startAuthentication({ optionsJSON: options });
-      const { data: info } = await Axios.post("/api/passkey/auth-verify", authResponse);
-      dispatch({ type: USER_SIGNIN_SUCCESS, payload: info });
-      localStorage.setItem("userInfo", JSON.stringify(info));
+      const result = await authClient.signIn.passkey();
+      if (result?.error) {
+        await Axios.delete("/api/users/passkey-signin-challenge").catch(() => {});
+        setError(result.error.message || "Passkey sign-in failed.");
+        return;
+      }
+      const session = await authClient.getSession();
+      if (!session?.data?.user) throw new Error("Sign-in failed");
+      const { user } = session.data;
+      const userInfo = {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.role === "admin",
+      };
+      dispatch({ type: USER_SIGNIN_SUCCESS, payload: userInfo });
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
     } catch (err) {
-      setPasskeyError(err.response?.data?.message || "Passkey sign-in failed.");
+      await Axios.delete("/api/users/passkey-signin-challenge").catch(() => {});
+      setError(err.message || "Passkey sign-in failed.");
     } finally {
-      setPasskeyLoading(false);
+      setLoading(false);
     }
   };
 
+  const handleGoogleSignin = () => {
+    authClient.signIn.social({
+      provider: "google",
+      callbackURL: `${window.location.origin}/admin`,
+    });
+  };
+
   useEffect(() => {
-    if (userInfo) {
-      navigate(redirect);
-    }
+    if (userInfo) navigate(redirect);
   }, [userInfo, navigate, redirect]);
 
   return (
@@ -55,17 +70,22 @@ export default function SigninScreen(props) {
       <div className="row center signin-container">
         <div className="signin-inner">
           <h1>Sign In</h1>
-
-          {passkeyError && <MessageBox variant="error">{passkeyError}</MessageBox>}
+          {error && <MessageBox variant="error">{error}</MessageBox>}
           <button
             className="primary"
+            style={{ width: "100%", marginBottom: "1rem" }}
+            onClick={handleGoogleSignin}
+          >
+            Sign in with Google
+          </button>
+          <button
+            className="secondary"
             style={{ width: "100%", marginBottom: "1.5rem" }}
             onClick={handlePasskeySignin}
-            disabled={passkeyLoading}
+            disabled={loading}
           >
-            {passkeyLoading ? "Waiting for passkey…" : "Sign in with passkey"}
+            {loading ? "Waiting for passkey…" : "Sign in with passkey"}
           </button>
-
         </div>
       </div>
     </motion.section>
