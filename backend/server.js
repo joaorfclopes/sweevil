@@ -114,10 +114,7 @@ if (process.env.NODE_ENV === 'production') {
   )
 } else {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
-  app.get('*', (req, res) => {
-    const target = new URL(req.path, frontendUrl)
-    res.redirect(target.toString())
-  })
+  app.get('*', (_req, res) => res.redirect(frontendUrl))
 }
 
 app.use((err, req, res, next) => {
