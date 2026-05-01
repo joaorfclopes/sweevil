@@ -19,7 +19,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
-    "axios": "^1.7.9",
+    "axios": "^1.15.1",
     "better-auth": "^1.6.9",
     "dayjs": "^1.11.20",
     "framer-motion": "^11.15.0",
@@ -40,7 +40,7 @@
     "sass": "^1.99.0",
     "slick-carousel": "^1.8.1",
     "smoothscroll-polyfill": "^0.4.4",
-    "styled-components": "^6.1.15",
+    "styled-components": "^6.4.0",
     "sweetalert2": "^11.15.10",
     "web-vitals": "^4.2.4",
     "yet-another-react-lightbox": "^3.28.0"
