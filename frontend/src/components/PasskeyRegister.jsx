@@ -29,20 +29,36 @@ export default function PasskeyRegister() {
     }
   };
 
-  if (isPending || (passkeys && passkeys.length > 0)) return null;
+  if (isPending) return null;
+
+  const hasPasskey = passkeys && passkeys.length > 0;
 
   return (
     <div style={{ marginBottom: "1rem" }}>
       {status === "error" && (
         <MessageBox variant="error">{error}</MessageBox>
       )}
-      <button
-        className="secondary"
-        onClick={handleRegister}
-        disabled={status === "loading"}
-      >
-        {status === "loading" ? "Registering…" : "Register passkey"}
-      </button>
+      {hasPasskey ? (
+        <div
+          style={{
+            display: "inline-block",
+            border: "2px solid #4caf50",
+            color: "#4caf50",
+            padding: "0.5rem 1rem",
+            cursor: "default",
+          }}
+        >
+          Passkey Active
+        </div>
+      ) : (
+        <button
+          className="secondary"
+          onClick={handleRegister}
+          disabled={status === "loading"}
+        >
+          {status === "loading" ? "Registering…" : "Register passkey"}
+        </button>
+      )}
     </div>
   );
 }
