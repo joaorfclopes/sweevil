@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import isURL from "validator/lib/isURL";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Paper,
@@ -373,8 +374,7 @@ export default function BookingsAdminTab() {
         <DialogContent>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {photosDialog.images.map((url, i) => {
-              let safeUrl = '#';
-              try { const u = new URL(url); if (u.protocol === 'https:') safeUrl = url; } catch (_) {}
+              const safeUrl = isURL(url, { protocols: ['https'], require_protocol: true }) ? url : '#';
               return (
               <a key={i} href={safeUrl} target="_blank" rel="noreferrer">
                 <img
