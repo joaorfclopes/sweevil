@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { authClient } from "./lib/authClient";
 import { applyMiddleware, combineReducers, compose, createStore } from "redux";
 import { thunk } from "redux-thunk";
 import { cartReducer } from "./reducers/cartReducers";
@@ -22,7 +23,6 @@ import {
 } from "./reducers/productReducers";
 import {
   userDetailsReducer,
-  userRegisterReducer,
   userSigninReducer,
   userUpdateReducer,
 } from "./reducers/userReducers";
@@ -57,14 +57,7 @@ const storedUserInfo = (() => {
   try {
     const raw = localStorage.getItem("userInfo");
     if (!raw) return null;
-    const info = JSON.parse(raw);
-    if (!info?.token) return null;
-    const payload = JSON.parse(atob(info.token.split(".")[1]));
-    if (payload.exp * 1000 < Date.now()) {
-      localStorage.removeItem("userInfo");
-      return null;
-    }
-    return info;
+    return JSON.parse(raw);
   } catch {
     localStorage.removeItem("userInfo");
     return null;
@@ -93,7 +86,6 @@ const reducer = combineReducers({
   productDelete: productDeleteReducer,
   cart: cartReducer,
   userSignin: userSigninReducer,
-  userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
   userUpdate: userUpdateReducer,
   orderCreate: orderCreateReducer,
@@ -135,10 +127,12 @@ const store = createStore(
 
 Axios.interceptors.response.use(
   (res) => res,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("userInfo");
       store.dispatch({ type: "USER_SIGNOUT" });
+      await authClient.signOut().catch(() => {});
+      window.location.href = "/";
     }
     return Promise.reject(error);
   }

@@ -1,39 +1,38 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { startRegistration } from "@simplewebauthn/browser";
 import Axios from "axios";
+import { authClient } from "../lib/authClient";
 import MessageBox from "./MessageBox";
 
 export default function PasskeyRegister() {
-  const { userInfo } = useSelector((s) => s.userSignin);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+  const { data: session } = authClient.useSession();
+  const { data: passkeys, isPending } = authClient.useListPasskeys();
 
   const handleRegister = async () => {
     setStatus("loading");
     setError("");
     try {
-      const { data: options } = await Axios.post(
-        "/api/passkey/register-options",
-        {},
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-      const registration = await startRegistration({ optionsJSON: options });
-      await Axios.post("/api/passkey/register-verify", registration, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
-      setStatus("success");
+      const name = session?.user?.email || navigator.userAgent;
+      const result = await authClient.passkey.addPasskey({ name });
+      if (result?.error) {
+        await Axios.delete("/api/users/passkey-challenge").catch(() => {});
+        setStatus("error");
+        setError(result.error.message || "Registration failed");
+      }
     } catch (err) {
+      await Axios.delete("/api/users/passkey-challenge").catch(() => {});
       setStatus("error");
-      setError(err.response?.data?.message || err.message || "Registration failed");
+      setError(err.message || "Registration failed");
+    } finally {
+      if (status !== "error") setStatus("idle");
     }
   };
 
+  if (isPending || (passkeys && passkeys.length > 0)) return null;
+
   return (
     <div style={{ marginBottom: "1rem" }}>
-      {status === "success" && (
-        <MessageBox variant="success">Passkey registered successfully.</MessageBox>
-      )}
       {status === "error" && (
         <MessageBox variant="error">{error}</MessageBox>
       )}
