@@ -278,42 +278,49 @@ export default function BookingScreen(props) {
           </div>
         ) : (
           <>
-            <h1 className="custom-font">Book a Session</h1>
-
-            {step > STEPS.CALENDAR && (
-              <div className="booking-breadcrumb">
-                <button
-                  className="booking-back"
-                  onClick={() => setStep(step - 1)}
-                >
-                  ← Back
-                </button>
-                <span>
-                  {dayjs(selectedDate).format("DD/MM/YYYY")}
-                  {selectedSlot && ` — ${selectedSlot}`}
-                </span>
+            {step === STEPS.CALENDAR ? (
+              <div className="booking-calendar-outer">
+                <img src="/bookings.png" alt="" className="booking-hero-img" />
+                <div className="booking-calendar-content">
+                  <h1 className="custom-font">Book a Session</h1>
+                  <div className="booking-step">
+                    <h2>Select a date</h2>
+                    {loadingAvail ? (
+                      <LoadingBox />
+                    ) : availError ? (
+                      <MessageBox variant="error">{availError}</MessageBox>
+                    ) : (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateCalendar
+                          disablePast
+                          shouldDisableDate={shouldDisableDate}
+                          onChange={handleDateSelect}
+                          slots={{ day: AvailableDay }}
+                          slotProps={{ day: { availableDates } }}
+                        />
+                      </LocalizationProvider>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-
-            {step === STEPS.CALENDAR && (
-              <div className="booking-step">
-                <h2>Select a date</h2>
-                {loadingAvail ? (
-                  <LoadingBox />
-                ) : availError ? (
-                  <MessageBox variant="error">{availError}</MessageBox>
-                ) : (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DateCalendar
-                      disablePast
-                      shouldDisableDate={shouldDisableDate}
-                      onChange={handleDateSelect}
-                      slots={{ day: AvailableDay }}
-                      slotProps={{ day: { availableDates } }}
-                    />
-                  </LocalizationProvider>
+            ) : (
+              <>
+                <h1 className="custom-font">Book a Session</h1>
+                {step > STEPS.CALENDAR && (
+                  <div className="booking-breadcrumb">
+                    <button
+                      className="booking-back"
+                      onClick={() => setStep(step - 1)}
+                    >
+                      ← Back
+                    </button>
+                    <span>
+                      {dayjs(selectedDate).format("DD/MM/YYYY")}
+                      {selectedSlot && ` — ${selectedSlot}`}
+                    </span>
+                  </div>
                 )}
-              </div>
+              </>
             )}
 
             {step === STEPS.SLOTS && (
@@ -336,7 +343,7 @@ export default function BookingScreen(props) {
                 )}
                 {dayAvailability && (
                   <p className="booking-price">
-                    Price: <strong>{dayAvailability.price.toFixed(2)}€</strong>
+                    Deposit: <strong>{dayAvailability.price.toFixed(2)}€</strong>
                   </p>
                 )}
               </div>

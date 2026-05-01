@@ -72,6 +72,48 @@ export const bookingConfirmation = ({ booking }) => {
         </td>
       </tr>
       <tr>
+        <td style="padding:0 40px 40px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0"
+            style="border-top:1px solid #e0e0e0;padding-top:32px;margin-top:8px;">
+            <tbody>
+              <tr>
+                <td>
+                  <h2 style="margin:0 0 4px;font-size:18px;color:#1a1a1a;">Tattoo Booking &amp; Policies</h2>
+                  <p style="margin:0 0 20px;color:#555;font-size:14px;line-height:1.7;">
+                    Hi there! You are booking a tattoo session with Sweevil.<br/><br/>
+                    Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.<br/><br/>
+                    For price inquiries before booking, please contact:
+                    <a href="mailto:sweevil.tattoos@gmail.com" style="color:#1a1a1a;">sweevil.tattoos@gmail.com</a>
+                  </p>
+                  <p style="margin:0 0 12px;font-size:14px;color:#1a1a1a;font-weight:bold;">Important Booking Details:</p>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                      ${[
+                        ["Deposit", "Your appointment is only confirmed once the deposit is paid. This amount will be deducted from the final cost of your tattoo."],
+                        ["Cancellations", "Deposits are non-refundable in the event of a cancellation."],
+                        ["Rescheduling", "To keep your deposit, please provide at least 3 days' notice for any rescheduling needs."],
+                        ["Punctuality", "Please be on time. There is a 20-minute grace period. After this time, the session will be automatically canceled and the deposit will be forfeited."],
+                        ["Guests", "A maximum of one guest is allowed. No one under the age of 18 is permitted in the studio."],
+                        ["Preparation", "Arrive well-fed and hydrated. The consumption of alcohol or other substances 24 hours prior to your appointment is strictly prohibited. A good night's sleep is essential."],
+                        ["Clothing", "Please wear comfortable clothing that allows easy access to the area being tattooed and that you don't mind potentially getting ink on."],
+                        ["Health", "Please reach out to reschedule if you have a fever, flu symptoms, or if the skin in the area to be tattooed is sunburned or irritated."],
+                      ].map(([label, text]) => `
+                      <tr>
+                        <td style="padding:6px 0;vertical-align:top;width:110px;">
+                          <strong style="color:#1a1a1a;font-size:13px;">${label}:</strong>
+                        </td>
+                        <td style="padding:6px 0;color:#555;font-size:13px;line-height:1.6;">${text}</td>
+                      </tr>`).join("")}
+                    </tbody>
+                  </table>
+                  <p style="margin:20px 0 0;color:#555;font-size:14px;line-height:1.6;">Hope to meet you soon!</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
         <td style="background:#f4f4f4;padding:20px;text-align:center;">
           <p style="margin:0;color:#999;font-size:12px;">
             &copy; ${new Date().getFullYear()} ${brand}
