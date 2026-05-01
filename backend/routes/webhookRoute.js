@@ -75,7 +75,7 @@ webhookRouter.post("/stripe", async (req, res) => {
     );
   } catch (err) {
     console.error("[webhook] Signature verification failed:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    return res.status(400).json({ error: 'Webhook signature verification failed' });
   }
 
   if (event.type === "payment_intent.succeeded") {
