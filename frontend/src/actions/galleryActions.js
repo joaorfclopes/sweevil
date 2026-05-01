@@ -27,53 +27,36 @@ export const listGalleryImages = () => async (dispatch) => {
   }
 };
 
-export const createGalleryImage =
-  (imageData) => async (dispatch, getState) => {
-    dispatch({ type: GALLERY_IMAGE_CREATE_REQUEST });
-    const {
-      userSignin: { userInfo },
-    } = getState();
-    try {
-      const { data } = await Axios.post("/api/gallery", imageData, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
-      dispatch({ type: GALLERY_IMAGE_CREATE_SUCCESS, payload: data });
-    } catch (error) {
-      dispatch({
-        type: GALLERY_IMAGE_CREATE_FAIL,
-        payload: error.response?.data?.message || error.message,
-      });
-    }
-  };
-
-export const updateGalleryImage =
-  (id, imageData) => async (dispatch, getState) => {
-    dispatch({ type: GALLERY_IMAGE_UPDATE_REQUEST });
-    const {
-      userSignin: { userInfo },
-    } = getState();
-    try {
-      const { data } = await Axios.put(`/api/gallery/${id}`, imageData, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
-      dispatch({ type: GALLERY_IMAGE_UPDATE_SUCCESS, payload: data });
-    } catch (error) {
-      dispatch({
-        type: GALLERY_IMAGE_UPDATE_FAIL,
-        payload: error.response?.data?.message || error.message,
-      });
-    }
-  };
-
-export const deleteGalleryImage = (id) => async (dispatch, getState) => {
-  dispatch({ type: GALLERY_IMAGE_DELETE_REQUEST });
-  const {
-    userSignin: { userInfo },
-  } = getState();
+export const createGalleryImage = (imageData) => async (dispatch) => {
+  dispatch({ type: GALLERY_IMAGE_CREATE_REQUEST });
   try {
-    await Axios.delete(`/api/gallery/${id}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
+    const { data } = await Axios.post("/api/gallery", imageData);
+    dispatch({ type: GALLERY_IMAGE_CREATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: GALLERY_IMAGE_CREATE_FAIL,
+      payload: error.response?.data?.message || error.message,
     });
+  }
+};
+
+export const updateGalleryImage = (id, imageData) => async (dispatch) => {
+  dispatch({ type: GALLERY_IMAGE_UPDATE_REQUEST });
+  try {
+    const { data } = await Axios.put(`/api/gallery/${id}`, imageData);
+    dispatch({ type: GALLERY_IMAGE_UPDATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: GALLERY_IMAGE_UPDATE_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const deleteGalleryImage = (id) => async (dispatch) => {
+  dispatch({ type: GALLERY_IMAGE_DELETE_REQUEST });
+  try {
+    await Axios.delete(`/api/gallery/${id}`);
     dispatch({ type: GALLERY_IMAGE_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -83,19 +66,11 @@ export const deleteGalleryImage = (id) => async (dispatch, getState) => {
   }
 };
 
-export const reorderGalleryImages = (items) => async (dispatch, getState) => {
+export const reorderGalleryImages = (items) => async (dispatch) => {
   dispatch({ type: GALLERY_IMAGE_REORDER_REQUEST });
-  const {
-    userSignin: { userInfo },
-  } = getState();
   try {
-    await Axios.patch(
-      "/api/gallery/reorder",
-      { items },
-      { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    );
+    await Axios.patch("/api/gallery/reorder", { items });
     dispatch({ type: GALLERY_IMAGE_REORDER_SUCCESS });
-    // Sync Redux state with the new DB order
     const { data } = await Axios.get("/api/gallery");
     dispatch({ type: GALLERY_IMAGE_LIST_SUCCESS, payload: data });
   } catch (error) {

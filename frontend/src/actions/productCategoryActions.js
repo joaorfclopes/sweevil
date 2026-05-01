@@ -21,15 +21,10 @@ export const listProductCategories = () => async (dispatch) => {
   }
 };
 
-export const createProductCategory = (name, isClothing) => async (dispatch, getState) => {
+export const createProductCategory = (name, isClothing) => async (dispatch) => {
   dispatch({ type: PRODUCT_CATEGORY_CREATE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.post(
-      "/api/product-categories",
-      { name, isClothing },
-      { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    );
+    const { data } = await Axios.post("/api/product-categories", { name, isClothing });
     dispatch({ type: PRODUCT_CATEGORY_CREATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -39,13 +34,10 @@ export const createProductCategory = (name, isClothing) => async (dispatch, getS
   }
 };
 
-export const deleteProductCategory = (id) => async (dispatch, getState) => {
+export const deleteProductCategory = (id) => async (dispatch) => {
   dispatch({ type: PRODUCT_CATEGORY_DELETE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.delete(`/api/product-categories/${id}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.delete(`/api/product-categories/${id}`);
     dispatch({ type: PRODUCT_CATEGORY_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
