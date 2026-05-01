@@ -17,104 +17,65 @@ import {
   PRODUCT_DETAILS_REQUEST,
 } from "../constants/productConstants";
 
-export const listProducts = () => async (dispatch, getState) => {
+export const listProducts = () => async (dispatch) => {
   dispatch({ type: PRODUCT_LIST_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.get("/api/products", {
-      headers: userInfo ? { Authorization: `Bearer ${userInfo.token}` } : {},
-    });
+    const { data } = await Axios.get("/api/products");
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data.reverse() });
   } catch (error) {
     dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }
 };
 
-export const detailsProduct = (productId) => async (dispatch, getState) => {
+export const detailsProduct = (productId) => async (dispatch) => {
   dispatch({ type: PRODUCT_DETAILS_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.get(`/api/products/${productId}`, {
-      headers: userInfo ? { Authorization: `Bearer ${userInfo.token}` } : {},
-    });
+    const { data } = await Axios.get(`/api/products/${productId}`);
     dispatch({ type: PRODUCT_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
-export const createProduct = (product) => async (dispatch, getState) => {
+export const createProduct = (product) => async (dispatch) => {
   dispatch({ type: PRODUCT_CREATE_REQUEST });
-  const {
-    userSignin: { userInfo },
-  } = getState();
   try {
-    const { data } = await Axios.post("/api/products", product, {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    });
+    const { data } = await Axios.post("/api/products", product);
     dispatch({ type: PRODUCT_CREATE_SUCCESS, payload: data.product });
   } catch (error) {
     dispatch({
       type: PRODUCT_CREATE_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
-export const updateProduct = (product) => async (dispatch, getState) => {
+export const updateProduct = (product) => async (dispatch) => {
   dispatch({ type: PRODUCT_UPDATE_REQUEST, payload: product });
-  const {
-    userSignin: { userInfo },
-  } = getState();
   try {
-    const { data } = await Axios.put(`/api/products/${product._id}`, product, {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    });
+    const { data } = await Axios.put(`/api/products/${product._id}`, product);
     dispatch({ type: PRODUCT_UPDATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: PRODUCT_UPDATE_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
-export const deleteProduct = (productId) => async (dispatch, getState) => {
+export const deleteProduct = (productId) => async (dispatch) => {
   dispatch({ type: PRODUCT_DELETE_REQUEST, payload: productId });
-  const {
-    userSignin: { userInfo },
-  } = getState();
   try {
     // eslint-disable-next-line no-unused-vars
-    const { data } = await Axios.delete(`/api/products/${productId}`, {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    });
+    const { data } = await Axios.delete(`/api/products/${productId}`);
     dispatch({ type: PRODUCT_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };

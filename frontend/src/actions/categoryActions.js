@@ -24,15 +24,10 @@ export const listCategories = () => async (dispatch) => {
   }
 };
 
-export const createCategory = (name) => async (dispatch, getState) => {
+export const createCategory = (name) => async (dispatch) => {
   dispatch({ type: CATEGORY_CREATE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.post(
-      "/api/categories",
-      { name },
-      { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    );
+    const { data } = await Axios.post("/api/categories", { name });
     dispatch({ type: CATEGORY_CREATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -42,26 +37,18 @@ export const createCategory = (name) => async (dispatch, getState) => {
   }
 };
 
-export const reorderCategories = (items) => async (dispatch, getState) => {
-  const { userSignin: { userInfo } } = getState();
+export const reorderCategories = (items) => async () => {
   try {
-    await Axios.patch("/api/categories/reorder", { items }, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
-  } catch (error) {
+    await Axios.patch("/api/categories/reorder", { items });
+  } catch {
     // best-effort
   }
 };
 
-export const updateCategory = (id, name) => async (dispatch, getState) => {
+export const updateCategory = (id, name) => async (dispatch) => {
   dispatch({ type: CATEGORY_UPDATE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.put(
-      `/api/categories/${id}`,
-      { name },
-      { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    );
+    const { data } = await Axios.put(`/api/categories/${id}`, { name });
     dispatch({ type: CATEGORY_UPDATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -71,13 +58,10 @@ export const updateCategory = (id, name) => async (dispatch, getState) => {
   }
 };
 
-export const deleteCategory = (id) => async (dispatch, getState) => {
+export const deleteCategory = (id) => async (dispatch) => {
   dispatch({ type: CATEGORY_DELETE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.delete(`/api/categories/${id}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.delete(`/api/categories/${id}`);
     dispatch({ type: CATEGORY_DELETE_SUCCESS });
   } catch (error) {
     dispatch({

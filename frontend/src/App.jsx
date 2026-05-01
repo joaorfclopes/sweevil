@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -8,6 +8,8 @@ import {
 } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 import { signout } from "./actions/userActions";
+import { authClient } from "./lib/authClient";
+import { USER_SIGNIN_SUCCESS, USER_SIGNOUT } from "./constants/userConstants";
 import $ from "jquery";
 import { AnimatePresence } from "framer-motion";
 const CookieConsent = React.lazy(() =>
@@ -49,6 +51,21 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
 
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (sessionPending) return;
+    if (session?.user && !userInfo) {
+      const { user } = session;
+      const info = { _id: user.id, name: user.name, email: user.email, isAdmin: user.role === "admin" };
+      dispatch({ type: USER_SIGNIN_SUCCESS, payload: info });
+      localStorage.setItem("userInfo", JSON.stringify(info));
+    } else if (!session && !sessionPending && userInfo) {
+      localStorage.removeItem("userInfo");
+      dispatch({ type: USER_SIGNOUT });
+    }
+  }, [session, sessionPending]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isAdmin = location.pathname.startsWith('/admin');
   const isMain = location.pathname === '/';
 
@@ -86,7 +103,10 @@ function AppContent() {
     if (!userInfo) return;
     const reset = () => {
       clearTimeout(idleTimer.current);
-      idleTimer.current = setTimeout(() => dispatch(signout()), IDLE_TIMEOUT_MS);
+      idleTimer.current = setTimeout(async () => {
+        await authClient.signOut();
+        dispatch(signout());
+      }, IDLE_TIMEOUT_MS);
     };
     const events = ["mousemove", "keydown", "click", "touchstart", "scroll"];
     events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
@@ -98,6 +118,9 @@ function AppContent() {
   }, [userInfo, dispatch]);
 
   useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
     setTimeout(() => {
       setLoading(false);
       const loadingEl = document.querySelector(".loading");
@@ -107,6 +130,14 @@ function AppContent() {
       scroll();
     }, 1200);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   // Scroll to hash section once content is rendered
   useEffect(() => {

@@ -23,13 +23,10 @@ import {
   BOOKING_LIST_SUCCESS,
 } from "../constants/bookingConstants";
 
-export const listBookings = () => async (dispatch, getState) => {
+export const listBookings = () => async (dispatch) => {
   dispatch({ type: BOOKING_LIST_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    const { data } = await Axios.get("/api/bookings", {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    const { data } = await Axios.get("/api/bookings");
     dispatch({ type: BOOKING_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -39,13 +36,10 @@ export const listBookings = () => async (dispatch, getState) => {
   }
 };
 
-export const cancelBooking = (bookingId) => async (dispatch, getState) => {
+export const cancelBooking = (bookingId) => async (dispatch) => {
   dispatch({ type: BOOKING_CANCEL_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.put(`/api/bookings/${bookingId}/cancel`, {}, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.put(`/api/bookings/${bookingId}/cancel`, {});
     dispatch({ type: BOOKING_CANCEL_SUCCESS });
   } catch (error) {
     dispatch({
@@ -55,13 +49,10 @@ export const cancelBooking = (bookingId) => async (dispatch, getState) => {
   }
 };
 
-export const deleteBooking = (bookingId) => async (dispatch, getState) => {
+export const deleteBooking = (bookingId) => async (dispatch) => {
   dispatch({ type: BOOKING_DELETE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.delete(`/api/bookings/${bookingId}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.delete(`/api/bookings/${bookingId}`);
     dispatch({ type: BOOKING_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -84,13 +75,10 @@ export const listAvailability = () => async (dispatch) => {
   }
 };
 
-export const createAvailability = (availData) => async (dispatch, getState) => {
+export const createAvailability = (availData) => async (dispatch) => {
   dispatch({ type: AVAILABILITY_CREATE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.post("/api/availability", availData, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.post("/api/availability", availData);
     dispatch({ type: AVAILABILITY_CREATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -100,13 +88,10 @@ export const createAvailability = (availData) => async (dispatch, getState) => {
   }
 };
 
-export const updateAvailability = (id, availData) => async (dispatch, getState) => {
+export const updateAvailability = (id, availData) => async (dispatch) => {
   dispatch({ type: AVAILABILITY_UPDATE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.put(`/api/availability/${id}`, availData, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.put(`/api/availability/${id}`, availData);
     dispatch({ type: AVAILABILITY_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
@@ -116,13 +101,10 @@ export const updateAvailability = (id, availData) => async (dispatch, getState) 
   }
 };
 
-export const deleteAvailability = (id) => async (dispatch, getState) => {
+export const deleteAvailability = (id) => async (dispatch) => {
   dispatch({ type: AVAILABILITY_DELETE_REQUEST });
-  const { userSignin: { userInfo } } = getState();
   try {
-    await Axios.delete(`/api/availability/${id}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    await Axios.delete(`/api/availability/${id}`);
     dispatch({ type: AVAILABILITY_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
