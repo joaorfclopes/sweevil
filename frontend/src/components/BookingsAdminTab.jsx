@@ -373,9 +373,9 @@ export default function BookingsAdminTab() {
         <DialogContent>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {photosDialog.images.map((url, i) => (
-              <a key={i} href={url} target="_blank" rel="noreferrer">
+              <a key={i} href={url.startsWith('https://') ? url : '#'} target="_blank" rel="noreferrer">
                 <img
-                  src={url}
+                  src={url.startsWith('https://') ? url : ''}
                   alt=""
                   style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 4, border: "1px solid #e0e0e0", display: "block" }}
                 />
