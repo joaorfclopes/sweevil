@@ -22,6 +22,9 @@ export default function Navbar(props) {
   const location = useLocation();
 
   const openMenu = () => {
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute("content", "width=device-width, initial-scale=1, viewport-fit=cover");
     $(".nav-mobile").addClass("show");
     disableScroll();
   };
