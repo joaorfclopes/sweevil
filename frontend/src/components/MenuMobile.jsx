@@ -14,6 +14,9 @@ export default function MenuMobile() {
   const location = useLocation();
 
   const closeMenu = () => {
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute("content", "width=device-width, initial-scale=1");
     $(".nav-mobile").removeClass("show");
     enableScroll();
   };
