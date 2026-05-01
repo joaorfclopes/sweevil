@@ -54,6 +54,18 @@ export const getAuth = () => {
             },
           },
         },
+        account: {
+          create: {
+            before: async (account) => ({
+              data: { ...account, accessToken: null, refreshToken: null, idToken: null, accessTokenExpiresAt: null },
+            }),
+          },
+          update: {
+            before: async (account) => ({
+              data: { ...account, accessToken: null, refreshToken: null, idToken: null, accessTokenExpiresAt: null },
+            }),
+          },
+        },
       },
       session: {
         expiresIn: 60 * 60 * 8,

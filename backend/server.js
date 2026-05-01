@@ -40,11 +40,17 @@ const port = process.env.BACKEND_PORT || process.env.PORT || 5000
 await mongoose.connect(process.env.MONGODB_URL)
 const auth = getAuth()
 
+const db = mongoose.connection.getClient().db()
+
 // Auto-expire passkey challenge verifications using MongoDB TTL index.
 // better-auth sets expiresAt but never creates this index itself.
-await mongoose.connection.getClient().db()
-  .collection("verification")
-  .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, background: true })
+await db.collection("verification").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, background: true })
+
+// Scrub any OAuth tokens that may have been stored before the account hook was in place.
+await db.collection("account").updateMany(
+  { accessToken: { $ne: null } },
+  { $set: { accessToken: null, refreshToken: null, idToken: null, accessTokenExpiresAt: null } }
+)
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
