@@ -277,198 +277,193 @@ export default function BookingScreen(props) {
             </p>
           </div>
         ) : (
-          <>
-            {step === STEPS.CALENDAR ? (
-              <div className="booking-calendar-outer">
-                <img src="/bookings.png" alt="" className="booking-hero-img" />
-                <div className="booking-calendar-content">
-                  <h1 className="custom-font">Book a Session</h1>
-                  <div className="booking-step">
-                    <h2>Select a date</h2>
-                    {loadingAvail ? (
-                      <LoadingBox />
-                    ) : availError ? (
-                      <MessageBox variant="error">{availError}</MessageBox>
-                    ) : (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar
-                          disablePast
-                          shouldDisableDate={shouldDisableDate}
-                          onChange={handleDateSelect}
-                          slots={{ day: AvailableDay }}
-                          slotProps={{ day: { availableDates } }}
-                        />
-                      </LocalizationProvider>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <h1 className="custom-font">Book a Session</h1>
-                {step > STEPS.CALENDAR && (
-                  <div className="booking-breadcrumb">
-                    <button
-                      className="booking-back"
-                      onClick={() => setStep(step - 1)}
-                    >
-                      ← Back
-                    </button>
-                    <span>
-                      {dayjs(selectedDate).format("DD/MM/YYYY")}
-                      {selectedSlot && ` — ${selectedSlot}`}
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
-
-            {step === STEPS.SLOTS && (
-              <div className="booking-step">
-                <h2>Select a time slot</h2>
-                {availableSlots.length === 0 ? (
-                  <MessageBox variant="error">No slots available for this date.</MessageBox>
-                ) : (
-                  <div className="booking-slots">
-                    {availableSlots.map((s) => (
-                      <button
-                        key={s.time}
-                        className="booking-slot-btn primary"
-                        onClick={() => handleSlotSelect(s.time)}
-                      >
-                        {s.time}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {dayAvailability && (
-                  <p className="booking-price">
-                    Deposit: <strong>{dayAvailability.price.toFixed(2)}€</strong>
-                  </p>
-                )}
-              </div>
-            )}
-
-            {step === STEPS.FORM && (
-              <div className="booking-step">
-                <h2>Your details</h2>
-                {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                <form onSubmit={handleFormSubmit} className="booking-form">
-                  <div>
-                    <label>Name *</label>
-                    <input
-                      required
-                      value={guestInfo.name}
-                      onChange={(e) =>
-                        setGuestInfo({ ...guestInfo, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label>Email *</label>
-                    <input
-                      type="email"
-                      required
-                      value={guestInfo.email}
-                      onChange={(e) =>
-                        setGuestInfo({ ...guestInfo, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label>Phone *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={guestInfo.phone}
-                      onChange={(e) =>
-                        setGuestInfo({ ...guestInfo, phone: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label>Notes</label>
-                    <textarea
-                      rows={3}
-                      value={guestInfo.notes}
-                      onChange={(e) =>
-                        setGuestInfo({ ...guestInfo, notes: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label>
-                      Photos{" "}
-                      <span style={{ fontWeight: 400, color: "#888" }}>
-                        (optional, max 10)
-                      </span>
-                    </label>
-                    {imagePreviews.length > 0 && (
-                      <div className="booking-image-previews">
-                        {imagePreviews.map((src, i) => (
-                          <div key={i} className="booking-image-preview">
-                            <img src={src} alt="" />
-                            <button
-                              type="button"
-                              className="booking-image-remove"
-                              onClick={() => removeImage(i)}
-                              aria-label="Remove photo"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {imageFiles.length < 10 && (
-                      <label className="booking-image-add">
-                        + Add photos
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          style={{ display: "none" }}
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                    )}
-                  </div>
+          <div className="booking-calendar-outer">
+            <img src="/bookings.png" alt="" className="booking-hero-img" />
+            <div className="booking-calendar-content">
+              <h1 className="custom-font">Book a Session</h1>
+              {step > STEPS.CALENDAR && (
+                <div className="booking-breadcrumb">
                   <button
-                    type="submit"
-                    className="primary"
-                    disabled={submitting}
+                    className="booking-back"
+                    onClick={() => setStep(step - 1)}
                   >
-                    {submitting ? "Please wait..." : `Continue to Payment — ${dayAvailability?.price.toFixed(2)}€`}
+                    ← Back
                   </button>
-                </form>
-              </div>
-            )}
+                  <span>
+                    {dayjs(selectedDate).format("DD/MM/YYYY")}
+                    {selectedSlot && ` — ${selectedSlot}`}
+                  </span>
+                </div>
+              )}
 
-            {step === STEPS.PAYMENT && (
-              <div className="booking-step">
-                <h2>Payment</h2>
-                {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                {awaitingMbway ? (
-                  <div style={{ textAlign: "center", padding: "2rem 0" }}>
+              {step === STEPS.CALENDAR && (
+                <div className="booking-step">
+                  <h2>Select a date</h2>
+                  {loadingAvail ? (
                     <LoadingBox />
-                    <p style={{ marginTop: "1rem" }}>
-                      Waiting for MBWay confirmation in your app…
+                  ) : availError ? (
+                    <MessageBox variant="error">{availError}</MessageBox>
+                  ) : (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateCalendar
+                        disablePast
+                        shouldDisableDate={shouldDisableDate}
+                        onChange={handleDateSelect}
+                        slots={{ day: AvailableDay }}
+                        slotProps={{ day: { availableDates } }}
+                      />
+                    </LocalizationProvider>
+                  )}
+                </div>
+              )}
+
+              {step === STEPS.SLOTS && (
+                <div className="booking-step">
+                  <h2>Select a time slot</h2>
+                  {availableSlots.length === 0 ? (
+                    <MessageBox variant="error">No slots available for this date.</MessageBox>
+                  ) : (
+                    <div className="booking-slots">
+                      {availableSlots.map((s) => (
+                        <button
+                          key={s.time}
+                          className="booking-slot-btn primary"
+                          onClick={() => handleSlotSelect(s.time)}
+                        >
+                          {s.time}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {dayAvailability && (
+                    <p className="booking-price">
+                      Deposit: <strong>{dayAvailability.price.toFixed(2)}€</strong>
                     </p>
-                  </div>
-                ) : !clientSecret || !stripePromise ? (
-                  <LoadingBox />
-                ) : (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <StripeCheckoutForm
-                      price={dayAvailability?.price}
-                      onSuccess={handlePaymentSuccess}
-                      onProcessing={handleProcessing}
-                    />
-                  </Elements>
-                )}
-              </div>
-            )}
-          </>
+                  )}
+                </div>
+              )}
+
+              {step === STEPS.FORM && (
+                <div className="booking-step">
+                  <h2>Your details</h2>
+                  {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
+                  <form onSubmit={handleFormSubmit} className="booking-form">
+                    <div>
+                      <label>Name *</label>
+                      <input
+                        required
+                        value={guestInfo.name}
+                        onChange={(e) =>
+                          setGuestInfo({ ...guestInfo, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>Email *</label>
+                      <input
+                        type="email"
+                        required
+                        value={guestInfo.email}
+                        onChange={(e) =>
+                          setGuestInfo({ ...guestInfo, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>Phone *</label>
+                      <input
+                        type="tel"
+                        required
+                        value={guestInfo.phone}
+                        onChange={(e) =>
+                          setGuestInfo({ ...guestInfo, phone: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>Notes</label>
+                      <textarea
+                        rows={3}
+                        value={guestInfo.notes}
+                        onChange={(e) =>
+                          setGuestInfo({ ...guestInfo, notes: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>
+                        Photos{" "}
+                        <span style={{ fontWeight: 400, color: "#888" }}>
+                          (optional, max 10)
+                        </span>
+                      </label>
+                      {imagePreviews.length > 0 && (
+                        <div className="booking-image-previews">
+                          {imagePreviews.map((src, i) => (
+                            <div key={i} className="booking-image-preview">
+                              <img src={src} alt="" />
+                              <button
+                                type="button"
+                                className="booking-image-remove"
+                                onClick={() => removeImage(i)}
+                                aria-label="Remove photo"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {imageFiles.length < 10 && (
+                        <label className="booking-image-add">
+                          + Add photos
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            style={{ display: "none" }}
+                            onChange={handleImageChange}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      className="primary"
+                      disabled={submitting}
+                    >
+                      {submitting ? "Please wait..." : `Continue to Payment — ${dayAvailability?.price.toFixed(2)}€`}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {step === STEPS.PAYMENT && (
+                <div className="booking-step">
+                  <h2>Payment</h2>
+                  {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
+                  {awaitingMbway ? (
+                    <div style={{ textAlign: "center", padding: "2rem 0" }}>
+                      <LoadingBox />
+                      <p style={{ marginTop: "1rem" }}>
+                        Waiting for MBWay confirmation in your app…
+                      </p>
+                    </div>
+                  ) : !clientSecret || !stripePromise ? (
+                    <LoadingBox />
+                  ) : (
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <StripeCheckoutForm
+                        price={dayAvailability?.price}
+                        onSuccess={handlePaymentSuccess}
+                        onProcessing={handleProcessing}
+                      />
+                    </Elements>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </motion.section>
