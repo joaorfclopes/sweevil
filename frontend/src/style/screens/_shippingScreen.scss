@@ -1,4 +1,5 @@
 @use '../general/globals' as *;
+@use '../general/phone-input' as *;
 
 .shipping {
   @include lg {

@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { getCountryDataList } from "countries-list";
 import { saveShippingAddress } from "../actions/cartActions";
 
@@ -9,39 +14,64 @@ const COUNTRY_LIST = getCountryDataList()
   .map(({ code, name }) => ({ code, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
+const safeText = /^[\p{L}\p{N}\s\-'.,#/()+&]+$/u;
+
+const schema = z.object({
+  email: z.string().email("Enter a valid email address"),
+  phoneNumber: z.string().min(7, "Enter a valid phone number"),
+  fullName: z
+    .string()
+    .min(2, "Full name is required")
+    .max(100)
+    .regex(/^[\p{L}\s\-'.]+$/u, "Only letters, spaces, hyphens and apostrophes"),
+  country: z.string().min(2, "Country is required"),
+  address: z
+    .string()
+    .min(3, "Address is required")
+    .max(200)
+    .regex(safeText, "Invalid characters in address"),
+  city: z
+    .string()
+    .min(2, "City is required")
+    .max(100)
+    .regex(/^[\p{L}\s\-'.]+$/u, "Only letters allowed"),
+  postalCode: z
+    .string()
+    .min(3, "Postal code is required")
+    .max(20)
+    .regex(/^[\w\s\-]+$/, "Invalid postal code"),
+});
+
 export default function ShippingScreen(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
 
-  const [email, setEmail] = useState(shippingAddress.email);
-  const [phoneNumber, setPhoneNumber] = useState(shippingAddress.phoneNumber);
-  const [fullName, setFullName] = useState(shippingAddress.fullName);
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country || "PT");
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: shippingAddress.email || "",
+      phoneNumber: shippingAddress.phoneNumber || "",
+      fullName: shippingAddress.fullName || "",
+      country: shippingAddress.country || "PT",
+      address: shippingAddress.address || "",
+      city: shippingAddress.city || "",
+      postalCode: shippingAddress.postalCode || "",
+    },
+  });
 
   useEffect(() => {
-    if (cartItems.length <= 0) {
-      navigate("/cart");
-    }
+    if (cartItems.length <= 0) navigate("/cart");
   }, [cartItems, navigate]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(
-      saveShippingAddress({
-        email,
-        phoneNumber,
-        fullName,
-        address,
-        city,
-        postalCode,
-        country,
-      })
-    );
+  const onSubmit = (data) => {
+    dispatch(saveShippingAddress(data));
     navigate("/cart/placeorder");
   };
 
@@ -57,81 +87,64 @@ export default function ShippingScreen(props) {
       <div className="row center shipping-container">
         <div className="shipping-inner">
           <h1 className="custom-font">Shipping Details</h1>
-          <form className="form" onSubmit={submitHandler}>
+          <form className="form" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              <input type="email" id="email" {...register("email")} />
+              {errors.email && <span className="field-error">{errors.email.message}</span>}
             </div>
             <div>
-              <label htmlFor="phoneNumber">Phone Number</label>
-              <input
-                type="number"
-                id="phoneNumber"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
+              <label>Phone Number</label>
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    country="pt"
+                    value={field.value}
+                    onChange={field.onChange}
+                    inputProps={{ id: "phoneNumber" }}
+                    containerClass="phone-input-container"
+                    inputClass="phone-input-field"
+                  />
+                )}
               />
+              {errors.phoneNumber && (
+                <span className="field-error">{errors.phoneNumber.message}</span>
+              )}
             </div>
             <div>
               <label htmlFor="fullName">Full Name</label>
-              <input
-                type="text"
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="address">Address</label>
-              <input
-                type="text"
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="city">City</label>
-              <input
-                type="text"
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="postalCode">Postal Code</label>
-              <input
-                type="text"
-                id="postalCode"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-                required
-              />
+              <input type="text" id="fullName" {...register("fullName")} />
+              {errors.fullName && <span className="field-error">{errors.fullName.message}</span>}
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <select
-                id="country"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                required
-              >
+              <select id="country" {...register("country")}>
                 {COUNTRY_LIST.map(({ code, name }) => (
                   <option key={code} value={code}>
                     {name}
                   </option>
                 ))}
               </select>
+              {errors.country && <span className="field-error">{errors.country.message}</span>}
+            </div>
+            <div>
+              <label htmlFor="address">Address</label>
+              <input type="text" id="address" {...register("address")} />
+              {errors.address && <span className="field-error">{errors.address.message}</span>}
+            </div>
+            <div>
+              <label htmlFor="city">City</label>
+              <input type="text" id="city" {...register("city")} />
+              {errors.city && <span className="field-error">{errors.city.message}</span>}
+            </div>
+            <div>
+              <label htmlFor="postalCode">Postal Code</label>
+              <input type="text" id="postalCode" {...register("postalCode")} />
+              {errors.postalCode && (
+                <span className="field-error">{errors.postalCode.message}</span>
+              )}
             </div>
             <div>
               <button className="primary" type="submit">
