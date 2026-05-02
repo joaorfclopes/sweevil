@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
+import rateLimit from "express-rate-limit";
 import Stripe from "stripe";
 import Booking from "../models/bookingModel.js";
 import Availability from "../models/availabilityModel.js";
@@ -11,6 +12,22 @@ import { generateICS } from "../mailing/calendarInvite.js";
 import { sendMail } from "../mailing/sendMail.js";
 
 const bookingRouter = express.Router();
+
+const createBookingLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many booking requests, please try again later." },
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many payment requests, please try again later." },
+});
 
 let _stripe;
 const getStripe = () => {
@@ -55,6 +72,7 @@ bookingRouter.get(
 
 bookingRouter.post(
   "/",
+  createBookingLimiter,
   expressAsyncHandler(async (req, res) => {
     const { date, slot, guestInfo, images } = req.body;
     if (!date || !slot || !guestInfo?.name || !guestInfo?.email || !guestInfo?.phone) {
@@ -93,6 +111,7 @@ bookingRouter.post(
 
 bookingRouter.post(
   "/:id/create-payment-intent",
+  paymentLimiter,
   expressAsyncHandler(async (req, res) => {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
@@ -119,6 +138,7 @@ bookingRouter.get(
 
 bookingRouter.put(
   "/:id/pay",
+  paymentLimiter,
   expressAsyncHandler(async (req, res) => {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
