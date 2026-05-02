@@ -1,9 +1,26 @@
+import crypto from "crypto";
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
+import rateLimit from "express-rate-limit";
 import Stripe from "stripe";
+import { fromNodeHeaders } from "better-auth/node";
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
-import { isAdmin, isAuth } from "../utils.js";
+import { isAdmin, isAuth, formatDate } from "../utils.js";
+import { getAuth } from "../auth.js";
+import { placedOrder } from "../mailing/placedOrder.js";
+import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
+import { orderPendingPayment } from "../mailing/orderPendingPayment.js";
+import { sendMail } from "../mailing/sendMail.js";
+
+const getAdminSession = async (req) => {
+  try {
+    const session = await getAuth().api.getSession({ headers: fromNodeHeaders(req.headers) });
+    return session?.user?.role === "admin" ? session : null;
+  } catch {
+    return null;
+  }
+};
 
 const orderRouter = express.Router();
 
@@ -12,6 +29,25 @@ const getStripe = () => {
   if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   return _stripe;
 };
+
+const createOrderLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many payment requests, please try again later." },
+});
+
+const validateToken = (order, token) =>
+  token && order.confirmToken && token === order.confirmToken;
 
 orderRouter.get(
   "/",
@@ -85,7 +121,7 @@ orderRouter.get(
 
 orderRouter.post(
   "/",
-  isAuth,
+  createOrderLimiter,
   expressAsyncHandler(async (req, res) => {
     const { orderItems, shippingAddress } = req.body;
     if (!Array.isArray(orderItems) || orderItems.length === 0) {
@@ -119,6 +155,7 @@ orderRouter.post(
     );
     const totalPrice = parseFloat((itemsPrice + shippingPrice).toFixed(2));
     const itemsQty = builtItems.reduce((a, c) => a + c.qty, 0);
+    const confirmToken = crypto.randomBytes(32).toString("hex");
     const order = new Order({
       orderItems: builtItems,
       shippingAddress,
@@ -127,38 +164,67 @@ orderRouter.post(
       shippingPrice,
       totalPrice,
       status: "IN PROGRESS",
-      user: req.user._id,
+      confirmToken,
     });
     const createdOrder = await order.save();
-    res.status(201).send({ message: "New order created", order: createdOrder });
+
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
+    const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    sendMail({
+      from,
+      to: shippingAddress.email,
+      subject: `Complete your order at ${process.env.BRAND_NAME}`,
+      html: orderPendingPayment({ order: createdOrder, paymentUrl }),
+    });
+    sendMail({
+      from,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+      subject: `New order pending payment — ${shippingAddress.fullName}`,
+      html: placedOrderAdmin({
+        order: {
+          orderId: createdOrder._id,
+          orderDate: formatDate(createdOrder.createdAt.toISOString()),
+          shippingAddress: createdOrder.shippingAddress,
+          orderItems: createdOrder.orderItems,
+          itemsPrice: createdOrder.itemsPrice,
+          shippingPrice: createdOrder.shippingPrice,
+          totalPrice: createdOrder.totalPrice,
+        },
+      }),
+    });
+
+    res.status(201).send({ message: "New order created", order: { ...createdOrder.toObject(), confirmToken } });
   })
 );
 
 orderRouter.get(
   "/:id",
-  isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
-    if (order) {
-      // Only the order owner or an admin may view the order
-      if (!req.user.isAdmin && order.user?.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-      res.json(order);
-    } else {
-      res.status(404).json({ message: "Order not found" });
+    const isAdminUser = !!(await getAdminSession(req));
+    const token = req.query.token;
+
+    const orderWithToken = await Order.findById(req.params.id);
+    if (!orderWithToken) return res.status(404).json({ message: "Order not found" });
+
+    if (!isAdminUser && !validateToken(orderWithToken, token)) {
+      return res.status(403).json({ message: "Access denied" });
     }
+
+    const { confirmToken: _, ...orderData } = orderWithToken.toObject();
+    res.json(orderData);
   })
 );
 
 orderRouter.post(
   "/:id/create-payment-intent",
-  isAuth,
+  paymentLimiter,
   expressAsyncHandler(async (req, res) => {
+    const { confirmToken } = req.body;
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).send({ message: "Order not found" });
-    if (order.user?.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Access denied" });
+    if (!validateToken(order, confirmToken)) {
+      return res.status(403).json({ message: "Invalid token" });
     }
     if (order.isPaid) {
       return res.status(400).json({ message: "Order already paid" });
@@ -176,19 +242,17 @@ orderRouter.post(
 
 orderRouter.put(
   "/:id/pay",
-  isAuth,
+  paymentLimiter,
   expressAsyncHandler(async (req, res) => {
+    const { paymentIntentId, confirmToken } = req.body;
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).send({ message: "Order not found" });
-
-    if (order.user?.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Access denied" });
+    if (!validateToken(order, confirmToken)) {
+      return res.status(403).json({ message: "Invalid token" });
     }
     if (order.isPaid) {
       return res.status(400).json({ message: "Order already paid" });
     }
-
-    const { paymentIntentId } = req.body;
     if (!paymentIntentId || typeof paymentIntentId !== "string") {
       return res.status(400).json({ message: "paymentIntentId is required" });
     }
@@ -197,7 +261,6 @@ orderRouter.put(
     if (paymentIntent.status !== "succeeded") {
       return res.status(402).json({ message: `Payment not succeeded: ${paymentIntent.status}` });
     }
-
     if (Math.abs(paymentIntent.amount_received - Math.round(order.totalPrice * 100)) > 1) {
       return res.status(402).json({ message: "Payment amount does not match order total" });
     }
@@ -230,44 +293,63 @@ orderRouter.put(
     }
 
     const updatedOrder = await order.save();
+
+    const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    sendMail({
+      from,
+      to: order.shippingAddress.email,
+      subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+      html: placedOrder({
+        order: {
+          orderId: updatedOrder._id,
+          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+          shippingAddress: updatedOrder.shippingAddress,
+          orderItems: updatedOrder.orderItems,
+          itemsPrice: updatedOrder.itemsPrice,
+          shippingPrice: updatedOrder.shippingPrice,
+          totalPrice: updatedOrder.totalPrice,
+        },
+      }),
+    });
+
     res.send({ message: "Order paid", order: updatedOrder });
   })
 );
 
 orderRouter.put(
   "/:id/cancel",
-  isAuth,
   expressAsyncHandler(async (req, res) => {
+    const isAdminUser = !!(await getAdminSession(req));
+    const { confirmToken } = req.body;
+
     const order = await Order.findById(req.params.id);
-    if (order) {
-      // Only the order owner or an admin may cancel the order
-      if (!req.user.isAdmin && order.user?.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-      order.status = "CANCELED";
-      if (order.isPaid) {
-        for (const item of order.orderItems) {
-          const product = await Product.findById(item.product);
-          if (product) {
-            if (!product.isClothing) {
-              product.countInStock.stock += item.qty;
-            } else {
-              if (item.size === "XS") product.countInStock.xs += item.qty;
-              else if (item.size === "S") product.countInStock.s += item.qty;
-              else if (item.size === "M") product.countInStock.m += item.qty;
-              else if (item.size === "L") product.countInStock.l += item.qty;
-              else if (item.size === "XL") product.countInStock.xl += item.qty;
-              else if (item.size === "XXL") product.countInStock.xxl += item.qty;
-            }
-            await product.save();
+    if (!order) return res.status(404).send({ message: "Order not found" });
+
+    if (!isAdminUser && !validateToken(order, confirmToken)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    order.status = "CANCELED";
+    if (order.isPaid) {
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          if (!product.isClothing) {
+            product.countInStock.stock += item.qty;
+          } else {
+            if (item.size === "XS") product.countInStock.xs += item.qty;
+            else if (item.size === "S") product.countInStock.s += item.qty;
+            else if (item.size === "M") product.countInStock.m += item.qty;
+            else if (item.size === "L") product.countInStock.l += item.qty;
+            else if (item.size === "XL") product.countInStock.xl += item.qty;
+            else if (item.size === "XXL") product.countInStock.xxl += item.qty;
           }
+          await product.save();
         }
       }
-      const updatedOrder = await order.save();
-      res.send({ message: "Order canceled", order: updatedOrder });
-    } else {
-      res.status(404).send({ message: "Order not found" });
     }
+    const updatedOrder = await order.save();
+    res.send({ message: "Order canceled", order: updatedOrder });
   })
 );
 

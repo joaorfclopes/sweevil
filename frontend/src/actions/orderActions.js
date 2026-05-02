@@ -45,10 +45,10 @@ export const createOrder = (order) => async (dispatch) => {
   }
 };
 
-export const detailsOrder = (orderId) => async (dispatch) => {
+export const detailsOrder = (orderId, token) => async (dispatch) => {
   dispatch({ type: ORDER_DETAILS_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.get(`/api/orders/${orderId}`);
+    const { data } = await Axios.get(`/api/orders/${orderId}${token ? `?token=${token}` : ""}`);
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -63,10 +63,6 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
   try {
     const { data } = await Axios.put(`/api/orders/${order._id}/pay`, paymentResult);
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
-    // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post("/api/email/placedOrder", { order });
-    // eslint-disable-next-line no-unused-vars
-    const { sendEmailAdmin } = await Axios.post("/api/email/placedOrderAdmin", { order });
   } catch (error) {
     dispatch({
       type: ORDER_PAY_FAIL,
@@ -105,10 +101,10 @@ export const deliverOrder = (orderId) => async (dispatch) => {
   }
 };
 
-export const cancelOrder = (orderId) => async (dispatch) => {
+export const cancelOrder = (orderId, token) => async (dispatch) => {
   dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, {});
+    const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, token ? { confirmToken: token } : {});
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
     if (data.order.isPaid) {
       // eslint-disable-next-line no-unused-vars
