@@ -55,6 +55,7 @@ export default function ShippingScreen(props) {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
+    mode: "onBlur",
     defaultValues: {
       email: shippingAddress.email || "",
       phoneNumber: shippingAddress.phoneNumber || "",
@@ -84,10 +85,10 @@ export default function ShippingScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="row center shipping-container">
+      <div className="shipping-container">
         <div className="shipping-inner">
           <h1 className="custom-font">Shipping Details</h1>
-          <form className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form className="shipping-form" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="email">Email</label>
               <input type="email" id="email" {...register("email")} />
