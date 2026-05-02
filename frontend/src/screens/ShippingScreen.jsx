@@ -24,7 +24,7 @@ const schema = z.object({
     .min(2, "Full name is required")
     .max(100)
     .regex(/^[\p{L}\s\-'.]+$/u, "Only letters, spaces, hyphens and apostrophes"),
-  country: z.string().min(2, "Country is required"),
+  country: z.string().min(1, "Country is required"),
   address: z
     .string()
     .min(3, "Address is required")
@@ -60,7 +60,7 @@ export default function ShippingScreen(props) {
       email: shippingAddress.email || "",
       phoneNumber: shippingAddress.phoneNumber || "",
       fullName: shippingAddress.fullName || "",
-      country: shippingAddress.country || "PT",
+      country: shippingAddress.country || "",
       address: shippingAddress.address || "",
       city: shippingAddress.city || "",
       postalCode: shippingAddress.postalCode || "",
@@ -122,6 +122,7 @@ export default function ShippingScreen(props) {
             <div>
               <label htmlFor="country">Country</label>
               <select id="country" {...register("country")}>
+                <option value="">Select a country</option>
                 {COUNTRY_LIST.map(({ code, name }) => (
                   <option key={code} value={code}>
                     {name}
