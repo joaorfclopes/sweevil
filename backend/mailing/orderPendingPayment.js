@@ -39,7 +39,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
 </head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
-    style="background:#ffffff;margin:32px auto;border-radius:4px;overflow:hidden;">
+    style="background:#ffffff;margin:0 auto;border-radius:4px;overflow:hidden;">
     <tbody>
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
