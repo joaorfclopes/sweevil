@@ -85,8 +85,12 @@ function AvailableDay(props) {
 
 const STEPS = { CALENDAR: 0, SLOTS: 1, FORM: 2, PAYMENT: 3, CONFIRMED: 4 };
 
+const EXCLUSIVITY_TEXT =
+  "Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.";
+
 export default function BookingScreen(props) {
   const [searchParams] = useSearchParams();
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   const [availability, setAvailability] = useState([]);
   const [loadingAvail, setLoadingAvail] = useState(true);
@@ -281,6 +285,20 @@ export default function BookingScreen(props) {
             <img src="/bookings.png" alt="" className="booking-hero-img" />
             <div className="booking-calendar-content">
               <h1 className="custom-font">Book a Session</h1>
+              <p className="booking-contact-info">
+                For price inquiries before booking, please contact:{" "}
+                <a href={`mailto:${import.meta.env.VITE_SENDER_EMAIL_ADDRESS}`}>
+                  {import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
+                </a>
+                <br />
+                <button
+                  type="button"
+                  className="booking-info-link"
+                  onClick={() => setInfoModalOpen(true)}
+                >
+                  Click here for more info
+                </button>
+              </p>
               {step > STEPS.CALENDAR && (
                 <div className="booking-breadcrumb">
                   <button
@@ -466,6 +484,20 @@ export default function BookingScreen(props) {
           </div>
         )}
       </div>
+      {infoModalOpen && (
+        <div className="booking-modal-overlay" onClick={() => setInfoModalOpen(false)}>
+          <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="booking-modal-close"
+              onClick={() => setInfoModalOpen(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <p>{EXCLUSIVITY_TEXT}</p>
+          </div>
+        </div>
+      )}
     </motion.section>
   );
 }

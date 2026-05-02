@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import $ from "jquery";
 import { toPrice } from "../utils";
+import { getShippingPrice, getShippingLabel } from "../config/shippingZones";
 import { createOrder } from "../actions/orderActions";
 import { ORDER_CREATE_RESET } from "../constants/orderConstants";
 import Placeholder from "../components/Placeholder";
@@ -25,8 +26,9 @@ export default function PlaceOrderScreen(props) {
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
   cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
-  cart.shippingPrice = cart.itemsPrice >= 40 ? toPrice(0) : toPrice(9.99);
+  cart.shippingPrice = toPrice(getShippingPrice(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice));
   cart.totalPrice = toPrice(cart.itemsPrice + cart.shippingPrice);
+  const shippingLabel = getShippingLabel(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice);
 
   const placeOrderHandler = () => {
     dispatch(
@@ -124,7 +126,7 @@ export default function PlaceOrderScreen(props) {
               : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </p>
             <p>
-              Shipping (free over 40€) :{" "}
+              {shippingLabel} :{" "}
               {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
             </p>
             <h3 className="total">

@@ -76,6 +76,9 @@ export default function ShopScreen(props) {
           )}
         </div>
       </div>
+      <div className="free-shipping-banner">
+        Free shipping on orders over €40
+      </div>
     </motion.section>
   );
 }
