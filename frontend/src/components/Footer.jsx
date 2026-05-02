@@ -71,6 +71,7 @@ export default function Footer({ showShopNow = false }) {
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">Livro de Reclamações</a>
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">Resolução de Litígios</a>
       </div>
+      <div className="brand-notice">Sweevil® is a registered brand</div>
     </footer>
   );
 }
