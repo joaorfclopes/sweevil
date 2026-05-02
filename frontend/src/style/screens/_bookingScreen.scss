@@ -206,6 +206,62 @@
     }
   }
 
+  .booking-contact-info {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+
+    a {
+      color: #1a1a1a;
+    }
+  }
+
+  .booking-info-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #1a1a1a;
+  }
+
+  .booking-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .booking-modal {
+    background: #fff;
+    border-radius: 6px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #333;
+
+    .booking-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #555;
+      line-height: 1;
+      padding: 0;
+    }
+  }
+
   .booking-confirmed {
     text-align: center;
     padding: 3rem 1rem;

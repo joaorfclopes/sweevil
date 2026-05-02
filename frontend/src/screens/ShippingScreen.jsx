@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getCountryDataList } from "countries-list";
 import { saveShippingAddress } from "../actions/cartActions";
+
+const COUNTRY_LIST = getCountryDataList()
+  .map(({ code, name }) => ({ code, name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 export default function ShippingScreen(props) {
   const dispatch = useDispatch();
@@ -16,7 +21,7 @@ export default function ShippingScreen(props) {
   const [address, setAddress] = useState(shippingAddress.address);
   const [city, setCity] = useState(shippingAddress.city);
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
+  const [country, setCountry] = useState(shippingAddress.country || "PT");
 
   useEffect(() => {
     if (cartItems.length <= 0) {
@@ -115,13 +120,18 @@ export default function ShippingScreen(props) {
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <input
-                type="text"
+              <select
                 id="country"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 required
-              />
+              >
+                {COUNTRY_LIST.map(({ code, name }) => (
+                  <option key={code} value={code}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <button className="primary" type="submit">

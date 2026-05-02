@@ -81,9 +81,7 @@ export const bookingConfirmation = ({ booking }) => {
                   <h2 style="margin:0 0 4px;font-size:18px;color:#1a1a1a;">Tattoo Booking &amp; Policies</h2>
                   <p style="margin:0 0 20px;color:#555;font-size:14px;line-height:1.7;">
                     Hi there! You are booking a tattoo session with Sweevil.<br/><br/>
-                    Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.<br/><br/>
-                    For price inquiries before booking, please contact:
-                    <a href="mailto:sweevil.tattoos@gmail.com" style="color:#1a1a1a;">sweevil.tattoos@gmail.com</a>
+                    Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.
                   </p>
                   <p style="margin:0 0 12px;font-size:14px;color:#1a1a1a;font-weight:bold;">Important Booking Details:</p>
                   <table width="100%" cellpadding="0" cellspacing="0" border="0">

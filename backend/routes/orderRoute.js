@@ -7,6 +7,7 @@ import { fromNodeHeaders } from "better-auth/node";
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
 import { isAdmin, isAuth, formatDate } from "../utils.js";
+import { getShippingPrice } from "../config/shippingZones.js";
 import { getAuth } from "../auth.js";
 import { placedOrder } from "../mailing/placedOrder.js";
 import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
@@ -151,7 +152,7 @@ orderRouter.post(
       builtItems.reduce((a, c) => a + c.price * c.qty, 0).toFixed(2)
     );
     const shippingPrice = parseFloat(
-      (itemsPrice >= 40 ? 0 : 9.99).toFixed(2)
+      getShippingPrice(shippingAddress.country, shippingAddress.postalCode, itemsPrice).toFixed(2)
     );
     const totalPrice = parseFloat((itemsPrice + shippingPrice).toFixed(2));
     const itemsQty = builtItems.reduce((a, c) => a + c.qty, 0);
