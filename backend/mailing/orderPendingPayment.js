@@ -10,10 +10,20 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
     .map(
       (item) => `
       <tr>
-        <td style="padding:8px 20px;color:#1a1a1a;font-size:15px;">
-          ${item.name}${item.size ? ` (${item.size})` : ""} × ${item.qty}
+        <td style="padding:8px 20px;">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding-right:12px;vertical-align:middle;">
+                <img src="${item.image}" alt="${item.name}" width="60" height="60"
+                  style="display:block;border-radius:4px;object-fit:cover;" />
+              </td>
+              <td style="vertical-align:middle;color:#1a1a1a;font-size:15px;">
+                ${item.name}${item.size ? ` (${item.size})` : ""} × ${item.qty}
+              </td>
+            </tr>
+          </table>
         </td>
-        <td style="padding:8px 20px;color:#1a1a1a;font-size:15px;text-align:right;">
+        <td style="padding:8px 20px;color:#1a1a1a;font-size:15px;text-align:right;vertical-align:middle;">
           ${(item.price * item.qty).toFixed(2)}€
         </td>
       </tr>`
@@ -25,7 +35,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Complete Your Order</title>
+  <title>Order placed at ${brand}</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
@@ -42,7 +52,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
       </tr>
       <tr>
         <td style="padding:40px 40px 24px;">
-          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Complete your order</h1>
+          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Order placed at ${brand}</h1>
           <p style="margin:0 0 24px;color:#555;font-size:15px;">
             Hi ${name}, your order has been created and is waiting for payment.
             Click the button below to complete your purchase.
