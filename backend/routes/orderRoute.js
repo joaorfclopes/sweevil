@@ -174,7 +174,7 @@ orderRouter.post(
     sendMail({
       from,
       to: shippingAddress.email,
-      subject: `Complete your order at ${process.env.BRAND_NAME}`,
+      subject: `Order placed at ${process.env.BRAND_NAME}`,
       html: orderPendingPayment({ order: createdOrder, paymentUrl }),
     });
     sendMail({
