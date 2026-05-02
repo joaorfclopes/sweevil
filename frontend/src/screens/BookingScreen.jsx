@@ -385,14 +385,14 @@ export default function BookingScreen(props) {
                   <form onSubmit={handleBookingSubmit(handleFormSubmit)} className="booking-form">
                     <div>
                       <label>Name *</label>
-                      <input {...registerBooking("name")} />
+                      <input maxLength={100} {...registerBooking("name")} />
                       {bookingErrors.name && (
                         <span className="field-error">{bookingErrors.name.message}</span>
                       )}
                     </div>
                     <div>
                       <label>Email *</label>
-                      <input type="email" {...registerBooking("email")} />
+                      <input type="email" maxLength={254} {...registerBooking("email")} />
                       {bookingErrors.email && (
                         <span className="field-error">{bookingErrors.email.message}</span>
                       )}
@@ -418,7 +418,7 @@ export default function BookingScreen(props) {
                     </div>
                     <div>
                       <label>Notes</label>
-                      <textarea rows={3} {...registerBooking("notes")} />
+                      <textarea rows={3} maxLength={1000} {...registerBooking("notes")} />
                       {bookingErrors.notes && (
                         <span className="field-error">{bookingErrors.notes.message}</span>
                       )}
