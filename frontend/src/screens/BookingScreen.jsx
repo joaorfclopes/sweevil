@@ -281,24 +281,11 @@ export default function BookingScreen(props) {
             </p>
           </div>
         ) : (
+          <>
           <div className="booking-calendar-outer">
             <img src="/bookings.png" alt="" className="booking-hero-img" />
             <div className="booking-calendar-content">
               <h1 className="custom-font">Book a Session</h1>
-              <p className="booking-contact-info">
-                For price inquiries before booking, please contact:{" "}
-                <a href={`mailto:${import.meta.env.VITE_SENDER_EMAIL_ADDRESS}`}>
-                  {import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
-                </a>
-                <br />
-                <button
-                  type="button"
-                  className="booking-info-link"
-                  onClick={() => setInfoModalOpen(true)}
-                >
-                  Click here for more info
-                </button>
-              </p>
               {step > STEPS.CALENDAR && (
                 <div className="booking-breadcrumb">
                   <button
@@ -482,6 +469,21 @@ export default function BookingScreen(props) {
               )}
             </div>
           </div>
+          <p className="booking-contact-info">
+            For price inquiries before booking, please contact:{" "}
+            <a href={`mailto:${import.meta.env.VITE_SENDER_EMAIL_ADDRESS}`}>
+              {import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
+            </a>
+            <br />
+            <button
+              type="button"
+              className="booking-info-link"
+              onClick={() => setInfoModalOpen(true)}
+            >
+              Click here for more info
+            </button>
+          </p>
+          </>
         )}
       </div>
       {infoModalOpen && (

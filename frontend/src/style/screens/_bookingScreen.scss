@@ -29,6 +29,7 @@
     .booking-back {
       background: none;
       border: none;
+      outline: none;
       padding: 0;
       font-size: 0.95rem;
       text-decoration: underline;
@@ -209,7 +210,9 @@
   .booking-contact-info {
     font-size: 0.9rem;
     color: #555;
-    margin-bottom: 1.5rem;
+    text-align: center;
+    margin-top: 1.5rem;
+    margin-bottom: 0;
 
     a {
       color: #1a1a1a;
@@ -219,6 +222,7 @@
   .booking-info-link {
     background: none;
     border: none;
+    outline: none;
     padding: 0;
     font-size: 0.9rem;
     text-decoration: underline;
