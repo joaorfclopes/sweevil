@@ -91,7 +91,7 @@ export default function ShippingScreen(props) {
           <form className="shipping-form" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="email">Email</label>
-              <input type="email" id="email" {...register("email")} />
+              <input type="email" id="email" maxLength={254} {...register("email")} />
               {errors.email && <span className="field-error">{errors.email.message}</span>}
             </div>
             <div>
@@ -116,7 +116,7 @@ export default function ShippingScreen(props) {
             </div>
             <div>
               <label htmlFor="fullName">Full Name</label>
-              <input type="text" id="fullName" {...register("fullName")} />
+              <input type="text" id="fullName" maxLength={100} {...register("fullName")} />
               {errors.fullName && <span className="field-error">{errors.fullName.message}</span>}
             </div>
             <div>
@@ -132,17 +132,17 @@ export default function ShippingScreen(props) {
             </div>
             <div>
               <label htmlFor="address">Address</label>
-              <input type="text" id="address" {...register("address")} />
+              <input type="text" id="address" maxLength={200} {...register("address")} />
               {errors.address && <span className="field-error">{errors.address.message}</span>}
             </div>
             <div>
               <label htmlFor="city">City</label>
-              <input type="text" id="city" {...register("city")} />
+              <input type="text" id="city" maxLength={85} {...register("city")} />
               {errors.city && <span className="field-error">{errors.city.message}</span>}
             </div>
             <div>
               <label htmlFor="postalCode">Postal Code</label>
-              <input type="text" id="postalCode" {...register("postalCode")} />
+              <input type="text" id="postalCode" maxLength={20} {...register("postalCode")} />
               {errors.postalCode && (
                 <span className="field-error">{errors.postalCode.message}</span>
               )}

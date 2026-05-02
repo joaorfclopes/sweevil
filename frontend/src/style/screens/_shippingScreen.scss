@@ -49,5 +49,9 @@
     select {
       appearance: auto;
     }
+
+    button[type="submit"] {
+      width: 100%;
+    }
   }
 }
