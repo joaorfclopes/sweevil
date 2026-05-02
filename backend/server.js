@@ -69,7 +69,16 @@ app.use(helmet({ contentSecurityPolicy: false }))
 // Webhook must receive raw body — before express.json()
 app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRoute)
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many auth requests, please try again later." },
+})
+
 // better-auth handler must be before express.json()
+app.use('/api/auth', authLimiter)
 app.all('/api/auth/*', toNodeHandler(auth))
 
 app.use(express.json({ limit: '1mb' }))
