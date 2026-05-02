@@ -128,6 +128,7 @@ export default function BookingScreen(props) {
     formState: { errors: bookingErrors },
   } = useForm({
     resolver: zodResolver(bookingFormSchema),
+    mode: "onBlur",
     defaultValues: { name: "", email: "", phone: "", notes: "" },
   });
 
