@@ -30,7 +30,7 @@ import {
 } from "../constants/orderConstants";
 import PlaceHolder from "../components/Placeholder";
 
-function StripeCheckoutForm({ order, dispatch }) {
+function StripeCheckoutForm({ order, dispatch, token }) {
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -50,7 +50,7 @@ function StripeCheckoutForm({ order, dispatch }) {
       setStripeError(error.message);
       setPaying(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      dispatch(payOrder(order, { paymentIntentId: paymentIntent.id }));
+      dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
     }
   };
 
@@ -110,6 +110,8 @@ export default function OrderScreen(props) {
     error: errorCancel,
   } = orderCancel;
 
+  const token = searchParams.get("token");
+
   useEffect(() => {
     if (
       !order ||
@@ -123,13 +125,14 @@ export default function OrderScreen(props) {
       dispatch({ type: ORDER_SEND_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
-      dispatch(detailsOrder(orderId));
+      dispatch(detailsOrder(orderId, token));
       setClientSecret("");
     }
   }, [
     dispatch,
     orderId,
     order,
+    token,
     successPay,
     successSend,
     successDeliver,
@@ -146,8 +149,7 @@ export default function OrderScreen(props) {
       setStripePromise(loadStripe(publishableKey));
       const { data } = await Axios.post(
         `/api/orders/${order._id}/create-payment-intent`,
-        {},
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+        { confirmToken: token }
       );
       if (cancelled) return;
       setClientSecret(data.clientSecret);
@@ -170,7 +172,7 @@ export default function OrderScreen(props) {
       !order.isPaid
     ) {
       handledRedirect.current = true;
-      dispatch(payOrder(order, { paymentIntentId }));
+      dispatch(payOrder(order, { paymentIntentId, confirmToken: token }));
     }
   }, [searchParams, order, dispatch]);
 
@@ -209,7 +211,7 @@ export default function OrderScreen(props) {
       denyButtonText: "Yes",
     }).then((result) => {
       if (result.isDenied) {
-        dispatch(cancelOrder(order._id));
+        dispatch(cancelOrder(order._id, token));
         Swal.fire("Canceled!", "", "error");
       }
     });
@@ -350,7 +352,7 @@ export default function OrderScreen(props) {
                     )}
                     {loadingPay && <LoadingBox />}
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <StripeCheckoutForm order={order} dispatch={dispatch} />
+                      <StripeCheckoutForm order={order} dispatch={dispatch} token={token} />
                     </Elements>
                   </>
                 )}

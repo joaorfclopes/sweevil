@@ -39,7 +39,7 @@ export default function PlaceOrderScreen(props) {
 
   useEffect(() => {
     if (success) {
-      navigate(`/cart/order/${order._id}`);
+      navigate(`/cart/order/${order._id}?token=${order.confirmToken}`);
       dispatch({ type: ORDER_CREATE_RESET });
     }
   }, [success, navigate, order, dispatch]);
