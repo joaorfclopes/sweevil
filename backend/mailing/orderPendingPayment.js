@@ -37,7 +37,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Order placed at ${brand}</title>
 </head>
-<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#1a1a1a;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
     style="background:#ffffff;margin:0 auto;border-radius:4px;overflow:hidden;">
     <tbody>
