@@ -10,6 +10,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
     "@mui/x-date-pickers": "^7.29.4",
@@ -30,7 +31,9 @@
     "react-cookie-consent": "^9.0.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.75.0",
     "react-lazy-load-image-component": "^1.6.2",
+    "react-phone-input-2": "^2.15.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.29.1",
     "react-router-hash-link": "^2.4.3",
@@ -45,7 +48,8 @@
     "sweetalert2": "^11.15.10",
     "validator": "^13.15.35",
     "web-vitals": "^4.2.4",
-    "yet-another-react-lightbox": "^3.28.0"
+    "yet-another-react-lightbox": "^3.28.0",
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.7.0",

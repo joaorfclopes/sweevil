@@ -10,10 +10,31 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import Axios from "axios";
 import dayjs from "dayjs";
 import MessageBox from "../components/MessageBox";
 import LoadingBox from "../components/LoadingBox";
+
+const bookingFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name is required")
+    .max(100)
+    .regex(/^[\p{L}\s\-'.]+$/u, "Only letters, spaces, hyphens and apostrophes"),
+  email: z.string().email("Enter a valid email address"),
+  phone: z.string().min(7, "Enter a valid phone number"),
+  notes: z
+    .string()
+    .max(1000, "Notes must be under 1000 characters")
+    .regex(/^[\p{L}\p{N}\s\-'.,!?()\n]*$/u, "Invalid characters in notes")
+    .optional()
+    .or(z.literal("")),
+});
 
 function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
   const stripe = useStripe();
@@ -99,7 +120,16 @@ export default function BookingScreen(props) {
   const [step, setStep] = useState(STEPS.CALENDAR);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [guestInfo, setGuestInfo] = useState({ name: "", email: "", phone: "", notes: "" });
+
+  const {
+    register: registerBooking,
+    handleSubmit: handleBookingSubmit,
+    control: bookingControl,
+    formState: { errors: bookingErrors },
+  } = useForm({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: { name: "", email: "", phone: "", notes: "" },
+  });
 
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -170,16 +200,15 @@ export default function BookingScreen(props) {
     setImagePreviews(previews);
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (formData) => {
     setSubmitting(true);
     setSubmitError("");
     try {
       let uploadedUrls = [];
       if (imageFiles.length > 0) {
-        const formData = new FormData();
-        imageFiles.forEach((f) => formData.append("images", f));
-        const { data } = await Axios.post("/api/uploads/booking-images", formData);
+        const fd = new FormData();
+        imageFiles.forEach((f) => fd.append("images", f));
+        const { data } = await Axios.post("/api/uploads/booking-images", fd);
         uploadedUrls = data.urls;
       }
 
@@ -187,7 +216,7 @@ export default function BookingScreen(props) {
       const { data: createdBooking } = await Axios.post("/api/bookings", {
         date: dateKey,
         slot: selectedSlot,
-        guestInfo,
+        guestInfo: formData,
         images: uploadedUrls,
       });
       setBooking(createdBooking);
@@ -352,48 +381,46 @@ export default function BookingScreen(props) {
                 <div className="booking-step">
                   <h2>Your details</h2>
                   {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                  <form onSubmit={handleFormSubmit} className="booking-form">
+                  <form onSubmit={handleBookingSubmit(handleFormSubmit)} className="booking-form">
                     <div>
                       <label>Name *</label>
-                      <input
-                        required
-                        value={guestInfo.name}
-                        onChange={(e) =>
-                          setGuestInfo({ ...guestInfo, name: e.target.value })
-                        }
-                      />
+                      <input {...registerBooking("name")} />
+                      {bookingErrors.name && (
+                        <span className="field-error">{bookingErrors.name.message}</span>
+                      )}
                     </div>
                     <div>
                       <label>Email *</label>
-                      <input
-                        type="email"
-                        required
-                        value={guestInfo.email}
-                        onChange={(e) =>
-                          setGuestInfo({ ...guestInfo, email: e.target.value })
-                        }
-                      />
+                      <input type="email" {...registerBooking("email")} />
+                      {bookingErrors.email && (
+                        <span className="field-error">{bookingErrors.email.message}</span>
+                      )}
                     </div>
                     <div>
                       <label>Phone *</label>
-                      <input
-                        type="tel"
-                        required
-                        value={guestInfo.phone}
-                        onChange={(e) =>
-                          setGuestInfo({ ...guestInfo, phone: e.target.value })
-                        }
+                      <Controller
+                        name="phone"
+                        control={bookingControl}
+                        render={({ field }) => (
+                          <PhoneInput
+                            country="pt"
+                            value={field.value}
+                            onChange={field.onChange}
+                            containerClass="phone-input-container"
+                            inputClass="phone-input-field"
+                          />
+                        )}
                       />
+                      {bookingErrors.phone && (
+                        <span className="field-error">{bookingErrors.phone.message}</span>
+                      )}
                     </div>
                     <div>
                       <label>Notes</label>
-                      <textarea
-                        rows={3}
-                        value={guestInfo.notes}
-                        onChange={(e) =>
-                          setGuestInfo({ ...guestInfo, notes: e.target.value })
-                        }
-                      />
+                      <textarea rows={3} {...registerBooking("notes")} />
+                      {bookingErrors.notes && (
+                        <span className="field-error">{bookingErrors.notes.message}</span>
+                      )}
                     </div>
                     <div>
                       <label>
