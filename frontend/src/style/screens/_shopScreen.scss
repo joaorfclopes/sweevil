@@ -2,10 +2,22 @@
 
 .shop {
   .shop-container {
-    padding-top: 168px;
+    padding-top: 130px;
     min-height: 95vh;
     @include md {
-      padding-top: 190px;
+      padding-top: 150px;
+    }
+
+    .free-shipping-banner {
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      background: #1a1a1a;
+      color: #fff;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     .filters {
@@ -27,25 +39,6 @@
           color: $secondaryColor;
         }
       }
-    }
-  }
-
-  .free-shipping-banner {
-    position: fixed;
-    top: 130px;
-    left: 0;
-    right: 0;
-    background: #1a1a1a;
-    color: #fff;
-    text-align: center;
-    padding: 10px 16px;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    z-index: 100;
-
-    @include md {
-      top: 150px;
     }
   }
 }

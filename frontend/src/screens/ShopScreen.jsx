@@ -44,10 +44,10 @@ export default function ShopScreen(props) {
       variants={props.pageVariants}
       transition={props.pageTransition}
     >
-      <div className="free-shipping-banner">
-        Free shipping on orders over €40
-      </div>
       <div className="shop-container">
+        <div className="free-shipping-banner">
+          Free shipping on orders over €40
+        </div>
         {categoriesInUse.length > 0 && (
           <div className="filters">
             <div

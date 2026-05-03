@@ -30,6 +30,10 @@
     opacity: 0;
     width: 235px;
     height: 235px;
+    @media (max-width: 767px) {
+      width: min(80vw, 320px);
+      height: min(80vw, 320px);
+    }
     img {
       display: block;
       width: 100%;
