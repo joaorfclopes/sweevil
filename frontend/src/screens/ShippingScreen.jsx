@@ -56,7 +56,8 @@ export default function ShippingScreen(props) {
     register,
     handleSubmit,
     control,
-    setValue,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -82,7 +83,8 @@ export default function ShippingScreen(props) {
       .then((res) => res.json())
       .then(({ country_code }) => {
         if (!country_code) return;
-        setValue("country", country_code.toUpperCase());
+        const code = country_code.toUpperCase();
+        reset({ ...getValues(), country: code }, { keepDirty: true, keepTouched: true, keepErrors: true });
         setPhoneCountry(country_code.toLowerCase());
       })
       .catch(() => {});
