@@ -30,5 +30,5 @@ export function getShippingPrice(country, postalCode, itemsPrice) {
 export function getShippingLabel(country, postalCode, itemsPrice) {
   if (itemsPrice >= 40) return "Free shipping";
   const zone = getShippingZone(country, postalCode);
-  return `Shipping to ${ZONES[zone].label} — €${ZONES[zone].price.toFixed(2)}`;
+  return `Shipping to ${ZONES[zone].label}`;
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Notyf } from "notyf";
+import { notyf } from "../utils/notyf";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Tooltip from "@mui/material/Tooltip";
 import ShopNow from "../assets/svg/shop-now.svg?react";
@@ -9,7 +9,6 @@ import Email from "../assets/svg/email.svg?react";
 import Location from "../assets/svg/location.svg?react";
 
 export default function Footer({ showShopNow = false }) {
-  const notyf = new Notyf();
 
   const copied = () => {
     notyf.success({
