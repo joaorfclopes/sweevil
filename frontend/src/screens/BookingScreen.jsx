@@ -477,6 +477,12 @@ export default function BookingScreen(props) {
                 <div className="booking-step">
                   <h2>Payment</h2>
                   {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
+                  {dayAvailability && (
+                    <div className="booking-price-summary">
+                      <p>Deposit: {dayAvailability.price.toFixed(2)}€</p>
+                      <p>IVA (23%): {(dayAvailability.price * 0.23 / 1.23).toFixed(2)}€ included</p>
+                    </div>
+                  )}
                   {awaitingMbway ? (
                     <div style={{ textAlign: "center", padding: "2rem 0" }}>
                       <LoadingBox />

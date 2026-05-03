@@ -217,6 +217,7 @@ emailRouter.post(
           isPaid: order.isPaid,
           shippingAddress: {
             fullName: order.shippingAddress.fullName,
+            country: order.shippingAddress.country,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
