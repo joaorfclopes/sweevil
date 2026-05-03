@@ -365,14 +365,14 @@ export default function BookingScreen(props) {
                           onClick={() => handleSlotSelect(s.time)}
                         >
                           <span className="slot-time">{s.time}</span>
-                          {dayAvailability && (
-                            <span className="slot-deposit">
-                              Deposit: {dayAvailability.price.toFixed(2)}€
-                            </span>
-                          )}
                         </button>
                       ))}
                     </div>
+                    {dayAvailability && (
+                      <p className="booking-slot-price">
+                        Deposit: {dayAvailability.price.toFixed(2)}€
+                      </p>
+                    )}
                   )}
                 </div>
               )}

@@ -11,7 +11,7 @@ import { getCountryDataList } from "countries-list";
 import { saveShippingAddress } from "../actions/cartActions";
 
 const COUNTRY_LIST = getCountryDataList()
-  .map(({ code, name }) => ({ code, name }))
+  .map(({ iso2, name }) => ({ code: iso2, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
 const safeText = /^[\p{L}\p{N}\s\-'.,#/()+&]+$/u;
