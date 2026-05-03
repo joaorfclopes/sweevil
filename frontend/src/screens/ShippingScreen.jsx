@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -48,10 +48,15 @@ export default function ShippingScreen(props) {
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
 
+  const [phoneCountry, setPhoneCountry] = useState(
+    shippingAddress.country ? shippingAddress.country.toLowerCase() : "pt"
+  );
+
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -70,6 +75,19 @@ export default function ShippingScreen(props) {
   useEffect(() => {
     if (cartItems.length <= 0) navigate("/cart");
   }, [cartItems, navigate]);
+
+  useEffect(() => {
+    if (shippingAddress.country) return;
+    fetch("https://ipapi.co/json/")
+      .then((res) => res.json())
+      .then(({ country_code }) => {
+        if (!country_code) return;
+        setValue("country", country_code.toUpperCase());
+        setPhoneCountry(country_code.toLowerCase());
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit = (data) => {
     dispatch(saveShippingAddress(data));
@@ -101,7 +119,7 @@ export default function ShippingScreen(props) {
                 control={control}
                 render={({ field }) => (
                   <PhoneInput
-                    country="pt"
+                    country={phoneCountry}
                     value={field.value}
                     onChange={field.onChange}
                     inputProps={{ id: "phoneNumber" }}
