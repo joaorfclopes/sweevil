@@ -48,6 +48,7 @@ button:not([disabled]) {
 .notyf {
   cursor: pointer;
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  margin-bottom: 1rem !important;
 }
 .notyf__dismiss-btn {
   border: none !important;
