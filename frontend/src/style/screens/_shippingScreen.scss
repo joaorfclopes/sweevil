@@ -17,6 +17,10 @@
     .shipping-inner {
       width: 100%;
       max-width: 600px;
+
+      @include lg {
+        margin: 0 auto;
+      }
     }
   }
 
