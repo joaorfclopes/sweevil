@@ -46,6 +46,14 @@
     h2 {
       margin-bottom: 1rem;
     }
+
+    &--calendar {
+      text-align: center;
+
+      @include lg {
+        text-align: left;
+      }
+    }
   }
 
   .booking-calendar-content {
@@ -104,7 +112,7 @@
         order: 1;
         align-items: flex-start;
         text-align: left;
-        width: auto;
+        width: 340px;
       }
     }
   }
