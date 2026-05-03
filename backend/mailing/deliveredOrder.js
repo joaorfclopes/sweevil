@@ -1,5 +1,6 @@
 import { formatName } from "../utils.js";
 import itemsDetails from "./itemsDetails.js";
+import { getTax } from "./taxRates.js";
 
 export const deliveredOrder = ({
   order: {
@@ -658,6 +659,7 @@ export const deliveredOrder = ({
                                                 </font>
                                               </td>
                                             </tr>
+                                            ${(() => { const tax = getTax(country, itemsPrice); return tax ? `<tr><td align="left" style="font-family:'FuturaPTHeavy-Reg',Futura,Arial,sans-serif;color:#2d2d2d;text-transform:uppercase;font-weight:700;font-size:14px;line-height:20px;"><font face="'FuturaPTHeavy-Reg',Futura,Arial,sans-serif">${tax.label} (${tax.display}): ${tax.amount.toFixed(2)}€</font></td></tr>` : ''; })()}
                                             <tr>
                                               <td
                                                 align="left"

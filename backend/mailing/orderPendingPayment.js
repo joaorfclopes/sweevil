@@ -1,4 +1,5 @@
 import { formatName } from "../utils.js";
+import { getTax } from "./taxRates.js";
 
 export const orderPendingPayment = ({ order, paymentUrl }) => {
   const brand = process.env.BRAND_NAME || "Sweevil";
@@ -70,6 +71,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
                 <td style="padding:8px 20px;color:#555;font-size:14px;">Subtotal</td>
                 <td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${order.itemsPrice.toFixed(2)}€</td>
               </tr>
+              ${(() => { const tax = getTax(order.shippingAddress.country, order.itemsPrice); return tax ? `<tr><td style="padding:8px 20px;color:#555;font-size:14px;">${tax.label} (${tax.display})</td><td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${tax.amount.toFixed(2)}€</td></tr>` : ''; })()}
               <tr>
                 <td style="padding:8px 20px;color:#555;font-size:14px;">Shipping</td>
                 <td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${order.shippingPrice.toFixed(2)}€</td>
