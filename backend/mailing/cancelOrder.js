@@ -5,6 +5,7 @@ export const cancelOrder = ({
   order: {
     orderId,
     orderDate,
+    isPaid,
     shippingAddress: { fullName },
     orderItems,
     itemsPrice,
@@ -299,7 +300,7 @@ export const cancelOrder = ({
                                 &nbsp;
                               </td>
                             </tr>
-                            <tr>
+                            ${isPaid ? `<tr>
                               <td width="600" border="0">
                                 <table
                                   width="100%"
@@ -470,10 +471,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                For any questions or information please contact us at: ${
-                                                  process.env
-                                                    .VITE_SENDER_EMAIL_ADDRESS
-                                                }
+                                                For any questions or information please contact us at: ${process.env.VITE_SENDER_EMAIL_ADDRESS}
                                                 </font>
                                               </td>
                                             </tr>
@@ -504,7 +502,7 @@ export const cancelOrder = ({
                               >
                                 &nbsp;
                               </td>
-                            </tr>
+                            </tr>` : ""}
                             <tr>
                               <td width="600" border="0">
                                 <table

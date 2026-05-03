@@ -214,6 +214,7 @@ emailRouter.post(
         order: {
           orderId: order._id,
           orderDate: formatDate(order.createdAt.toISOString()),
+          isPaid: order.isPaid,
           shippingAddress: {
             fullName: order.shippingAddress.fullName,
           },
