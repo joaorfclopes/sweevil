@@ -60,15 +60,12 @@ export default function ProductScreen(props) {
 
   const addToCartHandler = async () => {
     dispatch(addToCart(productId, qty, chosenSize));
-    notyf
-      .success({
-        icon: false,
-        message: `${product.name} added <b>to cart</b>`,
-        dismissible: true,
-      })
-      .on("click", () => {
-        navigate("/cart");
-      });
+    window.__cartNav = () => navigate("/cart");
+    notyf.success({
+      icon: false,
+      message: `${product.name} added to <span class="notyf-cart" onclick="window.__cartNav()">Cart</span>`,
+      dismissible: true,
+    });
   };
 
   const next = () => {
