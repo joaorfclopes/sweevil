@@ -46,13 +46,14 @@ button:not([disabled]) {
   cursor: pointer !important;
 }
 .notyf {
-  cursor: pointer;
+  cursor: default;
   padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
 }
 .notyf__dismiss-btn {
   border: none !important;
 }
-.notyf-undo {
+.notyf-undo,
+.notyf-cart {
   text-decoration: underline;
   cursor: pointer;
   font-weight: 600;
