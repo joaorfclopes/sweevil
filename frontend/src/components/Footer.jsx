@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { notyf } from "../utils/notyf";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Tooltip from "@mui/material/Tooltip";
@@ -9,6 +9,8 @@ import Email from "../assets/svg/email.svg?react";
 import Location from "../assets/svg/location.svg?react";
 
 export default function Footer({ showShopNow = false }) {
+  const { pathname } = useLocation();
+  const isShop = pathname === "/shop";
 
   const copied = () => {
     notyf.success({
@@ -70,7 +72,7 @@ export default function Footer({ showShopNow = false }) {
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">Livro de Reclamações</a>
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">Resolução de Litígios</a>
       </div>
-      <div className="brand-notice">Sweevil® is a registered brand</div>
+      <div className="brand-notice" style={isShop ? { paddingBottom: "50px" } : undefined}>Sweevil® is a registered brand</div>
     </footer>
   );
 }
