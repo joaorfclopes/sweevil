@@ -20,6 +20,7 @@ import orderRoute from './routes/orderRoute.js'
 import productRoute from './routes/productRoute.js'
 import uploadRoute from './routes/uploadRoute.js'
 import userRoute from './routes/userRoute.js'
+import geoRoute from './routes/geoRoute.js'
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('FATAL ERROR: BETTER_AUTH_SECRET is not defined in environment variables')
@@ -104,6 +105,8 @@ app.use('/api/about', aboutRoute)
 app.use('/api/product-categories', productCategoryRoute)
 app.use('/api/availability', availabilityRoute)
 app.use('/api/bookings', bookingRoute)
+
+app.use('/api/geo', geoRoute)
 
 app.get('/api/config/stripe', (req, res) => {
   res.send(process.env.STRIPE_PUBLISHABLE_KEY || '')
