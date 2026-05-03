@@ -29,6 +29,7 @@ import {
   ORDER_SEND_RESET,
 } from "../constants/orderConstants";
 import PlaceHolder from "../components/Placeholder";
+import { getTax } from "../config/taxRates";
 
 function StripeCheckoutForm({ order, dispatch, token }) {
   const stripe = useStripe();
@@ -333,6 +334,14 @@ export default function OrderScreen(props) {
                 {order.itemsQty > 1 ? "items" : "item"}) :{" "}
                 {order.itemsPrice && order.itemsPrice.toFixed(2)}€
               </p>
+              {(() => {
+                const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+                return tax ? (
+                  <p>
+                    {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+                  </p>
+                ) : null;
+              })()}
               <p>
                 Shipping :{" "}
                 {order.shippingPrice && order.shippingPrice.toFixed(2)}€
