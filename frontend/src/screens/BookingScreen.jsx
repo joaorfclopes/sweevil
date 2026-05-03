@@ -332,7 +332,8 @@ export default function BookingScreen(props) {
               )}
 
               {step === STEPS.CALENDAR && (
-                <div className="booking-step">
+                <div className="booking-step booking-step--calendar">
+                  <h2>Select a date</h2>
                   {loadingAvail ? (
                     <LoadingBox />
                   ) : availError ? (
