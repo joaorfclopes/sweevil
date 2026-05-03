@@ -8,18 +8,6 @@
       padding-top: 150px;
     }
 
-    .free-shipping-banner {
-      width: 100vw;
-      margin-left: calc(-50vw + 50%);
-      background: #1a1a1a;
-      color: #fff;
-      text-align: center;
-      padding: 10px 16px;
-      font-size: 0.8rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
     .filters {
       user-select: none;
       padding: 8px;
@@ -40,5 +28,20 @@
         }
       }
     }
+  }
+
+  .free-shipping-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    z-index: 100;
   }
 }
