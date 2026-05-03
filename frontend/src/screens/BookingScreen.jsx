@@ -333,7 +333,6 @@ export default function BookingScreen(props) {
 
               {step === STEPS.CALENDAR && (
                 <div className="booking-step">
-                  <h2>Select a date</h2>
                   {loadingAvail ? (
                     <LoadingBox />
                   ) : availError ? (
@@ -365,15 +364,15 @@ export default function BookingScreen(props) {
                           className="booking-slot-btn primary"
                           onClick={() => handleSlotSelect(s.time)}
                         >
-                          {s.time}
+                          <span className="slot-time">{s.time}</span>
+                          {dayAvailability && (
+                            <span className="slot-deposit">
+                              Deposit: {dayAvailability.price.toFixed(2)}€
+                            </span>
+                          )}
                         </button>
                       ))}
                     </div>
-                  )}
-                  {dayAvailability && (
-                    <p className="booking-price">
-                      Deposit: <strong>{dayAvailability.price.toFixed(2)}€</strong>
-                    </p>
                   )}
                 </div>
               )}

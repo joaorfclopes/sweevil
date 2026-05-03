@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Notyf } from "notyf";
+import { notyf } from "../utils/notyf";
 import { motion } from "framer-motion";
 import $ from "jquery";
 import MessageBox from "../components/MessageBox";
@@ -16,7 +16,6 @@ export default function CartScreen(props) {
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
-  const notyf = new Notyf();
 
   const sizeOption = (size, val) => {
     return (

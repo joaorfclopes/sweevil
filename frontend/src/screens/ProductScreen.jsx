@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { Notyf } from "notyf";
+import { notyf } from "../utils/notyf";
 import { motion } from "framer-motion";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -23,7 +23,6 @@ export default function ProductScreen(props) {
   const { loading, product, error } = productDetails;
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
-  const notyf = new Notyf();
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 

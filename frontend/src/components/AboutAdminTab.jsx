@@ -5,11 +5,10 @@ import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { Notyf } from "notyf";
+import { notyf } from "../utils/notyf";
 
 export default function AboutAdminTab() {
   const { userInfo } = useSelector((state) => state.userSignin);
-  const notyf = new Notyf();
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");

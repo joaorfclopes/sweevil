@@ -121,14 +121,20 @@ export default function ShippingScreen(props) {
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <select id="country" {...register("country")}>
-                <option value="">Select a country</option>
-                {COUNTRY_LIST.map(({ code, name }) => (
-                  <option key={code} value={code}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
+                  <select id="country" value={field.value} onChange={field.onChange} onBlur={field.onBlur}>
+                    <option value="">Select a country</option>
+                    {COUNTRY_LIST.map(({ code, name }) => (
+                      <option key={code} value={code}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
               {errors.country && <span className="field-error">{errors.country.message}</span>}
             </div>
             <div>
