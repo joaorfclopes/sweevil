@@ -357,22 +357,24 @@ export default function BookingScreen(props) {
                   {availableSlots.length === 0 ? (
                     <MessageBox variant="error">No slots available for this date.</MessageBox>
                   ) : (
-                    <div className="booking-slots">
-                      {availableSlots.map((s) => (
-                        <button
-                          key={s.time}
-                          className="booking-slot-btn primary"
-                          onClick={() => handleSlotSelect(s.time)}
-                        >
-                          <span className="slot-time">{s.time}</span>
-                        </button>
-                      ))}
-                    </div>
-                    {dayAvailability && (
-                      <p className="booking-slot-price">
-                        Deposit: {dayAvailability.price.toFixed(2)}€
-                      </p>
-                    )}
+                    <>
+                      <div className="booking-slots">
+                        {availableSlots.map((s) => (
+                          <button
+                            key={s.time}
+                            className="booking-slot-btn primary"
+                            onClick={() => handleSlotSelect(s.time)}
+                          >
+                            <span className="slot-time">{s.time}</span>
+                          </button>
+                        ))}
+                      </div>
+                      {dayAvailability && (
+                        <p className="booking-slot-price">
+                          Deposit: {dayAvailability.price.toFixed(2)}€
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
               )}
