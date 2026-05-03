@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { notyf } from "../utils/notyf";
@@ -53,12 +53,20 @@ export default function CartScreen(props) {
     });
   };
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCart(id));
+  const undoFnRef = useRef(null);
+
+  const removeFromCartHandler = (item) => {
+    dispatch(removeFromCart(item.product));
+    undoFnRef.current = () => {
+      dispatch(addToCart(item.product, item.qty, item.size));
+      notyf.dismissAll();
+    };
+    window.__cartUndo = () => undoFnRef.current?.();
     notyf.error({
       icon: false,
-      message: "Product removed from cart",
+      message: `${item.name} removed from cart &nbsp;<span class="notyf-undo" onclick="window.__cartUndo()">Undo</span>`,
       dismissible: true,
+      duration: 5000,
     });
   };
 
@@ -179,11 +187,11 @@ export default function CartScreen(props) {
                   <div className="item-remove">
                     <Remove
                       className="icon"
-                      onClick={() => removeFromCartHandler(item.product)}
+                      onClick={() => removeFromCartHandler(item)}
                     />
                     <button
                       className="secondary"
-                      onClick={() => removeFromCartHandler(item.product)}
+                      onClick={() => removeFromCartHandler(item)}
                     >
                       Remove
                     </button>

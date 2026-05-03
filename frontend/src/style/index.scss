@@ -52,6 +52,12 @@ button:not([disabled]) {
 .notyf__dismiss-btn {
   border: none !important;
 }
+.notyf-undo {
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
 .swal2-shown {
   padding-right: 0 !important;
 }
