@@ -6,6 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import $ from "jquery";
 import { toPrice } from "../utils";
 import { getShippingPrice, getShippingLabel } from "../config/shippingZones";
+import { getTax } from "../config/taxRates";
 import { createOrder } from "../actions/orderActions";
 import { ORDER_CREATE_RESET } from "../constants/orderConstants";
 import Placeholder from "../components/Placeholder";
@@ -29,6 +30,7 @@ export default function PlaceOrderScreen(props) {
   cart.shippingPrice = toPrice(getShippingPrice(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice));
   cart.totalPrice = toPrice(cart.itemsPrice + cart.shippingPrice);
   const shippingLabel = getShippingLabel(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice);
+  const tax = getTax(shippingAddress.country, cart.itemsPrice);
 
   const placeOrderHandler = () => {
     dispatch(
@@ -125,6 +127,11 @@ export default function PlaceOrderScreen(props) {
               Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
               : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </p>
+            {tax && (
+              <p>
+                {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+              </p>
+            )}
             <p>
               {shippingLabel} :{" "}
               {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
