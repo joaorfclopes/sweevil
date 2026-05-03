@@ -63,6 +63,13 @@ button:not([disabled]) {
     overflow-y: scroll;
   }
 }
+.yarl__root {
+  height: 100dvh !important;
+}
+.yarl__button {
+  border: none !important;
+  outline: none !important;
+}
 .ril__toolbar {
   background-color: transparent !important;
   button {
