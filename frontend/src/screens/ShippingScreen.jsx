@@ -14,6 +14,10 @@ const COUNTRY_LIST = getCountryDataList()
   .map(({ iso2, name }) => ({ code: iso2, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
+const DIAL_CODES = Object.fromEntries(
+  getCountryDataList().map(({ iso2, phone }) => [iso2, String(phone[0])])
+);
+
 const safeText = /^[\p{L}\p{N}\s\-'.,#/()+&]+$/u;
 
 const schema = z.object({
@@ -79,28 +83,24 @@ export default function ShippingScreen(props) {
 
   useEffect(() => {
     if (shippingAddress.country) return;
-    const detect = async () => {
-      const apis = [
-        "https://ipwho.is/",
-        "https://ipapi.co/json/",
-      ];
-      for (const url of apis) {
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
-          const code = data.country_code;
-          if (code && typeof code === "string" && code.length === 2) {
-            reset(
-              { ...getValues(), country: code.toUpperCase() },
-              { keepDirty: true, keepTouched: true, keepErrors: true }
-            );
-            setPhoneCountry(code.toLowerCase());
-            return;
-          }
-        } catch (_) {}
-      }
-    };
-    detect();
+    fetch("/api/geo")
+      .then((res) => res.json())
+      .then(({ country }) => {
+        if (!country || country.length !== 2) return;
+        const code = country.toUpperCase();
+        const dialCode = DIAL_CODES[code];
+        const currentPhone = getValues("phoneNumber");
+        reset(
+          {
+            ...getValues(),
+            country: code,
+            ...(!currentPhone && dialCode ? { phoneNumber: `+${dialCode}` } : {}),
+          },
+          { keepDirty: true, keepTouched: true, keepErrors: true }
+        );
+        setPhoneCountry(code.toLowerCase());
+      })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
