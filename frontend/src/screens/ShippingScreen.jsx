@@ -79,15 +79,28 @@ export default function ShippingScreen(props) {
 
   useEffect(() => {
     if (shippingAddress.country) return;
-    fetch("https://ipapi.co/json/")
-      .then((res) => res.json())
-      .then(({ country_code }) => {
-        if (!country_code) return;
-        const code = country_code.toUpperCase();
-        reset({ ...getValues(), country: code }, { keepDirty: true, keepTouched: true, keepErrors: true });
-        setPhoneCountry(country_code.toLowerCase());
-      })
-      .catch(() => {});
+    const detect = async () => {
+      const apis = [
+        "https://ipwho.is/",
+        "https://ipapi.co/json/",
+      ];
+      for (const url of apis) {
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          const code = data.country_code;
+          if (code && typeof code === "string" && code.length === 2) {
+            reset(
+              { ...getValues(), country: code.toUpperCase() },
+              { keepDirty: true, keepTouched: true, keepErrors: true }
+            );
+            setPhoneCountry(code.toLowerCase());
+            return;
+          }
+        } catch (_) {}
+      }
+    };
+    detect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
