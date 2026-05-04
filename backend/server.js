@@ -55,13 +55,14 @@ await db.collection("account").updateMany(
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https') {
-      const appDomain = process.env.APP_DOMAIN
-      if (!appDomain) return next()
-      res.redirect(301, `https://${appDomain}${req.url}`)
-    } else {
-      next()
+    const appDomain = process.env.APP_DOMAIN
+    if (!appDomain) return next()
+    const proto = req.header('x-forwarded-proto')
+    const host = req.header('host')
+    if (proto !== 'https' || host !== appDomain) {
+      return res.redirect(301, `https://${appDomain}${req.url}`)
     }
+    next()
   })
 }
 
