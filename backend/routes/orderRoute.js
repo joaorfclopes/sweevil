@@ -13,6 +13,7 @@ import { placedOrder } from "../mailing/placedOrder.js";
 import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
 import { orderPendingPayment } from "../mailing/orderPendingPayment.js";
 import { sendMail } from "../mailing/sendMail.js";
+import { getTax } from "../mailing/taxRates.js";
 
 const getAdminSession = async (req) => {
   try {
@@ -230,13 +231,78 @@ orderRouter.post(
     if (order.isPaid) {
       return res.status(400).json({ message: "Order already paid" });
     }
-    const paymentIntent = await getStripe().paymentIntents.create({
-      amount: Math.round(order.totalPrice * 100),
+    const stripe = getStripe();
+
+    // Reuse existing PaymentIntent on page refresh
+    if (order.stripeInvoiceId && order.paymentResult?.id) {
+      const pi = await stripe.paymentIntents.retrieve(order.paymentResult.id);
+      if (pi.status === "requires_payment_method" || pi.status === "requires_confirmation") {
+        return res.json({ clientSecret: pi.client_secret });
+      }
+    }
+
+    const totalCents = Math.round(order.totalPrice * 100);
+    const shippingCents = Math.round(order.shippingPrice * 100);
+    const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+    const taxCents = tax ? Math.round(tax.amount * 100) : 0;
+    const netItemsCents = totalCents - taxCents - shippingCents;
+
+    const customer = await stripe.customers.create({
+      email: order.shippingAddress.email,
+      name: order.shippingAddress.fullName,
+      phone: order.shippingAddress.phoneNumber,
+      metadata: { orderId: order._id.toString() },
+    });
+
+    const invoice = await stripe.invoices.create({
+      customer: customer.id,
+      currency: "eur",
+      collection_method: "send_invoice",
+      days_until_due: 30,
+      auto_advance: false,
+      metadata: { orderId: order._id.toString() },
+    });
+
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: netItemsCents,
+      currency: "eur",
+      description: `Products (${order.itemsQty} item${order.itemsQty !== 1 ? "s" : ""})`,
+    });
+
+    if (taxCents > 0) {
+      await stripe.invoiceItems.create({
+        customer: customer.id,
+        invoice: invoice.id,
+        amount: taxCents,
+        currency: "eur",
+        description: `${tax.label} (${tax.display})`,
+      });
+    }
+
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: shippingCents,
+      currency: "eur",
+      description: "Shipping",
+    });
+
+    await stripe.invoices.finalizeInvoice(invoice.id);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalCents,
       currency: "eur",
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       receipt_email: order.shippingAddress.email,
-      metadata: { orderId: order._id.toString() },
+      metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
     });
+
+    order.stripeInvoiceId = invoice.id;
+    order.paymentResult = { id: paymentIntent.id };
+    await order.save();
+
     res.json({ clientSecret: paymentIntent.client_secret });
   })
 );
@@ -274,6 +340,7 @@ orderRouter.put(
       status: paymentIntent.status,
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
       email_address: paymentIntent.receipt_email || "",
+      invoiceId: order.stripeInvoiceId || null,
     };
 
     for (const item of order.orderItems) {
@@ -295,6 +362,21 @@ orderRouter.put(
 
     const updatedOrder = await order.save();
 
+    // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
+    let invoicePdfBuffer = null;
+    if (order.stripeInvoiceId) {
+      try {
+        await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
+        const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
+        if (paidInvoice.invoice_pdf) {
+          const pdfRes = await fetch(paidInvoice.invoice_pdf);
+          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        }
+      } catch (e) {
+        console.error("[order] Failed to process invoice:", e.message);
+      }
+    }
+
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
     sendMail({
       from,
@@ -311,6 +393,9 @@ orderRouter.put(
           totalPrice: updatedOrder.totalPrice,
         },
       }),
+      attachments: invoicePdfBuffer
+        ? [{ filename: "invoice.pdf", content: invoicePdfBuffer, contentType: "application/pdf" }]
+        : [],
     });
 
     res.send({ message: "Order paid", order: updatedOrder });
