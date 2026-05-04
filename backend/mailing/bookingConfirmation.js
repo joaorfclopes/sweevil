@@ -1,4 +1,4 @@
-export const bookingConfirmation = ({ booking }) => {
+export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
   const dateStr = new Date(booking.date).toLocaleDateString("pt-PT", {
     weekday: "long",
     year: "numeric",
@@ -65,6 +65,10 @@ export const bookingConfirmation = ({ booking }) => {
               ${booking.images.map((url) => `<td style="padding:4px;width:25%;vertical-align:top;"><a href="${url}" target="_blank"><img src="${url}" width="100" style="display:block;max-width:100%;border-radius:4px;border:1px solid #e0e0e0;" /></a></td>`).join("")}
             </tr></tbody></table>
           </div>` : ""}
+          ${hasInvoice ? `
+          <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
+            Your invoice is attached to this email as a PDF.
+          </p>` : ""}
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
             If you have any questions, please contact us at
             <a href="mailto:${contactEmail}" style="color:#1a1a1a;">${contactEmail}</a>.

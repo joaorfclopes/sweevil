@@ -35,7 +35,7 @@ const getStripe = () => {
   return _stripe;
 };
 
-export const sendBookingEmails = (booking) => {
+export const sendBookingEmails = (booking, invoicePdfBuffer = null) => {
   const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
   const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
   const icsContent = generateICS({ booking, adminEmail });
@@ -44,12 +44,20 @@ export const sendBookingEmails = (booking) => {
     content: icsContent,
     contentType: "text/calendar; charset=utf-8; method=REQUEST",
   };
+  const attachments = [icsAttachment];
+  if (invoicePdfBuffer) {
+    attachments.push({
+      filename: "invoice.pdf",
+      content: invoicePdfBuffer,
+      contentType: "application/pdf",
+    });
+  }
   sendMail({
     from,
     to: booking.guestInfo.email,
     subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString("pt-PT")}`,
-    html: bookingConfirmation({ booking }),
-    attachments: [icsAttachment],
+    html: bookingConfirmation({ booking, hasInvoice: !!invoicePdfBuffer }),
+    attachments,
   });
   sendMail({
     from,
@@ -237,16 +245,22 @@ bookingRouter.put(
     };
     const updated = await booking.save();
 
-    // Mark Stripe invoice as paid — triggers receipt email with PDF to customer
+    // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
+    let invoicePdfBuffer = null;
     if (booking.stripeInvoiceId) {
       try {
         await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
+        const paidInvoice = await getStripe().invoices.retrieve(booking.stripeInvoiceId);
+        if (paidInvoice.invoice_pdf) {
+          const pdfRes = await fetch(paidInvoice.invoice_pdf);
+          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        }
       } catch (e) {
-        console.error("[booking] Failed to mark invoice paid:", e.message);
+        console.error("[booking] Failed to process invoice:", e.message);
       }
     }
 
-    sendBookingEmails(updated);
+    sendBookingEmails(updated, invoicePdfBuffer);
 
     res.json({ message: "Booking confirmed", booking: updated });
   })
