@@ -2,7 +2,8 @@ import express from "express";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import rateLimit from "express-rate-limit";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import sharp from "sharp";
 import { isAuth, isAdmin } from "../utils.js";
 import path from "path";
 
@@ -16,15 +17,29 @@ const bookingUploadLimiter = rateLimit({
 
 const uploadRouter = express.Router();
 
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/tiff",
+  "image/bmp",
+];
 
 const fileFilter = (req, file, cb) => {
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (jpeg, png, webp, gif) are allowed"), false);
+    cb(new Error("Only image files (jpeg, png, webp, gif, avif, tiff, bmp) are allowed"), false);
   }
 };
+
+const memoryUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter,
+  limits: { fileSize: 20 * 1024 * 1024 },
+});
 
 function makeS3Client() {
   const cfg = { region: process.env.AWS_REGION || "us-east-1" };
@@ -35,22 +50,6 @@ function makeS3Client() {
     };
   }
   return new S3Client(cfg);
-}
-
-function createUpload() {
-  const s3 = makeS3Client();
-  const storageS3 = multerS3({
-    s3,
-    bucket: process.env.AWS_S3_BUCKET,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    key(req, file, cb) {
-      const ALLOWED_FOLDERS = ["store", "gallery"];
-      const folder = ALLOWED_FOLDERS.includes(req.query.folder) ? req.query.folder : "store";
-      const sanitized = path.basename(file.originalname).replace(/[^a-zA-Z0-9._-]/g, "_");
-      cb(null, folder + "/" + sanitized);
-    },
-  });
-  return multer({ storage: storageS3, fileFilter });
 }
 
 function createBookingUpload() {
@@ -72,9 +71,38 @@ function createBookingUpload() {
 }
 
 uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
-  createUpload().single("image")(req, res, (err) => {
+  memoryUpload.single("image")(req, res, async (err) => {
     if (err) return next(err);
-    res.json({ location: req.file.location });
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    try {
+      const ALLOWED_FOLDERS = ["store", "gallery"];
+      const folder = ALLOWED_FOLDERS.includes(req.query.folder) ? req.query.folder : "store";
+      const baseName = path
+        .basename(req.file.originalname, path.extname(req.file.originalname))
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+      const key = `${folder}/${Date.now()}_${baseName}.webp`;
+
+      const processed = await sharp(req.file.buffer)
+        .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      const s3 = makeS3Client();
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET,
+          Key: key,
+          Body: processed,
+          ContentType: "image/webp",
+        })
+      );
+
+      const region = process.env.AWS_REGION || "us-east-1";
+      const location = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
+      res.json({ location });
+    } catch (processingErr) {
+      next(processingErr);
+    }
   });
 });
 
