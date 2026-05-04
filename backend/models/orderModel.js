@@ -25,11 +25,13 @@ const orderSchema = new mongoose.Schema(
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
     },
+    stripeInvoiceId: { type: String },
     paymentResult: {
       id: String,
       status: String,
       update_time: String,
       email_address: String,
+      invoiceId: String,
     },
     itemsQty: { type: Number, required: true },
     itemsPrice: { type: Number, required: true },
