@@ -84,7 +84,6 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
                 <td>
                   <h2 style="margin:0 0 4px;font-size:18px;color:#1a1a1a;">Tattoo Booking &amp; Policies</h2>
                   <p style="margin:0 0 20px;color:#555;font-size:14px;line-height:1.7;">
-                    Hi there! You are booking a tattoo session with Sweevil.<br/><br/>
                     Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.
                   </p>
                   <p style="margin:0 0 12px;font-size:14px;color:#1a1a1a;font-weight:bold;">Important Booking Details:</p>
