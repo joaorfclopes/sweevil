@@ -17,10 +17,12 @@ const bookingSchema = new mongoose.Schema(
       enum: ["PENDING_PAYMENT", "CONFIRMED", "CANCELED"],
       default: "PENDING_PAYMENT",
     },
+    stripeInvoiceId: { type: String },
     paymentResult: {
       id: String,
       status: String,
       update_time: String,
+      invoiceId: String,
     },
     images: [{ type: String }],
     confirmToken: { type: String },

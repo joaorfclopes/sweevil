@@ -116,14 +116,61 @@ bookingRouter.post(
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     if (booking.isPaid) return res.status(400).json({ message: "Already paid" });
-    const paymentIntent = await getStripe().paymentIntents.create({
-      amount: Math.round(booking.price * 100),
-      currency: "eur",
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      receipt_email: booking.guestInfo.email,
+
+    const stripe = getStripe();
+
+    // Reuse existing open invoice if available (e.g. page refresh)
+    if (booking.stripeInvoiceId) {
+      const existing = await stripe.invoices.retrieve(booking.stripeInvoiceId);
+      if (existing.status === "open" && existing.payment_intent) {
+        const pi = await stripe.paymentIntents.retrieve(existing.payment_intent);
+        return res.json({ clientSecret: pi.client_secret });
+      }
+    }
+
+    const totalCents = Math.round(booking.price * 100);
+    const taxCents = Math.round((booking.price * 0.23) / 1.23 * 100);
+    const netCents = totalCents - taxCents;
+
+    const customer = await stripe.customers.create({
+      email: booking.guestInfo.email,
+      name: booking.guestInfo.name,
+      phone: booking.guestInfo.phone,
       metadata: { bookingId: booking._id.toString() },
     });
-    res.json({ clientSecret: paymentIntent.client_secret });
+
+    const invoice = await stripe.invoices.create({
+      customer: customer.id,
+      currency: "eur",
+      collection_method: "charge_automatically",
+      auto_advance: false,
+      payment_settings: { payment_method_types: ["card"] },
+      metadata: { bookingId: booking._id.toString() },
+    });
+
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: netCents,
+      currency: "eur",
+      description: `Tattoo deposit — ${booking.slot} on ${new Date(booking.date).toLocaleDateString("pt-PT")}`,
+    });
+
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: taxCents,
+      currency: "eur",
+      description: "IVA 23%",
+    });
+
+    const finalized = await stripe.invoices.finalizeInvoice(invoice.id);
+
+    booking.stripeInvoiceId = invoice.id;
+    await booking.save();
+
+    const pi = await stripe.paymentIntents.retrieve(finalized.payment_intent);
+    res.json({ clientSecret: pi.client_secret });
   })
 );
 
@@ -177,6 +224,7 @@ bookingRouter.put(
       id: paymentIntent.id,
       status: paymentIntent.status,
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
+      invoiceId: paymentIntent.invoice || null,
     };
     const updated = await booking.save();
 
