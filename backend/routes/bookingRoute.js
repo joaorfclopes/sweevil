@@ -119,18 +119,17 @@ bookingRouter.post(
 
     const stripe = getStripe();
 
-    // Reuse existing open invoice if available (e.g. page refresh)
-    if (booking.stripeInvoiceId) {
-      const existing = await stripe.invoices.retrieve(booking.stripeInvoiceId);
-      if (existing.status === "open" && existing.payment_intent) {
-        const pi = await stripe.paymentIntents.retrieve(existing.payment_intent);
-        return res.json({ clientSecret: pi.client_secret });
-      }
-    }
-
     const totalCents = Math.round(booking.price * 100);
     const taxCents = Math.round((booking.price * 0.23) / 1.23 * 100);
     const netCents = totalCents - taxCents;
+
+    // Reuse existing open invoice + PaymentIntent on page refresh
+    if (booking.stripeInvoiceId && booking.paymentResult?.id) {
+      const pi = await stripe.paymentIntents.retrieve(booking.paymentResult.id);
+      if (pi.status === "requires_payment_method" || pi.status === "requires_confirmation") {
+        return res.json({ clientSecret: pi.client_secret });
+      }
+    }
 
     const customer = await stripe.customers.create({
       email: booking.guestInfo.email,
@@ -139,12 +138,13 @@ bookingRouter.post(
       metadata: { bookingId: booking._id.toString() },
     });
 
+    // Create invoice for record-keeping and PDF — decoupled from payment collection
     const invoice = await stripe.invoices.create({
       customer: customer.id,
       currency: "eur",
-      collection_method: "charge_automatically",
+      collection_method: "send_invoice",
+      days_until_due: 30,
       auto_advance: false,
-      payment_settings: { payment_method_types: ["card"] },
       metadata: { bookingId: booking._id.toString() },
     });
 
@@ -164,13 +164,22 @@ bookingRouter.post(
       description: "IVA 23%",
     });
 
-    const finalized = await stripe.invoices.finalizeInvoice(invoice.id);
+    await stripe.invoices.finalizeInvoice(invoice.id);
+
+    // Standard PaymentIntent for Stripe Elements checkout
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalCents,
+      currency: "eur",
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+      receipt_email: booking.guestInfo.email,
+      metadata: { bookingId: booking._id.toString(), stripeInvoiceId: invoice.id },
+    });
 
     booking.stripeInvoiceId = invoice.id;
+    booking.paymentResult = { id: paymentIntent.id };
     await booking.save();
 
-    const pi = await stripe.paymentIntents.retrieve(finalized.payment_intent);
-    res.json({ clientSecret: pi.client_secret });
+    res.json({ clientSecret: paymentIntent.client_secret });
   })
 );
 
@@ -224,9 +233,18 @@ bookingRouter.put(
       id: paymentIntent.id,
       status: paymentIntent.status,
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
-      invoiceId: paymentIntent.invoice || null,
+      invoiceId: booking.stripeInvoiceId || null,
     };
     const updated = await booking.save();
+
+    // Mark Stripe invoice as paid — triggers receipt email with PDF to customer
+    if (booking.stripeInvoiceId) {
+      try {
+        await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
+      } catch (e) {
+        console.error("[booking] Failed to mark invoice paid:", e.message);
+      }
+    }
 
     sendBookingEmails(updated);
 
