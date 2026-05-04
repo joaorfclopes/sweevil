@@ -12,6 +12,7 @@ export const placedOrder = ({
     shippingPrice,
     totalPrice,
   },
+  hasInvoice = false,
 }) => {
   return `<!DOCTYPE html>
   <html lang="en">
@@ -737,6 +738,27 @@ export const placedOrder = ({
                                 &nbsp;
                               </td>
                             </tr>
+                            ${hasInvoice ? `
+                            <tr>
+                              <td
+                                align="center"
+                                style="
+                                  font-family: 'FuturaPTBook-Reg', Futura, Arial,
+                                    sans-serif;
+                                  color: #2d2d2d;
+                                  font-size: 12px;
+                                  line-height: 20px;
+                                  letter-spacing: 0.6px;
+                                "
+                              >
+                                <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
+                                  Your invoice is attached to this email as a PDF.
+                                </font>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px;">&nbsp;</td>
+                            </tr>` : ""}
                             <tr>
                               <td
                                 align="center"
