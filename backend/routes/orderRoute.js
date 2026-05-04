@@ -295,7 +295,6 @@ orderRouter.post(
       amount: totalCents,
       currency: "eur",
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      receipt_email: order.shippingAddress.email,
       metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
     });
 
@@ -392,6 +391,7 @@ orderRouter.put(
           shippingPrice: updatedOrder.shippingPrice,
           totalPrice: updatedOrder.totalPrice,
         },
+        hasInvoice: !!invoicePdfBuffer,
       }),
       attachments: invoicePdfBuffer
         ? [{ filename: "invoice.pdf", content: invoicePdfBuffer, contentType: "application/pdf" }]

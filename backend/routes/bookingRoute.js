@@ -179,7 +179,6 @@ bookingRouter.post(
       amount: totalCents,
       currency: "eur",
       automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      receipt_email: booking.guestInfo.email,
       metadata: { bookingId: booking._id.toString(), stripeInvoiceId: invoice.id },
     });
 
