@@ -31,12 +31,20 @@ if (!process.env.ALLOWED_EMAILS) {
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('FATAL ERROR: STRIPE_SECRET_KEY is not defined in environment variables')
 }
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error('FATAL ERROR: STRIPE_WEBHOOK_SECRET is not defined — webhook signature verification will fail for all events')
+}
 if (!process.env.MONGODB_URL) {
   throw new Error('FATAL ERROR: MONGODB_URL is not defined in environment variables')
 }
 
 const app = express()
 const port = process.env.BACKEND_PORT || process.env.PORT || 5000
+
+// Trust exactly one proxy hop (Heroku's router). Without this, express-rate-limit
+// sees the load-balancer IP for every request, making rate limits per-proxy instead
+// of per-client. It also ensures req.ip reflects the real client address.
+app.set('trust proxy', 1)
 
 await mongoose.connect(process.env.MONGODB_URL)
 const auth = getAuth()
@@ -66,7 +74,22 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-app.use(helmet({ contentSecurityPolicy: false }))
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.stripe.com"],
+        frameSrc: ["'none'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+)
 
 // Webhook must receive raw body — before express.json()
 app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRoute)

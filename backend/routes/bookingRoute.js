@@ -125,6 +125,11 @@ bookingRouter.post(
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     if (booking.isPaid) return res.status(400).json({ message: "Already paid" });
 
+    const { confirmToken } = req.body;
+    if (!confirmToken || confirmToken !== booking.confirmToken) {
+      return res.status(403).json({ message: "Invalid confirm token" });
+    }
+
     const stripe = getStripe();
 
     const totalCents = Math.round(booking.price * 100);
