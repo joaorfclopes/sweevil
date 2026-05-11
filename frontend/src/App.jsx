@@ -37,7 +37,8 @@ import PoliticaDevolucoes from "./screens/PoliticaDevolucoes";
 import MainScreen from "./screens/MainScreen";
 import BookingScreen from "./screens/BookingScreen";
 import ArrowUp from "./components/ArrowUp";
-import { FeaturesProvider } from "./FeaturesContext";
+import { FeaturesProvider, useFeatures } from "./FeaturesContext";
+import MaintenanceScreen from "./screens/MaintenanceScreen";
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -47,6 +48,7 @@ function AppContent() {
   const { userInfo } = userSignin;
   const location = useLocation();
   const idleTimer = useRef(null);
+  const { maintenanceMode } = useFeatures();
 
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -147,6 +149,8 @@ function AppContent() {
       if (el) scrollWithOffset(el);
     }
   }, [loading]);
+
+  if (maintenanceMode) return <MaintenanceScreen />;
 
   return (
     <div className="App">
