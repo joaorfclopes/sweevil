@@ -64,11 +64,11 @@ export default function Footer({ showShopNow = false }) {
         </div>
       </div>
       <div className="legal-links">
-        <a href="/termos-e-condicoes">Termos e Condições</a>
-        <a href="/politica-de-privacidade">Política de Privacidade</a>
-        <a href="/politica-de-cookies">Política de Cookies</a>
-        <a href="/direito-de-arrependimento">Direito de Arrependimento</a>
-        <a href="/politica-de-devolucoes">Devoluções e Reembolsos</a>
+        <Link to="/termos-e-condicoes">Termos e Condições</Link>
+        <Link to="/politica-de-privacidade">Política de Privacidade</Link>
+        <Link to="/politica-de-cookies">Política de Cookies</Link>
+        <Link to="/direito-de-arrependimento">Direito de Arrependimento</Link>
+        <Link to="/politica-de-devolucoes">Devoluções e Reembolsos</Link>
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">Livro de Reclamações</a>
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">Resolução de Litígios</a>
       </div>
