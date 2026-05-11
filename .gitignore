@@ -30,3 +30,5 @@ frontend/.env
 .history
 
 TODO.md
+# Added by code-review-graph
+.code-review-graph/
