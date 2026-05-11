@@ -25,6 +25,7 @@ export default function ProductScreen(props) {
   const [chosenSize, setChosenSize] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useScrollLock(isOpen);
 
@@ -36,6 +37,7 @@ export default function ProductScreen(props) {
 
   useEffect(() => {
     scrollTop();
+    setCurrentIndex(0);
     dispatch(detailsProduct(productId));
   }, [dispatch, productId]);
 
@@ -75,17 +77,17 @@ export default function ProductScreen(props) {
   };
 
   const next = () => {
-    document.getElementById("carousel-control-next").click();
+    setCurrentIndex((i) => (i + 1) % product.images.length);
   };
 
   const previous = () => {
-    document.getElementById("carousel-control-prev").click();
+    setCurrentIndex((i) => (i - 1 + product.images.length) % product.images.length);
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => next(),
-    onSwipedRight: () => previous(),
-    preventDefaultTouchmoveEvent: true,
+    onSwipedLeft: next,
+    onSwipedRight: previous,
+    preventScrollOnSwipe: true,
     trackMouse: true,
   });
 
@@ -127,9 +129,7 @@ export default function ProductScreen(props) {
                 {product.images.map((image, index) => (
                   <div
                     key={image}
-                    className={`carousel-item product-image ${
-                      image === product.images[0] && "active"
-                    }`}
+                    className={`carousel-item product-image ${index === currentIndex ? "active" : ""}`}
                   >
                     <Placeholder height="100%">
                       <div
@@ -148,38 +148,27 @@ export default function ProductScreen(props) {
                 ))}
               </div>
               <div className="arrows">
-                <a
-                  id="carousel-control-prev"
+                <button
                   className="carousel-control-prev"
-                  href="#productImageCarousel"
-                  role="button"
-                  data-slide="prev"
+                  onClick={previous}
+                  aria-label="Previous image"
                 >
-                  <span
-                    className="carousel-control-prev-icon"
-                    aria-hidden="true"
-                  ></span>
-                </a>
-                <a
-                  id="carousel-control-next"
+                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button
                   className="carousel-control-next"
-                  href="#productImageCarousel"
-                  role="button"
-                  data-slide="next"
+                  onClick={next}
+                  aria-label="Next image"
                 >
-                  <span
-                    className="carousel-control-next-icon"
-                    aria-hidden="true"
-                  ></span>
-                </a>
+                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
               </div>
               <ol className="carousel-indicators">
                 {product.images.map((image, index) => (
                   <li
                     key={index}
-                    data-target="#productImageCarousel"
-                    data-slide-to={index}
-                    className={`${image === product.images[0] && "active"}`}
+                    className={index === currentIndex ? "active" : ""}
+                    onClick={() => setCurrentIndex(index)}
                   ></li>
                 ))}
               </ol>
@@ -189,8 +178,7 @@ export default function ProductScreen(props) {
                 <div
                   key={image}
                   className="image-preview"
-                  data-target="#productImageCarousel"
-                  data-slide-to={index}
+                  onClick={() => setCurrentIndex(index)}
                 >
                   <Placeholder height="100%">
                     <div
