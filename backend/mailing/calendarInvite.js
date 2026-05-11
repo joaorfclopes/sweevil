@@ -1,5 +1,16 @@
 const pad = (n) => String(n).padStart(2, "0");
 
+// Sanitize a string for safe use inside an ICS property value.
+// Strips CR and LF to prevent line-injection attacks, and escapes
+// commas, semicolons, and backslashes per RFC 5545 §3.3.11.
+const icsEscape = (str) =>
+  String(str ?? "")
+    .replace(/\r/g, "")
+    .replace(/\n/g, "")
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,");
+
 const formatLocal = (date, hour, minute) => {
   const y = date.getUTCFullYear();
   const m = pad(date.getUTCMonth() + 1);
@@ -21,12 +32,12 @@ export const generateICS = ({ booking, adminEmail }) => {
 
   const brand = process.env.BRAND_NAME || "Sweevil";
   const uid = `booking-${booking._id}@${brand.toLowerCase().replace(/\s+/g, "-")}`;
-  const summary = `${brand} — ${booking.guestInfo.name}`;
+  const summary = `${brand} — ${icsEscape(booking.guestInfo.name)}`;
   const description = [
-    `Guest: ${booking.guestInfo.name}`,
-    `Phone: ${booking.guestInfo.phone}`,
-    `Email: ${booking.guestInfo.email}`,
-    booking.guestInfo.notes ? `Notes: ${booking.guestInfo.notes}` : "",
+    `Guest: ${icsEscape(booking.guestInfo.name)}`,
+    `Phone: ${icsEscape(booking.guestInfo.phone)}`,
+    `Email: ${icsEscape(booking.guestInfo.email)}`,
+    booking.guestInfo.notes ? `Notes: ${icsEscape(booking.guestInfo.notes)}` : "",
   ]
     .filter(Boolean)
     .join("\\n");

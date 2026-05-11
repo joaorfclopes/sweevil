@@ -4,9 +4,9 @@ import geoip from "geoip-lite";
 const geoRouter = express.Router();
 
 geoRouter.get("/", (req, res) => {
-  const forwarded = req.headers["x-forwarded-for"];
-  const ip = forwarded ? forwarded.split(",")[0].trim() : req.ip;
-  const geo = geoip.lookup(ip);
+  // req.ip is the correct client IP when trust proxy is configured on the app.
+  // Manually reading x-forwarded-for would allow clients to spoof their country.
+  const geo = geoip.lookup(req.ip);
   res.json({ country: geo?.country || null });
 });
 
