@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "code-review-graph": {
+      "command": "uvx",
+      "args": ["code-review-graph", "serve"],
+      "type": "stdio"
+    },
+    "caveman-shrink": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "caveman-shrink"],
+      "env": {}
+    }
+  }
+}
