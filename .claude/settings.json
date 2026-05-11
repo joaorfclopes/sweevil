@@ -3,6 +3,7 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": ["snyk"],
   "permissions": {
+    "allow": ["Bash(rtk git *)"],
     "deny": [
       "Read(**/.env)",
       "Read(**/.env.*)",
