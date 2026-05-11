@@ -79,12 +79,12 @@ uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
         processed = await sharp(bgPath)
           .resize(SIZE, SIZE)
           .composite([{ input: productImg, gravity: "center" }])
-          .avif({ quality: 80 })
+          .avif({ quality: 70, effort: 6 })
           .toBuffer();
       } else {
         processed = await sharp(req.file.buffer)
           .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
-          .avif({ quality: 80 })
+          .avif({ quality: 70, effort: 6 })
           .toBuffer();
       }
 
@@ -124,7 +124,7 @@ uploadRouter.post("/booking-images", bookingUploadLimiter, (req, res, next) => {
           const key = `bookings/${Date.now()}_${baseName}.avif`;
           const processed = await sharp(file.buffer)
             .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
-            .avif({ quality: 80 })
+            .avif({ quality: 70, effort: 6 })
             .toBuffer();
           await s3.send(
             new PutObjectCommand({
