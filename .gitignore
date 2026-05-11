@@ -32,3 +32,6 @@ frontend/.env
 TODO.md
 # Added by code-review-graph
 .code-review-graph/
+
+# Claude Code agent worktrees
+.claude/worktrees/
