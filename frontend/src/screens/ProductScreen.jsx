@@ -26,6 +26,8 @@ export default function ProductScreen(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedCarousel, setLoadedCarousel] = useState(new Set());
+  const [loadedPreviews, setLoadedPreviews] = useState(new Set());
 
   useScrollLock(isOpen);
 
@@ -93,10 +95,12 @@ export default function ProductScreen(props) {
 
   const imageLoaded = (id) => {
     $(`#${id}-carousel-img`).addClass("show");
+    setLoadedCarousel((prev) => new Set([...prev, id]));
   };
 
   const previewImageLoaded = (id) => {
     $(`#${id}-preview-img`).addClass("show");
+    setLoadedPreviews((prev) => new Set([...prev, id]));
   };
 
   const openLightbox = (index) => {
@@ -131,7 +135,7 @@ export default function ProductScreen(props) {
                     key={image}
                     className={`carousel-item product-image ${index === currentIndex ? "active" : ""}`}
                   >
-                    <Placeholder height="100%">
+                    <Placeholder height="100%" hide={loadedCarousel.has(index)}>
                       <div
                         id={`${index}-carousel-img`}
                         className="carousel-image product-image-inner"
@@ -180,7 +184,7 @@ export default function ProductScreen(props) {
                   className="image-preview"
                   onClick={() => setCurrentIndex(index)}
                 >
-                  <Placeholder height="100%">
+                  <Placeholder height="100%" hide={loadedPreviews.has(index)}>
                     <div
                       id={`${index}-preview-img`}
                       className="image-preview-inner"
