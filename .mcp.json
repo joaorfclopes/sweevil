@@ -6,6 +6,11 @@
       "env": {
         "SNYK_TOKEN": "${SNYK_TOKEN}"
       }
+    },
+    "code-review-graph": {
+      "command": "uvx",
+      "args": ["code-review-graph", "serve"],
+      "type": "stdio"
     }
   }
 }

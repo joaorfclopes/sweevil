@@ -1,5 +1,35 @@
 {
   "defaultMode": "bypassPermissions",
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["snyk"]
+  "enabledMcpjsonServers": ["snyk"],
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/node_modules/**)",
+      "Read(**/dist/**)",
+      "Read(**/build/**)",
+      "Read(**/*.lock)",
+      "Read(**/.git/**)",
+      "Read(**/*.log)",
+      "Read(**/logs/**)",
+      "Read(**/.claude/completions/**)",
+      "Read(**/.claude/sessions/**)",
+      "Read(**/docs/archive/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "code-review-graph update --skip-flows",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
 }
