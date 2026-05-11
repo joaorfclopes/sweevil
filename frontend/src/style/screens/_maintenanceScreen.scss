@@ -1,0 +1,45 @@
+@use '../general/globals' as *;
+
+.maintenance-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+
+  .maintenance-image {
+    width: 180px;
+    margin-bottom: 2rem;
+
+    @include sm {
+      width: 220px;
+    }
+  }
+
+  .title {
+    font-family: $font;
+    margin: 0 0 1rem;
+    font-size: 3rem;
+
+    @include sm {
+      font-size: 4rem;
+    }
+
+    @include md {
+      font-size: 5rem;
+    }
+  }
+
+  p {
+    font-family: $font;
+    font-size: $largeMobile;
+    color: #888;
+    margin: 0;
+
+    @include md {
+      font-size: $largeDesktop;
+    }
+  }
+}

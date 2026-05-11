@@ -4,6 +4,13 @@
   .not-found-screen-container {
     min-height: 95vh;
     text-align: center;
+    .not-found-image {
+      width: 180px;
+      margin-bottom: 2rem;
+      @include sm {
+        width: 220px;
+      }
+    }
     .title {
       font-family: $font;
       margin: 0;

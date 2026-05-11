@@ -137,7 +137,10 @@ app.get('/api/config/stripe', (req, res) => {
 })
 
 app.get('/api/config/features', (req, res) => {
-  res.json({ bookingEnabled: process.env.ENABLE_BOOKING === 'true' })
+  res.json({
+    bookingEnabled: process.env.ENABLE_BOOKING === 'true',
+    maintenanceMode: process.env.MAINTENANCE_MODE === 'true',
+  })
 })
 
 const __dirname = path.resolve()

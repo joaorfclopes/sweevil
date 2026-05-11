@@ -363,10 +363,12 @@ orderRouter.put(
 
     // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
     let invoicePdfBuffer = null;
+    let invoiceNumber = "invoice";
     if (order.stripeInvoiceId) {
       try {
         await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
         const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
+        if (paidInvoice.number) invoiceNumber = paidInvoice.number;
         if (paidInvoice.invoice_pdf) {
           const pdfRes = await fetch(paidInvoice.invoice_pdf);
           invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
@@ -394,7 +396,7 @@ orderRouter.put(
         hasInvoice: !!invoicePdfBuffer,
       }),
       attachments: invoicePdfBuffer
-        ? [{ filename: "invoice.pdf", content: invoicePdfBuffer, contentType: "application/pdf" }]
+        ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
         : [],
     });
 

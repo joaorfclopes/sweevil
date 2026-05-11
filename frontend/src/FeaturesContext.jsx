@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-const FeaturesContext = createContext({ bookingEnabled: false });
+const FeaturesContext = createContext({ bookingEnabled: false, maintenanceMode: false });
 
 export function FeaturesProvider({ children }) {
-  const [features, setFeatures] = useState({ bookingEnabled: false });
+  const [features, setFeatures] = useState({ bookingEnabled: false, maintenanceMode: false });
 
   useEffect(() => {
     axios
