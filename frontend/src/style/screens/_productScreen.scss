@@ -156,6 +156,10 @@
       }
     }
   }
+  .carousel-control-prev,
+  .carousel-control-next {
+    border: none !important;
+  }
   .show {
     @include fade-in;
   }

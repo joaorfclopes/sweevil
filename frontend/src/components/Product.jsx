@@ -30,7 +30,7 @@ export default function Product(props) {
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
           {soldOut && <span className="sold-out-pill">Sold Out</span>}
-          <Placeholder>
+          <Placeholder hide={hidePlaceholder}>
             <div id={`${product._id}-product-img`} className="product-image">
               <LazyLoadImage
                 src={product.images[0]}
