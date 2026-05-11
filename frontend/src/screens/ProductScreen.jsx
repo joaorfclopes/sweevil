@@ -20,13 +20,19 @@ export default function ProductScreen(props) {
   const navigate = useNavigate();
   const { id: productId } = useParams();
   const productDetails = useSelector((state) => state.productDetails);
-  const { loading, product, error } = productDetails;
+  const { loading, product, error, errorStatus } = productDetails;
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
   useScrollLock(isOpen);
+
+  useEffect(() => {
+    if (errorStatus === 404 || errorStatus === 403) {
+      navigate("/not-found");
+    }
+  }, [errorStatus, navigate]);
 
   useEffect(() => {
     scrollTop();

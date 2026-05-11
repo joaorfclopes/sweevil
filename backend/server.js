@@ -157,6 +157,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use((err, req, res, next) => {
+  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    return res.status(404).send({ message: 'Resource not found' })
+  }
   console.error('Error:', err.message)
   console.error(err.stack)
   const statusCode = err.statusCode || 500

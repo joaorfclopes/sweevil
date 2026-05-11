@@ -36,6 +36,7 @@ export const detailsProduct = (productId) => async (dispatch) => {
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
       payload: error.response?.data?.message || error.message,
+      statusCode: error.response?.status,
     });
   }
 };

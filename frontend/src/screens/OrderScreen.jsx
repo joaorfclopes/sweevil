@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -75,6 +75,7 @@ function StripeCheckoutForm({ order, dispatch, token }) {
 
 export default function OrderScreen(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id: orderId } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -83,7 +84,7 @@ export default function OrderScreen(props) {
   const handledRedirect = useRef(false);
 
   const orderDetails = useSelector((state) => state.orderDetails);
-  const { loading, order, error } = orderDetails;
+  const { loading, order, error, errorStatus } = orderDetails;
   const orderPay = useSelector((state) => state.orderPay);
   const {
     loading: loadingPay,
@@ -112,6 +113,12 @@ export default function OrderScreen(props) {
   } = orderCancel;
 
   const token = searchParams.get("token");
+
+  useEffect(() => {
+    if (errorStatus === 404 || errorStatus === 403) {
+      navigate("/not-found");
+    }
+  }, [errorStatus, navigate]);
 
   useEffect(() => {
     if (
