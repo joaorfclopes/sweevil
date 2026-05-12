@@ -1,7 +1,6 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import data from "../data.js";
 import GalleryImage from "../models/galleryImageModel.js";
 import { isAdmin, isAuth } from "../utils.js";
 
@@ -111,16 +110,5 @@ galleryImageRouter.delete(
     res.json({ message: "Image deleted" });
   })
 );
-
-// Seed route - only available in development
-if (process.env.NODE_ENV !== "production") {
-  galleryImageRouter.get(
-    "/seed",
-    expressAsyncHandler(async (req, res) => {
-      const createdGallery = await GalleryImage.insertMany(data.galleryImages);
-      res.json({ createdGallery });
-    })
-  );
-}
 
 export default galleryImageRouter;

@@ -17,6 +17,7 @@ export default function GalleryImage({ galleryImage }) {
           <img
             src={galleryImage.image}
             alt={galleryImage.description || ""}
+            loading="lazy"
             onLoad={() => imageLoaded(galleryImage._id)}
           />
         </div>

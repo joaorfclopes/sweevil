@@ -25,6 +25,7 @@
     "countries-list": "^3.3.0",
     "dayjs": "^1.11.20",
     "framer-motion": "^11.15.0",
+    "heic2any": "^0.0.4",
     "jquery": "^3.7.1",
     "notyf": "^3.10.0",
     "react": "^18.3.1",

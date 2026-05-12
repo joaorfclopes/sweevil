@@ -95,7 +95,7 @@ async function main() {
   const results = { success: [], missing: [], failed: [] };
 
   for (const doc of docs) {
-    const filename = path.basename(doc.image); // e.g. "tattoo1.jpg"
+    const filename = path.basename(doc.image); // e.g. "tattoo.avif"
     const localPath = path.join(IMAGES_DIR, filename);
 
     process.stdout.write(`  ${filename} ... `);

@@ -1,6 +1,6 @@
 /**
  * One-time migration: re-encode all S3 images to AVIF with compression.
- * For store/ images: also composites frontend/public/background.jpg as background.
+ * For store/ images: also composites frontend/public/background.avif as background.
  *
  * Usage:
  *   node scripts/migrate-s3-to-avif.mjs
@@ -28,15 +28,17 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DRY_RUN = process.argv.includes("--dry-run");
+const FORCE = process.argv.includes("--force");
 const FOLDER_FILTER = (() => {
   const idx = process.argv.indexOf("--folder");
   return idx !== -1 ? process.argv[idx + 1] : null;
 })();
 
 const AVIF_OPTS = { quality: 70, effort: 6 };
-const BG_PATH = path.join(__dirname, "../frontend/public/background.jpg");
+const BG_PATH = path.join(__dirname, "../frontend/public/background.avif");
 const STORE_SIZE = 1000;
 const GALLERY_SIZE = 2000;
+const BOOKING_SIZE = 1000;
 
 const FOLDERS = ["store", "gallery", "bookings"];
 
@@ -67,7 +69,7 @@ async function listFolder(s3, folder) {
         Bucket: process.env.AWS_S3_BUCKET,
         Prefix: `${folder}/`,
         ContinuationToken: token,
-      })
+      }),
     );
     (res.Contents || []).forEach((o) => objects.push(o.Key));
     token = res.IsTruncated ? res.NextContinuationToken : null;
@@ -77,9 +79,15 @@ async function listFolder(s3, folder) {
 
 // ── MongoDB ───────────────────────────────────────────────────────────────────
 
-const productSchema = new mongoose.Schema({ images: [String] }, { strict: false });
+const productSchema = new mongoose.Schema(
+  { images: [String] },
+  { strict: false },
+);
 const gallerySchema = new mongoose.Schema({ image: String }, { strict: false });
-const bookingSchema = new mongoose.Schema({ images: [String] }, { strict: false });
+const bookingSchema = new mongoose.Schema(
+  { images: [String] },
+  { strict: false },
+);
 
 let Product, GalleryImage, Booking;
 
@@ -103,7 +111,12 @@ async function updateDbUrl(oldUrl, newUrl) {
 async function processBuffer(buffer, folder) {
   if (folder === "store") {
     const productImg = await sharp(buffer)
-      .resize({ width: STORE_SIZE, height: STORE_SIZE, fit: "inside", withoutEnlargement: true })
+      .resize({
+        width: STORE_SIZE,
+        height: STORE_SIZE,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
       .toBuffer();
     return sharp(BG_PATH)
       .resize(STORE_SIZE, STORE_SIZE)
@@ -111,9 +124,14 @@ async function processBuffer(buffer, folder) {
       .avif(AVIF_OPTS)
       .toBuffer();
   }
-  const size = folder === "gallery" ? GALLERY_SIZE : GALLERY_SIZE;
+  const size = folder === "gallery" ? GALLERY_SIZE : BOOKING_SIZE;
   return sharp(buffer)
-    .resize({ width: size, height: size, fit: "inside", withoutEnlargement: true })
+    .resize({
+      width: size,
+      height: size,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
     .avif(AVIF_OPTS)
     .toBuffer();
 }
@@ -121,13 +139,16 @@ async function processBuffer(buffer, folder) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function migrateKey(s3, key, region) {
-  if (key.endsWith(".avif")) {
+  if (key.endsWith("/")) return;
+  if (key.endsWith(".avif") && !FORCE) {
     console.log(`  SKIP (already avif): ${key}`);
     return;
   }
 
   const ext = path.extname(key);
-  const newKey = key.slice(0, key.length - ext.length) + ".avif";
+  const newKey = key.endsWith(".avif")
+    ? key
+    : key.slice(0, key.length - ext.length) + ".avif";
   const oldUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
   const newUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${newKey}`;
   const folder = key.split("/")[0];
@@ -137,30 +158,32 @@ async function migrateKey(s3, key, region) {
 
   // Download
   const { Body } = await s3.send(
-    new GetObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key })
+    new GetObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }),
   );
   const inputBuffer = await streamToBuffer(Body);
 
   // Process
   const outputBuffer = await processBuffer(inputBuffer, folder);
 
-  // Upload new key
+  // Upload (overwrites same key when --force on existing .avif)
   await s3.send(
     new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET,
       Key: newKey,
       Body: outputBuffer,
       ContentType: "image/avif",
-    })
+    }),
   );
 
-  // Update MongoDB
+  // Update MongoDB (no-op when key unchanged)
   await updateDbUrl(oldUrl, newUrl);
 
-  // Delete old key
-  await s3.send(
-    new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key })
-  );
+  // Delete old key only when key changed
+  if (key !== newKey) {
+    await s3.send(
+      new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }),
+    );
+  }
 
   console.log(`  DONE: ${key}`);
 }
@@ -171,7 +194,9 @@ async function main() {
   if (!process.env.AWS_S3_BUCKET) throw new Error("AWS_S3_BUCKET not set");
   if (!process.env.MONGODB_URL) throw new Error("MONGODB_URL not set");
 
-  console.log(`Mode: ${DRY_RUN ? "DRY RUN" : "LIVE"}`);
+  console.log(
+    `Mode: ${DRY_RUN ? "DRY RUN" : "LIVE"}${FORCE ? " (--force)" : ""}`,
+  );
   if (FOLDER_FILTER) console.log(`Folder filter: ${FOLDER_FILTER}`);
 
   await mongoose.connect(process.env.MONGODB_URL);
@@ -181,13 +206,25 @@ async function main() {
   const s3 = makeS3();
   const folders = FOLDER_FILTER ? [FOLDER_FILTER] : FOLDERS;
 
+  const failed = [];
+
   for (const folder of folders) {
     console.log(`\n── ${folder}/ ──`);
     const keys = await listFolder(s3, folder);
     console.log(`  ${keys.length} objects found`);
     for (const key of keys) {
-      await migrateKey(s3, key, region);
+      try {
+        await migrateKey(s3, key, region);
+      } catch (err) {
+        console.error(`  FAIL: ${key} — ${err.message}`);
+        failed.push(key);
+      }
     }
+  }
+
+  if (failed.length > 0) {
+    console.log(`\n── Failed (${failed.length}) ──`);
+    failed.forEach((k) => console.log(`  ${k}`));
   }
 
   await mongoose.disconnect();

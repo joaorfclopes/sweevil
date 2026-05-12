@@ -29,9 +29,11 @@ debug.log
 frontend/.env
 .history
 
-TODO.md
 # Added by code-review-graph
 .code-review-graph/
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# Superpowers
+docs/superpowers/

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { convertIfHeic } from "../utils/convertHeic";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { LocalizationProvider, DateCalendar, PickersDay } from "@mui/x-date-pickers";
@@ -185,8 +186,8 @@ export default function BookingScreen(props) {
     setStep(STEPS.FORM);
   };
 
-  const handleImageChange = (e) => {
-    const selected = Array.from(e.target.files);
+  const handleImageChange = async (e) => {
+    const selected = await Promise.all(Array.from(e.target.files).map(convertIfHeic));
     const combined = [...imageFiles, ...selected].slice(0, 10);
     setImageFiles(combined);
     setImagePreviews(combined.map((f) => URL.createObjectURL(f)));
@@ -313,7 +314,7 @@ export default function BookingScreen(props) {
         ) : (
           <>
           <div className="booking-calendar-outer">
-            <img src="/bookings.png" alt="" className="booking-hero-img" />
+            <img src="/bookings.avif" alt="" className="booking-hero-img" />
             <div className="booking-calendar-content">
               <h1 className="custom-font">Book a Session</h1>
               {step > STEPS.CALENDAR && (

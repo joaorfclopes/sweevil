@@ -19,7 +19,7 @@ export default function AboutScreen(props) {
       <div className="row about-container">
         <Video
           videoSrc={video}
-          poster={window.location.origin + "/sweevil.jpg"}
+          poster={window.location.origin + "/sweevil.avif"}
           subtitle="produced by João Santana"
         />
         <div className="text">
@@ -30,7 +30,7 @@ export default function AboutScreen(props) {
         </div>
         <Video
           videoSrc={video}
-          poster={window.location.origin + "/sweevil.jpg"}
+          poster={window.location.origin + "/sweevil.avif"}
           subtitle="produced by João Santana"
           mobile
         />
