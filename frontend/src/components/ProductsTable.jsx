@@ -335,7 +335,7 @@ export default function ProductsTable() {
                         <TableCell align="center">
                           {(() => {
                             let safeSrc = null;
-                            try { if (new URL(product.images?.[0]).protocol === "https:") safeSrc = product.images[0]; } catch {}
+                            try { const u = new URL(product.images?.[0]); if (u.protocol === "https:") safeSrc = u.href; } catch {}
                             return safeSrc ? (
                               <img
                                 src={safeSrc}
