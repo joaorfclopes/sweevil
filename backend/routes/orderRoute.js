@@ -351,54 +351,55 @@ orderRouter.put(
 
     const updatedOrder = await order.save();
 
-    // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
-    let invoicePdfBuffer = null;
-    let invoiceNumber = "invoice";
-    if (order.stripeInvoiceId) {
-      try {
-        await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
-        const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
-        if (paidInvoice.number) invoiceNumber = paidInvoice.number;
-        if (paidInvoice.invoice_pdf) {
-          const pdfUrl = new URL(paidInvoice.invoice_pdf);
-          if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
-            throw new Error("Unexpected invoice_pdf origin");
+    if (!updatedOrder.confirmationEmailSent) {
+      let invoicePdfBuffer = null;
+      let invoiceNumber = "invoice";
+      if (order.stripeInvoiceId) {
+        try {
+          await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
+          const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
+          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.invoice_pdf) {
+            const pdfUrl = new URL(paidInvoice.invoice_pdf);
+            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
+              throw new Error("Unexpected invoice_pdf origin");
+            }
+            const pdfRes = await fetch(pdfUrl.toString());
+            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
-          const pdfRes = await fetch(pdfUrl.toString());
-          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        } catch (e) {
+          console.error("[order] Failed to process invoice:", e.message);
         }
-      } catch (e) {
-        console.error("[order] Failed to process invoice:", e.message);
       }
+      const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+      const invoiceAttachment = invoicePdfBuffer
+        ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
+        : [];
+      const orderEmailData = {
+        orderId: updatedOrder._id,
+        orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+        shippingAddress: updatedOrder.shippingAddress,
+        orderItems: updatedOrder.orderItems,
+        itemsPrice: updatedOrder.itemsPrice,
+        shippingPrice: updatedOrder.shippingPrice,
+        totalPrice: updatedOrder.totalPrice,
+      };
+      await sendMail({
+        from,
+        to: order.shippingAddress.email,
+        subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+        html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
+        attachments: invoiceAttachment,
+      });
+      await sendMail({
+        from,
+        to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+        subject: `Order paid — ${updatedOrder.shippingAddress.fullName}`,
+        html: placedOrderAdmin({ order: orderEmailData }),
+        attachments: invoiceAttachment,
+      });
+      await Order.findByIdAndUpdate(updatedOrder._id, { confirmationEmailSent: true });
     }
-
-    const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
-    const invoiceAttachment = invoicePdfBuffer
-      ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
-      : [];
-    const orderEmailData = {
-      orderId: updatedOrder._id,
-      orderDate: formatDate(updatedOrder.createdAt.toISOString()),
-      shippingAddress: updatedOrder.shippingAddress,
-      orderItems: updatedOrder.orderItems,
-      itemsPrice: updatedOrder.itemsPrice,
-      shippingPrice: updatedOrder.shippingPrice,
-      totalPrice: updatedOrder.totalPrice,
-    };
-    await sendMail({
-      from,
-      to: order.shippingAddress.email,
-      subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
-      html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
-      attachments: invoiceAttachment,
-    });
-    await sendMail({
-      from,
-      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: `Order paid — ${updatedOrder.shippingAddress.fullName}`,
-      html: placedOrderAdmin({ order: orderEmailData }),
-      attachments: invoiceAttachment,
-    });
 
     res.send({ message: "Order paid", order: updatedOrder });
   })

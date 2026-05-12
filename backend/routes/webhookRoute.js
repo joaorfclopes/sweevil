@@ -5,6 +5,9 @@ import Booking from "../models/bookingModel.js";
 import Product from "../models/productModel.js";
 import { sendBookingEmails } from "./bookingRoute.js";
 import { sendMail } from "../mailing/sendMail.js";
+import { placedOrder } from "../mailing/placedOrder.js";
+import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
+import { formatDate } from "../utils.js";
 
 const webhookRouter = express.Router();
 
@@ -34,6 +37,62 @@ const handleOrderPaid = async (paymentIntent) => {
 
   await order.save();
   console.log(`[webhook] Order ${orderId} marked as paid`);
+
+  if (!order.confirmationEmailSent) {
+    try {
+      const stripe = getStripe();
+      let invoicePdfBuffer = null;
+      let invoiceNumber = "invoice";
+      if (order.stripeInvoiceId) {
+        try {
+          await stripe.invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
+          const paidInvoice = await stripe.invoices.retrieve(order.stripeInvoiceId);
+          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.invoice_pdf) {
+            const pdfUrl = new URL(paidInvoice.invoice_pdf);
+            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
+              throw new Error("Unexpected invoice_pdf origin");
+            }
+            const pdfRes = await fetch(pdfUrl.toString());
+            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+          }
+        } catch (e) {
+          console.error("[webhook] Failed to process invoice:", e.message);
+        }
+      }
+      const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+      const invoiceAttachment = invoicePdfBuffer
+        ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
+        : [];
+      const orderEmailData = {
+        orderId: order._id,
+        orderDate: formatDate(order.createdAt.toISOString()),
+        shippingAddress: order.shippingAddress,
+        orderItems: order.orderItems,
+        itemsPrice: order.itemsPrice,
+        shippingPrice: order.shippingPrice,
+        totalPrice: order.totalPrice,
+      };
+      await sendMail({
+        from,
+        to: order.shippingAddress.email,
+        subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+        html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
+        attachments: invoiceAttachment,
+      });
+      await sendMail({
+        from,
+        to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+        subject: `Order paid — ${order.shippingAddress.fullName}`,
+        html: placedOrderAdmin({ order: orderEmailData }),
+        attachments: invoiceAttachment,
+      });
+      await Order.findByIdAndUpdate(order._id, { confirmationEmailSent: true });
+      console.log(`[webhook] Confirmation email sent for order ${orderId}`);
+    } catch (e) {
+      console.error("[webhook] Failed to send confirmation email:", e.message);
+    }
+  }
 };
 
 const handleBookingPaid = async (paymentIntent) => {
