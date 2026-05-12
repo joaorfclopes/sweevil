@@ -258,28 +258,29 @@ bookingRouter.put(
     };
     const updated = await booking.save();
 
-    // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
-    let invoicePdfBuffer = null;
-    let invoiceNumber = "invoice";
-    if (booking.stripeInvoiceId) {
-      try {
-        await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
-        const paidInvoice = await getStripe().invoices.retrieve(booking.stripeInvoiceId);
-        if (paidInvoice.number) invoiceNumber = paidInvoice.number;
-        if (paidInvoice.invoice_pdf) {
-          const pdfUrl = new URL(paidInvoice.invoice_pdf);
-          if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
-            throw new Error("Unexpected invoice_pdf origin");
+    if (!updated.confirmationEmailSent) {
+      let invoicePdfBuffer = null;
+      let invoiceNumber = "invoice";
+      if (booking.stripeInvoiceId) {
+        try {
+          await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
+          const paidInvoice = await getStripe().invoices.retrieve(booking.stripeInvoiceId);
+          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.invoice_pdf) {
+            const pdfUrl = new URL(paidInvoice.invoice_pdf);
+            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
+              throw new Error("Unexpected invoice_pdf origin");
+            }
+            const pdfRes = await fetch(pdfUrl.toString());
+            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
-          const pdfRes = await fetch(pdfUrl.toString());
-          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        } catch (e) {
+          console.error("[booking] Failed to process invoice:", e.message);
         }
-      } catch (e) {
-        console.error("[booking] Failed to process invoice:", e.message);
       }
+      await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
+      await Booking.findByIdAndUpdate(updated._id, { confirmationEmailSent: true });
     }
-
-    await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
 
     res.json({ message: "Booking confirmed", booking: updated });
   })

@@ -27,6 +27,7 @@ const bookingSchema = new mongoose.Schema(
     images: [{ type: String }],
     confirmToken: { type: String },
     isPaid: { type: Boolean, default: false },
+    confirmationEmailSent: { type: Boolean, default: false },
     paidAt: Date,
   },
   { timestamps: true }

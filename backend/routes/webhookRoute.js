@@ -110,8 +110,37 @@ const handleBookingPaid = async (paymentIntent) => {
   };
 
   const updated = await booking.save();
-  await sendBookingEmails(updated);
   console.log(`[webhook] Booking ${bookingId} marked as confirmed`);
+
+  if (!booking.confirmationEmailSent) {
+    try {
+      const stripe = getStripe();
+      let invoicePdfBuffer = null;
+      let invoiceNumber = "invoice";
+      if (booking.stripeInvoiceId) {
+        try {
+          await stripe.invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
+          const paidInvoice = await stripe.invoices.retrieve(booking.stripeInvoiceId);
+          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.invoice_pdf) {
+            const pdfUrl = new URL(paidInvoice.invoice_pdf);
+            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
+              throw new Error("Unexpected invoice_pdf origin");
+            }
+            const pdfRes = await fetch(pdfUrl.toString());
+            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+          }
+        } catch (e) {
+          console.error("[webhook] Failed to process booking invoice:", e.message);
+        }
+      }
+      await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
+      await Booking.findByIdAndUpdate(booking._id, { confirmationEmailSent: true });
+      console.log(`[webhook] Confirmation email sent for booking ${bookingId}`);
+    } catch (e) {
+      console.error("[webhook] Failed to send booking confirmation email:", e.message);
+    }
+  }
 };
 
 const handlePaymentFailed = async (paymentIntent) => {
