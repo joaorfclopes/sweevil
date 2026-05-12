@@ -11,6 +11,7 @@ import { bookingConfirmation } from "../mailing/bookingConfirmation.js";
 import { bookingAdmin } from "../mailing/bookingAdmin.js";
 import { generateICS } from "../mailing/calendarInvite.js";
 import { sendMail } from "../mailing/sendMail.js";
+import { cancelBooking } from "../mailing/cancelBooking.js";
 
 const bookingRouter = express.Router();
 
@@ -295,6 +296,13 @@ bookingRouter.put(
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     booking.status = "CANCELED";
     const updated = await booking.save();
+    const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    await sendMail({
+      from,
+      to: updated.guestInfo.email,
+      subject: `Your booking has been cancelled — ${process.env.BRAND_NAME}`,
+      html: cancelBooking({ booking: updated }),
+    });
     res.json({ message: "Booking canceled", booking: updated });
   })
 );
