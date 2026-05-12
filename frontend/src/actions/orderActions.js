@@ -66,7 +66,7 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
   } catch (error) {
     if (error.response?.data?.message === "Order already paid") {
-      const { data } = await Axios.get(`/api/orders/${order._id}`);
+      const { data } = await Axios.get(`/api/orders/${order._id}?token=${paymentResult.confirmToken}`);
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
     } else {
       dispatch({
