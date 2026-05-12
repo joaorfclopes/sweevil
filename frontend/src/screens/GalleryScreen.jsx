@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { listGalleryImages } from "../actions/galleryActions";
 import { listCategories } from "../actions/categoryActions";
@@ -188,7 +189,8 @@ export default function GalleryScreen() {
                 on={{
                   view: ({ index }) => setLightboxIndex(index),
                 }}
-                plugins={[Captions]}
+                plugins={[Captions, Zoom]}
+                zoom={{ maxZoomPixelRatio: 5, zoomInMultiplier: 2, pinchZoomDistanceFactor: 100, wheelZoomDistanceFactor: 100 }}
                 noScroll={{ disabled: true }}
               />
             </div>

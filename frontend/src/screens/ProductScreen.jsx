@@ -7,6 +7,7 @@ import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSwipeable } from "react-swipeable";
 import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import useScrollLock from "../hooks/useScrollLock";
 import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
@@ -208,6 +209,8 @@ export default function ProductScreen(props) {
             on={{
               view: ({ index }) => setImageIndex(index),
             }}
+            plugins={[Zoom]}
+            zoom={{ maxZoomPixelRatio: 5, zoomInMultiplier: 2, pinchZoomDistanceFactor: 100, wheelZoomDistanceFactor: 100 }}
             noScroll={{ disabled: true }}
           />
           <div className="product-details">
