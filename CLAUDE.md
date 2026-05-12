@@ -4,6 +4,11 @@
 
 ---
 
+## Git commits
+When committing, always use `git add .` unless I explicitly specify files to stage.
+
+---
+
 ## Project Overview
 
 **Tech Stack**: Express.js + MongoDB/Mongoose 8 + React 18 + Redux v5 — admin-only studio management app (no public users)
