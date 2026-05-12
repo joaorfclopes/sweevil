@@ -1,6 +1,6 @@
 /**
  * One-time migration: re-encode all S3 images to AVIF with compression.
- * For store/ images: also composites frontend/public/background.avif as background.
+ * For store/ images: also composites frontend/public/background.png as background.
  *
  * Usage:
  *   node scripts/migrate-s3-to-avif.mjs
@@ -35,7 +35,7 @@ const FOLDER_FILTER = (() => {
 })();
 
 const AVIF_OPTS = { quality: 70, effort: 6 };
-const BG_PATH = path.join(__dirname, "../frontend/public/background.avif");
+const BG_PATH = path.join(__dirname, "../frontend/public/background.png");
 const STORE_SIZE = 1000;
 const GALLERY_SIZE = 2000;
 const BOOKING_SIZE = 1000;
