@@ -15,6 +15,10 @@ const bookingUploadLimiter = rateLimit({
   message: { message: "Too many upload requests, please try again later." },
 });
 
+const AVIF_QUALITY = parseInt(process.env.AVIF_QUALITY, 10) || 65;
+const AVIF_EFFORT = parseInt(process.env.AVIF_EFFORT, 10) || 4;
+const IMAGE_MAX_SIZE = parseInt(process.env.IMAGE_MAX_SIZE, 10) || 1000;
+
 const uploadRouter = express.Router();
 
 const ALLOWED_MIME_TYPES = [
@@ -54,6 +58,8 @@ function makeS3Client() {
   return new S3Client(cfg);
 }
 
+const s3 = makeS3Client();
+
 const bookingMemoryUpload = multer({
   storage: multer.memoryStorage(),
   fileFilter,
@@ -71,24 +77,22 @@ uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
 
       let processed;
       if (folder === "store") {
-        const SIZE = 1000;
         const bgPath = path.join(path.resolve(), "frontend", "public", "background.png");
         const productImg = await sharp(req.file.buffer)
-          .resize({ width: SIZE, height: SIZE, fit: "inside", withoutEnlargement: true })
+          .resize({ width: IMAGE_MAX_SIZE, height: IMAGE_MAX_SIZE, fit: "inside", withoutEnlargement: true })
           .toBuffer();
         processed = await sharp(bgPath)
-          .resize(SIZE, SIZE)
+          .resize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE)
           .composite([{ input: productImg, gravity: "center" }])
-          .avif({ quality: 70, effort: 6 })
+          .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
           .toBuffer();
       } else {
         processed = await sharp(req.file.buffer)
-          .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
-          .avif({ quality: 70, effort: 6 })
+          .resize({ width: IMAGE_MAX_SIZE, height: IMAGE_MAX_SIZE, fit: "inside", withoutEnlargement: true })
+          .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
           .toBuffer();
       }
 
-      const s3 = makeS3Client();
       await s3.send(
         new PutObjectCommand({
           Bucket: process.env.AWS_S3_BUCKET,
@@ -114,14 +118,13 @@ uploadRouter.post("/booking-images", bookingUploadLimiter, (req, res, next) => {
       return res.status(400).json({ message: "No files uploaded" });
     }
     try {
-      const s3 = makeS3Client();
       const region = process.env.AWS_REGION || "us-east-1";
       const urls = await Promise.all(
         req.files.map(async (file) => {
           const key = `bookings/${randomUUID()}.avif`;
           const processed = await sharp(file.buffer)
-            .resize({ width: 1000, height: 1000, fit: "inside", withoutEnlargement: true })
-            .avif({ quality: 70, effort: 6 })
+            .resize({ width: IMAGE_MAX_SIZE, height: IMAGE_MAX_SIZE, fit: "inside", withoutEnlargement: true })
+            .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
             .toBuffer();
           await s3.send(
             new PutObjectCommand({
