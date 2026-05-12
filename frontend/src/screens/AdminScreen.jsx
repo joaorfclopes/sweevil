@@ -42,10 +42,10 @@ export default function AdminScreen(props) {
         </Link>
       </div>
       {bookingEnabled && <BookingsAdminTab />}
-      <ProductsTable />
       <OrdersTable />
-      <AboutAdminTab />
+      <ProductsTable />
       <GalleryAdminTab />
+      <AboutAdminTab />
     </motion.section>
   );
 }
