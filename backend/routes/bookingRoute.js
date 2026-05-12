@@ -256,7 +256,11 @@ bookingRouter.put(
         await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
         const paidInvoice = await getStripe().invoices.retrieve(booking.stripeInvoiceId);
         if (paidInvoice.invoice_pdf) {
-          const pdfRes = await fetch(paidInvoice.invoice_pdf);
+          const pdfUrl = new URL(paidInvoice.invoice_pdf);
+          if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
+            throw new Error("Unexpected invoice_pdf origin");
+          }
+          const pdfRes = await fetch(pdfUrl.toString());
           invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
         }
       } catch (e) {

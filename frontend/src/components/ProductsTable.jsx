@@ -333,15 +333,19 @@ export default function ProductsTable() {
                           <Checkbox checked={selected.has(product._id)} onChange={() => toggleSelect(product._id)} />
                         </TableCell>
                         <TableCell align="center">
-                          {product.images?.[0] ? (
-                            <img
-                              src={product.images[0]}
-                              alt={product.name}
-                              style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }}
-                            />
-                          ) : (
-                            <div style={{ width: 40, height: 40, background: '#e0e0e0', borderRadius: 4, display: 'inline-block' }} />
-                          )}
+                          {(() => {
+                            let safeSrc = null;
+                            try { if (new URL(product.images?.[0]).protocol === "https:") safeSrc = product.images[0]; } catch {}
+                            return safeSrc ? (
+                              <img
+                                src={safeSrc}
+                                alt={product.name}
+                                style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }}
+                              />
+                            ) : (
+                              <div style={{ width: 40, height: 40, background: '#e0e0e0', borderRadius: 4, display: 'inline-block' }} />
+                            );
+                          })()}
                         </TableCell>
                         <TableCell align="center">{product.name}</TableCell>
                         <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
