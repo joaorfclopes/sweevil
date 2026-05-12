@@ -72,7 +72,7 @@ uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
       let processed;
       if (folder === "store") {
         const SIZE = 1000;
-        const bgPath = path.join(path.resolve(), "frontend", "public", "background.avif");
+        const bgPath = path.join(path.resolve(), "frontend", "public", "background.png");
         const productImg = await sharp(req.file.buffer)
           .resize({ width: SIZE, height: SIZE, fit: "inside", withoutEnlargement: true })
           .toBuffer();
