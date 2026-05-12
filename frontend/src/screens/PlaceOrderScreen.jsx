@@ -17,7 +17,7 @@ export default function PlaceOrderScreen(props) {
   const cart = useSelector((state) => state.cart);
   const { cartItems, shippingAddress } = cart;
   const orderCreate = useSelector((state) => state.orderCreate);
-  const { success, order } = orderCreate;
+  const { loading, success, order } = orderCreate;
 
   useEffect(() => {
     if (cartItems.length <= 0) {
@@ -140,8 +140,8 @@ export default function PlaceOrderScreen(props) {
               Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
             </h3>
           </div>
-          <button className="primary" onClick={placeOrderHandler}>
-            Place Order
+          <button className="primary" onClick={placeOrderHandler} disabled={loading}>
+            {loading ? "Placing Order..." : "Place Order"}
           </button>
         </div>
       </div>
