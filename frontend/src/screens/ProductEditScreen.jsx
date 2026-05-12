@@ -39,11 +39,11 @@ import MessageBox from "../components/MessageBox";
 import { PRODUCT_CREATE_RESET, PRODUCT_DETAILS_RESET, PRODUCT_UPDATE_RESET } from "../constants/productConstants";
 
 function ImageCard({ item, isCover }) {
-  const src = item.type === "saved" ? item.url : item.preview;
   return (
     <div className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
-      <LazyLoadImage src={src} alt="" effect="opacity" width="100%" height="100%"
-        style={{ opacity: item.type === "pending" ? 0.6 : 1 }} />
+      {item.type === "saved"
+        ? <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+        : <img src={item.preview} alt="" width="100%" height="100%" style={{ opacity: 0.6, display: "block" }} />}
     </div>
   );
 }
@@ -51,12 +51,12 @@ function ImageCard({ item, isCover }) {
 function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isActive ? 0 : 1 };
-  const src = item.type === "saved" ? item.url : item.preview;
   const stop = (e) => e.stopPropagation();
   return (
     <div ref={setNodeRef} style={style} className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
-      <LazyLoadImage src={src} alt="" effect="opacity" width="100%" height="100%"
-        style={{ opacity: item.type === "pending" ? 0.6 : 1 }} />
+      {item.type === "saved"
+        ? <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+        : <img src={item.preview} alt="" width="100%" height="100%" style={{ opacity: 0.6, display: "block" }} />}
       <div className="product-image-card-overlay">
         <Tooltip title={isCover ? "Cover image" : "Set as cover"}>
           <IconButton size="small" className={`product-image-icon-btn${isCover ? " product-image-icon-btn--star" : ""}`}
