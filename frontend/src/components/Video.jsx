@@ -2,30 +2,19 @@ import React, { useState, useEffect } from "react";
 import $ from "jquery";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Placeholder from "../components/Placeholder";
-import Play from "../assets/svg/play.svg?react";
 
 export default function Video(props) {
-  const [play, setPlay] = useState(false);
   const [hidePlaceholder, setHidePlaceholder] = useState(false);
 
   const videoLoaded = () => {
     $(".video-desktop").addClass("show");
     $(".video-mobile").addClass("show");
     $(".video-subtitle").addClass("show");
-    $(".play").addClass("show");
     setHidePlaceholder(true);
   };
 
   useEffect(() => {
     const videoElem = document.getElementById("video");
-    videoElem.onplay = () => {
-      $(".play").addClass("hide");
-      $(".play").removeClass("show");
-    };
-    videoElem.onpause = () => {
-      $(".play").addClass("show");
-      $(".play").removeClass("hide");
-    };
     videoElem.onended = () => {
       videoElem.pause();
       videoElem.removeAttribute("src");
@@ -33,29 +22,19 @@ export default function Video(props) {
     };
   }, []);
 
-  const handlePlayClick = () => {
-    const videoElem = document.getElementById("video");
-    setPlay(true);
-    videoElem.play();
-  };
-
   return (
     <div className={`video ${props.mobile ? "mobile" : "desktop"}`}>
-      <Placeholder height="100%">
+      <Placeholder height="100%" hide={hidePlaceholder}>
         <video
           id="video"
           className={`video-${props.mobile ? "mobile" : "desktop"}`}
           poster={props.poster}
-          controls={play}
-          onMouseEnter={() => setPlay(true)}
-          onMouseLeave={() => setPlay(false)}
+          controls
+          preload="none"
         >
-          <source src={props.videoSrc} type="video/mp4" />
+          {props.webmSrc && <source src={props.webmSrc} type="video/webm" />}
           Your browser does not support the video tag.
         </video>
-        <div className="play" onClick={handlePlayClick}>
-          <Play />
-        </div>
         <div className="poster">
           <LazyLoadImage src={props.poster} afterLoad={videoLoaded} />
         </div>

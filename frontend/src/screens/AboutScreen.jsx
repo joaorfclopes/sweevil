@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Video from "../components/Video";
-import video from "../assets/video/video.mp4";
+const VIDEO_WEBM = "/video/video.webm";
 
 export default function AboutScreen(props) {
   const [about, setAbout] = useState({ title: "Who's Sweevil?", body: "" });
@@ -18,7 +18,7 @@ export default function AboutScreen(props) {
     <section className="about" id="about">
       <div className="row about-container">
         <Video
-          videoSrc={video}
+          webmSrc={VIDEO_WEBM}
           poster={window.location.origin + "/sweevil.avif"}
           subtitle="produced by João Santana"
         />
@@ -29,7 +29,7 @@ export default function AboutScreen(props) {
           ))}
         </div>
         <Video
-          videoSrc={video}
+          webmSrc={VIDEO_WEBM}
           poster={window.location.origin + "/sweevil.avif"}
           subtitle="produced by João Santana"
           mobile
