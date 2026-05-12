@@ -79,11 +79,11 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://code.jquery.com", "https://cdn.jsdelivr.net", "https://js.stripe.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://code.jquery.com", "https://cdn.jsdelivr.net", "https://js.stripe.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
-        connectSrc: ["'self'", "https://api.stripe.com", "https://m.stripe.com", "https://m.stripe.network"],
+        connectSrc: ["'self'", "https://api.stripe.com", "https://m.stripe.com", "https://m.stripe.network", "https://cdn.jsdelivr.net"],
         frameSrc: ["https://js.stripe.com", "https://m.stripe.com", "https://m.stripe.network"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
