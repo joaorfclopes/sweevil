@@ -6,7 +6,7 @@ header {
   font-weight: bold;
   text-transform: uppercase;
   position: fixed;
-  z-index: 10001;
+  z-index: 1000;
   transition: 0.1s;
   &.scrolled {
     background-color: white;

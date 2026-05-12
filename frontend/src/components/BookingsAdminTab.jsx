@@ -547,7 +547,6 @@ export default function BookingsAdminTab() {
         onClose={() => setPhotosDialog({ open: false, images: [], name: "" })}
         maxWidth="md"
         fullWidth
-        disableScrollLock
       >
         <DialogTitle>Photos — {photosDialog.name}</DialogTitle>
         <DialogContent>
@@ -578,7 +577,6 @@ export default function BookingsAdminTab() {
         onClose={() => setNotesDialog({ open: false, notes: "", name: "" })}
         maxWidth="sm"
         fullWidth
-        disableScrollLock
       >
         <DialogTitle>Notes — {notesDialog.name}</DialogTitle>
         <DialogContent>
@@ -593,7 +591,7 @@ export default function BookingsAdminTab() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={dialogOpen} onClose={() => { setDialogOpen(false); setPriceEditing(false); }} maxWidth="xs" fullWidth disableScrollLock>
+      <Dialog open={dialogOpen} onClose={() => { setDialogOpen(false); setPriceEditing(false); }} maxWidth="xs" fullWidth>
         <DialogTitle>
           {editingAvail ? "Edit" : "Set"} Availability —{" "}
           {dialogDate ? dayjs(dialogDate).format("DD/MM/YYYY") : ""}

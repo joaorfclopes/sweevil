@@ -675,7 +675,7 @@ export default function GalleryAdminTab() {
       </Paper>
 
       {/* ── Upload dialog ── */}
-      <Dialog open={uploadOpen} onClose={() => { setUploadOpen(false); resetUploadForm(); }} maxWidth="sm" fullWidth disableScrollLock>
+      <Dialog open={uploadOpen} onClose={() => { setUploadOpen(false); resetUploadForm(); }} maxWidth="sm" fullWidth>
         <DialogTitle>Add Gallery Image</DialogTitle>
         <DialogContent>
           <div
@@ -713,7 +713,7 @@ export default function GalleryAdminTab() {
       </Dialog>
 
       {/* ── Edit dialog ── */}
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth disableScrollLock>
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Edit Image</DialogTitle>
         <DialogContent>
           {editItem && (
