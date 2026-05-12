@@ -173,13 +173,13 @@ orderRouter.post(
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
     const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
-    sendMail({
+    await sendMail({
       from,
       to: shippingAddress.email,
       subject: `Order placed at ${process.env.BRAND_NAME}`,
       html: orderPendingPayment({ order: createdOrder, paymentUrl }),
     });
-    sendMail({
+    await sendMail({
       from,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
       subject: `New order pending payment — ${shippingAddress.fullName}`,
@@ -343,20 +343,10 @@ orderRouter.put(
     };
 
     for (const item of order.orderItems) {
-      const product = await Product.findById(item.product);
-      if (product) {
-        if (!product.isClothing) {
-          product.countInStock.stock -= item.qty;
-        } else {
-          if (item.size === "XS") product.countInStock.xs -= item.qty;
-          else if (item.size === "S") product.countInStock.s -= item.qty;
-          else if (item.size === "M") product.countInStock.m -= item.qty;
-          else if (item.size === "L") product.countInStock.l -= item.qty;
-          else if (item.size === "XL") product.countInStock.xl -= item.qty;
-          else if (item.size === "XXL") product.countInStock.xxl -= item.qty;
-        }
-        await product.save();
-      }
+      const field = item.isClothing
+        ? `countInStock.${item.size.toLowerCase()}`
+        : "countInStock.stock";
+      await Product.findByIdAndUpdate(item.product, { $inc: { [field]: -item.qty } });
     }
 
     const updatedOrder = await order.save();
@@ -383,7 +373,7 @@ orderRouter.put(
     }
 
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
-    sendMail({
+    await sendMail({
       from,
       to: order.shippingAddress.email,
       subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
@@ -424,20 +414,10 @@ orderRouter.put(
     order.status = "CANCELED";
     if (order.isPaid) {
       for (const item of order.orderItems) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          if (!product.isClothing) {
-            product.countInStock.stock += item.qty;
-          } else {
-            if (item.size === "XS") product.countInStock.xs += item.qty;
-            else if (item.size === "S") product.countInStock.s += item.qty;
-            else if (item.size === "M") product.countInStock.m += item.qty;
-            else if (item.size === "L") product.countInStock.l += item.qty;
-            else if (item.size === "XL") product.countInStock.xl += item.qty;
-            else if (item.size === "XXL") product.countInStock.xxl += item.qty;
-          }
-          await product.save();
-        }
+        const field = item.isClothing
+          ? `countInStock.${item.size.toLowerCase()}`
+          : "countInStock.stock";
+        await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
       }
     }
     const updatedOrder = await order.save();

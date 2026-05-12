@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import multer from "multer";
 import rateLimit from "express-rate-limit";

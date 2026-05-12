@@ -25,20 +25,10 @@ const handleOrderPaid = async (paymentIntent) => {
   };
 
   for (const item of order.orderItems) {
-    const product = await Product.findById(item.product);
-    if (product) {
-      if (!product.isClothing) {
-        product.countInStock.stock -= item.qty;
-      } else {
-        if (item.size === "XS") product.countInStock.xs -= item.qty;
-        else if (item.size === "S") product.countInStock.s -= item.qty;
-        else if (item.size === "M") product.countInStock.m -= item.qty;
-        else if (item.size === "L") product.countInStock.l -= item.qty;
-        else if (item.size === "XL") product.countInStock.xl -= item.qty;
-        else if (item.size === "XXL") product.countInStock.xxl -= item.qty;
-      }
-      await product.save();
-    }
+    const field = item.isClothing
+      ? `countInStock.${item.size.toLowerCase()}`
+      : "countInStock.stock";
+    await Product.findByIdAndUpdate(item.product, { $inc: { [field]: -item.qty } });
   }
 
   await order.save();
@@ -60,7 +50,7 @@ const handleBookingPaid = async (paymentIntent) => {
   };
 
   const updated = await booking.save();
-  sendBookingEmails(updated);
+  await sendBookingEmails(updated);
   console.log(`[webhook] Booking ${bookingId} marked as confirmed`);
 };
 

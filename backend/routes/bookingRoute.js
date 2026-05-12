@@ -35,7 +35,7 @@ const getStripe = () => {
   return _stripe;
 };
 
-export const sendBookingEmails = (booking, invoicePdfBuffer = null) => {
+export const sendBookingEmails = async (booking, invoicePdfBuffer = null) => {
   const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
   const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
   const icsContent = generateICS({ booking, adminEmail });
@@ -52,14 +52,14 @@ export const sendBookingEmails = (booking, invoicePdfBuffer = null) => {
       contentType: "application/pdf",
     });
   }
-  sendMail({
+  await sendMail({
     from,
     to: booking.guestInfo.email,
     subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString("pt-PT")}`,
     html: bookingConfirmation({ booking, hasInvoice: !!invoicePdfBuffer }),
     attachments,
   });
-  sendMail({
+  await sendMail({
     from,
     to: adminEmail,
     subject: `New booking — ${booking.guestInfo.name}`,
@@ -268,7 +268,7 @@ bookingRouter.put(
       }
     }
 
-    sendBookingEmails(updated, invoicePdfBuffer);
+    await sendBookingEmails(updated, invoicePdfBuffer);
 
     res.json({ message: "Booking confirmed", booking: updated });
   })
