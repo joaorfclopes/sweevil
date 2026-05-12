@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import isURL from "validator/lib/isURL";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  Box,
+  Collapse,
   Paper,
   Table,
   TableBody,
@@ -10,6 +12,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Toolbar,
   Tooltip,
   Typography,
@@ -20,6 +23,7 @@ import {
   DialogActions,
   TextField,
   Chip,
+  Checkbox,
   Divider,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -28,6 +32,12 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import DownloadIcon from "@mui/icons-material/Download";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import SearchIcon from "@mui/icons-material/Search";
+import { downloadCSV, getComparator, isNewRow, normalize } from "../utils/adminTableUtils";
+import StatusChip from "./StatusChip";
 import Swal from "sweetalert2";
 import { LocalizationProvider, DateCalendar, PickersDay } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -112,6 +122,13 @@ export default function BookingsAdminTab() {
   const [priceEditing, setPriceEditing] = useState(false);
   const [dialogError, setDialogError] = useState("");
 
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortDir, setSortDir] = useState('desc');
+  const [orderBy, setOrderBy] = useState('date');
+  const [selected, setSelected] = useState(new Set());
+  const [expanded, setExpanded] = useState(new Set());
+
   useEffect(() => {
     dispatch(listBookings());
     dispatch(listAvailability());
@@ -140,6 +157,79 @@ export default function BookingsAdminTab() {
     availMap[dayjs(a.date).format("YYYY-MM-DD")] = a;
   });
   const availableDates = Object.keys(availMap);
+
+  const handleSort = (col) => {
+    if (orderBy === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else { setOrderBy(col); setSortDir('asc'); }
+    setPage(0);
+  };
+
+  const filteredBookings = useMemo(() => {
+    let arr = bookings ?? [];
+    if (statusFilter) arr = arr.filter((b) => b.status === statusFilter);
+    if (search) {
+      const q = normalize(search);
+      arr = arr.filter(
+        (b) =>
+          normalize(b.guestInfo?.name ?? '').includes(q) ||
+          normalize(b.guestInfo?.email ?? '').includes(q) ||
+          normalize(formatDateDay(b.date)).includes(q) ||
+          normalize(b.status ?? '').includes(q)
+      );
+    }
+    return [...arr].sort(getComparator(sortDir, orderBy));
+  }, [bookings, search, statusFilter, sortDir, orderBy]);
+
+  useEffect(() => { setPage(0); setSelected(new Set()); setExpanded(new Set()); }, [search, statusFilter]);
+
+  const visibleBookingRows = filteredBookings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const visibleBookingIds = visibleBookingRows.map((r) => r._id);
+  const allBookingsSelected = visibleBookingIds.length > 0 && visibleBookingIds.every((id) => selected.has(id));
+
+  const toggleSelectAll = () => {
+    if (allBookingsSelected) {
+      setSelected((prev) => { const n = new Set(prev); visibleBookingIds.forEach((id) => n.delete(id)); return n; });
+    } else {
+      setSelected((prev) => new Set([...prev, ...visibleBookingIds]));
+    }
+  };
+  const toggleSelect = (id) => {
+    setSelected((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  };
+  const toggleExpand = (id) => {
+    setExpanded((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  };
+
+  const handleBulkDeleteBookings = () => {
+    Swal.fire({
+      title: `Delete ${selected.size} bookings?`,
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete all',
+      confirmButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selected.forEach((id) => dispatch(deleteBooking(id)));
+        setSelected(new Set());
+      }
+    });
+  };
+
+  const handleExportBookingsCSV = () => {
+    const headers = ['Date', 'Time', 'Guest', 'Email', 'Status', 'Notes', 'Updated'];
+    const rows = filteredBookings.map((b) => [
+      formatDateDay(b.date),
+      b.slot,
+      b.guestInfo?.name,
+      b.guestInfo?.email,
+      b.status,
+      b.guestInfo?.notes,
+      formatDateDay(b.updatedAt),
+    ]);
+    downloadCSV(headers, rows, 'bookings-export.csv');
+  };
+
+  const BOOKING_STATUS_FILTERS = ['', 'CONFIRMED', 'PENDING_PAYMENT', 'CANCELED'];
+  const BOOKING_STATUS_LABELS  = { '': 'All', CONFIRMED: 'Confirmed', PENDING_PAYMENT: 'Pending Payment', CANCELED: 'Canceled' };
 
   const handleDayClick = (date) => {
     const dateStr = dayjs(date).format("YYYY-MM-DD");
@@ -250,115 +340,203 @@ export default function BookingsAdminTab() {
 
         <Divider />
 
-        <Typography
-          variant="subtitle2"
-          style={{ color: "#555", padding: "16px 16px 8px" }}
-        >
-          <b>Bookings</b>
-        </Typography>
+        <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
+          <Typography variant="subtitle2" style={{ color: '#555' }} sx={{ flexGrow: 1 }}>
+            <b>Bookings ({filteredBookings.length})</b>
+          </Typography>
+          {selected.size > 0 && (
+            <button className="dangerous-outline" onClick={handleBulkDeleteBookings}>
+              Delete {selected.size} selected
+            </button>
+          )}
+          <TextField
+            size="small"
+            placeholder="Search guest, email, status…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+            style={{ width: 240 }}
+          />
+          <Tooltip title="Export CSV">
+            <IconButton onClick={handleExportBookingsCSV}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+
+        {/* Status filter chips */}
+        <div style={{ display: 'flex', gap: 6, padding: '0 16px 12px', flexWrap: 'wrap' }}>
+          {BOOKING_STATUS_FILTERS.map((s) => (
+            <Chip
+              key={s || 'all'}
+              label={BOOKING_STATUS_LABELS[s]}
+              size="small"
+              onClick={() => setStatusFilter(s)}
+              variant={statusFilter === s ? 'filled' : 'outlined'}
+              sx={statusFilter === s ? { backgroundColor: '#1a1a1a', color: '#fff' } : {}}
+            />
+          ))}
+        </div>
+
         {loadingBookings ? (
           <LoadingBox />
         ) : errorBookings ? (
           <MessageBox variant="error">{errorBookings}</MessageBox>
         ) : (
           <>
-            <TableContainer>
-              <Table size="small">
+            <TableContainer sx={{ maxHeight: 520 }}>
+              <Table size="small" stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>Guest</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Phone</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Status</TableCell>
+                    <TableCell padding="checkbox">
+                      <Checkbox checked={allBookingsSelected} indeterminate={selected.size > 0 && !allBookingsSelected} onChange={toggleSelectAll} />
+                    </TableCell>
+                    <TableCell padding="checkbox" />
+                    {[
+                      { id: 'date', label: 'Date' },
+                      { id: 'slot', label: 'Time' },
+                      { id: 'guestInfo.name', label: 'Guest' },
+                      { id: 'guestInfo.email', label: 'Email' },
+                      { id: 'status', label: 'Status' },
+                      { id: 'updatedAt', label: 'Updated' },
+                    ].map(({ id, label }) => (
+                      <TableCell key={id}>
+                        <TableSortLabel
+                          active={orderBy === id}
+                          direction={orderBy === id ? sortDir : 'asc'}
+                          onClick={() => handleSort(id)}
+                        >
+                          {label}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
                     <TableCell>Notes</TableCell>
                     <TableCell>Photos</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {bookings
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((b) => (
-                      <TableRow key={b._id}>
-                        <TableCell>{formatDateDay(b.date)}</TableCell>
-                        <TableCell>{b.slot}</TableCell>
-                        <TableCell>{b.guestInfo?.name}</TableCell>
-                        <TableCell>{b.guestInfo?.email}</TableCell>
-                        <TableCell>{b.guestInfo?.phone}</TableCell>
-                        <TableCell>{b.price?.toFixed(2)}€</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={b.status}
-                            color={statusColor(b.status)}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          {b.guestInfo?.notes && (
-                            <Tooltip title="View notes">
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  setNotesDialog({ open: true, notes: b.guestInfo.notes, name: b.guestInfo?.name })
-                                }
-                              >
-                                <NoteAltIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {b.images?.length > 0 && (
-                            <Tooltip title={`${b.images.length} photo(s)`}>
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  setPhotosDialog({ open: true, images: b.images, name: b.guestInfo?.name })
-                                }
-                              >
-                                <PhotoLibraryIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </TableCell>
-                        <TableCell align="right">
-                          {b.status === "CONFIRMED" && (
-                            <Tooltip title="Cancel">
-                              <IconButton
-                                size="small"
-                                onClick={() => handleCancelBooking(b._id)}
-                              >
-                                <BlockIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                          <Tooltip title="Delete">
-                            <IconButton
-                              size="small"
-                              onClick={() => handleDeleteBooking(b._id)}
-                            >
-                              <DeleteOutlineIcon fontSize="small" />
+                  {filteredBookings.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={11} align="center" sx={{ py: 4, color: '#888' }}>
+                        No bookings found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    visibleBookingRows.map((b) => (
+                      <React.Fragment key={b._id}>
+                        <TableRow sx={isNewRow(b) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}>
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={selected.has(b._id)} onChange={() => toggleSelect(b._id)} />
+                          </TableCell>
+                          <TableCell padding="checkbox">
+                            <IconButton size="small" onClick={() => toggleExpand(b._id)}>
+                              {expanded.has(b._id) ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
                             </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell>{formatDateDay(b.date)}</TableCell>
+                          <TableCell>{b.slot}</TableCell>
+                          <TableCell>{b.guestInfo?.name}</TableCell>
+                          <TableCell>{b.guestInfo?.email}</TableCell>
+                          <TableCell><StatusChip status={b.status} /></TableCell>
+                          <TableCell>{formatDateDay(b.updatedAt)}</TableCell>
+                          <TableCell>
+                            {b.guestInfo?.notes && (
+                              <Tooltip title="View notes">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    setNotesDialog({ open: true, notes: b.guestInfo.notes, name: b.guestInfo?.name })
+                                  }
+                                >
+                                  <NoteAltIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {b.images?.length > 0 && (
+                              <Tooltip title={`${b.images.length} photo(s)`}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    setPhotosDialog({ open: true, images: b.images, name: b.guestInfo?.name })
+                                  }
+                                >
+                                  <PhotoLibraryIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {b.status === "CONFIRMED" && (
+                              <Tooltip title="Cancel">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleCancelBooking(b._id)}
+                                >
+                                  <BlockIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            <Tooltip title="Delete">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleDeleteBooking(b._id)}
+                              >
+                                <DeleteOutlineIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+
+                        {/* Expandable row */}
+                        <TableRow>
+                          <TableCell colSpan={11} sx={{ py: 0, borderBottom: expanded.has(b._id) ? undefined : 'none' }}>
+                            <Collapse in={expanded.has(b._id)} timeout="auto" unmountOnExit>
+                              <Box sx={{ p: 2, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                <div>
+                                  <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
+                                    Contact
+                                  </Typography>
+                                  <Typography variant="body2">Phone: {b.guestInfo?.phone || '—'}</Typography>
+                                  <Typography variant="body2">Email: {b.guestInfo?.email}</Typography>
+                                </div>
+                                <div>
+                                  <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
+                                    Payment
+                                  </Typography>
+                                  <Typography variant="body2">Paid: {b.isPaid ? formatDateDay(b.paidAt) : 'No'}</Typography>
+                                  <Typography variant="body2">Price: {b.price?.toFixed(2)}€</Typography>
+                                  {b.stripeInvoiceId && (
+                                    <Typography variant="body2">Invoice: {b.stripeInvoiceId}</Typography>
+                                  )}
+                                </div>
+                                {b.guestInfo?.notes && (
+                                  <div>
+                                    <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}>
+                                      Notes
+                                    </Typography>
+                                    <Typography variant="body2">{b.guestInfo.notes}</Typography>
+                                  </div>
+                                )}
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
             <TablePagination
               component="div"
-              count={bookings.length}
+              count={filteredBookings.length}
               page={page}
-              onPageChange={(_, p) => setPage(p)}
+              onPageChange={(_, p) => { setPage(p); setSelected(new Set()); setExpanded(new Set()); }}
               rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10));
-                setPage(0);
-              }}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); setSelected(new Set()); setExpanded(new Set()); }}
             />
           </>
         )}

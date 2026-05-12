@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 import { S3Client, DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { isAuth, isAdmin } from "../utils.js";
-import path from "path";
+import { randomUUID } from "crypto";
 
 const bookingUploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -24,13 +24,15 @@ const ALLOWED_MIME_TYPES = [
   "image/avif",
   "image/tiff",
   "image/bmp",
+  "image/heic",
+  "image/heif",
 ];
 
 const fileFilter = (req, file, cb) => {
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (jpeg, png, webp, gif, avif, tiff, bmp) are allowed"), false);
+    cb(new Error("Only image files (jpeg, png, webp, gif, avif, tiff, bmp, heic, heif) are allowed"), false);
   }
 };
 
@@ -64,15 +66,12 @@ uploadRouter.post("/s3", isAuth, isAdmin, (req, res, next) => {
     try {
       const ALLOWED_FOLDERS = ["store", "gallery"];
       const folder = ALLOWED_FOLDERS.includes(req.query.folder) ? req.query.folder : "store";
-      const baseName = path
-        .basename(req.file.originalname, path.extname(req.file.originalname))
-        .replace(/[^a-zA-Z0-9._-]/g, "_");
-      const key = `${folder}/${Date.now()}_${baseName}.avif`;
+      const key = `${folder}/${randomUUID()}.avif`;
 
       let processed;
       if (folder === "store") {
         const SIZE = 1000;
-        const bgPath = path.join(path.resolve(), "frontend", "public", "background.jpg");
+        const bgPath = path.join(path.resolve(), "frontend", "public", "background.avif");
         const productImg = await sharp(req.file.buffer)
           .resize({ width: SIZE, height: SIZE, fit: "inside", withoutEnlargement: true })
           .toBuffer();
@@ -118,12 +117,9 @@ uploadRouter.post("/booking-images", bookingUploadLimiter, (req, res, next) => {
       const region = process.env.AWS_REGION || "us-east-1";
       const urls = await Promise.all(
         req.files.map(async (file) => {
-          const baseName = path
-            .basename(file.originalname, path.extname(file.originalname))
-            .replace(/[^a-zA-Z0-9._-]/g, "_");
-          const key = `bookings/${Date.now()}_${baseName}.avif`;
+          const key = `bookings/${randomUUID()}.avif`;
           const processed = await sharp(file.buffer)
-            .resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true })
+            .resize({ width: 1000, height: 1000, fit: "inside", withoutEnlargement: true })
             .avif({ quality: 70, effort: 6 })
             .toBuffer();
           await s3.send(

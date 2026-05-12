@@ -1,6 +1,5 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
-import data from "../data.js";
 import Product from "../models/productModel.js";
 import { isAuth, isAdmin, optionalAuth } from "../utils.js";
 
@@ -36,17 +35,6 @@ productRouter.get(
     res.send(products.map(toPublic));
   }),
 );
-
-// Seed route - only available in development
-if (process.env.NODE_ENV !== "production") {
-  productRouter.get(
-    "/seed",
-    expressAsyncHandler(async (req, res) => {
-      const createdProducts = await Product.insertMany(data.products);
-      res.send({ createdProducts });
-    }),
-  );
-}
 
 productRouter.get(
   "/:id",

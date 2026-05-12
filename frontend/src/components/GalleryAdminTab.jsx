@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
+import { convertIfHeic } from "../utils/convertHeic";
 import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -355,9 +356,10 @@ export default function GalleryAdminTab() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0] || e.dataTransfer?.files?.[0];
-    if (!file) return;
+  const handleFileChange = async (e) => {
+    const raw = e.target.files?.[0] || e.dataTransfer?.files?.[0];
+    if (!raw) return;
+    const file = await convertIfHeic(raw);
     setUploadPreview(URL.createObjectURL(file));
     setUploadFile(file);
     setUploadS3Error("");

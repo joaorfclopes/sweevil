@@ -1,3 +1,4 @@
+import Checkbox from '@mui/material/Checkbox';
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Paper from "@mui/material/Paper";
@@ -8,13 +9,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import TableSortLabel from '@mui/material/TableSortLabel';
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import React, { useEffect, useState } from "react";
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -34,6 +39,8 @@ import {
   PRODUCT_CATEGORY_CREATE_RESET,
   PRODUCT_CATEGORY_DELETE_RESET,
 } from "../constants/productCategoryConstants";
+import { downloadCSV, getComparator, isNewRow, normalize } from '../utils/adminTableUtils';
+import { formatDateDay } from '../utils';
 import LoadingBox from "./LoadingBox";
 import MessageBox from "./MessageBox";
 
@@ -59,9 +66,75 @@ export default function ProductsTable() {
   const [newCatName, setNewCatName] = useState("");
   const [newCatIsClothing, setNewCatIsClothing] = useState(false);
 
-  const emptyRows =
-    rowsPerPage -
-    Math.min(rowsPerPage, (products && products.length) - page * rowsPerPage);
+  const [search, setSearch] = useState('');
+  const [sortDir, setSortDir] = useState('asc');
+  const [orderBy, setOrderBy] = useState('name');
+  const [selected, setSelected] = useState(new Set());
+
+  const handleSort = (col) => {
+    if (orderBy === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else { setOrderBy(col); setSortDir('asc'); }
+    setPage(0);
+  };
+
+  const filtered = useMemo(() => {
+    let arr = products ?? [];
+    if (search) {
+      const q = normalize(search);
+      arr = arr.filter(
+        (p) =>
+          normalize(p.name ?? '').includes(q) ||
+          normalize(p.category ?? '').includes(q)
+      );
+    }
+    return [...arr].sort(getComparator(sortDir, orderBy));
+  }, [products, search, sortDir, orderBy]);
+
+  useEffect(() => { setPage(0); setSelected(new Set()); }, [search]);
+
+  const visibleRows = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const visibleIds = visibleRows.map((r) => r._id);
+  const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelected((prev) => { const n = new Set(prev); visibleIds.forEach((id) => n.delete(id)); return n; });
+    } else {
+      setSelected((prev) => new Set([...prev, ...visibleIds]));
+    }
+  };
+  const toggleSelect = (id) => {
+    setSelected((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  };
+  const handleBulkDelete = () => {
+    Swal.fire({
+      title: `Delete ${selected.size} products?`,
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete all',
+      confirmButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selected.forEach((id) => dispatch(deleteProduct(id)));
+        setSelected(new Set());
+      }
+    });
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Name', 'Price (€)', 'Category', 'Stock', 'Visible', 'Updated'];
+    const rows = filtered.map((p) => {
+      const stock = p.isClothing
+        ? ['xs', 's', 'm', 'l', 'xl', 'xxl'].reduce((sum, k) => sum + (p.countInStock?.[k] ?? 0), 0)
+        : (p.countInStock?.stock ?? 0);
+      return [p.name, p.price?.toFixed(2), p.category, stock, p.visible ? 'Yes' : 'No', formatDateDay(p.updatedAt)];
+    });
+    downloadCSV(headers, rows, 'products-export.csv');
+  };
+
+  const getStock = (p) =>
+    p.isClothing
+      ? ['xs', 's', 'm', 'l', 'xl', 'xxl'].reduce((sum, k) => sum + (p.countInStock?.[k] ?? 0), 0)
+      : (p.countInStock?.stock ?? 0);
 
   useEffect(() => {
     if (successDelete) {
@@ -100,15 +173,6 @@ export default function ProductsTable() {
     });
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const deleteHandler = (product) => {
     Swal.fire({
       title: `Delete ${product.name}?`,
@@ -135,8 +199,8 @@ export default function ProductsTable() {
   };
 
   return (
-    <div className="products-table" style={{ marginBottom: "50px" }}>
-      <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
+    <div className="products-table" style={{ marginBottom: '50px' }}>
+      <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
         {loading ? (
@@ -145,22 +209,36 @@ export default function ProductsTable() {
           <MessageBox variant="error">{error}</MessageBox>
         ) : (
           <>
-            <Toolbar>
-              <Typography
-                style={{ width: "100%" }}
-                className="title"
-                variant="h6"
-                id="tableTitle"
-                component="div"
-              >
-                <b>Products</b>
+            {/* Toolbar */}
+            <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
+              <Typography style={{ flexGrow: 1 }} variant="h6">
+                <b>Products ({filtered.length})</b>
               </Typography>
+              {selected.size > 0 && (
+                <button className="dangerous-outline" onClick={handleBulkDelete}>
+                  Delete {selected.size} selected
+                </button>
+              )}
+              <TextField
+                size="small"
+                placeholder="Search name, category…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+                style={{ width: 220 }}
+              />
+              <Tooltip title="Export CSV">
+                <IconButton onClick={handleExportCSV}>
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Create Product">
                 <IconButton aria-label="create" onClick={createHandler}>
                   <AddIcon />
                 </IconButton>
               </Tooltip>
             </Toolbar>
+
             <div style={{ padding: "0 16px 16px", borderBottom: "1px solid #e0e0e0" }}>
               <Typography variant="subtitle2" style={{ color: "#555", marginBottom: 8 }}>
                 <b>Categories</b>
@@ -210,67 +288,81 @@ export default function ProductsTable() {
                 </label>
               </div>
             </div>
-            <TableContainer>
-              <Table className="table" aria-label="simple table">
+
+            {/* Table */}
+            <TableContainer sx={{ maxHeight: 520 }}>
+              <Table className="table" stickyHeader aria-label="products table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">
-                      <b>Name</b>
+                    <TableCell padding="checkbox">
+                      <Checkbox checked={allSelected} indeterminate={selected.size > 0 && !allSelected} onChange={toggleSelectAll} />
                     </TableCell>
-                    <TableCell align="center">
-                      <b>Price</b>
-                    </TableCell>
-                    <TableCell align="center">
-                      <b>Category</b>
-                    </TableCell>
-                    <TableCell align="center">
-                      <b>Visible</b>
-                    </TableCell>
-                    <TableCell align="right">
-                      <b>Actions</b>
-                    </TableCell>
+                    <TableCell align="center"><b>Image</b></TableCell>
+                    {[
+                      { id: 'name', label: 'Name' },
+                      { id: 'price', label: 'Price' },
+                      { id: 'category', label: 'Category' },
+                      { id: 'countInStock.stock', label: 'Stock' },
+                      { id: 'visible', label: 'Visible' },
+                      { id: 'updatedAt', label: 'Updated' },
+                    ].map(({ id, label }) => (
+                      <TableCell key={id} align="center">
+                        <TableSortLabel
+                          active={orderBy === id}
+                          direction={orderBy === id ? sortDir : 'asc'}
+                          onClick={() => handleSort(id)}
+                        >
+                          <b>{label}</b>
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    <TableCell align="right"><b>Actions</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {products &&
-                    (rowsPerPage > 0
-                      ? products.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                      : products
-                    ).map((product) => (
-                      <TableRow key={product._id}>
+                  {filtered.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
+                        No products found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    visibleRows.map((product) => (
+                      <TableRow key={product._id} sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}>
+                        <TableCell padding="checkbox">
+                          <Checkbox checked={selected.has(product._id)} onChange={() => toggleSelect(product._id)} />
+                        </TableCell>
+                        <TableCell align="center">
+                          {product.images?.[0] ? (
+                            <img
+                              src={product.images[0]}
+                              alt={product.name}
+                              style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }}
+                            />
+                          ) : (
+                            <div style={{ width: 40, height: 40, background: '#e0e0e0', borderRadius: 4, display: 'inline-block' }} />
+                          )}
+                        </TableCell>
                         <TableCell align="center">{product.name}</TableCell>
-                        <TableCell align="center">
-                          {product.price && product.price.toFixed(2)}€
-                        </TableCell>
+                        <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
                         <TableCell align="center">{product.category}</TableCell>
-                        <TableCell align="center">
-                          {product.visible ? "Yes" : "No"}
-                        </TableCell>
+                        <TableCell align="center">{getStock(product)}</TableCell>
+                        <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
                         <TableCell align="right">
-                          <button
-                            className="secondary"
-                            onClick={() =>
-                              navigate(`/admin/product/${product._id}/edit`)
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="dangerous-outline"
-                            onClick={() => deleteHandler(product)}
-                          >
-                            Delete
-                          </button>
+                          <Tooltip title="Edit">
+                            <IconButton size="small" onClick={() => navigate(`/admin/product/${product._id}/edit`)}>
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton size="small" onClick={() => deleteHandler(product)}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 69 * emptyRows }}>
-                      <TableCell colSpan={5} />
-                    </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
@@ -278,11 +370,11 @@ export default function ProductsTable() {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={products ? products.length : 0}
+              count={filtered.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              onPageChange={(_, p) => { setPage(p); setSelected(new Set()); }}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); setSelected(new Set()); }}
             />
           </>
         )}
