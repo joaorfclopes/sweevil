@@ -108,6 +108,7 @@ export default function BookingsAdminTab() {
   const availabilityDelete = useSelector((s) => s.availabilityDelete);
   const { success: successAvailDelete } = availabilityDelete;
 
+  const [sectionOpen, setSectionOpen] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -308,11 +309,17 @@ export default function BookingsAdminTab() {
     <div className="bookings-admin" style={{ marginBottom: "50px" }}>
       <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
         <Toolbar>
-          <Typography style={{ width: "100%" }} className="title" variant="h6" component="div">
+          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
             <b>Bookings</b>
           </Typography>
+          <Tooltip title={sectionOpen ? "Collapse" : "Expand"}>
+            <IconButton onClick={() => setSectionOpen((v) => !v)}>
+              {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </Tooltip>
         </Toolbar>
 
+        <Collapse in={sectionOpen}>
         <div style={{ padding: "0 16px 16px" }}>
           <Typography variant="subtitle2" style={{ color: "#555", marginBottom: 8 }}>
             <b>Availability</b>
@@ -540,6 +547,7 @@ export default function BookingsAdminTab() {
             />
           </>
         )}
+        </Collapse>
       </Paper>
 
       <Dialog

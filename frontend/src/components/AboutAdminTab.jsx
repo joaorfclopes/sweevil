@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { notyf } from "../utils/notyf";
 
 export default function AboutAdminTab() {
   const { userInfo } = useSelector((state) => state.userSignin);
 
+  const [open, setOpen] = useState(true);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
@@ -41,10 +47,16 @@ export default function AboutAdminTab() {
     <div style={{ marginBottom: "50px" }}>
       <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
         <Toolbar>
-          <Typography style={{ width: "100%" }} className="title" variant="h6" component="div">
+          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
             <b>About</b>
           </Typography>
+          <Tooltip title={open ? "Collapse" : "Expand"}>
+            <IconButton onClick={() => setOpen((v) => !v)}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </Tooltip>
         </Toolbar>
+        <Collapse in={open}>
         <div style={{ padding: "0 16px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
           <TextField
             label="Title"
@@ -69,6 +81,7 @@ export default function AboutAdminTab() {
             </button>
           </div>
         </div>
+        </Collapse>
       </Paper>
     </div>
   );

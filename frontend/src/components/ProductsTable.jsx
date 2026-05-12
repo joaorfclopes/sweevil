@@ -1,4 +1,5 @@
 import Checkbox from '@mui/material/Checkbox';
+import Collapse from '@mui/material/Collapse';
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Paper from "@mui/material/Paper";
@@ -18,6 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -61,6 +64,7 @@ export default function ProductsTable() {
   const { loading: loadingCatCreate, success: successCatCreate, error: errorCatCreate } = useSelector((state) => state.productCategoryCreate);
   const { loading: loadingCatDelete, success: successCatDelete, error: errorCatDelete } = useSelector((state) => state.productCategoryDelete);
 
+  const [open, setOpen] = useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [newCatName, setNewCatName] = useState("");
@@ -237,8 +241,14 @@ export default function ProductsTable() {
                   <AddIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title={open ? "Collapse" : "Expand"}>
+                <IconButton onClick={() => setOpen((v) => !v)}>
+                  {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+              </Tooltip>
             </Toolbar>
 
+            <Collapse in={open}>
             <div style={{ padding: "0 16px 16px", borderBottom: "1px solid #e0e0e0" }}>
               <Typography variant="subtitle2" style={{ color: "#555", marginBottom: 8 }}>
                 <b>Categories</b>
@@ -380,6 +390,7 @@ export default function ProductsTable() {
               onPageChange={(_, p) => { setPage(p); setSelected(new Set()); }}
               onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); setSelected(new Set()); }}
             />
+            </Collapse>
           </>
         )}
       </Paper>

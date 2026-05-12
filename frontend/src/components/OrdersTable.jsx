@@ -1,5 +1,6 @@
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -16,6 +17,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DownloadIcon from '@mui/icons-material/Download';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -42,6 +45,7 @@ export default function OrdersTable() {
     error: errorDelete,
   } = orderDelete;
 
+  const [open, setOpen] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState('');
@@ -179,8 +183,14 @@ export default function OrdersTable() {
                   <DownloadIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title={open ? "Collapse" : "Expand"}>
+                <IconButton onClick={() => setOpen((v) => !v)}>
+                  {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+              </Tooltip>
             </Toolbar>
 
+            <Collapse in={open}>
             {/* Status filter chips */}
             <div style={{ display: 'flex', gap: 6, padding: '0 16px 12px', flexWrap: 'wrap' }}>
               {STATUS_FILTERS.map((s) => (
@@ -272,6 +282,7 @@ export default function OrdersTable() {
               onPageChange={(_, p) => { setPage(p); setSelected(new Set()); }}
               onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
             />
+            </Collapse>
           </>
         )}
       </Paper>

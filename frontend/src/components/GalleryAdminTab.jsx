@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
 import { convertIfHeic } from "../utils/convertHeic";
+import Collapse from "@mui/material/Collapse";
 import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -22,6 +23,9 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import EditIcon from "@mui/icons-material/Edit";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import SearchIcon from "@mui/icons-material/Search";
 import Swal from "sweetalert2";
 import {
   DndContext,
@@ -244,6 +248,8 @@ export default function GalleryAdminTab() {
 
   // Gallery filter
   const [filterCategory, setFilterCategory] = useState("*");
+  const [filterDesc, setFilterDesc] = useState("");
+  const [sectionOpen, setSectionOpen] = useState(true);
 
   // Category management
   const [catItems, setCatItems] = useState([]);
@@ -257,9 +263,14 @@ export default function GalleryAdminTab() {
   const colCount = useColCount();
 
   // Filtered view (display-only; doesn't affect drag-reorder order)
-  const displayItems = filterCategory === "*"
-    ? items
-    : items.filter((img) => img.category === filterCategory);
+  const displayItems = useMemo(() => {
+    let arr = filterCategory === "*" ? items : items.filter((img) => img.category === filterCategory);
+    if (filterDesc.trim()) {
+      const q = filterDesc.trim().toLowerCase();
+      arr = arr.filter((img) => (img.description ?? "").toLowerCase().includes(q));
+    }
+    return arr;
+  }, [items, filterCategory, filterDesc]);
 
   // Distribute items across columns: full rows round-robin, last partial row right-aligned
   // so the visual gap (if any) is spread from the left rather than piling on col 0
@@ -510,17 +521,31 @@ export default function GalleryAdminTab() {
         {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
         {errorCatCreate && errorCatCreate !== "Category already exists" && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
 
-        <Toolbar>
-          <Typography style={{ width: "100%" }} className="title" variant="h6" component="div">
+        <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
+          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
             <b>Gallery</b>
           </Typography>
+          <TextField
+            size="small"
+            placeholder="Search description…"
+            value={filterDesc}
+            onChange={(e) => setFilterDesc(e.target.value)}
+            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+            style={{ width: 200 }}
+          />
           <Tooltip title="Add image">
             <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
               <AddIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title={sectionOpen ? "Collapse" : "Expand"}>
+            <IconButton onClick={() => setSectionOpen((v) => !v)}>
+              {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </Tooltip>
         </Toolbar>
 
+        <Collapse in={sectionOpen}>
         <div style={{ padding: "0 16px 12px", borderBottom: "1px solid #e0e0e0" }}>
           <Typography variant="subtitle2" style={{ marginBottom: 8, color: "#555" }}>
             <b>Categories</b>
@@ -668,10 +693,11 @@ export default function GalleryAdminTab() {
           )}
           {!loading && !error && displayItems.length === 0 && (
             <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>
-              {filterCategory === "*" ? "No images yet. Click + to add one." : `No images in "${filterCategory}".`}
+              {filterCategory === "*" && !filterDesc ? "No images yet. Click + to add one." : `No images match the current filter.`}
             </p>
           )}
         </div>
+        </Collapse>
       </Paper>
 
       {/* ── Upload dialog ── */}
