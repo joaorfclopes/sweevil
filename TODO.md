@@ -1,5 +1,8 @@
 # TODO
 
+## Automatic refund on order/booking cancellation
+When canceling a paid order or booking, automatically trigger a Stripe refund and notify both client and admin by email. Building blocks already in place: `stripeInvoiceId` stored on both models, cancel routes exist (`PUT /:id/cancel`), nodemailer + cancel email templates exist. Steps: (1) verify which ID in `paymentResult` is usable for `stripe.refunds.create()` — likely `paymentIntentId`; (2) in both cancel routes, add `stripe.refunds.create({ payment_intent: ... })` guarded by `isPaid === true`; (3) wire the existing cancel email sends (client + admin) into both cancel routes — order cancel currently sends no emails, booking cancel sends nothing; (4) update email templates to say "refund initiated" instead of directing admin to manually refund via Dashboard.
+
 ## Migrate from Heroku to Vercel
 Backend is Express + Mongoose running as a persistent server process — incompatible with Vercel's serverless model out of the box. Migration steps: (1) wrap `server.js` as a Vercel serverless function in `api/index.js`; (2) add `vercel.json` with rewrite rules routing `/api/*` to the function and `/*` to the built frontend; (3) handle Mongoose cold-start reconnection (can't rely on a persistent connection); (4) remove the Heroku-specific `app.set('trust proxy', 1)` or replace with Vercel's equivalent; (5) remove `Procfile` and `app.json`. Frontend static files go to Vercel CDN automatically via the build output. Stripe webhooks raw body handling is already in place. Do the async image processing Lambda (see below) before this, since sharp processing will hit Vercel's 10s serverless timeout otherwise.
 
