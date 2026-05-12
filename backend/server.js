@@ -84,7 +84,7 @@ app.use(
         fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
         connectSrc: ["'self'", "https://api.stripe.com"],
-        frameSrc: ["'none'"],
+        frameSrc: ["https://js.stripe.com"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
