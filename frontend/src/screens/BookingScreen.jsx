@@ -305,6 +305,7 @@ export default function BookingScreen(props) {
       <div className="booking-container">
         {step === STEPS.CONFIRMED ? (
           <div className="booking-confirmed">
+            <img src="/booking-confirmation.avif" alt="Booking confirmed" className="booking-confirmed-img" />
             <h1 className="custom-font">Booking Confirmed!</h1>
             <p>
               Your booking for <strong>{selectedSlot}</strong> on{" "}
