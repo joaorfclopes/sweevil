@@ -61,10 +61,13 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
           ${booking.images && booking.images.length > 0 ? `
           <div style="margin-top:24px;">
             <p style="margin:0 0 10px;color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;font-weight:bold;">Your Photos</p>
-            <table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr>
-              ${booking.images.map((url) => `<td style="padding:4px;width:25%;vertical-align:top;"><a href="${url}" target="_blank"><img src="${url}" width="100" style="display:block;max-width:100%;border-radius:4px;border:1px solid #e0e0e0;" /></a></td>`).join("")}
-            </tr></tbody></table>
+            <table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody>
+              ${(() => { const rows = []; for (let i = 0; i < booking.images.length; i += 3) rows.push(booking.images.slice(i, i + 3)); return rows.map(row => `<tr>${row.map(url => `<td style="padding:4px;width:33.33%;vertical-align:top;"><a href="${url}" target="_blank" style="display:block;height:120px;overflow:hidden;border-radius:4px;border:1px solid #e0e0e0;"><img src="${url}" width="100%" height="120" style="display:block;width:100%;height:120px;object-fit:cover;" /></a></td>`).join("")}${row.length < 3 ? Array(3 - row.length).fill('<td style="padding:4px;"></td>').join("") : ""}</tr>`).join(""); })()}
+            </tbody></table>
           </div>` : ""}
+          <p style="margin:20px 0 0;color:#767676;font-size:13px;font-style:italic;">
+            Please note that the artist only does one tattoo per day.
+          </p>
           ${hasInvoice ? `
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
             Your invoice is attached to this email as a PDF.

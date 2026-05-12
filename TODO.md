@@ -1,8 +1,5 @@
 # TODO
 
-## Booking any hour marks day as full
-When a booking is CONFIRMED for any slot on a day, that entire day disappears from the customer-facing calendar — even if other slots on the same day are still free. The `availabilityRoute.js` GET handler computes `isBooked` only from CONFIRMED bookings and the frontend filters dates via `slots.some(s => s.isAvailable && !s.isBooked)`, which should handle multiple slots correctly. Most likely cause: admins configure only one slot per day so it naturally fills, OR PENDING_PAYMENT bookings are being treated as confirmed somewhere. Needs reproduction with a multi-slot day to confirm root cause.
-
 ## Migrate from Heroku to Vercel
 Backend is Express + Mongoose running as a persistent server process — incompatible with Vercel's serverless model out of the box. Migration steps: (1) wrap `server.js` as a Vercel serverless function in `api/index.js`; (2) add `vercel.json` with rewrite rules routing `/api/*` to the function and `/*` to the built frontend; (3) handle Mongoose cold-start reconnection (can't rely on a persistent connection); (4) remove the Heroku-specific `app.set('trust proxy', 1)` or replace with Vercel's equivalent; (5) remove `Procfile` and `app.json`. Frontend static files go to Vercel CDN automatically via the build output. Stripe webhooks raw body handling is already in place. Do the async image processing Lambda (see below) before this, since sharp processing will hit Vercel's 10s serverless timeout otherwise.
 

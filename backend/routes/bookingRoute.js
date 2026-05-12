@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import Booking from "../models/bookingModel.js";
 import Availability from "../models/availabilityModel.js";
 import { isAdmin, isAuth } from "../utils.js";
+import { deleteAllFromS3 } from "../s3.js";
 import { bookingConfirmation } from "../mailing/bookingConfirmation.js";
 import { bookingAdmin } from "../mailing/bookingAdmin.js";
 import { generateICS } from "../mailing/calendarInvite.js";
@@ -35,7 +36,7 @@ const getStripe = () => {
   return _stripe;
 };
 
-export const sendBookingEmails = async (booking, invoicePdfBuffer = null) => {
+export const sendBookingEmails = async (booking, invoicePdfBuffer = null, invoiceNumber = "invoice") => {
   const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
   const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
   const icsContent = generateICS({ booking, adminEmail });
@@ -47,7 +48,7 @@ export const sendBookingEmails = async (booking, invoicePdfBuffer = null) => {
   const attachments = [icsAttachment];
   if (invoicePdfBuffer) {
     attachments.push({
-      filename: "invoice.pdf",
+      filename: `${invoiceNumber}.pdf`,
       content: invoicePdfBuffer,
       contentType: "application/pdf",
     });
@@ -59,12 +60,20 @@ export const sendBookingEmails = async (booking, invoicePdfBuffer = null) => {
     html: bookingConfirmation({ booking, hasInvoice: !!invoicePdfBuffer }),
     attachments,
   });
+  const adminAttachments = [icsAttachment];
+  if (invoicePdfBuffer) {
+    adminAttachments.push({
+      filename: `${invoiceNumber}.pdf`,
+      content: invoicePdfBuffer,
+      contentType: "application/pdf",
+    });
+  }
   await sendMail({
     from,
     to: adminEmail,
     subject: `New booking — ${booking.guestInfo.name}`,
     html: bookingAdmin({ booking }),
-    attachments: [icsAttachment],
+    attachments: adminAttachments,
   });
 };
 
@@ -251,10 +260,12 @@ bookingRouter.put(
 
     // Mark Stripe invoice as paid and fetch PDF to attach to confirmation email
     let invoicePdfBuffer = null;
+    let invoiceNumber = "invoice";
     if (booking.stripeInvoiceId) {
       try {
         await getStripe().invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
         const paidInvoice = await getStripe().invoices.retrieve(booking.stripeInvoiceId);
+        if (paidInvoice.number) invoiceNumber = paidInvoice.number;
         if (paidInvoice.invoice_pdf) {
           const pdfUrl = new URL(paidInvoice.invoice_pdf);
           if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
@@ -268,7 +279,7 @@ bookingRouter.put(
       }
     }
 
-    await sendBookingEmails(updated, invoicePdfBuffer);
+    await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
 
     res.json({ message: "Booking confirmed", booking: updated });
   })
@@ -295,6 +306,7 @@ bookingRouter.delete(
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     await booking.deleteOne();
+    await deleteAllFromS3(booking.images);
     res.json({ message: "Booking deleted" });
   })
 );

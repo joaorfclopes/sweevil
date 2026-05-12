@@ -254,8 +254,8 @@ export default function BookingsAdminTab() {
       return;
     }
     const price = parseFloat(priceInput);
-    if (isNaN(price) || price <= 0) {
-      setDialogError("Enter a valid price.");
+    if (isNaN(price) || price < 0.5) {
+      setDialogError("Price must be at least €0.50.");
       return;
     }
     const slots = times.map((time) => ({ time, isAvailable: true }));
@@ -627,7 +627,7 @@ export default function BookingsAdminTab() {
             margin="normal"
             value={priceInput}
             onChange={(e) => setPriceInput(e.target.value)}
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{ min: 0.5, step: 0.01 }}
             InputProps={{
               readOnly: !priceEditing,
               endAdornment: !priceEditing && (

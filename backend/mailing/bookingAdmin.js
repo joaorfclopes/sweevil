@@ -76,9 +76,9 @@ export const bookingAdmin = ({ booking }) => {
               ${booking.images && booking.images.length > 0 ? `<tr>
                 <td style="padding:8px 20px;">
                   <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Photos (${booking.images.length})</strong><br/>
-                  <table cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;"><tbody><tr>
-                    ${booking.images.map((url) => `<td style="padding:4px;"><a href="${url}" target="_blank"><img src="${url}" width="100" style="display:block;border-radius:4px;border:1px solid #e0e0e0;" /></a></td>`).join("")}
-                  </tr></tbody></table>
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:8px;"><tbody>
+                    ${(() => { const rows = []; for (let i = 0; i < booking.images.length; i += 3) rows.push(booking.images.slice(i, i + 3)); return rows.map(row => `<tr>${row.map(url => `<td style="padding:4px;width:33.33%;vertical-align:top;"><a href="${url}" target="_blank" style="display:block;height:120px;overflow:hidden;border-radius:4px;border:1px solid #e0e0e0;"><img src="${url}" width="100%" height="120" style="display:block;width:100%;height:120px;object-fit:cover;" /></a></td>`).join("")}${row.length < 3 ? Array(3 - row.length).fill('<td style="padding:4px;"></td>').join("") : ""}</tr>`).join(""); })()}
+                  </tbody></table>
                 </td>
               </tr>` : ""}
             </tbody>

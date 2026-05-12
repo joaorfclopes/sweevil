@@ -4,6 +4,7 @@ import Order from "../models/orderModel.js";
 import Booking from "../models/bookingModel.js";
 import Product from "../models/productModel.js";
 import { sendBookingEmails } from "./bookingRoute.js";
+import { sendMail } from "../mailing/sendMail.js";
 
 const webhookRouter = express.Router();
 
@@ -54,6 +55,36 @@ const handleBookingPaid = async (paymentIntent) => {
   console.log(`[webhook] Booking ${bookingId} marked as confirmed`);
 };
 
+const handlePaymentFailed = async (paymentIntent) => {
+  const brand = process.env.BRAND_NAME || "Sweevil";
+  const from = `${brand} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+  const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
+  const reason = paymentIntent.last_payment_error?.message || "Unknown reason";
+
+  let subject, body;
+  if (paymentIntent.metadata?.orderId) {
+    const order = await Order.findById(paymentIntent.metadata.orderId);
+    const name = order?.shippingAddress?.fullName || paymentIntent.metadata.orderId;
+    subject = `Payment failed — Order by ${name}`;
+    body = `<p>Payment failed for order by <strong>${name}</strong>.</p><p>Order ID: ${paymentIntent.metadata.orderId}</p><p>Reason: ${reason}</p>`;
+  } else if (paymentIntent.metadata?.bookingId) {
+    const booking = await Booking.findById(paymentIntent.metadata.bookingId);
+    const name = booking?.guestInfo?.name || paymentIntent.metadata.bookingId;
+    subject = `Payment failed — Booking by ${name}`;
+    body = `<p>Payment failed for booking by <strong>${name}</strong>.</p><p>Booking ID: ${paymentIntent.metadata.bookingId}</p><p>Reason: ${reason}</p>`;
+  } else {
+    return;
+  }
+
+  await sendMail({
+    from,
+    to: adminEmail,
+    subject,
+    html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#1a1a1a;padding:24px;">${body}<p style="color:#999;font-size:12px;margin-top:32px;">&copy; ${new Date().getFullYear()} ${brand}</p></body></html>`,
+  });
+  console.log(`[webhook] Payment failed notification sent: ${subject}`);
+};
+
 webhookRouter.post("/stripe", async (req, res) => {
   const sig = req.headers["stripe-signature"];
   let event;
@@ -78,6 +109,15 @@ webhookRouter.post("/stripe", async (req, res) => {
       }
     } catch (err) {
       console.error("[webhook] Handler error:", err.message);
+    }
+  }
+
+  if (event.type === "payment_intent.payment_failed") {
+    const pi = event.data.object;
+    try {
+      await handlePaymentFailed(pi);
+    } catch (err) {
+      console.error("[webhook] Payment failed handler error:", err.message);
     }
   }
 

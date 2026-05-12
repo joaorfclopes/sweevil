@@ -16,6 +16,7 @@ availabilityRouter.get(
           date: avail.date,
           status: "CONFIRMED",
         });
+        const isDayBooked = bookings.length > 0;
         const bookedSlots = bookings.map((b) => b.slot);
         return {
           _id: avail._id,
@@ -24,7 +25,7 @@ availabilityRouter.get(
           slots: avail.slots.map((s) => ({
             time: s.time,
             isAvailable: s.isAvailable,
-            isBooked: bookedSlots.includes(s.time),
+            isBooked: isDayBooked || bookedSlots.includes(s.time),
           })),
         };
       })

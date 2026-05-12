@@ -2,6 +2,7 @@ import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import { isAuth, isAdmin, optionalAuth } from "../utils.js";
+import { deleteAllFromS3 } from "../s3.js";
 
 const productRouter = express.Router();
 
@@ -97,6 +98,7 @@ productRouter.delete(
     const product = await Product.findById(req.params.id);
     if (product) {
       await product.deleteOne();
+      await deleteAllFromS3(product.images);
       res.send({ message: "Product deleted", product });
     } else {
       res.status(404).send({ message: "Product not Found" });

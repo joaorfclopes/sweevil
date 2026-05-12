@@ -2,9 +2,10 @@ import path from "path";
 import express from "express";
 import multer from "multer";
 import rateLimit from "express-rate-limit";
-import { S3Client, DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { isAuth, isAdmin } from "../utils.js";
+import { s3, s3KeyFromUrl } from "../s3.js";
 import { randomUUID } from "crypto";
 
 const bookingUploadLimiter = rateLimit({
@@ -47,18 +48,6 @@ const memoryUpload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-function makeS3Client() {
-  const cfg = { region: process.env.AWS_REGION || "us-east-1" };
-  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-    cfg.credentials = {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    };
-  }
-  return new S3Client(cfg);
-}
-
-const s3 = makeS3Client();
 
 const bookingMemoryUpload = multer({
   storage: multer.memoryStorage(),
@@ -148,11 +137,10 @@ uploadRouter.delete("/s3", isAuth, isAdmin, async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ message: "url is required" });
   try {
-    const key = new URL(url).pathname.slice(1);
-    if (!key.startsWith("store/") && !key.startsWith("gallery/")) {
+    const key = s3KeyFromUrl(url);
+    if (!key || (!key.startsWith("store/") && !key.startsWith("gallery/"))) {
       return res.status(400).json({ message: "Invalid key" });
     }
-    const s3 = makeS3Client();
     await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
     res.json({ message: "Deleted" });
   } catch (err) {

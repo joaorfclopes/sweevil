@@ -373,25 +373,31 @@ orderRouter.put(
     }
 
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    const invoiceAttachment = invoicePdfBuffer
+      ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
+      : [];
+    const orderEmailData = {
+      orderId: updatedOrder._id,
+      orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+      shippingAddress: updatedOrder.shippingAddress,
+      orderItems: updatedOrder.orderItems,
+      itemsPrice: updatedOrder.itemsPrice,
+      shippingPrice: updatedOrder.shippingPrice,
+      totalPrice: updatedOrder.totalPrice,
+    };
     await sendMail({
       from,
       to: order.shippingAddress.email,
       subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
-      html: placedOrder({
-        order: {
-          orderId: updatedOrder._id,
-          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
-          shippingAddress: updatedOrder.shippingAddress,
-          orderItems: updatedOrder.orderItems,
-          itemsPrice: updatedOrder.itemsPrice,
-          shippingPrice: updatedOrder.shippingPrice,
-          totalPrice: updatedOrder.totalPrice,
-        },
-        hasInvoice: !!invoicePdfBuffer,
-      }),
-      attachments: invoicePdfBuffer
-        ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
-        : [],
+      html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
+      attachments: invoiceAttachment,
+    });
+    await sendMail({
+      from,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+      subject: `Order paid — ${updatedOrder.shippingAddress.fullName}`,
+      html: placedOrderAdmin({ order: orderEmailData }),
+      attachments: invoiceAttachment,
     });
 
     res.send({ message: "Order paid", order: updatedOrder });

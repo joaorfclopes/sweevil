@@ -353,6 +353,7 @@ export default function ProductEditScreen(props) {
                 <input
                   type="number"
                   step="0.01"
+                  min="0.5"
                   id="price"
                   placeholder="Enter price"
                   value={price}
