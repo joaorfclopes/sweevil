@@ -70,6 +70,7 @@ function AppContent() {
 
   const isAdmin = location.pathname.startsWith('/admin');
   const isMain = location.pathname === '/';
+  const isAuthError = new URLSearchParams(location.search).get('error') === 'Registration_not_allowed_for_this_email';
 
   const scroll = () => {
     $(window).on("scroll", function () {
@@ -165,10 +166,14 @@ function AppContent() {
                   <Route
                     path="/"
                     element={
-                      <MainScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      isAuthError ? (
+                        <Navigate to="/not-found" replace />
+                      ) : (
+                        <MainScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      )
                     }
                   />
                   <Route
