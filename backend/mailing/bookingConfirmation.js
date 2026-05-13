@@ -66,7 +66,7 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
             </tbody></table>
           </div>` : ""}
           <p style="margin:20px 0 0;color:#767676;font-size:13px;font-style:italic;">
-            Please note that the artist only does one tattoo per day.
+            Please note that the artist only does one tattoo per day and the booking value is non-refundable.
           </p>
           ${hasInvoice ? `
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
