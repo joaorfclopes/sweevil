@@ -16,3 +16,5 @@ Sentry.init({
   ],
   enableLogs: true,
 });
+
+Sentry.profiler.startProfiler();
