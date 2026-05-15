@@ -110,6 +110,7 @@ app.use(
           'https://*.ingest.sentry.io',
         ],
         frameSrc: ['https://js.stripe.com', 'https://m.stripe.com', 'https://m.stripe.network'],
+        workerSrc: ["'self'", 'blob:'],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
