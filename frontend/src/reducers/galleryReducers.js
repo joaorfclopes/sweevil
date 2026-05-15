@@ -19,7 +19,7 @@ import {
 export const galleryImageListReducer = (state = { gallery: [] }, action) => {
   switch (action.type) {
     case GALLERY_IMAGE_LIST_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
     case GALLERY_IMAGE_LIST_SUCCESS:
       return { loading: false, gallery: action.payload };
     case GALLERY_IMAGE_LIST_FAIL:

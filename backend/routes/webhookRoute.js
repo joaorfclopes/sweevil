@@ -1,5 +1,5 @@
-import express from 'express';
 import * as Sentry from '@sentry/node';
+import express from 'express';
 import Stripe from 'stripe';
 import { placedOrder } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';

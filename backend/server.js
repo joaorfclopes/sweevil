@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import * as Sentry from '@sentry/node';
-import './instrument.js';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
@@ -10,6 +9,7 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import path from 'path';
 import { getAuth } from './auth.js';
+import './instrument.js';
 import aboutRoute from './routes/aboutRoute.js';
 import availabilityRoute from './routes/availabilityRoute.js';
 import bookingRoute from './routes/bookingRoute.js';

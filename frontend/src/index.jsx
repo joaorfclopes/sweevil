@@ -12,8 +12,7 @@ import './style/index.scss';
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
-  enabled: Boolean(import.meta.env.VITE_SENTRY_DSN),
-  tracesSampleRate: 0,
+  sendDefaultPii: true,
 });
 
 smoothscroll.polyfill();

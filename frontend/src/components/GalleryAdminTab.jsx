@@ -376,7 +376,10 @@ export default function GalleryAdminTab() {
     }
   }, [categories, uploadCategory]);
 
-  // Fetch on mount and after gallery mutations
+  useEffect(() => {
+    dispatch(listGalleryImages());
+  }, [dispatch]);
+
   useEffect(() => {
     if (successCreate) {
       dispatch({ type: GALLERY_IMAGE_CREATE_RESET });
@@ -390,10 +393,7 @@ export default function GalleryAdminTab() {
     } else if (successDelete) {
       dispatch({ type: GALLERY_IMAGE_DELETE_RESET });
       dispatch(listGalleryImages());
-    } else {
-      dispatch(listGalleryImages());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, successCreate, successUpdate, successDelete]);
 
   // Auto-sync image-derived categories into DB (runs once after both loads are ready)
@@ -496,17 +496,20 @@ export default function GalleryAdminTab() {
 
   // ── Delete ──
 
-  const handleDelete = useCallback((item) => {
-    Swal.fire({
-      title: 'Delete this image?',
-      text: 'This cannot be undone.',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
-      confirmButtonColor: '#d33',
-    }).then((result) => {
-      if (result.isConfirmed) dispatch(deleteGalleryImage(item._id));
-    });
-  }, [dispatch]);
+  const handleDelete = useCallback(
+    (item) => {
+      Swal.fire({
+        title: 'Delete this image?',
+        text: 'This cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete',
+        confirmButtonColor: '#d33',
+      }).then((result) => {
+        if (result.isConfirmed) dispatch(deleteGalleryImage(item._id));
+      });
+    },
+    [dispatch]
+  );
 
   // ── Category delete ──
 
@@ -854,10 +857,7 @@ export default function GalleryAdminTab() {
                 onDragEnd={handleDragEnd}
                 onDragCancel={() => setActiveId(null)}
               >
-                <SortableContext
-                  items={sortableIds}
-                  strategy={rectSortingStrategy}
-                >
+                <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
                   <div className="gallery-admin-flex">
                     {adminColumns.map((col, ci) => (
                       <div key={ci} className="gallery-admin-col">

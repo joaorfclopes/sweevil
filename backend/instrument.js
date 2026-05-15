@@ -1,7 +1,9 @@
+import dotenv from 'dotenv';
 import * as Sentry from '@sentry/node';
+
+dotenv.config();
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  enabled: process.env.NODE_ENV === 'production',
-  tracesSampleRate: 0,
+  sendDefaultPii: true,
 });
