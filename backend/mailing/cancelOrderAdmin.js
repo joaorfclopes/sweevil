@@ -1,5 +1,5 @@
-import { formatName } from "../utils.js";
-import itemsDetails from "./itemsDetails.js";
+import { formatName } from '../utils.js';
+import itemsDetails from './itemsDetails.js';
 
 export const cancelOrderAdmin = ({
   order: {
@@ -141,7 +141,7 @@ export const cancelOrderAdmin = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  ${isPaid ? "Refund Request" : "Order Canceled"}
+                                  ${isPaid ? 'Refund Request' : 'Order Canceled'}
                                 </font>
                               </td>
                             </tr>
@@ -262,9 +262,7 @@ export const cancelOrderAdmin = ({
                                         "
                                       >
                                         <a
-                                          href="${
-                                            process.env.VITE_HOME_PAGE
-                                          }/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -471,7 +469,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  ${isPaid ? `Access your Stripe Dashboard and refund ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} here: https://dashboard.stripe.com/payments` : "No payment was made — no refund required."}
+                                                  ${isPaid ? `Access your Stripe Dashboard and refund ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} here: https://dashboard.stripe.com/payments` : 'No payment was made — no refund required.'}
                                                 </font>
                                               </td>
                                           </tr>
@@ -632,9 +630,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Sub-Total: ${itemsPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Sub-Total: ${itemsPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -655,10 +651,7 @@ export const cancelOrderAdmin = ({
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
                                                   Shipping:
-                                                  ${
-                                                    shippingPrice &&
-                                                    shippingPrice.toFixed(2)
-                                                  }€
+                                                  ${shippingPrice && shippingPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -678,9 +671,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Total: ${totalPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Total: ${totalPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>

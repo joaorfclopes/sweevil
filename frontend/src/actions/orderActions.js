@@ -1,42 +1,42 @@
-import Axios from "axios";
-import { CART_EMPTY } from "../constants/cartConstants";
+import Axios from 'axios';
+import { CART_EMPTY } from '../constants/cartConstants';
 import {
+  ORDER_ADMIN_LIST_FAIL,
+  ORDER_ADMIN_LIST_REQUEST,
+  ORDER_ADMIN_LIST_SUCCESS,
+  ORDER_CANCEL_FAIL,
+  ORDER_CANCEL_REQUEST,
+  ORDER_CANCEL_SUCCESS,
   ORDER_CREATE_FAIL,
   ORDER_CREATE_REQUEST,
   ORDER_CREATE_SUCCESS,
-  ORDER_DETAILS_REQUEST,
-  ORDER_DETAILS_SUCCESS,
-  ORDER_DETAILS_FAIL,
-  ORDER_PAY_REQUEST,
-  ORDER_PAY_SUCCESS,
-  ORDER_PAY_FAIL,
-  ORDER_LIST_REQUEST,
-  ORDER_LIST_FAIL,
-  ORDER_LIST_SUCCESS,
-  ORDER_ADMIN_LIST_REQUEST,
-  ORDER_ADMIN_LIST_SUCCESS,
-  ORDER_ADMIN_LIST_FAIL,
-  ORDER_DELETE_REQUEST,
   ORDER_DELETE_FAIL,
+  ORDER_DELETE_REQUEST,
   ORDER_DELETE_SUCCESS,
+  ORDER_DELIVER_FAIL,
   ORDER_DELIVER_REQUEST,
   ORDER_DELIVER_SUCCESS,
-  ORDER_DELIVER_FAIL,
-  ORDER_CANCEL_REQUEST,
-  ORDER_CANCEL_SUCCESS,
-  ORDER_CANCEL_FAIL,
+  ORDER_DETAILS_FAIL,
+  ORDER_DETAILS_REQUEST,
+  ORDER_DETAILS_SUCCESS,
+  ORDER_LIST_FAIL,
+  ORDER_LIST_REQUEST,
+  ORDER_LIST_SUCCESS,
+  ORDER_PAY_FAIL,
+  ORDER_PAY_REQUEST,
+  ORDER_PAY_SUCCESS,
+  ORDER_SEND_FAIL,
   ORDER_SEND_REQUEST,
   ORDER_SEND_SUCCESS,
-  ORDER_SEND_FAIL,
-} from "../constants/orderConstants";
+} from '../constants/orderConstants';
 
 export const createOrder = (order) => async (dispatch) => {
   dispatch({ type: ORDER_CREATE_REQUEST, payload: order });
   try {
-    const { data } = await Axios.post("/api/orders", order);
+    const { data } = await Axios.post('/api/orders', order);
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: data.order });
     dispatch({ type: CART_EMPTY });
-    localStorage.removeItem("cartItems");
+    localStorage.removeItem('cartItems');
   } catch (error) {
     dispatch({
       type: ORDER_CREATE_FAIL,
@@ -48,7 +48,7 @@ export const createOrder = (order) => async (dispatch) => {
 export const detailsOrder = (orderId, token) => async (dispatch) => {
   dispatch({ type: ORDER_DETAILS_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.get(`/api/orders/${orderId}${token ? `?token=${token}` : ""}`);
+    const { data } = await Axios.get(`/api/orders/${orderId}${token ? `?token=${token}` : ''}`);
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -65,8 +65,10 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
     const { data } = await Axios.put(`/api/orders/${order._id}/pay`, paymentResult);
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
   } catch (error) {
-    if (error.response?.data?.message === "Order already paid") {
-      const { data } = await Axios.get(`/api/orders/${order._id}?token=${paymentResult.confirmToken}`);
+    if (error.response?.data?.message === 'Order already paid') {
+      const { data } = await Axios.get(
+        `/api/orders/${order._id}?token=${paymentResult.confirmToken}`
+      );
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
     } else {
       dispatch({
@@ -83,7 +85,7 @@ export const sendOrder = (orderId) => async (dispatch) => {
     const { data } = await Axios.put(`/api/orders/${orderId}/send`, {});
     dispatch({ type: ORDER_SEND_SUCCESS, payload: data });
     // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post("/api/email/sentOrder", { order: data.order });
+    const { sendEmail } = await Axios.post('/api/email/sentOrder', { order: data.order });
   } catch (error) {
     dispatch({
       type: ORDER_SEND_FAIL,
@@ -98,7 +100,7 @@ export const deliverOrder = (orderId) => async (dispatch) => {
     const { data } = await Axios.put(`/api/orders/${orderId}/deliver`, {});
     dispatch({ type: ORDER_DELIVER_SUCCESS, payload: data });
     // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post("/api/email/deliveredOrder", { order: data.order });
+    const { sendEmail } = await Axios.post('/api/email/deliveredOrder', { order: data.order });
   } catch (error) {
     dispatch({
       type: ORDER_DELIVER_FAIL,
@@ -110,7 +112,10 @@ export const deliverOrder = (orderId) => async (dispatch) => {
 export const cancelOrder = (orderId, token) => async (dispatch) => {
   dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, token ? { confirmToken: token } : {});
+    const { data } = await Axios.put(
+      `/api/orders/${orderId}/cancel`,
+      token ? { confirmToken: token } : {}
+    );
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -123,7 +128,7 @@ export const cancelOrder = (orderId, token) => async (dispatch) => {
 export const listOrder = () => async (dispatch) => {
   dispatch({ type: ORDER_LIST_REQUEST });
   try {
-    const { data } = await Axios.get("/api/orders/list");
+    const { data } = await Axios.get('/api/orders/list');
     dispatch({ type: ORDER_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -136,7 +141,7 @@ export const listOrder = () => async (dispatch) => {
 export const listOrders = () => async (dispatch) => {
   dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
   try {
-    const { data } = await Axios.get("/api/orders");
+    const { data } = await Axios.get('/api/orders');
     dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data.reverse() });
   } catch (error) {
     dispatch({

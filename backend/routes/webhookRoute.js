@@ -1,13 +1,13 @@
-import express from "express";
-import Stripe from "stripe";
-import Order from "../models/orderModel.js";
-import Booking from "../models/bookingModel.js";
-import Product from "../models/productModel.js";
-import { sendBookingEmails } from "./bookingRoute.js";
-import { sendMail } from "../mailing/sendMail.js";
-import { placedOrder } from "../mailing/placedOrder.js";
-import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
-import { formatDate } from "../utils.js";
+import express from 'express';
+import Stripe from 'stripe';
+import { placedOrder } from '../mailing/placedOrder.js';
+import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
+import { sendMail } from '../mailing/sendMail.js';
+import Booking from '../models/bookingModel.js';
+import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
+import { formatDate } from '../utils.js';
+import { sendBookingEmails } from './bookingRoute.js';
 
 const webhookRouter = express.Router();
 
@@ -20,18 +20,18 @@ const handleOrderPaid = async (paymentIntent) => {
 
   order.isPaid = true;
   order.paidAt = Date.now();
-  order.status = "PAID";
+  order.status = 'PAID';
   order.paymentResult = {
     id: paymentIntent.id,
     status: paymentIntent.status,
     update_time: new Date(paymentIntent.created * 1000).toISOString(),
-    email_address: paymentIntent.receipt_email || "",
+    email_address: paymentIntent.receipt_email || '',
   };
 
   for (const item of order.orderItems) {
     const field = item.isClothing
       ? `countInStock.${item.size.toLowerCase()}`
-      : "countInStock.stock";
+      : 'countInStock.stock';
     await Product.findByIdAndUpdate(item.product, { $inc: { [field]: -item.qty } });
   }
 
@@ -42,7 +42,7 @@ const handleOrderPaid = async (paymentIntent) => {
     try {
       const stripe = getStripe();
       let invoicePdfBuffer = null;
-      let invoiceNumber = "invoice";
+      let invoiceNumber = 'invoice';
       if (order.stripeInvoiceId) {
         try {
           await stripe.invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
@@ -50,19 +50,25 @@ const handleOrderPaid = async (paymentIntent) => {
           if (paidInvoice.number) invoiceNumber = paidInvoice.number;
           if (paidInvoice.invoice_pdf) {
             const pdfUrl = new URL(paidInvoice.invoice_pdf);
-            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
-              throw new Error("Unexpected invoice_pdf origin");
+            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+              throw new Error('Unexpected invoice_pdf origin');
             }
             const pdfRes = await fetch(pdfUrl.toString());
             invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
         } catch (e) {
-          console.error("[webhook] Failed to process invoice:", e.message);
+          console.error('[webhook] Failed to process invoice:', e.message);
         }
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
       const invoiceAttachment = invoicePdfBuffer
-        ? [{ filename: `${invoiceNumber}.pdf`, content: invoicePdfBuffer, contentType: "application/pdf" }]
+        ? [
+            {
+              filename: `${invoiceNumber}.pdf`,
+              content: invoicePdfBuffer,
+              contentType: 'application/pdf',
+            },
+          ]
         : [];
       const orderEmailData = {
         orderId: order._id,
@@ -90,7 +96,7 @@ const handleOrderPaid = async (paymentIntent) => {
       await Order.findByIdAndUpdate(order._id, { confirmationEmailSent: true });
       console.log(`[webhook] Confirmation email sent for order ${orderId}`);
     } catch (e) {
-      console.error("[webhook] Failed to send confirmation email:", e.message);
+      console.error('[webhook] Failed to send confirmation email:', e.message);
     }
   }
 };
@@ -102,7 +108,7 @@ const handleBookingPaid = async (paymentIntent) => {
 
   booking.isPaid = true;
   booking.paidAt = Date.now();
-  booking.status = "CONFIRMED";
+  booking.status = 'CONFIRMED';
   booking.paymentResult = {
     id: paymentIntent.id,
     status: paymentIntent.status,
@@ -116,7 +122,7 @@ const handleBookingPaid = async (paymentIntent) => {
     try {
       const stripe = getStripe();
       let invoicePdfBuffer = null;
-      let invoiceNumber = "invoice";
+      let invoiceNumber = 'invoice';
       if (booking.stripeInvoiceId) {
         try {
           await stripe.invoices.pay(booking.stripeInvoiceId, { paid_out_of_band: true });
@@ -124,30 +130,30 @@ const handleBookingPaid = async (paymentIntent) => {
           if (paidInvoice.number) invoiceNumber = paidInvoice.number;
           if (paidInvoice.invoice_pdf) {
             const pdfUrl = new URL(paidInvoice.invoice_pdf);
-            if (pdfUrl.protocol !== "https:" || !pdfUrl.hostname.endsWith(".stripe.com")) {
-              throw new Error("Unexpected invoice_pdf origin");
+            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+              throw new Error('Unexpected invoice_pdf origin');
             }
             const pdfRes = await fetch(pdfUrl.toString());
             invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
         } catch (e) {
-          console.error("[webhook] Failed to process booking invoice:", e.message);
+          console.error('[webhook] Failed to process booking invoice:', e.message);
         }
       }
       await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
       await Booking.findByIdAndUpdate(booking._id, { confirmationEmailSent: true });
       console.log(`[webhook] Confirmation email sent for booking ${bookingId}`);
     } catch (e) {
-      console.error("[webhook] Failed to send booking confirmation email:", e.message);
+      console.error('[webhook] Failed to send booking confirmation email:', e.message);
     }
   }
 };
 
 const handlePaymentFailed = async (paymentIntent) => {
-  const brand = process.env.BRAND_NAME || "Sweevil";
+  const brand = process.env.BRAND_NAME || 'Sweevil';
   const from = `${brand} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
   const adminEmail = process.env.VITE_SENDER_EMAIL_ADDRESS;
-  const reason = paymentIntent.last_payment_error?.message || "Unknown reason";
+  const reason = paymentIntent.last_payment_error?.message || 'Unknown reason';
 
   let subject, body;
   if (paymentIntent.metadata?.orderId) {
@@ -173,21 +179,17 @@ const handlePaymentFailed = async (paymentIntent) => {
   console.log(`[webhook] Payment failed notification sent: ${subject}`);
 };
 
-webhookRouter.post("/stripe", async (req, res) => {
-  const sig = req.headers["stripe-signature"];
+webhookRouter.post('/stripe', async (req, res) => {
+  const sig = req.headers['stripe-signature'];
   let event;
   try {
-    event = getStripe().webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = getStripe().webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error("[webhook] Signature verification failed:", err.message);
+    console.error('[webhook] Signature verification failed:', err.message);
     return res.status(400).json({ error: 'Webhook signature verification failed' });
   }
 
-  if (event.type === "payment_intent.succeeded") {
+  if (event.type === 'payment_intent.succeeded') {
     const pi = event.data.object;
     try {
       if (pi.metadata?.orderId) {
@@ -196,16 +198,16 @@ webhookRouter.post("/stripe", async (req, res) => {
         await handleBookingPaid(pi);
       }
     } catch (err) {
-      console.error("[webhook] Handler error:", err.message);
+      console.error('[webhook] Handler error:', err.message);
     }
   }
 
-  if (event.type === "payment_intent.payment_failed") {
+  if (event.type === 'payment_intent.payment_failed') {
     const pi = event.data.object;
     try {
       await handlePaymentFailed(pi);
     } catch (err) {
-      console.error("[webhook] Payment failed handler error:", err.message);
+      console.error('[webhook] Payment failed handler error:', err.message);
     }
   }
 

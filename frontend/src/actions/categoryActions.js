@@ -1,23 +1,23 @@
-import Axios from "axios";
+import Axios from 'axios';
 import {
-  CATEGORY_LIST_REQUEST,
-  CATEGORY_LIST_SUCCESS,
-  CATEGORY_LIST_FAIL,
+  CATEGORY_CREATE_FAIL,
   CATEGORY_CREATE_REQUEST,
   CATEGORY_CREATE_SUCCESS,
-  CATEGORY_CREATE_FAIL,
-  CATEGORY_UPDATE_REQUEST,
-  CATEGORY_UPDATE_SUCCESS,
-  CATEGORY_UPDATE_FAIL,
+  CATEGORY_DELETE_FAIL,
   CATEGORY_DELETE_REQUEST,
   CATEGORY_DELETE_SUCCESS,
-  CATEGORY_DELETE_FAIL,
-} from "../constants/categoryConstants";
+  CATEGORY_LIST_FAIL,
+  CATEGORY_LIST_REQUEST,
+  CATEGORY_LIST_SUCCESS,
+  CATEGORY_UPDATE_FAIL,
+  CATEGORY_UPDATE_REQUEST,
+  CATEGORY_UPDATE_SUCCESS,
+} from '../constants/categoryConstants';
 
 export const listCategories = () => async (dispatch) => {
   dispatch({ type: CATEGORY_LIST_REQUEST });
   try {
-    const { data } = await Axios.get("/api/categories");
+    const { data } = await Axios.get('/api/categories');
     dispatch({ type: CATEGORY_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: CATEGORY_LIST_FAIL, payload: error.message });
@@ -27,7 +27,7 @@ export const listCategories = () => async (dispatch) => {
 export const createCategory = (name) => async (dispatch) => {
   dispatch({ type: CATEGORY_CREATE_REQUEST });
   try {
-    const { data } = await Axios.post("/api/categories", { name });
+    const { data } = await Axios.post('/api/categories', { name });
     dispatch({ type: CATEGORY_CREATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -39,7 +39,7 @@ export const createCategory = (name) => async (dispatch) => {
 
 export const reorderCategories = (items) => async () => {
   try {
-    await Axios.patch("/api/categories/reorder", { items });
+    await Axios.patch('/api/categories/reorder', { items });
   } catch {
     // best-effort
   }

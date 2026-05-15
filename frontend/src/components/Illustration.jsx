@@ -1,5 +1,4 @@
-import React from "react";
-import Lettering from "../assets/svg/home/lettering.svg?react";
+import Lettering from '../assets/svg/home/lettering.svg?react';
 
 export default function Illustration(props) {
   return (

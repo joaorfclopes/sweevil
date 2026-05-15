@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios from 'axios';
 import {
   AVAILABILITY_CREATE_FAIL,
   AVAILABILITY_CREATE_REQUEST,
@@ -21,12 +21,12 @@ import {
   BOOKING_LIST_FAIL,
   BOOKING_LIST_REQUEST,
   BOOKING_LIST_SUCCESS,
-} from "../constants/bookingConstants";
+} from '../constants/bookingConstants';
 
 export const listBookings = () => async (dispatch) => {
   dispatch({ type: BOOKING_LIST_REQUEST });
   try {
-    const { data } = await Axios.get("/api/bookings");
+    const { data } = await Axios.get('/api/bookings');
     dispatch({ type: BOOKING_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -65,7 +65,7 @@ export const deleteBooking = (bookingId) => async (dispatch) => {
 export const listAvailability = () => async (dispatch) => {
   dispatch({ type: AVAILABILITY_LIST_REQUEST });
   try {
-    const { data } = await Axios.get("/api/availability");
+    const { data } = await Axios.get('/api/availability');
     dispatch({ type: AVAILABILITY_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -78,7 +78,7 @@ export const listAvailability = () => async (dispatch) => {
 export const createAvailability = (availData) => async (dispatch) => {
   dispatch({ type: AVAILABILITY_CREATE_REQUEST });
   try {
-    await Axios.post("/api/availability", availData);
+    await Axios.post('/api/availability', availData);
     dispatch({ type: AVAILABILITY_CREATE_SUCCESS });
   } catch (error) {
     dispatch({

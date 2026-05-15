@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axios from 'axios';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const FeaturesContext = createContext({ bookingEnabled: false, maintenanceMode: false });
 
@@ -8,16 +8,12 @@ export function FeaturesProvider({ children }) {
 
   useEffect(() => {
     axios
-      .get("/api/config/features")
+      .get('/api/config/features')
       .then((res) => setFeatures(res.data))
       .catch(() => {});
   }, []);
 
-  return (
-    <FeaturesContext.Provider value={features}>
-      {children}
-    </FeaturesContext.Provider>
-  );
+  return <FeaturesContext.Provider value={features}>{children}</FeaturesContext.Provider>;
 }
 
 export function useFeatures() {

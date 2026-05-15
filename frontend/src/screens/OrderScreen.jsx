@@ -1,56 +1,51 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
-import Swal from "sweetalert2";
-import { motion } from "framer-motion";
-import $ from "jquery";
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import Axios from 'axios';
+import { motion } from 'framer-motion';
+import $ from 'jquery';
+import { useEffect, useRef, useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import {
   cancelOrder,
-  sendOrder,
   deliverOrder,
   detailsOrder,
   payOrder,
-} from "../actions/orderActions";
-import LoadingBox from "../components/LoadingBox";
-import MessageBox from "../components/MessageBox";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import Axios from "axios";
+  sendOrder,
+} from '../actions/orderActions';
+import LoadingBox from '../components/LoadingBox';
+import MessageBox from '../components/MessageBox';
+import PlaceHolder from '../components/Placeholder';
+import { getTax } from '../config/taxRates';
 import {
   ORDER_CANCEL_RESET,
   ORDER_DELIVER_RESET,
   ORDER_PAY_RESET,
   ORDER_SEND_RESET,
-} from "../constants/orderConstants";
-import PlaceHolder from "../components/Placeholder";
-import { getTax } from "../config/taxRates";
+} from '../constants/orderConstants';
 
 function StripeCheckoutForm({ order, dispatch, token }) {
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
-  const [stripeError, setStripeError] = useState("");
+  const [stripeError, setStripeError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
     setPaying(true);
-    setStripeError("");
+    setStripeError('');
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: { return_url: window.location.href },
-      redirect: "if_required",
+      redirect: 'if_required',
     });
     if (error) {
       setStripeError(error.message);
       setPaying(false);
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
     }
   };
@@ -58,16 +53,14 @@ function StripeCheckoutForm({ order, dispatch, token }) {
   return (
     <form onSubmit={handleSubmit}>
       <PaymentElement />
-      {stripeError && (
-        <MessageBox variant="error">{stripeError}</MessageBox>
-      )}
+      {stripeError && <MessageBox variant="error">{stripeError}</MessageBox>}
       <button
         type="submit"
         disabled={!stripe || paying}
         className="primary"
-        style={{ marginTop: "1rem", width: "100%" }}
+        style={{ marginTop: '1rem', width: '100%' }}
       >
-        {paying ? "Processing..." : `Pay €${order.totalPrice.toFixed(2)}`}
+        {paying ? 'Processing...' : `Pay €${order.totalPrice.toFixed(2)}`}
       </button>
     </form>
   );
@@ -80,43 +73,27 @@ export default function OrderScreen(props) {
   const [searchParams] = useSearchParams();
 
   const [stripePromise, setStripePromise] = useState(null);
-  const [clientSecret, setClientSecret] = useState("");
+  const [clientSecret, setClientSecret] = useState('');
   const handledRedirect = useRef(false);
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { loading, order, error, errorStatus } = orderDetails;
   const orderPay = useSelector((state) => state.orderPay);
-  const {
-    loading: loadingPay,
-    success: successPay,
-    error: errorPay,
-  } = orderPay;
+  const { loading: loadingPay, success: successPay, error: errorPay } = orderPay;
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
   const orderSend = useSelector((state) => state.orderSend);
-  const {
-    loading: loadingSend,
-    success: successSend,
-    error: errorSend,
-  } = orderSend;
+  const { loading: loadingSend, success: successSend, error: errorSend } = orderSend;
   const orderDeliver = useSelector((state) => state.orderDeliver);
-  const {
-    loading: loadingDeliver,
-    success: successDeliver,
-    error: errorDeliver,
-  } = orderDeliver;
+  const { loading: loadingDeliver, success: successDeliver, error: errorDeliver } = orderDeliver;
   const orderCancel = useSelector((state) => state.orderCancel);
-  const {
-    loading: loadingCancel,
-    success: successCancel,
-    error: errorCancel,
-  } = orderCancel;
+  const { loading: loadingCancel, success: successCancel, error: errorCancel } = orderCancel;
 
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
 
   useEffect(() => {
     if (errorStatus === 404 || errorStatus === 403) {
-      navigate("/not-found");
+      navigate('/not-found');
     }
   }, [errorStatus, navigate]);
 
@@ -134,31 +111,21 @@ export default function OrderScreen(props) {
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
       dispatch(detailsOrder(orderId, token));
-      setClientSecret("");
+      setClientSecret('');
     }
-  }, [
-    dispatch,
-    orderId,
-    order,
-    token,
-    successPay,
-    successSend,
-    successDeliver,
-    successCancel,
-  ]);
+  }, [dispatch, orderId, order, token, successPay, successSend, successDeliver, successCancel]);
 
   useEffect(() => {
-    if (!order || order.isPaid || order.status === "CANCELED") return;
+    if (!order || order.isPaid || order.status === 'CANCELED') return;
 
     let cancelled = false;
     const setupStripe = async () => {
-      const { data: publishableKey } = await Axios.get("/api/config/stripe");
+      const { data: publishableKey } = await Axios.get('/api/config/stripe');
       if (cancelled) return;
       setStripePromise(loadStripe(publishableKey));
-      const { data } = await Axios.post(
-        `/api/orders/${order._id}/create-payment-intent`,
-        { confirmToken: token }
-      );
+      const { data } = await Axios.post(`/api/orders/${order._id}/create-payment-intent`, {
+        confirmToken: token,
+      });
       if (cancelled) return;
       setClientSecret(data.clientSecret);
     };
@@ -171,14 +138,9 @@ export default function OrderScreen(props) {
 
   useEffect(() => {
     if (handledRedirect.current) return;
-    const paymentIntentId = searchParams.get("payment_intent");
-    const redirectStatus = searchParams.get("redirect_status");
-    if (
-      paymentIntentId &&
-      redirectStatus === "succeeded" &&
-      order &&
-      !order.isPaid
-    ) {
+    const paymentIntentId = searchParams.get('payment_intent');
+    const redirectStatus = searchParams.get('redirect_status');
+    if (paymentIntentId && redirectStatus === 'succeeded' && order && !order.isPaid) {
       handledRedirect.current = true;
       dispatch(payOrder(order, { paymentIntentId, confirmToken: token }));
     }
@@ -186,26 +148,26 @@ export default function OrderScreen(props) {
 
   const sendHandler = () => {
     Swal.fire({
-      title: "Send Order?",
+      title: 'Send Order?',
       showCancelButton: true,
-      confirmButtonText: "Yes",
+      confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(sendOrder(order._id));
-        Swal.fire("Sent!", "", "success");
+        Swal.fire('Sent!', '', 'success');
       }
     });
   };
 
   const deliverHandler = () => {
     Swal.fire({
-      title: "Deliver Order?",
+      title: 'Deliver Order?',
       showCancelButton: true,
-      confirmButtonText: "Yes",
+      confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deliverOrder(order._id));
-        Swal.fire("Delivered!", "", "success");
+        Swal.fire('Delivered!', '', 'success');
       }
     });
   };
@@ -216,17 +178,17 @@ export default function OrderScreen(props) {
       showConfirmButton: false,
       showDenyButton: true,
       showCancelButton: true,
-      denyButtonText: "Yes",
+      denyButtonText: 'Yes',
     }).then((result) => {
       if (result.isDenied) {
         dispatch(cancelOrder(order._id, token));
-        Swal.fire("Canceled!", "", "error");
+        Swal.fire('Canceled!', '', 'error');
       }
     });
   };
 
   const imageLoaded = (id) => {
-    $(`#${id}-order-img`).addClass("show");
+    $(`#${id}-order-img`).addClass('show');
   };
 
   return (
@@ -249,33 +211,29 @@ export default function OrderScreen(props) {
             {loadingSend && <LoadingBox />}
             {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
             {loadingDeliver && <LoadingBox />}
-            {errorDeliver && (
-              <MessageBox variant="error">{errorDeliver}</MessageBox>
-            )}
+            {errorDeliver && <MessageBox variant="error">{errorDeliver}</MessageBox>}
             {loadingCancel && <LoadingBox />}
-            {errorCancel && (
-              <MessageBox variant="error">{errorCancel}</MessageBox>
-            )}
-            {order.status === "PAID" && (
-              <div style={{ marginBottom: "0.5rem" }}>
+            {errorCancel && <MessageBox variant="error">{errorCancel}</MessageBox>}
+            {order.status === 'PAID' && (
+              <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="success">
-                  Order successfully paid! Check your email Inbox (if you can't
-                  find it check your Spam) for more information.
+                  Order successfully paid! Check your email Inbox (if you can't find it check your
+                  Spam) for more information.
                 </MessageBox>
               </div>
             )}
-            {order.status === "CANCELED" && (
-              <div style={{ marginBottom: "0.5rem" }}>
+            {order.status === 'CANCELED' && (
+              <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="error">Order canceled.</MessageBox>
               </div>
             )}
-            {order.status === "SENT" && (
-              <div style={{ marginBottom: "0.5rem" }}>
+            {order.status === 'SENT' && (
+              <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="success">Order sent!</MessageBox>
               </div>
             )}
-            {order.status === "DELIVERED" && (
-              <div style={{ marginBottom: "0.5rem" }}>
+            {order.status === 'DELIVERED' && (
+              <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="success">Order delivered!</MessageBox>
               </div>
             )}
@@ -299,10 +257,7 @@ export default function OrderScreen(props) {
                   <li key={item.product}>
                     <div className="item-image">
                       <PlaceHolder height="100%">
-                        <div
-                          id={`${item.product}-order-img`}
-                          className="item-image-inner"
-                        >
+                        <div id={`${item.product}-order-img`} className="item-image-inner">
                           <Link to={`/shop/product/${item.product}`}>
                             <LazyLoadImage
                               className="small"
@@ -323,9 +278,7 @@ export default function OrderScreen(props) {
                       </div>
                     </div>
                     <div className="item-content">
-                      {item.size !== "" && (
-                        <div className="item-size">Size: {item.size}</div>
-                      )}
+                      {item.size !== '' && <div className="item-size">Size: {item.size}</div>}
                       <div className="item-qty">
                         <p>Quantity: {item.qty}</p>
                       </div>
@@ -337,8 +290,7 @@ export default function OrderScreen(props) {
             </div>
             <div className="card total-amount">
               <p>
-                Subtotal ({order.itemsQty}{" "}
-                {order.itemsQty > 1 ? "items" : "item"}) :{" "}
+                Subtotal ({order.itemsQty} {order.itemsQty > 1 ? 'items' : 'item'}) :{' '}
                 {order.itemsPrice && order.itemsPrice.toFixed(2)}€
               </p>
               {(() => {
@@ -349,23 +301,16 @@ export default function OrderScreen(props) {
                   </p>
                 ) : null;
               })()}
-              <p>
-                Shipping :{" "}
-                {order.shippingPrice && order.shippingPrice.toFixed(2)}€
-              </p>
-              <h3 className="total">
-                Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
-              </h3>
+              <p>Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}€</p>
+              <h3 className="total">Total : {order.totalPrice && order.totalPrice.toFixed(2)}€</h3>
             </div>
-            {order.status !== "CANCELED" && !order.isPaid && (
+            {order.status !== 'CANCELED' && !order.isPaid && (
               <div className="stripe-payment">
                 {!clientSecret || !stripePromise ? (
                   <LoadingBox />
                 ) : (
                   <>
-                    {errorPay && (
-                      <MessageBox variant="error">{errorPay}</MessageBox>
-                    )}
+                    {errorPay && <MessageBox variant="error">{errorPay}</MessageBox>}
                     {loadingPay && <LoadingBox />}
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
                       <StripeCheckoutForm order={order} dispatch={dispatch} token={token} />
@@ -377,7 +322,7 @@ export default function OrderScreen(props) {
             {userInfo &&
             userInfo.isAdmin &&
             order.isPaid &&
-            order.status !== "CANCELED" &&
+            order.status !== 'CANCELED' &&
             !order.isSent &&
             !order.isDelivered ? (
               <div className="deliver-button full-width">
@@ -395,8 +340,8 @@ export default function OrderScreen(props) {
                 </div>
               )
             )}
-            {order.status !== "CANCELED" && !order.isDelivered && (
-              <div className={`cancel-button ${order.isPaid && "full-width"}`}>
+            {order.status !== 'CANCELED' && !order.isDelivered && (
+              <div className={`cancel-button ${order.isPaid && 'full-width'}`}>
                 <button className="dangerous" onClick={cancelHandler}>
                   Cancel Order
                 </button>

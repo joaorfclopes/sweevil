@@ -1,78 +1,118 @@
-import Axios from "axios";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import { motion } from "framer-motion";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import {
   DndContext,
-  closestCenter,
+  DragOverlay,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
-  DragOverlay,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  rectSortingStrategy,
-  useSortable,
-  arrayMove,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Axios from 'axios';
+import { motion } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   createProduct,
   detailsProduct,
   listProducts,
   updateProduct,
-} from "../actions/productActions";
-import { listProductCategories } from "../actions/productCategoryActions";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/opacity.css";
-import LoadingBox from "../components/LoadingBox";
-import MessageBox from "../components/MessageBox";
-import { PRODUCT_CREATE_RESET, PRODUCT_DETAILS_RESET, PRODUCT_UPDATE_RESET } from "../constants/productConstants";
+} from '../actions/productActions';
+import { listProductCategories } from '../actions/productCategoryActions';
+import LoadingBox from '../components/LoadingBox';
+import MessageBox from '../components/MessageBox';
+import {
+  PRODUCT_CREATE_RESET,
+  PRODUCT_DETAILS_RESET,
+  PRODUCT_UPDATE_RESET,
+} from '../constants/productConstants';
 
 function ImageCard({ item, isCover }) {
   return (
-    <div className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
-      {item.type === "saved"
-        ? <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
-        : <img src={item.preview} alt="" width="100%" height="100%" style={{ opacity: 0.6, display: "block" }} />}
+    <div className={`product-image-card${isCover ? ' product-image-card--cover' : ''}`}>
+      {item.type === 'saved' ? (
+        <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+      ) : (
+        <img
+          src={item.preview}
+          alt=""
+          width="100%"
+          height="100%"
+          style={{ opacity: 0.6, display: 'block' }}
+        />
+      )}
     </div>
   );
 }
 
 function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isActive ? 0 : 1 };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isActive ? 0 : 1,
+  };
   const stop = (e) => e.stopPropagation();
   return (
-    <div ref={setNodeRef} style={style} className={`product-image-card${isCover ? " product-image-card--cover" : ""}`}>
-      {item.type === "saved"
-        ? <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
-        : <img src={item.preview} alt="" width="100%" height="100%" style={{ opacity: 0.6, display: "block" }} />}
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`product-image-card${isCover ? ' product-image-card--cover' : ''}`}
+    >
+      {item.type === 'saved' ? (
+        <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+      ) : (
+        <img
+          src={item.preview}
+          alt=""
+          width="100%"
+          height="100%"
+          style={{ opacity: 0.6, display: 'block' }}
+        />
+      )}
       <div className="product-image-card-overlay">
-        <Tooltip title={isCover ? "Cover image" : "Set as cover"}>
-          <IconButton size="small" className={`product-image-icon-btn${isCover ? " product-image-icon-btn--star" : ""}`}
-            onPointerDown={stop} onClick={(e) => { stop(e); onSetCover(item); }}>
+        <Tooltip title={isCover ? 'Cover image' : 'Set as cover'}>
+          <IconButton
+            size="small"
+            className={`product-image-icon-btn${isCover ? ' product-image-icon-btn--star' : ''}`}
+            onPointerDown={stop}
+            onClick={(e) => {
+              stop(e);
+              onSetCover(item);
+            }}
+          >
             {isCover ? <StarIcon fontSize="small" /> : <StarBorderIcon fontSize="small" />}
           </IconButton>
         </Tooltip>
         <Tooltip title="Delete">
-          <IconButton size="small" className="product-image-icon-btn product-image-icon-btn--danger"
-            onPointerDown={stop} onClick={(e) => { stop(e); onDelete(item); }}>
+          <IconButton
+            size="small"
+            className="product-image-icon-btn product-image-icon-btn--danger"
+            onPointerDown={stop}
+            onClick={(e) => {
+              stop(e);
+              onDelete(item);
+            }}
+          >
             <DeleteIcon fontSize="small" />
           </IconButton>
         </Tooltip>
         <Tooltip title="Drag to reorder">
-          <IconButton size="small" className="product-image-icon-btn product-image-drag-handle"
-            {...attributes} {...listeners}>
+          <IconButton
+            size="small"
+            className="product-image-icon-btn product-image-drag-handle"
+            {...attributes}
+            {...listeners}
+          >
             <DragIndicatorIcon fontSize="small" />
           </IconButton>
         </Tooltip>
@@ -91,46 +131,38 @@ export default function ProductEditScreen(props) {
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error } = productDetails;
   const productUpdate = useSelector((state) => state.productUpdate);
-  const {
-    loading: loadingUpdate,
-    success: successUpdate,
-    error: errorUpdate,
-  } = productUpdate;
+  const { loading: loadingUpdate, success: successUpdate, error: errorUpdate } = productUpdate;
   const { categories: productCategories = [] } = useSelector((state) => state.productCategoryList);
   const productCreate = useSelector((state) => state.productCreate);
-  const {
-    loading: loadingCreate,
-    success: successCreate,
-    error: errorCreate,
-  } = productCreate;
+  const { loading: loadingCreate, success: successCreate, error: errorCreate } = productCreate;
 
-  const isNew = productId === "new";
+  const isNew = productId === 'new';
 
   // Clear stale product from Redux on mount so we always fetch fresh data
   useEffect(() => {
     if (!isNew) dispatch({ type: PRODUCT_DETAILS_RESET });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId]);
 
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
   // Each item: { id, type: 'saved', url } | { id, type: 'pending', file, preview }
   const [imageItems, setImageItems] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState('');
   const [isClothing, setIsClothing] = useState(false);
-  const [countInStock, setCountInStock] = useState("");
-  const [countInStockXS, setCountInStockXS] = useState("");
-  const [countInStockS, setCountInStockS] = useState("");
-  const [countInStockM, setCountInStockM] = useState("");
-  const [countInStockL, setCountInStockL] = useState("");
-  const [countInStockXL, setCountInStockXL] = useState("");
-  const [countInStockXXL, setCountInStockXXL] = useState("");
-  const [description, setDescription] = useState("");
+  const [countInStock, setCountInStock] = useState('');
+  const [countInStockXS, setCountInStockXS] = useState('');
+  const [countInStockS, setCountInStockS] = useState('');
+  const [countInStockM, setCountInStockM] = useState('');
+  const [countInStockL, setCountInStockL] = useState('');
+  const [countInStockXL, setCountInStockXL] = useState('');
+  const [countInStockXXL, setCountInStockXXL] = useState('');
+  const [description, setDescription] = useState('');
   const [loadingUpload, setLoadingUpload] = useState(false);
-  const [errorUpload, setErrorUpload] = useState("");
-  const [taxPrice, setTaxPrice] = useState("");
-  const [finalPrice, setFinalPrice] = useState("");
+  const [errorUpload, setErrorUpload] = useState('');
+  const [taxPrice, setTaxPrice] = useState('');
+  const [finalPrice, setFinalPrice] = useState('');
   const [visible, setVisible] = useState(false);
 
   const fileInputRef = useRef();
@@ -144,13 +176,13 @@ export default function ProductEditScreen(props) {
     if (successCreate) {
       dispatch({ type: PRODUCT_CREATE_RESET });
       dispatch(listProducts());
-      navigate("/admin");
+      navigate('/admin');
       return;
     }
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET });
       dispatch(listProducts());
-      navigate("/admin");
+      navigate('/admin');
       return;
     }
     if (isNew) return;
@@ -159,20 +191,20 @@ export default function ProductEditScreen(props) {
     } else {
       setName(product.name);
       setPrice(product.price);
-      setImageItems((product.images || []).map((url) => ({ id: url, type: "saved", url })));
-      setCategory(product.category || "");
+      setImageItems((product.images || []).map((url) => ({ id: url, type: 'saved', url })));
+      setCategory(product.category || '');
       const cat = productCategories.find((c) => c.name === product.category);
       if (cat?.isClothing) {
         setIsClothing(true);
-        setCountInStock("");
+        setCountInStock('');
       } else {
         setIsClothing(false);
-        setCountInStockXS("");
-        setCountInStockS("");
-        setCountInStockM("");
-        setCountInStockL("");
-        setCountInStockXL("");
-        setCountInStockXXL("");
+        setCountInStockXS('');
+        setCountInStockS('');
+        setCountInStockM('');
+        setCountInStockL('');
+        setCountInStockXL('');
+        setCountInStockXXL('');
       }
       if (product.countInStock) {
         setCountInStock(product.countInStock.stock);
@@ -194,18 +226,18 @@ export default function ProductEditScreen(props) {
     e.preventDefault();
     if (loadingUpload) return;
     setLoadingUpload(true);
-    setErrorUpload("");
+    setErrorUpload('');
     const finalUrls = [];
     try {
       for (const item of imageItems) {
-        if (item.type === "saved") {
+        if (item.type === 'saved') {
           finalUrls.push(item.url);
         } else {
           const formData = new FormData();
-          formData.append("image", item.file);
-          const { data } = await Axios.post("/api/uploads/s3", formData, {
+          formData.append('image', item.file);
+          const { data } = await Axios.post('/api/uploads/s3', formData, {
             headers: {
-              "Content-Type": "multipart/form-data",
+              'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${userInfo.token}`,
             },
           });
@@ -248,12 +280,12 @@ export default function ProductEditScreen(props) {
   const handleFileInput = (files) => {
     const newItems = Array.from(files).map((file) => ({
       id: `pending-${Date.now()}-${Math.random()}`,
-      type: "pending",
+      type: 'pending',
       file,
       preview: URL.createObjectURL(file),
     }));
     setImageItems((prev) => [...prev, ...newItems]);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleDrop = (e) => {
@@ -262,8 +294,8 @@ export default function ProductEditScreen(props) {
   };
 
   const handleDeleteImage = (item) => {
-    if (item.type === "saved") {
-      Axios.delete("/api/uploads/s3", {
+    if (item.type === 'saved') {
+      Axios.delete('/api/uploads/s3', {
         data: { url: item.url },
         headers: { Authorization: `Bearer ${userInfo.token}` },
       }).catch(() => {});
@@ -301,15 +333,15 @@ export default function ProductEditScreen(props) {
     const cat = productCategories.find((c) => c.name === selected);
     if (cat?.isClothing) {
       setIsClothing(true);
-      setCountInStock("");
+      setCountInStock('');
     } else {
       setIsClothing(false);
-      setCountInStockXS("");
-      setCountInStockS("");
-      setCountInStockM("");
-      setCountInStockL("");
-      setCountInStockXL("");
-      setCountInStockXXL("");
+      setCountInStockXS('');
+      setCountInStockS('');
+      setCountInStockM('');
+      setCountInStockL('');
+      setCountInStockXL('');
+      setCountInStockXXL('');
     }
   };
 
@@ -328,15 +360,11 @@ export default function ProductEditScreen(props) {
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <>
-          <h1>{isNew ? "New Product" : `Edit ${product?.name || ""}`}</h1>
+          <h1>{isNew ? 'New Product' : `Edit ${product?.name || ''}`}</h1>
           <form className="form" onSubmit={submitHandler}>
             {(loadingUpdate || loadingCreate) && <LoadingBox lineHeight="100vh" width="100px" />}
-            {errorUpdate && (
-              <MessageBox variant="error">{errorUpdate}</MessageBox>
-            )}
-            {errorCreate && (
-              <MessageBox variant="error">{errorCreate}</MessageBox>
-            )}
+            {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
+            {errorCreate && <MessageBox variant="error">{errorCreate}</MessageBox>}
             <>
               <div>
                 <label htmlFor="name">Name</label>
@@ -367,7 +395,7 @@ export default function ProductEditScreen(props) {
                   type="file"
                   accept="image/*"
                   multiple
-                  style={{ display: "none" }}
+                  style={{ display: 'none' }}
                   onChange={(e) => handleFileInput(e.target.files)}
                 />
                 {loadingUpload && <LoadingBox />}
@@ -385,11 +413,17 @@ export default function ProductEditScreen(props) {
                     onDrop={handleDrop}
                   >
                     {imageItems.length === 0 ? (
-                      <span className="product-dropzone-placeholder" onClick={() => fileInputRef.current?.click()}>
+                      <span
+                        className="product-dropzone-placeholder"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
                         Click or drop images here
                       </span>
                     ) : (
-                      <SortableContext items={imageItems.map((i) => i.id)} strategy={rectSortingStrategy}>
+                      <SortableContext
+                        items={imageItems.map((i) => i.id)}
+                        strategy={rectSortingStrategy}
+                      >
                         <div className="product-images-row">
                           {imageItems.map((item, idx) => (
                             <SortableImageCard
@@ -401,7 +435,10 @@ export default function ProductEditScreen(props) {
                               isActive={item.id === activeImageId}
                             />
                           ))}
-                          <div className="product-images-add-tile" onClick={() => fileInputRef.current?.click()}>
+                          <div
+                            className="product-images-add-tile"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
                             <span>+</span>
                           </div>
                         </div>
@@ -421,16 +458,24 @@ export default function ProductEditScreen(props) {
               <div>
                 <label htmlFor="category">Category</label>
                 <select value={category} onChange={(e) => setCategoryAndClothing(e)}>
-                  {category === "" && <option value="">Select a category</option>}
+                  {category === '' && <option value="">Select a category</option>}
                   <optgroup label="Clothing">
-                    {productCategories.filter((c) => c.isClothing).map((c) => (
-                      <option key={c._id} value={c.name}>{c.name}</option>
-                    ))}
+                    {productCategories
+                      .filter((c) => c.isClothing)
+                      .map((c) => (
+                        <option key={c._id} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
                   </optgroup>
                   <optgroup label="Other">
-                    {productCategories.filter((c) => !c.isClothing).map((c) => (
-                      <option key={c._id} value={c.name}>{c.name}</option>
-                    ))}
+                    {productCategories
+                      .filter((c) => !c.isClothing)
+                      .map((c) => (
+                        <option key={c._id} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
                   </optgroup>
                 </select>
               </div>
@@ -520,12 +565,17 @@ export default function ProductEditScreen(props) {
               </div>
               <div>
                 <label />
-                <div className="no-flex" style={{ display: "flex", gap: "8px" }}>
-                  <button className="secondary" type="button" onClick={() => navigate("/admin")} style={{ flex: 1 }}>
+                <div className="no-flex" style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    className="secondary"
+                    type="button"
+                    onClick={() => navigate('/admin')}
+                    style={{ flex: 1 }}
+                  >
                     Cancel
                   </button>
                   <button className="primary" type="submit" style={{ flex: 1 }}>
-                    {isNew ? "Create" : "Update"}
+                    {isNew ? 'Create' : 'Update'}
                   </button>
                 </div>
               </div>

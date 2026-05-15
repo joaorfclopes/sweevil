@@ -1,17 +1,16 @@
-import express from "express";
-import expressAsyncHandler from "express-async-handler";
-import mongoose from "mongoose";
-import User from "../models/userModel.js";
-import { isAuth } from "../utils.js";
+import express from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import mongoose from 'mongoose';
+import { isAuth } from '../utils.js';
 
 const userRouter = express.Router();
 
 userRouter.delete(
-  "/passkey-challenge",
+  '/passkey-challenge',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const db = mongoose.connection.getClient().db();
-    await db.collection("verification").deleteMany({
+    await db.collection('verification').deleteMany({
       value: { $regex: req.user._id },
     });
     res.json({ success: true });
@@ -19,10 +18,10 @@ userRouter.delete(
 );
 
 userRouter.delete(
-  "/passkey-signin-challenge",
+  '/passkey-signin-challenge',
   expressAsyncHandler(async (req, res) => {
     const db = mongoose.connection.getClient().db();
-    await db.collection("verification").deleteMany({
+    await db.collection('verification').deleteMany({
       value: { $regex: '"id":""' },
     });
     res.json({ success: true });

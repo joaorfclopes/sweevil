@@ -1,4 +1,4 @@
-@use "../general/globals" as *;
+@use '../general/globals' as *;
 
 .gallery {
   @include lg {
@@ -92,7 +92,6 @@
     --yarl__slide_captions_container_padding: 16px 16px 30px;
   }
 }
-
 
 .gallery-collapse-toggle-row {
   display: flex;

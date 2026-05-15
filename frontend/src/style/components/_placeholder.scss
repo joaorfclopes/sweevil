@@ -22,12 +22,7 @@
     color-stop(18%, $grey-nuance-darker),
     color-stop(33%, $grey-nuance-lighter)
   );
-  background: -webkit-linear-gradient(
-    left,
-    #eeeeee 8%,
-    #dddddd 18%,
-    #eeeeee 33%
-  );
+  background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
   background: linear-gradient(
     to right,
     $grey-nuance-lighter 8%,

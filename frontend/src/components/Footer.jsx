@@ -1,21 +1,20 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { notyf } from "../utils/notyf";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import Tooltip from "@mui/material/Tooltip";
-import ShopNow from "../assets/svg/shop-now.svg?react";
-import Instagram from "../assets/svg/instagram.svg?react";
-import Email from "../assets/svg/email.svg?react";
-import Location from "../assets/svg/location.svg?react";
+import Tooltip from '@mui/material/Tooltip';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Link, useLocation } from 'react-router-dom';
+import Email from '../assets/svg/email.svg?react';
+import Instagram from '../assets/svg/instagram.svg?react';
+import Location from '../assets/svg/location.svg?react';
+import ShopNow from '../assets/svg/shop-now.svg?react';
+import { notyf } from '../utils/notyf';
 
 export default function Footer({ showShopNow = false }) {
   const { pathname } = useLocation();
-  const isShop = pathname === "/shop";
+  const isShop = pathname === '/shop';
 
   const copied = () => {
     notyf.success({
       icon: false,
-      message: "Email copied to clipboard!",
+      message: 'Email copied to clipboard!',
       dismissible: true,
     });
   };
@@ -35,30 +34,25 @@ export default function Footer({ showShopNow = false }) {
       <div className="footer-content">
         <h1>Contacts</h1>
         <div className="contacts">
-          <a
-            href={import.meta.env.VITE_INSTAGRAM_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={import.meta.env.VITE_INSTAGRAM_LINK} target="_blank" rel="noreferrer">
             <Tooltip title="Instagram" placement="bottom">
-              <span><Instagram /></span>
+              <span>
+                <Instagram />
+              </span>
             </Tooltip>
           </a>
-          <CopyToClipboard
-            text={import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
-            onCopy={copied}
-          >
+          <CopyToClipboard text={import.meta.env.VITE_SENDER_EMAIL_ADDRESS} onCopy={copied}>
             <Tooltip title="Email" placement="bottom">
-              <span><Email /></span>
+              <span>
+                <Email />
+              </span>
             </Tooltip>
           </CopyToClipboard>
-          <a
-            href={import.meta.env.VITE_LOCATION_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={import.meta.env.VITE_LOCATION_LINK} target="_blank" rel="noreferrer">
             <Tooltip title="Location" placement="bottom">
-              <span><Location /></span>
+              <span>
+                <Location />
+              </span>
             </Tooltip>
           </a>
         </div>
@@ -69,10 +63,16 @@ export default function Footer({ showShopNow = false }) {
         <Link to="/politica-de-cookies">Política de Cookies</Link>
         <Link to="/direito-de-arrependimento">Direito de Arrependimento</Link>
         <Link to="/politica-de-devolucoes">Devoluções e Reembolsos</Link>
-        <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">Livro de Reclamações</a>
-        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">Resolução de Litígios</a>
+        <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">
+          Livro de Reclamações
+        </a>
+        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
+          Resolução de Litígios
+        </a>
       </div>
-      <div className="brand-notice" style={isShop ? { paddingBottom: "50px" } : undefined}>Sweevil® is a registered brand</div>
+      <div className="brand-notice" style={isShop ? { paddingBottom: '50px' } : undefined}>
+        Sweevil® is a registered brand
+      </div>
     </footer>
   );
 }

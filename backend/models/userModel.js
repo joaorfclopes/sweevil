@@ -1,11 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const passkeySchema = new mongoose.Schema({
-  credentialID: { type: String, required: true },
-  credentialPublicKey: { type: String, required: true },
-  counter: { type: Number, required: true },
-  transports: [{ type: String }],
-}, { _id: false });
+const passkeySchema = new mongoose.Schema(
+  {
+    credentialID: { type: String, required: true },
+    credentialPublicKey: { type: String, required: true },
+    counter: { type: Number, required: true },
+    transports: [{ type: String }],
+  },
+  { _id: false }
+);
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,6 +25,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 export default User;

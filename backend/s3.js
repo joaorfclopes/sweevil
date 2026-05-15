@@ -1,7 +1,7 @@
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 function makeS3Client() {
-  const cfg = { region: process.env.AWS_REGION || "us-east-1", followRegionRedirects: true };
+  const cfg = { region: process.env.AWS_REGION || 'us-east-1', followRegionRedirects: true };
   if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
     cfg.credentials = {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,

@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { signout } from "../actions/userActions";
-import ProductsTable from "../components/ProductsTable";
-import OrdersTable from "../components/OrdersTable";
-import GalleryAdminTab from "../components/GalleryAdminTab";
-import AboutAdminTab from "../components/AboutAdminTab";
-import BookingsAdminTab from "../components/BookingsAdminTab";
-import PasskeyRegister from "../components/PasskeyRegister";
-import { scrollTop } from "../utils.js";
-import { useFeatures } from "../FeaturesContext";
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { signout } from '../actions/userActions';
+import AboutAdminTab from '../components/AboutAdminTab';
+import BookingsAdminTab from '../components/BookingsAdminTab';
+import GalleryAdminTab from '../components/GalleryAdminTab';
+import OrdersTable from '../components/OrdersTable';
+import PasskeyRegister from '../components/PasskeyRegister';
+import ProductsTable from '../components/ProductsTable';
+import { useFeatures } from '../FeaturesContext';
+import { scrollTop } from '../utils.js';
 
 export default function AdminScreen(props) {
   const { bookingEnabled } = useFeatures();

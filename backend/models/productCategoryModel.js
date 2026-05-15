@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const productCategorySchema = new mongoose.Schema(
   {
@@ -8,6 +8,6 @@ const productCategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ProductCategory = mongoose.model("ProductCategory", productCategorySchema);
+const ProductCategory = mongoose.model('ProductCategory', productCategorySchema);
 
 export default ProductCategory;

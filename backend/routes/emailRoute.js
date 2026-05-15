@@ -1,14 +1,14 @@
-import express from "express";
-import expressAsyncHandler from "express-async-handler";
-import nodemailer from "nodemailer";
-import { isAuth, formatDate, isAdmin } from "../utils.js";
-import { placedOrder } from "../mailing/placedOrder.js";
-import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
-import { sendOrder } from "../mailing/sendOrder.js";
-import { deliveredOrder } from "../mailing/deliveredOrder.js";
-import { cancelOrder } from "../mailing/cancelOrder.js";
-import { cancelOrderAdmin } from "../mailing/cancelOrderAdmin.js";
-import Order from "../models/orderModel.js";
+import express from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import nodemailer from 'nodemailer';
+import { cancelOrder } from '../mailing/cancelOrder.js';
+import { cancelOrderAdmin } from '../mailing/cancelOrderAdmin.js';
+import { deliveredOrder } from '../mailing/deliveredOrder.js';
+import { placedOrder } from '../mailing/placedOrder.js';
+import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
+import { sendOrder } from '../mailing/sendOrder.js';
+import Order from '../models/orderModel.js';
+import { formatDate, isAdmin, isAuth } from '../utils.js';
 
 const emailRouter = express.Router();
 
@@ -17,9 +17,9 @@ let _etherealAccount = null;
 const getTransporter = async () => {
   if (process.env.MAILING_SERVICE_CLIENT_ID) {
     return nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
-        type: "OAuth2",
+        type: 'OAuth2',
         user: process.env.VITE_SENDER_EMAIL_ADDRESS,
         clientId: process.env.MAILING_SERVICE_CLIENT_ID,
         clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET,
@@ -34,11 +34,11 @@ const getTransporter = async () => {
     console.log(
       `[email] Ethereal test account: ${_etherealAccount.user} / ${_etherealAccount.pass}`
     );
-    console.log("[email] View sent emails at: https://ethereal.email/messages");
+    console.log('[email] View sent emails at: https://ethereal.email/messages');
   }
 
   return nodemailer.createTransport({
-    host: "smtp.ethereal.email",
+    host: 'smtp.ethereal.email',
     port: 587,
     secure: false,
     auth: { user: _etherealAccount.user, pass: _etherealAccount.pass },
@@ -49,7 +49,7 @@ const sendEmail = async (res, mailOptions) => {
   const transporter = await getTransporter();
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      res.send({ yo: "error" });
+      res.send({ yo: 'error' });
       console.log(error);
     } else {
       const previewUrl = nodemailer.getTestMessageUrl(info);
@@ -60,13 +60,13 @@ const sendEmail = async (res, mailOptions) => {
 };
 
 emailRouter.post(
-  "/placedOrder",
+  '/placedOrder',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.user?.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: 'Access denied' });
     }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
@@ -95,18 +95,18 @@ emailRouter.post(
 );
 
 emailRouter.post(
-  "/placedOrderAdmin",
+  '/placedOrderAdmin',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: 'Access denied' });
     }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: "A new order was placed!",
+      subject: 'A new order was placed!',
       html: placedOrderAdmin({
         order: {
           orderId: order._id,
@@ -132,12 +132,12 @@ emailRouter.post(
 );
 
 emailRouter.post(
-  "/sentOrder",
+  '/sentOrder',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
@@ -165,16 +165,16 @@ emailRouter.post(
 );
 
 emailRouter.post(
-  "/deliveredOrder",
+  '/deliveredOrder',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: "Thanks for your order!",
+      subject: 'Thanks for your order!',
       html: deliveredOrder({
         order: {
           orderId: order._id,
@@ -198,18 +198,18 @@ emailRouter.post(
 );
 
 emailRouter.post(
-  "/cancelOrder",
+  '/cancelOrder',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: 'Access denied' });
     }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: "Order Canceled!",
+      subject: 'Order Canceled!',
       html: cancelOrder({
         order: {
           orderId: order._id,
@@ -231,18 +231,18 @@ emailRouter.post(
 );
 
 emailRouter.post(
-  "/cancelOrderAdmin",
+  '/cancelOrderAdmin',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: 'Access denied' });
     }
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: "Refund Request",
+      subject: 'Refund Request',
       html: cancelOrderAdmin({
         order: {
           orderId: order._id,

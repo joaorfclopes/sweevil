@@ -10,7 +10,7 @@ import {
   USER_UPDATE_REQUEST,
   USER_UPDATE_RESET,
   USER_UPDATE_SUCCESS,
-} from "../constants/userConstants";
+} from '../constants/userConstants';
 
 export const userSigninReducer = (state = {}, action) => {
   switch (action.type) {
@@ -54,4 +54,3 @@ export const userUpdateReducer = (state = {}, action) => {
       return state;
   }
 };
-

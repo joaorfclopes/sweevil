@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import $ from "jquery";
-import Lightbox from "yet-another-react-lightbox";
-import Captions from "yet-another-react-lightbox/plugins/captions";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import "yet-another-react-lightbox/plugins/captions.css";
-import { listGalleryImages } from "../actions/galleryActions";
-import { listCategories } from "../actions/categoryActions";
-import useScrollLock from "../hooks/useScrollLock";
-import LoadingBox from "../components/LoadingBox";
-import MessageBox from "../components/MessageBox";
-import GalleryImage from "../components/GalleryImage";
+import $ from 'jquery';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Lightbox from 'yet-another-react-lightbox';
+import Captions from 'yet-another-react-lightbox/plugins/captions';
+import 'yet-another-react-lightbox/plugins/captions.css';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import { listCategories } from '../actions/categoryActions';
+import { listGalleryImages } from '../actions/galleryActions';
+import GalleryImage from '../components/GalleryImage';
+import LoadingBox from '../components/LoadingBox';
+import MessageBox from '../components/MessageBox';
+import useScrollLock from '../hooks/useScrollLock';
 
 const INITIAL_ROWS = 3;
 const ROWS_INCREMENT = 3;
@@ -27,8 +27,8 @@ function useColCount() {
   const [colCount, setColCount] = useState(getColCount);
   useEffect(() => {
     const onResize = () => setColCount(getColCount());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
   return colCount;
 }
@@ -39,7 +39,7 @@ export default function GalleryScreen() {
   const { loading, gallery, error } = galleryImageList;
   const { categories: dbCategories = [] } = useSelector((state) => state.categoryList);
 
-  const [selectedFilter, setSelectedFilter] = useState("*");
+  const [selectedFilter, setSelectedFilter] = useState('*');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
@@ -50,35 +50,37 @@ export default function GalleryScreen() {
 
   // Use ordered DB categories; fall back to image-derived names for any not yet synced
   const dbCatNames = dbCategories.map((c) => c.name);
-  const imageCatNames = gallery ? [...new Set(gallery.map((img) => img.category).filter(Boolean))] : [];
+  const imageCatNames = gallery
+    ? [...new Set(gallery.map((img) => img.category).filter(Boolean))]
+    : [];
   const extras = imageCatNames.filter((n) => !dbCatNames.includes(n));
   const categories = [...dbCatNames, ...extras];
 
   const handleClick = (e) => {
     setSelectedFilter(e);
     if (e !== selectedFilter) {
-      $(".gallery-images-container").addClass("invisible");
-      $(".gallery-images-container").addClass("hide-instant");
-      $(".gallery-images-container").removeClass("show");
+      $('.gallery-images-container').addClass('invisible');
+      $('.gallery-images-container').addClass('hide-instant');
+      $('.gallery-images-container').removeClass('show');
       setTimeout(() => {
-        $(".gallery-images-container").removeClass("invisible");
+        $('.gallery-images-container').removeClass('invisible');
         setTimeout(() => {
-          $(".gallery-images-container").addClass("show");
+          $('.gallery-images-container').addClass('show');
         }, 100);
       }, 100);
     }
-    if (e === "*") {
-      $("#filter-all").addClass("active");
+    if (e === '*') {
+      $('#filter-all').addClass('active');
       categories.forEach((filter) => {
-        $(`#filter-${filter}`).removeClass("active");
+        $(`#filter-${filter}`).removeClass('active');
       });
     } else {
-      $("#filter-all").removeClass("active");
+      $('#filter-all').removeClass('active');
       categories.forEach((filter) => {
         if (e !== filter) {
-          $(`#filter-${filter}`).removeClass("active");
+          $(`#filter-${filter}`).removeClass('active');
         } else {
-          $(`#filter-${e}`).addClass("active");
+          $(`#filter-${e}`).addClass('active');
         }
       });
     }
@@ -96,7 +98,7 @@ export default function GalleryScreen() {
 
   const getFilteredGallery = () => {
     if (!gallery) return [];
-    if (selectedFilter === "*") return gallery.filter((img) => img.image);
+    if (selectedFilter === '*') return gallery.filter((img) => img.image);
     return gallery.filter((img) => img.category === selectedFilter);
   };
 
@@ -140,11 +142,7 @@ export default function GalleryScreen() {
           <div className="gallery-container">
             <div className="filters">
               {gallery.length > 0 && (
-                <div
-                  id="filter-all"
-                  className="filter active"
-                  onClick={() => handleClick("*")}
-                >
+                <div id="filter-all" className="filter active" onClick={() => handleClick('*')}>
                   All
                 </div>
               )}
@@ -170,7 +168,7 @@ export default function GalleryScreen() {
                           setLightboxIndex(idx);
                           setLightboxOpen(true);
                         }}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                       >
                         <GalleryImage galleryImage={img} />
                       </div>
@@ -190,7 +188,12 @@ export default function GalleryScreen() {
                   view: ({ index }) => setLightboxIndex(index),
                 }}
                 plugins={[Captions, Zoom]}
-                zoom={{ maxZoomPixelRatio: 5, zoomInMultiplier: 2, pinchZoomDistanceFactor: 100, wheelZoomDistanceFactor: 100 }}
+                zoom={{
+                  maxZoomPixelRatio: 5,
+                  zoomInMultiplier: 2,
+                  pinchZoomDistanceFactor: 100,
+                  wheelZoomDistanceFactor: 100,
+                }}
                 noScroll={{ disabled: true }}
               />
             </div>

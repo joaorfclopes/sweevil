@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const galleryImageSchema = new mongoose.Schema(
   {
@@ -12,6 +12,6 @@ const galleryImageSchema = new mongoose.Schema(
   }
 );
 
-const GalleryImage = mongoose.model("Gallery", galleryImageSchema);
+const GalleryImage = mongoose.model('Gallery', galleryImageSchema);
 
 export default GalleryImage;

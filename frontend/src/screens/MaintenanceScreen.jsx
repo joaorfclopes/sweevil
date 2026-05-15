@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function MaintenanceScreen() {
   return (
     <div className="maintenance-screen">

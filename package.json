@@ -12,7 +12,8 @@
     "start:debug": "concurrently \"npm run backend:debug\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
-    "deploy": "npm run build && git push heroku master --force"
+    "deploy": "npm run build && git push heroku master --force",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -48,10 +49,18 @@
     "concurrently": "^9.2.0",
     "eslint": "^9.19.0",
     "eslint-plugin-react": "^7.37.4",
-    "nodemon": "^3.1.9"
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.8.3",
+    "prettier-plugin-organize-imports": "^4.3.0"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "prettier --write",
+    "*.{css,scss,json,md}": "prettier --write"
   }
 }

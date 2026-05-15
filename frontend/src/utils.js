@@ -1,8 +1,8 @@
-export const mainOptions = ["home", "about", "gallery"];
+export const mainOptions = ['home', 'about', 'gallery'];
 
-export const sizes = ["xs", "s", "m", "l", "xl", "xxl"];
+export const sizes = ['xs', 's', 'm', 'l', 'xl', 'xxl'];
 
-export const filters = ["Tattoos", "Paintings", "Digital"];
+export const filters = ['Tattoos', 'Paintings', 'Digital'];
 
 export const formatDateDayHour = (date) => {
   const day = date.substring(8, 10);
@@ -25,7 +25,7 @@ export const toPrice = (num) => Number(num.toFixed(2));
 
 export const formatName = (name) => {
   if (/\s/.test(name)) {
-    const firstName = name.substr(0, name.indexOf(" "));
+    const firstName = name.substr(0, name.indexOf(' '));
     return firstName;
   } else {
     return name;
@@ -33,15 +33,13 @@ export const formatName = (name) => {
 };
 
 export const scrollTop = () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 export const scrollWithOffset = (el) => {
   const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
   const width =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
+    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   const yOffset = width > 576 ? -130 : -100;
-  window.scrollTo({ top: yCoordinate + yOffset, behavior: "smooth" });
+  window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
 };

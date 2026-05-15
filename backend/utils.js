@@ -1,29 +1,28 @@
-import { fromNodeHeaders } from "better-auth/node";
-import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
-import { getAuth } from "./auth.js";
+import { fromNodeHeaders } from 'better-auth/node';
+import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
+import { getAuth } from './auth.js';
 
-const getSession = (req) =>
-  getAuth().api.getSession({ headers: fromNodeHeaders(req.headers) });
+const getSession = (req) => getAuth().api.getSession({ headers: fromNodeHeaders(req.headers) });
 
 export const isAuth = async (req, res, next) => {
   try {
     const session = await getSession(req);
-    if (!session) return res.status(401).send({ message: "Not authenticated" });
+    if (!session) return res.status(401).send({ message: 'Not authenticated' });
     const db = mongoose.connection.getClient().db();
     const userExists = await db
-      .collection("user")
+      .collection('user')
       .findOne({ _id: new ObjectId(session.user.id) }, { projection: { _id: 1 } });
-    if (!userExists) return res.status(401).send({ message: "Not authenticated" });
+    if (!userExists) return res.status(401).send({ message: 'Not authenticated' });
     req.user = {
       _id: session.user.id,
       name: session.user.name,
       email: session.user.email,
-      isAdmin: session.user.role === "admin",
+      isAdmin: session.user.role === 'admin',
     };
     next();
   } catch {
-    res.status(401).send({ message: "Not authenticated" });
+    res.status(401).send({ message: 'Not authenticated' });
   }
 };
 
@@ -35,7 +34,7 @@ export const optionalAuth = async (req, res, next) => {
         _id: session.user.id,
         name: session.user.name,
         email: session.user.email,
-        isAdmin: session.user.role === "admin",
+        isAdmin: session.user.role === 'admin',
       };
     }
   } catch {
@@ -46,7 +45,7 @@ export const optionalAuth = async (req, res, next) => {
 
 export const isAdmin = (req, res, next) => {
   if (req.user?.isAdmin) return next();
-  res.status(403).send({ message: "Admin access denied" });
+  res.status(403).send({ message: 'Admin access denied' });
 };
 
 export const formatDate = (date) => {
@@ -57,6 +56,6 @@ export const formatDate = (date) => {
 };
 
 export const formatName = (name) => {
-  if (/\s/.test(name)) return name.substr(0, name.indexOf(" "));
+  if (/\s/.test(name)) return name.substr(0, name.indexOf(' '));
   return name;
 };

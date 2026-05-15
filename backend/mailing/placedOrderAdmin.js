@@ -1,18 +1,10 @@
-import itemsDetails from "./itemsDetails.js";
+import itemsDetails from './itemsDetails.js';
 
 export const placedOrderAdmin = ({
   order: {
     orderId,
     orderDate,
-    shippingAddress: {
-      email,
-      phoneNumber,
-      fullName,
-      address,
-      country,
-      postalCode,
-      city,
-    },
+    shippingAddress: { email, phoneNumber, fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -174,9 +166,7 @@ export const placedOrderAdmin = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${
-                                    process.env.BRAND_NAME
-                                  }, you have a new order to deliver!
+                                  Hi ${process.env.BRAND_NAME}, you have a new order to deliver!
                                 </font>
                               </td>
                             </tr>
@@ -268,9 +258,7 @@ export const placedOrderAdmin = ({
                                         "
                                       >
                                         <a
-                                          href="${
-                                            process.env.VITE_HOME_PAGE
-                                          }/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -741,9 +729,7 @@ export const placedOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Sub-Total: ${itemsPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Sub-Total: ${itemsPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -764,10 +750,7 @@ export const placedOrderAdmin = ({
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
                                                   Shipping:
-                                                  ${
-                                                    shippingPrice &&
-                                                    shippingPrice.toFixed(2)
-                                                  }€
+                                                  ${shippingPrice && shippingPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -787,9 +770,7 @@ export const placedOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Total: ${totalPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Total: ${totalPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>

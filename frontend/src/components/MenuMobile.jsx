@@ -1,11 +1,10 @@
-import React from "react";
-import $ from "jquery";
-import { useSelector } from "react-redux";
-import { NavLink, useLocation } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
-import { mainOptions, scrollTop, scrollWithOffset } from "../utils";
-import { useFeatures } from "../FeaturesContext";
-import { enableScroll } from "../scroll";
+import $ from 'jquery';
+import { useSelector } from 'react-redux';
+import { NavLink, useLocation } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
+import { useFeatures } from '../FeaturesContext';
+import { enableScroll } from '../scroll';
+import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
 export default function MenuMobile() {
   const { bookingEnabled } = useFeatures();
@@ -16,8 +15,8 @@ export default function MenuMobile() {
   const closeMenu = () => {
     document
       .querySelector('meta[name="viewport"]')
-      .setAttribute("content", "width=device-width, initial-scale=1");
-    $(".nav-mobile").removeClass("show");
+      .setAttribute('content', 'width=device-width, initial-scale=1');
+    $('.nav-mobile').removeClass('show');
     enableScroll();
   };
 
@@ -36,7 +35,7 @@ export default function MenuMobile() {
           <li>
             <NavLink
               to="/admin"
-              className={({ isActive }) => (isActive ? "active" : "")}
+              className={({ isActive }) => (isActive ? 'active' : '')}
               onClick={closeMenu}
             >
               admin
@@ -44,18 +43,16 @@ export default function MenuMobile() {
           </li>
         )}
         {mainOptions.map((option) => {
-          const isHome = option === "home";
+          const isHome = option === 'home';
           const isActive =
-            location.pathname === "/" &&
-            (isHome
-              ? !location.hash || location.hash === "#"
-              : location.hash === `#${option}`);
+            location.pathname === '/' &&
+            (isHome ? !location.hash || location.hash === '#' : location.hash === `#${option}`);
           return (
             <li key={option}>
               <HashLink
                 scroll={(el) => scrollWithOffset(el)}
-                to={isHome ? "/" : `/#${option}`}
-                className={isActive ? "active" : ""}
+                to={isHome ? '/' : `/#${option}`}
+                className={isActive ? 'active' : ''}
                 onClick={isHome ? homeClick : closeMenu}
               >
                 {option}
@@ -66,7 +63,7 @@ export default function MenuMobile() {
         <li>
           <NavLink
             to="/shop"
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={({ isActive }) => (isActive ? 'active' : '')}
             onClick={closeMenu}
           >
             shop
@@ -76,7 +73,7 @@ export default function MenuMobile() {
           <li>
             <NavLink
               to="/booking"
-              className={({ isActive }) => (isActive ? "active" : "")}
+              className={({ isActive }) => (isActive ? 'active' : '')}
               onClick={closeMenu}
             >
               booking

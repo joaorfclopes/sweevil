@@ -1,20 +1,20 @@
-import express from "express";
-import expressAsyncHandler from "express-async-handler";
-import Availability from "../models/availabilityModel.js";
-import Booking from "../models/bookingModel.js";
-import { isAdmin, isAuth } from "../utils.js";
+import express from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import Availability from '../models/availabilityModel.js';
+import Booking from '../models/bookingModel.js';
+import { isAdmin, isAuth } from '../utils.js';
 
 const availabilityRouter = express.Router();
 
 availabilityRouter.get(
-  "/",
+  '/',
   expressAsyncHandler(async (req, res) => {
     const availability = await Availability.find({}).sort({ date: 1 });
     const result = await Promise.all(
       availability.map(async (avail) => {
         const bookings = await Booking.find({
           date: avail.date,
-          status: "CONFIRMED",
+          status: 'CONFIRMED',
         });
         const isDayBooked = bookings.length > 0;
         const bookedSlots = bookings.map((b) => b.slot);
@@ -35,16 +35,14 @@ availabilityRouter.get(
 );
 
 availabilityRouter.post(
-  "/",
+  '/',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const { date, slots, price } = req.body;
     const existing = await Availability.findOne({ date: new Date(date) });
     if (existing) {
-      return res
-        .status(400)
-        .json({ message: "Availability already exists for this date" });
+      return res.status(400).json({ message: 'Availability already exists for this date' });
     }
     const availability = new Availability({
       date: new Date(date),
@@ -57,13 +55,13 @@ availabilityRouter.post(
 );
 
 availabilityRouter.put(
-  "/:id",
+  '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const availability = await Availability.findById(req.params.id);
     if (!availability) {
-      return res.status(404).json({ message: "Availability not found" });
+      return res.status(404).json({ message: 'Availability not found' });
     }
     const { slots, price } = req.body;
     if (slots !== undefined) availability.slots = slots;
@@ -74,16 +72,16 @@ availabilityRouter.put(
 );
 
 availabilityRouter.delete(
-  "/:id",
+  '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const availability = await Availability.findById(req.params.id);
     if (!availability) {
-      return res.status(404).json({ message: "Availability not found" });
+      return res.status(404).json({ message: 'Availability not found' });
     }
     await availability.deleteOne();
-    res.json({ message: "Availability removed" });
+    res.json({ message: 'Availability removed' });
   })
 );
 

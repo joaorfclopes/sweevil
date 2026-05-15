@@ -1,5 +1,5 @@
-@use "../general/globals" as *;
-@use "../general/phone-input" as *;
+@use '../general/globals' as *;
+@use '../general/phone-input' as *;
 
 .shipping {
   .shipping-container {
@@ -57,7 +57,7 @@
       appearance: auto;
     }
 
-    button[type="submit"] {
+    button[type='submit'] {
       width: 100%;
     }
   }

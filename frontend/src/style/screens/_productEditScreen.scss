@@ -56,7 +56,9 @@
   flex-shrink: 0;
   color: #aaa;
   font-size: 2rem;
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
 
   &:hover {
     border-color: #555;
@@ -123,6 +125,8 @@
 
   .product-image-drag-handle {
     cursor: grab !important;
-    &:active { cursor: grabbing !important; }
+    &:active {
+      cursor: grabbing !important;
+    }
   }
 }

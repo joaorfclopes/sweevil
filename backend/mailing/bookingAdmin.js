@@ -1,11 +1,11 @@
 export const bookingAdmin = ({ booking }) => {
-  const dateStr = new Date(booking.date).toLocaleDateString("pt-PT", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const dateStr = new Date(booking.date).toLocaleDateString('pt-PT', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
-  const brand = process.env.BRAND_NAME || "Sweevil";
+  const brand = process.env.BRAND_NAME || 'Sweevil';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -20,9 +20,11 @@ export const bookingAdmin = ({ booking }) => {
     <tbody>
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
-          ${process.env.BRAND_LOGO
-            ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
-            : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`}
+          ${
+            process.env.BRAND_LOGO
+              ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
+              : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`
+          }
         </td>
       </tr>
       <tr>
@@ -67,20 +69,44 @@ export const bookingAdmin = ({ booking }) => {
                   <span style="color:#1a1a1a;font-size:15px;">${booking.price.toFixed(2)}€</span>
                 </td>
               </tr>
-              ${booking.guestInfo.notes ? `<tr>
+              ${
+                booking.guestInfo.notes
+                  ? `<tr>
                 <td style="padding:8px 20px;">
                   <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Notes</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.guestInfo.notes}</span>
                 </td>
-              </tr>` : ""}
-              ${booking.images && booking.images.length > 0 ? `<tr>
+              </tr>`
+                  : ''
+              }
+              ${
+                booking.images && booking.images.length > 0
+                  ? `<tr>
                 <td style="padding:8px 20px;">
                   <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Photos (${booking.images.length})</strong><br/>
                   <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:8px;"><tbody>
-                    ${(() => { const rows = []; for (let i = 0; i < booking.images.length; i += 3) rows.push(booking.images.slice(i, i + 3)); return rows.map(row => `<tr>${row.map(url => `<td style="padding:4px;width:33.33%;vertical-align:top;"><a href="${url}" target="_blank" style="display:block;height:120px;overflow:hidden;border-radius:4px;border:1px solid #e0e0e0;"><img src="${url}" width="100%" height="120" style="display:block;width:100%;height:120px;object-fit:cover;" /></a></td>`).join("")}${row.length < 3 ? Array(3 - row.length).fill('<td style="padding:4px;"></td>').join("") : ""}</tr>`).join(""); })()}
+                    ${(() => {
+                      const rows = [];
+                      for (let i = 0; i < booking.images.length; i += 3)
+                        rows.push(booking.images.slice(i, i + 3));
+                      return rows
+                        .map(
+                          (row) =>
+                            `<tr>${row.map((url) => `<td style="padding:4px;width:33.33%;vertical-align:top;"><a href="${url}" target="_blank" style="display:block;height:120px;overflow:hidden;border-radius:4px;border:1px solid #e0e0e0;"><img src="${url}" width="100%" height="120" style="display:block;width:100%;height:120px;object-fit:cover;" /></a></td>`).join('')}${
+                              row.length < 3
+                                ? Array(3 - row.length)
+                                    .fill('<td style="padding:4px;"></td>')
+                                    .join('')
+                                : ''
+                            }</tr>`
+                        )
+                        .join('');
+                    })()}
                   </tbody></table>
                 </td>
-              </tr>` : ""}
+              </tr>`
+                  : ''
+              }
             </tbody>
           </table>
         </td>

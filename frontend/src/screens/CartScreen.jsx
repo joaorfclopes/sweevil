@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { notyf } from "../utils/notyf";
-import { motion } from "framer-motion";
-import $ from "jquery";
-import MessageBox from "../components/MessageBox";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { sizes, toPrice, scrollTop } from "../utils";
-import { addToCart, removeFromCart } from "../actions/cartActions";
-import Remove from "../assets/svg/remove.svg?react";
-import PlaceHolder from "../components/Placeholder";
+import { motion } from 'framer-motion';
+import $ from 'jquery';
+import { useEffect, useRef } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { addToCart, removeFromCart } from '../actions/cartActions';
+import Remove from '../assets/svg/remove.svg?react';
+import MessageBox from '../components/MessageBox';
+import PlaceHolder from '../components/Placeholder';
+import { scrollTop, sizes, toPrice } from '../utils';
+import { notyf } from '../utils/notyf';
 
 export default function CartScreen(props) {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ export default function CartScreen(props) {
     dispatch(addToCart(id, 1, String(size)));
     notyf.success({
       icon: false,
-      message: "Product size updated",
+      message: 'Product size updated',
       dismissible: true,
     });
   };
@@ -48,7 +48,7 @@ export default function CartScreen(props) {
     dispatch(addToCart(id, Number(qty), size));
     notyf.success({
       icon: false,
-      message: "Product quantity updated",
+      message: 'Product quantity updated',
       dismissible: true,
     });
   };
@@ -76,11 +76,11 @@ export default function CartScreen(props) {
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   const checkoutHandler = () => {
-    navigate("/cart/shipping");
+    navigate('/cart/shipping');
   };
 
   const imageLoaded = (id) => {
-    $(`#${id}-cart-img`).addClass("show");
+    $(`#${id}-cart-img`).addClass('show');
   };
 
   useEffect(() => {
@@ -110,10 +110,7 @@ export default function CartScreen(props) {
               <li key={item.product}>
                 <div className="item-image">
                   <PlaceHolder height="100%">
-                    <div
-                      id={`${item.product}-cart-img`}
-                      className="item-image-inner"
-                    >
+                    <div id={`${item.product}-cart-img`} className="item-image-inner">
                       <Link to={`/shop/product/${item.product}`}>
                         <LazyLoadImage
                           className="small"
@@ -136,63 +133,51 @@ export default function CartScreen(props) {
                 <div className="item-content">
                   {item.isClothing && (
                     <div className="item-size">
-                      <span>Size:</span>{" "}
+                      <span>Size:</span>{' '}
                       <select
                         value={item.size}
-                        onChange={(e) =>
-                          changeSize(item.product, e.target.value)
-                        }
+                        onChange={(e) => changeSize(item.product, e.target.value)}
                       >
                         {sizes.map((size) =>
-                          size === "xs"
+                          size === 'xs'
                             ? sizeOption(size, item.countInStock.xs)
-                            : size === "s"
-                            ? sizeOption(size, item.countInStock.s)
-                            : size === "m"
-                            ? sizeOption(size, item.countInStock.m)
-                            : size === "l"
-                            ? sizeOption(size, item.countInStock.l)
-                            : size === "xl"
-                            ? sizeOption(size, item.countInStock.xl)
-                            : size === "xxl" &&
-                              sizeOption(size, item.countInStock.xxl)
+                            : size === 's'
+                              ? sizeOption(size, item.countInStock.s)
+                              : size === 'm'
+                                ? sizeOption(size, item.countInStock.m)
+                                : size === 'l'
+                                  ? sizeOption(size, item.countInStock.l)
+                                  : size === 'xl'
+                                    ? sizeOption(size, item.countInStock.xl)
+                                    : size === 'xxl' && sizeOption(size, item.countInStock.xxl)
                         )}
                       </select>
                     </div>
                   )}
                   <div className="item-qty">
-                    <span>Quantity:</span>{" "}
+                    <span>Quantity:</span>{' '}
                     <select
                       value={item.qty}
-                      onChange={(e) =>
-                        changeQty(item.product, e.target.value, item.size)
-                      }
+                      onChange={(e) => changeQty(item.product, e.target.value, item.size)}
                     >
                       {!item.isClothing
                         ? qtyOption(item.countInStock.stock)
-                        : item.size === "xs"
-                        ? qtyOption(item.countInStock.xs)
-                        : item.size === "s"
-                        ? qtyOption(item.countInStock.s)
-                        : item.size === "m"
-                        ? qtyOption(item.countInStock.m)
-                        : item.size === "l"
-                        ? qtyOption(item.countInStock.l)
-                        : item.size === "xl"
-                        ? qtyOption(item.countInStock.xl)
-                        : item.size === "xxl" &&
-                          qtyOption(item.countInStock.xxl)}
+                        : item.size === 'xs'
+                          ? qtyOption(item.countInStock.xs)
+                          : item.size === 's'
+                            ? qtyOption(item.countInStock.s)
+                            : item.size === 'm'
+                              ? qtyOption(item.countInStock.m)
+                              : item.size === 'l'
+                                ? qtyOption(item.countInStock.l)
+                                : item.size === 'xl'
+                                  ? qtyOption(item.countInStock.xl)
+                                  : item.size === 'xxl' && qtyOption(item.countInStock.xxl)}
                     </select>
                   </div>
                   <div className="item-remove">
-                    <Remove
-                      className="icon"
-                      onClick={() => removeFromCartHandler(item)}
-                    />
-                    <button
-                      className="secondary"
-                      onClick={() => removeFromCartHandler(item)}
-                    >
+                    <Remove className="icon" onClick={() => removeFromCartHandler(item)} />
+                    <button className="secondary" onClick={() => removeFromCartHandler(item)}>
                       Remove
                     </button>
                   </div>
@@ -203,8 +188,8 @@ export default function CartScreen(props) {
           </ul>
           <ul className="cart-total">
             <li>
-              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
-              : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
+              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+              {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </li>
             <li>
               <h2>Total : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€</h2>

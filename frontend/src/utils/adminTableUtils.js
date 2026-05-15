@@ -30,13 +30,13 @@ export function downloadCSV(headers, rows, filename) {
 
 export function statusChipProps(status) {
   const map = {
-    CONFIRMED:       { bg: '#2e7d32', label: 'Confirmed' },
+    CONFIRMED: { bg: '#2e7d32', label: 'Confirmed' },
     PENDING_PAYMENT: { bg: '#ed6c02', label: 'Pending Payment' },
-    PENDING:         { bg: '#ed6c02', label: 'Pending' },
-    CANCELED:        { bg: '#d32f2f', label: 'Canceled' },
-    SENT:            { bg: '#1565c0', label: 'Sent' },
-    PAID:            { bg: '#2e7d32', label: 'Paid' },
-    DELIVERED:       { bg: '#2e7d32', label: 'Delivered' },
+    PENDING: { bg: '#ed6c02', label: 'Pending' },
+    CANCELED: { bg: '#d32f2f', label: 'Canceled' },
+    SENT: { bg: '#1565c0', label: 'Sent' },
+    PAID: { bg: '#2e7d32', label: 'Paid' },
+    DELIVERED: { bg: '#2e7d32', label: 'Delivered' },
   };
   const key = status?.toUpperCase();
   const entry = map[key] ?? { bg: '#757575', label: status ?? '—' };
@@ -52,5 +52,8 @@ export function isNewRow(item) {
 }
 
 export function normalize(str) {
-  return String(str ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  return String(str ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
 }

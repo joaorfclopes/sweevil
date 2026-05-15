@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const slotSchema = new mongoose.Schema(
   {
@@ -17,5 +17,5 @@ const availabilitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Availability = mongoose.model("Availability", availabilitySchema);
+const Availability = mongoose.model('Availability', availabilitySchema);
 export default Availability;

@@ -1,15 +1,14 @@
-import express from "express";
-import expressAsyncHandler from "express-async-handler";
-import Product from "../models/productModel.js";
-import { isAuth, isAdmin, optionalAuth } from "../utils.js";
-import { deleteAllFromS3 } from "../s3.js";
+import express from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import Product from '../models/productModel.js';
+import { deleteAllFromS3 } from '../s3.js';
+import { isAdmin, isAuth, optionalAuth } from '../utils.js';
 
 const productRouter = express.Router();
 
 // Cap each stock value at 5 and strip internal fields from public responses
 const toPublic = (product) => {
-  const { __v, createdAt, updatedAt, visible, countInStock, ...rest } =
-    product.toObject();
+  const { __v, createdAt, updatedAt, visible, countInStock, ...rest } = product.toObject();
   const cap = (val) => Math.min(val ?? 0, 5);
   const stock = rest.isClothing
     ? {
@@ -25,7 +24,7 @@ const toPublic = (product) => {
 };
 
 productRouter.get(
-  "/",
+  '/',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
     if (req.user?.isAdmin) {
@@ -34,41 +33,51 @@ productRouter.get(
     }
     const products = await Product.find({ visible: true });
     res.send(products.map(toPublic));
-  }),
+  })
 );
 
 productRouter.get(
-  "/:id",
+  '/:id',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({ message: "Product not Found" });
+      return res.status(404).json({ message: 'Product not Found' });
     }
     if (req.user?.isAdmin) {
       return res.json(product);
     }
     if (!product.visible) {
-      return res.status(404).json({ message: "Product not Found" });
+      return res.status(404).json({ message: 'Product not Found' });
     }
     res.json(toPublic(product));
-  }),
+  })
 );
 
 productRouter.post(
-  "/",
+  '/',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { name, price, images, category, isClothing, countInStock, description, visible } = req.body;
-    const product = new Product({ name, price, images, category, isClothing, countInStock, description, visible });
+    const { name, price, images, category, isClothing, countInStock, description, visible } =
+      req.body;
+    const product = new Product({
+      name,
+      price,
+      images,
+      category,
+      isClothing,
+      countInStock,
+      description,
+      visible,
+    });
     const createdProduct = await product.save();
-    res.send({ message: "Product created", product: createdProduct });
-  }),
+    res.send({ message: 'Product created', product: createdProduct });
+  })
 );
 
 productRouter.put(
-  "/:id",
+  '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
@@ -83,15 +92,15 @@ productRouter.put(
       product.description = req.body.description;
       product.visible = req.body.visible;
       const updatedProduct = await product.save();
-      res.send({ message: "Product updated", product: updatedProduct });
+      res.send({ message: 'Product updated', product: updatedProduct });
     } else {
-      res.status(404).send({ message: "Product not Found" });
+      res.status(404).send({ message: 'Product not Found' });
     }
-  }),
+  })
 );
 
 productRouter.delete(
-  "/:id",
+  '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
@@ -99,11 +108,11 @@ productRouter.delete(
     if (product) {
       await product.deleteOne();
       await deleteAllFromS3(product.images);
-      res.send({ message: "Product deleted", product });
+      res.send({ message: 'Product deleted', product });
     } else {
-      res.status(404).send({ message: "Product not Found" });
+      res.status(404).send({ message: 'Product not Found' });
     }
-  }),
+  })
 );
 
 export default productRouter;

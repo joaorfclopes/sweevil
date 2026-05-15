@@ -1,10 +1,10 @@
-import { formatName } from "../utils.js";
-import { getTax } from "./taxRates.js";
+import { formatName } from '../utils.js';
+import { getTax } from './taxRates.js';
 
 export const orderPendingPayment = ({ order, paymentUrl }) => {
-  const brand = process.env.BRAND_NAME || "Sweevil";
-  const homeUrl = process.env.VITE_HOME_PAGE || "";
-  const contactEmail = process.env.VITE_SENDER_EMAIL_ADDRESS || "";
+  const brand = process.env.BRAND_NAME || 'Sweevil';
+  const homeUrl = process.env.VITE_HOME_PAGE || '';
+  const contactEmail = process.env.VITE_SENDER_EMAIL_ADDRESS || '';
   const name = formatName(order.shippingAddress.fullName);
 
   const itemRows = order.orderItems
@@ -19,7 +19,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
                   style="display:block;border-radius:4px;object-fit:cover;" />
               </td>
               <td style="vertical-align:middle;color:#1a1a1a;font-size:15px;">
-                ${item.name}${item.size ? ` (${item.size})` : ""} × ${item.qty}
+                ${item.name}${item.size ? ` (${item.size})` : ''} × ${item.qty}
               </td>
             </tr>
           </table>
@@ -29,7 +29,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
         </td>
       </tr>`
     )
-    .join("");
+    .join('');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -45,9 +45,11 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
           <a href="${homeUrl}" style="text-decoration:none;">
-            ${process.env.BRAND_LOGO
-              ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
-              : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`}
+            ${
+              process.env.BRAND_LOGO
+                ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
+                : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`
+            }
           </a>
         </td>
       </tr>
@@ -71,7 +73,12 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
                 <td style="padding:8px 20px;color:#555;font-size:14px;">Subtotal</td>
                 <td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${order.itemsPrice.toFixed(2)}€</td>
               </tr>
-              ${(() => { const tax = getTax(order.shippingAddress.country, order.itemsPrice); return tax ? `<tr><td style="padding:8px 20px;color:#555;font-size:14px;">${tax.label} (${tax.display})</td><td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${tax.amount.toFixed(2)}€</td></tr>` : ''; })()}
+              ${(() => {
+                const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+                return tax
+                  ? `<tr><td style="padding:8px 20px;color:#555;font-size:14px;">${tax.label} (${tax.display})</td><td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${tax.amount.toFixed(2)}€</td></tr>`
+                  : '';
+              })()}
               <tr>
                 <td style="padding:8px 20px;color:#555;font-size:14px;">Shipping</td>
                 <td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${order.shippingPrice.toFixed(2)}€</td>

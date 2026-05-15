@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -9,13 +9,13 @@ const bookingSchema = new mongoose.Schema(
       name: { type: String, required: true },
       email: { type: String, required: true },
       phone: { type: String, required: true },
-      notes: { type: String, default: "" },
+      notes: { type: String, default: '' },
     },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     status: {
       type: String,
-      enum: ["PENDING_PAYMENT", "CONFIRMED", "CANCELED"],
-      default: "PENDING_PAYMENT",
+      enum: ['PENDING_PAYMENT', 'CONFIRMED', 'CANCELED'],
+      default: 'PENDING_PAYMENT',
     },
     stripeInvoiceId: { type: String },
     paymentResult: {
@@ -33,5 +33,5 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
+const Booking = mongoose.model('Booking', bookingSchema);
 export default Booking;

@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import $ from "jquery";
-import { toPrice } from "../utils";
-import { getShippingPrice, getShippingLabel } from "../config/shippingZones";
-import { getTax } from "../config/taxRates";
-import { createOrder } from "../actions/orderActions";
-import { ORDER_CREATE_RESET } from "../constants/orderConstants";
-import Placeholder from "../components/Placeholder";
+import { motion } from 'framer-motion';
+import $ from 'jquery';
+import { useEffect } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { createOrder } from '../actions/orderActions';
+import Placeholder from '../components/Placeholder';
+import { getShippingLabel, getShippingPrice } from '../config/shippingZones';
+import { getTax } from '../config/taxRates';
+import { ORDER_CREATE_RESET } from '../constants/orderConstants';
+import { toPrice } from '../utils';
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
@@ -21,15 +21,21 @@ export default function PlaceOrderScreen(props) {
 
   useEffect(() => {
     if (cartItems.length <= 0) {
-      navigate("/cart");
+      navigate('/cart');
     }
   }, [cartItems, navigate]);
 
   cart.itemsQty = cartItems.reduce((a, c) => a + c.qty, 0);
   cart.itemsPrice = toPrice(cartItems.reduce((a, c) => a + c.price * c.qty, 0));
-  cart.shippingPrice = toPrice(getShippingPrice(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice));
+  cart.shippingPrice = toPrice(
+    getShippingPrice(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice)
+  );
   cart.totalPrice = toPrice(cart.itemsPrice + cart.shippingPrice);
-  const shippingLabel = getShippingLabel(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice);
+  const shippingLabel = getShippingLabel(
+    shippingAddress.country,
+    shippingAddress.postalCode,
+    cart.itemsPrice
+  );
   const tax = getTax(shippingAddress.country, cart.itemsPrice);
 
   const placeOrderHandler = () => {
@@ -49,7 +55,7 @@ export default function PlaceOrderScreen(props) {
   }, [success, navigate, order, dispatch]);
 
   const imageLoaded = (id) => {
-    $(`#${id}-place-order-img`).addClass("show");
+    $(`#${id}-place-order-img`).addClass('show');
   };
 
   return (
@@ -84,10 +90,7 @@ export default function PlaceOrderScreen(props) {
                 <li key={item.product}>
                   <div className="item-image">
                     <Placeholder height="100%">
-                      <div
-                        id={`${item.product}-place-order-img`}
-                        className="item-image-inner"
-                      >
+                      <div id={`${item.product}-place-order-img`} className="item-image-inner">
                         <Link to={`/shop/product/${item.product}`}>
                           <LazyLoadImage
                             className="small"
@@ -124,8 +127,8 @@ export default function PlaceOrderScreen(props) {
           </div>
           <div className="card total-amount">
             <p>
-              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? "items" : "item"})
-              : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
+              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+              {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </p>
             {tax && (
               <p>
@@ -133,15 +136,12 @@ export default function PlaceOrderScreen(props) {
               </p>
             )}
             <p>
-              {shippingLabel} :{" "}
-              {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+              {shippingLabel} : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
             </p>
-            <h3 className="total">
-              Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
-            </h3>
+            <h3 className="total">Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h3>
           </div>
           <button className="primary" onClick={placeOrderHandler} disabled={loading}>
-            {loading ? "Placing Order..." : "Place Order"}
+            {loading ? 'Placing Order...' : 'Place Order'}
           </button>
         </div>
       </div>

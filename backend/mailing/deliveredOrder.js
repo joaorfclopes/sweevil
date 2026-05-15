@@ -1,6 +1,6 @@
-import { formatName } from "../utils.js";
-import itemsDetails from "./itemsDetails.js";
-import { getTax } from "./taxRates.js";
+import { formatName } from '../utils.js';
+import itemsDetails from './itemsDetails.js';
+import { getTax } from './taxRates.js';
 
 export const deliveredOrder = ({
   order: {
@@ -168,9 +168,7 @@ export const deliveredOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${formatName(
-                                    fullName
-                                  )}, your order has been received.
+                                  Hi ${formatName(fullName)}, your order has been received.
                                 </font>
                               </td>
                             </tr>
@@ -262,9 +260,7 @@ export const deliveredOrder = ({
                                         "
                                       >
                                         <a
-                                          href="${
-                                            process.env.VITE_HOME_PAGE
-                                          }/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -653,13 +649,16 @@ export const deliveredOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Sub-Total: ${itemsPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Sub-Total: ${itemsPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
-                                            ${(() => { const tax = getTax(country, itemsPrice); return tax ? `<tr><td align="left" style="font-family:'FuturaPTHeavy-Reg',Futura,Arial,sans-serif;color:#2d2d2d;text-transform:uppercase;font-weight:700;font-size:14px;line-height:20px;"><font face="'FuturaPTHeavy-Reg',Futura,Arial,sans-serif">${tax.label} (${tax.display}): ${tax.amount.toFixed(2)}€</font></td></tr>` : ''; })()}
+                                            ${(() => {
+                                              const tax = getTax(country, itemsPrice);
+                                              return tax
+                                                ? `<tr><td align="left" style="font-family:'FuturaPTHeavy-Reg',Futura,Arial,sans-serif;color:#2d2d2d;text-transform:uppercase;font-weight:700;font-size:14px;line-height:20px;"><font face="'FuturaPTHeavy-Reg',Futura,Arial,sans-serif">${tax.label} (${tax.display}): ${tax.amount.toFixed(2)}€</font></td></tr>`
+                                                : '';
+                                            })()}
                                             <tr>
                                               <td
                                                 align="left"
@@ -677,10 +676,7 @@ export const deliveredOrder = ({
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
                                                   Shipping:
-                                                  ${
-                                                    shippingPrice &&
-                                                    shippingPrice.toFixed(2)
-                                                  }€
+                                                  ${shippingPrice && shippingPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -700,9 +696,7 @@ export const deliveredOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Total: ${totalPrice.toFixed(
-                                                    2
-                                                  )}€
+                                                  Total: ${totalPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -872,8 +866,7 @@ export const deliveredOrder = ({
                                                 ">
                                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
                                                 For more information please contact us at: ${
-                                                  process.env
-                                                    .VITE_SENDER_EMAIL_ADDRESS
+                                                  process.env.VITE_SENDER_EMAIL_ADDRESS
                                                 }
                                                 </font>
                                               </td>

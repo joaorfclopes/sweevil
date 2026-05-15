@@ -1,44 +1,38 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes,
-  useLocation
-} from 'react-router-dom'
-import { useDispatch, useSelector } from "react-redux";
-import { signout } from "./actions/userActions";
-import { authClient } from "./lib/authClient";
-import { USER_SIGNIN_SUCCESS, USER_SIGNOUT } from "./constants/userConstants";
-import $ from "jquery";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from 'framer-motion';
+import $ from 'jquery';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { signout } from './actions/userActions';
+import ArrowUp from './components/ArrowUp';
+import Footer from './components/Footer';
+import MenuMobile from './components/MenuMobile';
+import Navbar from './components/Navbar';
+import { USER_SIGNIN_SUCCESS, USER_SIGNOUT } from './constants/userConstants';
+import { FeaturesProvider, useFeatures } from './FeaturesContext';
+import { authClient } from './lib/authClient';
+import AdminScreen from './screens/AdminScreen';
+import BookingScreen from './screens/BookingScreen';
+import CartScreen from './screens/CartScreen';
+import DireitoArrependimentoScreen from './screens/DireitoArrependimentoScreen';
+import MainScreen from './screens/MainScreen';
+import MaintenanceScreen from './screens/MaintenanceScreen';
+import NotFoundScreen from './screens/NotFoundScreen';
+import OrderScreen from './screens/OrderScreen';
+import PlaceOrderScreen from './screens/PlaceOrderScreen';
+import PoliticaCookiesScreen from './screens/PoliticaCookiesScreen';
+import PoliticaDevolucoes from './screens/PoliticaDevolucoes';
+import PoliticaPrivacidadeScreen from './screens/PoliticaPrivacidadeScreen';
+import ProductEditScreen from './screens/ProductEditScreen';
+import ProductScreen from './screens/ProductScreen';
+import ShippingScreen from './screens/ShippingScreen';
+import ShopScreen from './screens/ShopScreen';
+import SigninScreen from './screens/SigninScreen';
+import TermosCondicoesScreen from './screens/TermosCondicoesScreen';
+import { scrollWithOffset } from './utils';
 const CookieConsent = React.lazy(() =>
-  import("react-cookie-consent").catch(() => ({ default: () => null }))
+  import('react-cookie-consent').catch(() => ({ default: () => null }))
 );
-import { scrollWithOffset } from "./utils";
-import Navbar from "./components/Navbar";
-import MenuMobile from "./components/MenuMobile";
-import Footer from "./components/Footer";
-import SigninScreen from "./screens/SigninScreen";
-import ShopScreen from "./screens/ShopScreen";
-import ProductScreen from "./screens/ProductScreen";
-import CartScreen from "./screens/CartScreen";
-import ShippingScreen from "./screens/ShippingScreen";
-import PlaceOrderScreen from "./screens/PlaceOrderScreen";
-import OrderScreen from "./screens/OrderScreen";
-import AdminScreen from "./screens/AdminScreen";
-import ProductEditScreen from "./screens/ProductEditScreen";
-import NotFoundScreen from "./screens/NotFoundScreen";
-import TermosCondicoesScreen from "./screens/TermosCondicoesScreen";
-import PoliticaPrivacidadeScreen from "./screens/PoliticaPrivacidadeScreen";
-import PoliticaCookiesScreen from "./screens/PoliticaCookiesScreen";
-import DireitoArrependimentoScreen from "./screens/DireitoArrependimentoScreen";
-import PoliticaDevolucoes from "./screens/PoliticaDevolucoes";
-import MainScreen from "./screens/MainScreen";
-import BookingScreen from "./screens/BookingScreen";
-import ArrowUp from "./components/ArrowUp";
-import { FeaturesProvider, useFeatures } from "./FeaturesContext";
-import MaintenanceScreen from "./screens/MaintenanceScreen";
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -59,32 +53,38 @@ function AppContent() {
     if (sessionPending) return;
     if (session?.user && !userInfo) {
       const { user } = session;
-      const info = { _id: user.id, name: user.name, email: user.email, isAdmin: user.role === "admin" };
+      const info = {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.role === 'admin',
+      };
       dispatch({ type: USER_SIGNIN_SUCCESS, payload: info });
-      localStorage.setItem("userInfo", JSON.stringify(info));
+      localStorage.setItem('userInfo', JSON.stringify(info));
     } else if (!session && !sessionPending && userInfo) {
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem('userInfo');
       dispatch({ type: USER_SIGNOUT });
     }
   }, [session, sessionPending]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isAdmin = location.pathname.startsWith('/admin');
   const isMain = location.pathname === '/';
-  const isAuthError = new URLSearchParams(location.search).get('error') === 'Registration_not_allowed_for_this_email';
+  const isAuthError =
+    new URLSearchParams(location.search).get('error') === 'Registration_not_allowed_for_this_email';
 
   const scroll = () => {
-    $(window).on("scroll", function () {
+    $(window).on('scroll', function () {
       if ($(window).scrollTop() >= 30) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
       if ($(window).scrollTop() >= 500) {
-        $(".arrow-up").addClass("show");
-        $(".arrow-up").removeClass("hide");
+        $('.arrow-up').addClass('show');
+        $('.arrow-up').removeClass('hide');
       } else {
-        $(".arrow-up").addClass("hide");
-        $(".arrow-up").removeClass("show");
+        $('.arrow-up').addClass('hide');
+        $('.arrow-up').removeClass('show');
       }
     });
   };
@@ -107,7 +107,7 @@ function AppContent() {
         dispatch(signout());
       }, IDLE_TIMEOUT_MS);
     };
-    const events = ["mousemove", "keydown", "click", "touchstart", "scroll"];
+    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
     events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
     reset();
     return () => {
@@ -117,15 +117,15 @@ function AppContent() {
   }, [userInfo, dispatch]);
 
   useEffect(() => {
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
     }
     setTimeout(() => {
       setLoading(false);
-      const loadingEl = document.querySelector(".loading");
-      if (loadingEl) loadingEl.style.display = "none";
-      document.body.classList.add("scroll");
-      document.getElementById("root").classList.add("show");
+      const loadingEl = document.querySelector('.loading');
+      if (loadingEl) loadingEl.style.display = 'none';
+      document.body.classList.add('scroll');
+      document.getElementById('root').classList.add('show');
       scroll();
     }, 1200);
   }, []);
@@ -165,47 +165,32 @@ function AppContent() {
                       isAuthError ? (
                         <Navigate to="/not-found" replace />
                       ) : (
-                        <MainScreen
-                          pageVariants={pageVariants}
-                          pageTransition={pageTransition}
-                        />
+                        <MainScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                       )
                     }
                   />
                   <Route
                     path="/shop"
                     element={
-                      <ShopScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <ShopScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
                     path="/shop/product/:id"
                     element={
-                      <ProductScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <ProductScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
                     path="/cart"
                     element={
-                      <CartScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <CartScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
                     path="/cart/shipping"
                     element={
-                      <ShippingScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <ShippingScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
@@ -220,29 +205,20 @@ function AppContent() {
                   <Route
                     path="/cart/order/:id"
                     element={
-                      <OrderScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <OrderScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
                     path="/signin"
                     element={
-                      <SigninScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <SigninScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route
                     path="/admin"
                     element={
                       userInfo ? (
-                        <AdminScreen
-                          pageVariants={pageVariants}
-                          pageTransition={pageTransition}
-                        />
+                        <AdminScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                       ) : (
                         <NotFoundScreen
                           pageVariants={pageVariants}
@@ -270,24 +246,21 @@ function AppContent() {
                   <Route
                     path="/booking"
                     element={
-                      <BookingScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <BookingScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                   <Route path="/termos-e-condicoes" element={<TermosCondicoesScreen />} />
                   <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadeScreen />} />
                   <Route path="/politica-de-cookies" element={<PoliticaCookiesScreen />} />
-                  <Route path="/direito-de-arrependimento" element={<DireitoArrependimentoScreen />} />
+                  <Route
+                    path="/direito-de-arrependimento"
+                    element={<DireitoArrependimentoScreen />}
+                  />
                   <Route path="/politica-de-devolucoes" element={<PoliticaDevolucoes />} />
                   <Route
                     path="*"
                     element={
-                      <NotFoundScreen
-                        pageVariants={pageVariants}
-                        pageTransition={pageTransition}
-                      />
+                      <NotFoundScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
                 </Routes>

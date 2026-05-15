@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import { notyf } from "../utils/notyf";
-import { motion } from "framer-motion";
-import $ from "jquery";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useSwipeable } from "react-swipeable";
-import Lightbox from "yet-another-react-lightbox";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import useScrollLock from "../hooks/useScrollLock";
-import LoadingBox from "../components/LoadingBox";
-import MessageBox from "../components/MessageBox";
-import Placeholder from "../components/Placeholder";
-import { detailsProduct } from "../actions/productActions";
-import { addToCart } from "../actions/cartActions";
-import { sizes, scrollTop } from "../utils";
+import { motion } from 'framer-motion';
+import $ from 'jquery';
+import { useEffect, useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
+import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import { addToCart } from '../actions/cartActions';
+import { detailsProduct } from '../actions/productActions';
+import LoadingBox from '../components/LoadingBox';
+import MessageBox from '../components/MessageBox';
+import Placeholder from '../components/Placeholder';
+import useScrollLock from '../hooks/useScrollLock';
+import { scrollTop, sizes } from '../utils';
+import { notyf } from '../utils/notyf';
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ export default function ProductScreen(props) {
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error, errorStatus } = productDetails;
   const [qty, setQty] = useState(1);
-  const [chosenSize, setChosenSize] = useState("");
+  const [chosenSize, setChosenSize] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,7 +34,7 @@ export default function ProductScreen(props) {
 
   useEffect(() => {
     if (errorStatus === 404 || errorStatus === 403) {
-      navigate("/not-found");
+      navigate('/not-found');
     }
   }, [errorStatus, navigate]);
 
@@ -65,13 +65,13 @@ export default function ProductScreen(props) {
         </select>
       </>
     ) : (
-      <span style={{ color: "red", textTransform: "uppercase" }}>Sold Out</span>
+      <span style={{ color: 'red', textTransform: 'uppercase' }}>Sold Out</span>
     );
   };
 
   const addToCartHandler = async () => {
     dispatch(addToCart(productId, qty, chosenSize));
-    window.__cartNav = () => navigate("/cart");
+    window.__cartNav = () => navigate('/cart');
     notyf.success({
       icon: false,
       message: `${product.name} added to <span class="notyf-cart" onclick="window.__cartNav()">Cart</span>`,
@@ -95,12 +95,12 @@ export default function ProductScreen(props) {
   });
 
   const imageLoaded = (id) => {
-    $(`#${id}-carousel-img`).addClass("show");
+    $(`#${id}-carousel-img`).addClass('show');
     setLoadedCarousel((prev) => new Set([...prev, id]));
   };
 
   const previewImageLoaded = (id) => {
-    $(`#${id}-preview-img`).addClass("show");
+    $(`#${id}-preview-img`).addClass('show');
     setLoadedPreviews((prev) => new Set([...prev, id]));
   };
 
@@ -125,16 +125,12 @@ export default function ProductScreen(props) {
       ) : (
         <div className="product-screen-container row center">
           <div className="product-images">
-            <div
-              id="productImageCarousel"
-              className="carousel slide"
-              data-interval="false"
-            >
+            <div id="productImageCarousel" className="carousel slide" data-interval="false">
               <div {...swipeHandlers} className="carousel-inner">
                 {product.images.map((image, index) => (
                   <div
                     key={image}
-                    className={`carousel-item product-image ${index === currentIndex ? "active" : ""}`}
+                    className={`carousel-item product-image ${index === currentIndex ? 'active' : ''}`}
                   >
                     <Placeholder height="100%" hide={loadedCarousel.has(index)}>
                       <div
@@ -160,11 +156,7 @@ export default function ProductScreen(props) {
                 >
                   <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                 </button>
-                <button
-                  className="carousel-control-next"
-                  onClick={next}
-                  aria-label="Next image"
-                >
+                <button className="carousel-control-next" onClick={next} aria-label="Next image">
                   <span className="carousel-control-next-icon" aria-hidden="true"></span>
                 </button>
               </div>
@@ -172,7 +164,7 @@ export default function ProductScreen(props) {
                 {product.images.map((image, index) => (
                   <li
                     key={index}
-                    className={index === currentIndex ? "active" : ""}
+                    className={index === currentIndex ? 'active' : ''}
                     onClick={() => setCurrentIndex(index)}
                   ></li>
                 ))}
@@ -180,16 +172,9 @@ export default function ProductScreen(props) {
             </div>
             <div className="image-preview-container">
               {product.images.map((image, index) => (
-                <div
-                  key={image}
-                  className="image-preview"
-                  onClick={() => setCurrentIndex(index)}
-                >
+                <div key={image} className="image-preview" onClick={() => setCurrentIndex(index)}>
                   <Placeholder height="100%" hide={loadedPreviews.has(index)}>
-                    <div
-                      id={`${index}-preview-img`}
-                      className="image-preview-inner"
-                    >
+                    <div id={`${index}-preview-img`} className="image-preview-inner">
                       <LazyLoadImage
                         src={image}
                         alt="product"
@@ -210,7 +195,12 @@ export default function ProductScreen(props) {
               view: ({ index }) => setImageIndex(index),
             }}
             plugins={[Zoom]}
-            zoom={{ maxZoomPixelRatio: 5, zoomInMultiplier: 2, pinchZoomDistanceFactor: 100, wheelZoomDistanceFactor: 100 }}
+            zoom={{
+              maxZoomPixelRatio: 5,
+              zoomInMultiplier: 2,
+              pinchZoomDistanceFactor: 100,
+              wheelZoomDistanceFactor: 100,
+            }}
             noScroll={{ disabled: true }}
           />
           <div className="product-details">
@@ -232,23 +222,20 @@ export default function ProductScreen(props) {
                   <div key={size} className="size-option">
                     <button
                       onClick={() => selectSize(size)}
-                      className={`secondary ${
-                        size === chosenSize ? "active" : ""
-                      }`}
+                      className={`secondary ${size === chosenSize ? 'active' : ''}`}
                       type="button"
                       disabled={
-                        size === "xs"
+                        size === 'xs'
                           ? availability(product.countInStock.xs)
-                          : size === "s"
-                          ? availability(product.countInStock.s)
-                          : size === "m"
-                          ? availability(product.countInStock.m)
-                          : size === "l"
-                          ? availability(product.countInStock.l)
-                          : size === "xl"
-                          ? availability(product.countInStock.xl)
-                          : size === "xxl" &&
-                            availability(product.countInStock.xxl)
+                          : size === 's'
+                            ? availability(product.countInStock.s)
+                            : size === 'm'
+                              ? availability(product.countInStock.m)
+                              : size === 'l'
+                                ? availability(product.countInStock.l)
+                                : size === 'xl'
+                                  ? availability(product.countInStock.xl)
+                                  : size === 'xxl' && availability(product.countInStock.xxl)
                       }
                     >
                       {size}
@@ -258,7 +245,7 @@ export default function ProductScreen(props) {
               </div>
             )}
             <div className="qty">
-              <b>Quantity:</b>{" "}
+              <b>Quantity:</b>{' '}
               {product.isClothing
                 ? !chosenSize
                   ? product.countInStock.xs +
@@ -270,17 +257,17 @@ export default function ProductScreen(props) {
                     0
                     ? selectQty(qty)
                     : selectQty(0)
-                  : chosenSize === "xs"
-                  ? selectQty(product.countInStock.xs)
-                  : chosenSize === "s"
-                  ? selectQty(product.countInStock.s)
-                  : chosenSize === "m"
-                  ? selectQty(product.countInStock.m)
-                  : chosenSize === "l"
-                  ? selectQty(product.countInStock.l)
-                  : chosenSize === "xl"
-                  ? selectQty(product.countInStock.xl)
-                  : chosenSize === "xxl" && selectQty(product.countInStock.xxl)
+                  : chosenSize === 'xs'
+                    ? selectQty(product.countInStock.xs)
+                    : chosenSize === 's'
+                      ? selectQty(product.countInStock.s)
+                      : chosenSize === 'm'
+                        ? selectQty(product.countInStock.m)
+                        : chosenSize === 'l'
+                          ? selectQty(product.countInStock.l)
+                          : chosenSize === 'xl'
+                            ? selectQty(product.countInStock.xl)
+                            : chosenSize === 'xxl' && selectQty(product.countInStock.xxl)
                 : selectQty(product.countInStock.stock)}
             </div>
             <div className="add-to-cart">

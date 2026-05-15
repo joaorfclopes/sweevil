@@ -1,13 +1,13 @@
 export const cancelBooking = ({ booking }) => {
-  const dateStr = new Date(booking.date).toLocaleDateString("pt-PT", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const dateStr = new Date(booking.date).toLocaleDateString('pt-PT', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
-  const brand = process.env.BRAND_NAME || "Sweevil";
-  const homeUrl = process.env.VITE_HOME_PAGE || "";
-  const contactEmail = process.env.VITE_SENDER_EMAIL_ADDRESS || "";
+  const brand = process.env.BRAND_NAME || 'Sweevil';
+  const homeUrl = process.env.VITE_HOME_PAGE || '';
+  const contactEmail = process.env.VITE_SENDER_EMAIL_ADDRESS || '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -23,9 +23,11 @@ export const cancelBooking = ({ booking }) => {
       <tr>
         <td style="background:#1a1a1a;padding:24px;text-align:center;">
           <a href="${homeUrl}" style="text-decoration:none;">
-            ${process.env.BRAND_LOGO
-              ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
-              : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`}
+            ${
+              process.env.BRAND_LOGO
+                ? `<img src="${process.env.BRAND_LOGO}" alt="${brand}" width="150" style="display:block;margin:0 auto;" />`
+                : `<span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:2px;">${brand}</span>`
+            }
           </a>
         </td>
       </tr>
@@ -50,19 +52,27 @@ export const cancelBooking = ({ booking }) => {
                   <span style="color:#1a1a1a;font-size:15px;">${booking.slot}</span>
                 </td>
               </tr>
-              ${booking.isPaid ? `
+              ${
+                booking.isPaid
+                  ? `
               <tr>
                 <td style="padding:8px 20px;">
                   <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Deposit</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.price.toFixed(2)}€</span>
                 </td>
-              </tr>` : ""}
+              </tr>`
+                  : ''
+              }
             </tbody>
           </table>
-          ${booking.isPaid ? `
+          ${
+            booking.isPaid
+              ? `
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
             Please note that deposits are non-refundable in the event of a cancellation.
-          </p>` : ""}
+          </p>`
+              : ''
+          }
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
             If you believe this is a mistake or have any questions, please contact us at
             <a href="mailto:${contactEmail}" style="color:#1a1a1a;">${contactEmail}</a>.
