@@ -1,4 +1,5 @@
 import express from 'express';
+import * as Sentry from '@sentry/node';
 import Stripe from 'stripe';
 import { placedOrder } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
@@ -57,6 +58,7 @@ const handleOrderPaid = async (paymentIntent) => {
             invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
         } catch (e) {
+          Sentry.captureException(e);
           console.error('[webhook] Failed to process invoice:', e.message);
         }
       }
@@ -96,6 +98,7 @@ const handleOrderPaid = async (paymentIntent) => {
       await Order.findByIdAndUpdate(order._id, { confirmationEmailSent: true });
       console.log(`[webhook] Confirmation email sent for order ${orderId}`);
     } catch (e) {
+      Sentry.captureException(e);
       console.error('[webhook] Failed to send confirmation email:', e.message);
     }
   }
@@ -137,6 +140,7 @@ const handleBookingPaid = async (paymentIntent) => {
             invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
           }
         } catch (e) {
+          Sentry.captureException(e);
           console.error('[webhook] Failed to process booking invoice:', e.message);
         }
       }
@@ -144,6 +148,7 @@ const handleBookingPaid = async (paymentIntent) => {
       await Booking.findByIdAndUpdate(booking._id, { confirmationEmailSent: true });
       console.log(`[webhook] Confirmation email sent for booking ${bookingId}`);
     } catch (e) {
+      Sentry.captureException(e);
       console.error('[webhook] Failed to send booking confirmation email:', e.message);
     }
   }
@@ -198,6 +203,7 @@ webhookRouter.post('/stripe', async (req, res) => {
         await handleBookingPaid(pi);
       }
     } catch (err) {
+      Sentry.captureException(err);
       console.error('[webhook] Handler error:', err.message);
     }
   }
@@ -207,6 +213,7 @@ webhookRouter.post('/stripe', async (req, res) => {
     try {
       await handlePaymentFailed(pi);
     } catch (err) {
+      Sentry.captureException(err);
       console.error('[webhook] Payment failed handler error:', err.message);
     }
   }
