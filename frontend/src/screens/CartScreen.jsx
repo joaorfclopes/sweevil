@@ -56,7 +56,7 @@ export default function CartScreen(props) {
   const undoFnRef = useRef(null);
 
   const removeFromCartHandler = (item) => {
-    dispatch(removeFromCart(item.product));
+    dispatch(removeFromCart(item.product, item.name));
     undoFnRef.current = () => {
       dispatch(addToCart(item.product, item.qty, item.size));
       notyf.dismissAll();
@@ -64,7 +64,7 @@ export default function CartScreen(props) {
     window.__cartUndo = () => undoFnRef.current?.();
     notyf.error({
       icon: false,
-      message: `${item.name} removed from cart &nbsp;<span class="notyf-undo" onclick="window.__cartUndo()">Undo</span>`,
+      message: `"${item.name}" removed from cart &nbsp;<span class="notyf-undo" onclick="window.__cartUndo()">Undo</span>`,
       dismissible: true,
       duration: 5000,
     });

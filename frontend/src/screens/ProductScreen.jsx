@@ -74,7 +74,7 @@ export default function ProductScreen(props) {
     window.__cartNav = () => navigate('/cart');
     notyf.success({
       icon: false,
-      message: `${product.name} added to <span class="notyf-cart" onclick="window.__cartNav()">Cart</span>`,
+      message: `"${product.name}" added to <span class="notyf-cart" onclick="window.__cartNav()">Cart</span>`,
       dismissible: true,
     });
   };

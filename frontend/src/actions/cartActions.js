@@ -25,12 +25,12 @@ export const addToCart = (productId, qty, size) => async (dispatch, getState) =>
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
 };
 
-export const removeFromCart = (productId) => async (dispatch, getState) => {
+export const removeFromCart = (productId, name) => async (dispatch, getState) => {
   dispatch({
     type: CART_REMOVE_ITEM,
     payload: productId,
   });
-  console.log(`[cart] Removed product ${productId}`);
+  console.log(`[cart] Removed "${name}"`);
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
 };
 
