@@ -33,7 +33,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Axios from 'axios';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { convertIfHeic } from '../utils/convertHeic';
@@ -148,13 +148,53 @@ function SortableCategoryChip({ id, name, dbCat, canDelete, isActive, onEdit, on
   );
 }
 
+// ─── Shared IntersectionObserver for all lazy images ─────────────────────────
+
+const _lazyCallbacks = new Map();
+const _lazyObserver =
+  typeof IntersectionObserver !== 'undefined'
+    ? new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const cb = _lazyCallbacks.get(entry.target);
+              if (cb) {
+                cb();
+                _lazyObserver.unobserve(entry.target);
+                _lazyCallbacks.delete(entry.target);
+              }
+            }
+          });
+        },
+        { rootMargin: '300px' }
+      )
+    : null;
+
+function LazyImg({ src, alt, ...props }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !_lazyObserver) return;
+    _lazyCallbacks.set(el, () => setVisible(true));
+    _lazyObserver.observe(el);
+    return () => {
+      _lazyObserver.unobserve(el);
+      _lazyCallbacks.delete(el);
+    };
+  }, []);
+
+  return <img ref={ref} src={visible ? src : undefined} alt={alt} {...props} />;
+}
+
 // ─── Plain card (used in DragOverlay) ────────────────────────────────────────
 
 function PlainCard({ item }) {
   return (
     <div className="gallery-image gallery-admin-card-wrapper">
       <div className="gallery-image-inner">
-        <img src={item.image} alt={item.description || item.category} loading="lazy" />
+        <img src={item.image} alt={item.description || item.category} />
       </div>
     </div>
   );
@@ -162,7 +202,7 @@ function PlainCard({ item }) {
 
 // ─── Sortable card ────────────────────────────────────────────────────────────
 
-function SortableCard({ item, onEdit, onDelete, isActive }) {
+const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActive }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item._id,
   });
@@ -176,7 +216,7 @@ function SortableCard({ item, onEdit, onDelete, isActive }) {
   return (
     <div ref={setNodeRef} style={style} className="gallery-image gallery-admin-card-wrapper">
       <div className="gallery-image-inner">
-        <img src={item.image} alt={item.description || item.category} loading="lazy" />
+        <LazyImg src={item.image} alt={item.description || item.category} />
       </div>
       {item.category && <span className="gallery-admin-category-badge">{item.category}</span>}
       <div className="gallery-admin-overlay">
@@ -213,7 +253,7 @@ function SortableCard({ item, onEdit, onDelete, isActive }) {
       </div>
     </div>
   );
-}
+});
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -440,12 +480,12 @@ export default function GalleryAdminTab() {
 
   // ── Edit ──
 
-  const openEdit = (item) => {
+  const openEdit = useCallback((item) => {
     setEditItem(item);
     setEditDescription(item.description || '');
     setEditCategory(item.category);
     setEditOpen(true);
-  };
+  }, []);
 
   const handleEditSubmit = () => {
     if (!editItem) return;
@@ -456,7 +496,7 @@ export default function GalleryAdminTab() {
 
   // ── Delete ──
 
-  const handleDelete = (item) => {
+  const handleDelete = useCallback((item) => {
     Swal.fire({
       title: 'Delete this image?',
       text: 'This cannot be undone.',
@@ -466,7 +506,7 @@ export default function GalleryAdminTab() {
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteGalleryImage(item._id));
     });
-  };
+  }, [dispatch]);
 
   // ── Category delete ──
 
@@ -520,19 +560,29 @@ export default function GalleryAdminTab() {
   const activeItem = activeId ? items.find((i) => i._id === activeId) : null;
 
   // catItems is the ordered DB list; merge with any image-derived names not yet in DB
-  const dbCategoryByName = Object.fromEntries(catItems.map((c) => [c.name, c]));
-  const dbCategoryNames = new Set(catItems.map((c) => c.name));
-  const imageDerivedExtras = [...new Set(items.map((img) => img.category).filter(Boolean))]
-    .filter((n) => !dbCategoryNames.has(n))
-    .sort();
-  // ordered: DB order first, then any image-derived stragglers
-  const allCategoryNames = [...catItems.map((c) => c.name), ...imageDerivedExtras];
+  const { dbCategoryByName, allCategoryNames } = useMemo(() => {
+    const byName = Object.fromEntries(catItems.map((c) => [c.name, c]));
+    const dbNames = new Set(catItems.map((c) => c.name));
+    const extras = [...new Set(items.map((img) => img.category).filter(Boolean))]
+      .filter((n) => !dbNames.has(n))
+      .sort();
+    return {
+      dbCategoryByName: byName,
+      allCategoryNames: [...catItems.map((c) => c.name), ...extras],
+    };
+  }, [catItems, items]);
 
   // Usage count per category across all images
-  const categoryUsage = items.reduce((acc, img) => {
-    if (img.category) acc[img.category] = (acc[img.category] || 0) + 1;
-    return acc;
-  }, {});
+  const categoryUsage = useMemo(
+    () =>
+      items.reduce((acc, img) => {
+        if (img.category) acc[img.category] = (acc[img.category] || 0) + 1;
+        return acc;
+      }, {}),
+    [items]
+  );
+
+  const sortableIds = useMemo(() => displayItems.map((i) => i._id), [displayItems]);
 
   const handleAddCategory = () => {
     const name = newCategoryName.trim();
@@ -805,7 +855,7 @@ export default function GalleryAdminTab() {
                 onDragCancel={() => setActiveId(null)}
               >
                 <SortableContext
-                  items={displayItems.map((i) => i._id)}
+                  items={sortableIds}
                   strategy={rectSortingStrategy}
                 >
                   <div className="gallery-admin-flex">
