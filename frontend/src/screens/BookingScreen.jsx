@@ -214,7 +214,7 @@ export default function BookingScreen(props) {
         images: uploadedUrls,
       });
       setBooking(createdBooking);
-      Sentry.metrics.count('booking.form_submitted', 1);
+      Sentry.metrics.count('booking.submit_attempted', 1);
       console.log(
         `[booking] Created — ${createdBooking._id}, ${dateKey} ${selectedSlot} for ${formData.email}`
       );

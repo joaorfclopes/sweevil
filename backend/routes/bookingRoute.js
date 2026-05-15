@@ -128,7 +128,7 @@ bookingRouter.post(
       confirmToken,
     });
     const created = await booking.save();
-    Sentry.metrics.count('booking.form_submitted', 1);
+    Sentry.metrics.count('booking.created', 1);
     console.log(
       `[booking] Created booking ${created._id} — ${slot} on ${date} for ${guestInfo.email}`
     );

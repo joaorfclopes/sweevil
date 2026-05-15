@@ -48,8 +48,6 @@ function StripeCheckoutForm({ order, dispatch, token }) {
       setStripeError(error.message);
       setPaying(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      Sentry.metrics.count('order.completed', 1);
-      Sentry.metrics.gauge('order.amount', order.totalPrice);
       dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
     }
   };

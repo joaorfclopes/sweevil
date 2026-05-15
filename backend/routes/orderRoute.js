@@ -171,7 +171,7 @@ orderRouter.post(
       confirmToken,
     });
     const createdOrder = await order.save();
-    Sentry.metrics.count('order.placed', 1);
+    Sentry.metrics.count('order.created', 1);
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
