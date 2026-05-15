@@ -88,6 +88,7 @@ orderRouter.put(
       order.sentAt = Date.now();
       order.status = 'SENT';
       const updatedOrder = await order.save();
+      console.log(`[order] Order ${updatedOrder._id} marked as sent`);
       res.send({ message: 'Order sent', order: updatedOrder });
     } else {
       res.status(404).send({ message: 'Order not found' });
@@ -106,6 +107,7 @@ orderRouter.put(
       order.deliveredAt = Date.now();
       order.status = 'DELIVERED';
       const updatedOrder = await order.save();
+      console.log(`[order] Order ${updatedOrder._id} marked as delivered`);
       res.send({ message: 'Order delivered', order: updatedOrder });
     } else {
       res.status(404).send({ message: 'Order not found' });
@@ -195,6 +197,7 @@ orderRouter.post(
       }),
     });
 
+    console.log(`[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingAddress.email} (${shippingAddress.country})`);
     res
       .status(201)
       .send({ message: 'New order created', order: { ...createdOrder.toObject(), confirmToken } });
@@ -414,6 +417,7 @@ orderRouter.put(
       });
       await Order.findByIdAndUpdate(updatedOrder._id, { confirmationEmailSent: true });
     }
+    console.log(`[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingAddress.email}`);
 
     res.send({ message: 'Order paid', order: updatedOrder });
   })
@@ -442,6 +446,7 @@ orderRouter.put(
       }
     }
     const updatedOrder = await order.save();
+    console.log(`[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: ${isAdminUser ? 'admin' : 'customer'}`);
 
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,

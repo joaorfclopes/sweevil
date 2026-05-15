@@ -1,1 +1,1 @@
-npx lint-staged
+npx prettier --write "**/*.{js,jsx,css,scss,json}" --ignore-path .gitignore

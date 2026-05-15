@@ -1,1 +1,1 @@
-web: node --experimental-modules backend/server.js
+web: node --import ./backend/instrument.js backend/server.js

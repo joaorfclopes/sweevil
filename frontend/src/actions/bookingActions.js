@@ -41,6 +41,7 @@ export const cancelBooking = (bookingId) => async (dispatch) => {
   try {
     await Axios.put(`/api/bookings/${bookingId}/cancel`, {});
     dispatch({ type: BOOKING_CANCEL_SUCCESS });
+    console.log(`[booking] Cancelled — ${bookingId}`);
   } catch (error) {
     dispatch({
       type: BOOKING_CANCEL_FAIL,
@@ -54,6 +55,7 @@ export const deleteBooking = (bookingId) => async (dispatch) => {
   try {
     await Axios.delete(`/api/bookings/${bookingId}`);
     dispatch({ type: BOOKING_DELETE_SUCCESS });
+    console.log(`[booking] Deleted — ${bookingId}`);
   } catch (error) {
     dispatch({
       type: BOOKING_DELETE_FAIL,

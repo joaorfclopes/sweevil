@@ -72,6 +72,7 @@ productRouter.post(
       visible,
     });
     const createdProduct = await product.save();
+    console.log(`[product] Created "${createdProduct.name}" (${createdProduct._id}) — €${createdProduct.price}, visible: ${createdProduct.visible}`);
     res.send({ message: 'Product created', product: createdProduct });
   })
 );
@@ -92,6 +93,7 @@ productRouter.put(
       product.description = req.body.description;
       product.visible = req.body.visible;
       const updatedProduct = await product.save();
+      console.log(`[product] Updated "${updatedProduct.name}" (${updatedProduct._id}) — €${updatedProduct.price}, visible: ${updatedProduct.visible}`);
       res.send({ message: 'Product updated', product: updatedProduct });
     } else {
       res.status(404).send({ message: 'Product not Found' });
@@ -108,6 +110,7 @@ productRouter.delete(
     if (product) {
       await product.deleteOne();
       await deleteAllFromS3(product.images);
+      console.log(`[product] Deleted "${product.name}" (${product._id})`);
       res.send({ message: 'Product deleted', product });
     } else {
       res.status(404).send({ message: 'Product not Found' });

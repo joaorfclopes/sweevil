@@ -127,6 +127,7 @@ bookingRouter.post(
       confirmToken,
     });
     const created = await booking.save();
+    console.log(`[booking] Created booking ${created._id} — ${slot} on ${date} for ${guestInfo.email}`);
     res.status(201).json(created);
   })
 );
@@ -211,6 +212,7 @@ bookingRouter.post(
     booking.stripeInvoiceId = invoice.id;
     booking.paymentResult = { id: paymentIntent.id };
     await booking.save();
+    console.log(`[booking] Payment intent created for booking ${booking._id} — €${booking.price}`);
 
     res.json({ clientSecret: paymentIntent.client_secret });
   })
@@ -293,6 +295,7 @@ bookingRouter.put(
       await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
       await Booking.findByIdAndUpdate(updated._id, { confirmationEmailSent: true });
     }
+    console.log(`[booking] Booking ${updated._id} confirmed — ${updated.slot} on ${updated.date.toISOString().split('T')[0]} for ${updated.guestInfo.email}`);
 
     res.json({ message: 'Booking confirmed', booking: updated });
   })
@@ -307,6 +310,7 @@ bookingRouter.put(
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
     booking.status = 'CANCELED';
     const updated = await booking.save();
+    console.log(`[booking] Booking ${updated._id} cancelled — ${updated.slot} on ${updated.date.toISOString().split('T')[0]} for ${updated.guestInfo.email}`);
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
     await sendMail({
       from,
@@ -327,6 +331,7 @@ bookingRouter.delete(
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
     await booking.deleteOne();
     await deleteAllFromS3(booking.images);
+    console.log(`[booking] Booking ${booking._id} deleted`);
     res.json({ message: 'Booking deleted' });
   })
 );

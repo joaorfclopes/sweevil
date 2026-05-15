@@ -50,6 +50,7 @@ availabilityRouter.post(
       price,
     });
     const created = await availability.save();
+    console.log(`[availability] Added ${new Date(date).toISOString().split('T')[0]} — €${price}, ${slots.length} slot(s)`);
     res.status(201).json(created);
   })
 );
@@ -67,6 +68,7 @@ availabilityRouter.put(
     if (slots !== undefined) availability.slots = slots;
     if (price !== undefined) availability.price = price;
     const updated = await availability.save();
+    console.log(`[availability] Updated ${updated.date.toISOString().split('T')[0]} — €${updated.price}`);
     res.json(updated);
   })
 );
@@ -81,6 +83,7 @@ availabilityRouter.delete(
       return res.status(404).json({ message: 'Availability not found' });
     }
     await availability.deleteOne();
+    console.log(`[availability] Removed ${availability.date.toISOString().split('T')[0]}`);
     res.json({ message: 'Availability removed' });
   })
 );

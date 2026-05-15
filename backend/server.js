@@ -9,7 +9,6 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import path from 'path';
 import { getAuth } from './auth.js';
-import './instrument.js';
 import aboutRoute from './routes/aboutRoute.js';
 import availabilityRoute from './routes/availabilityRoute.js';
 import bookingRoute from './routes/bookingRoute.js';
@@ -172,7 +171,10 @@ const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '/frontend/build')));
-  app.get('*', (req, res) => res.sendFile(path.join(__dirname, '/frontend/build/index.html')));
+  app.get('*', (req, res) => {
+    res.set('Document-Policy', 'js-profiling');
+    res.sendFile(path.join(__dirname, '/frontend/build/index.html'));
+  });
 } else {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.get('*', (_req, res) => res.redirect(frontendUrl));

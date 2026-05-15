@@ -105,6 +105,7 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
 
       const region = process.env.AWS_REGION || 'us-east-1';
       const location = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
+      console.log(`[upload] Image uploaded to ${folder}/ — ${key}`);
       res.json({ location });
     } catch (processingErr) {
       next(processingErr);
@@ -143,6 +144,7 @@ uploadRouter.post('/booking-images', bookingUploadLimiter, (req, res, next) => {
           return `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
         })
       );
+      console.log(`[upload] ${urls.length} booking image(s) uploaded`);
       res.json({ urls });
     } catch (processingErr) {
       next(processingErr);
@@ -159,6 +161,7 @@ uploadRouter.delete('/s3', isAuth, isAdmin, async (req, res) => {
       return res.status(400).json({ message: 'Invalid key' });
     }
     await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
+    console.log(`[upload] Image deleted — ${key}`);
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -49,6 +49,7 @@ function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
       redirect: 'if_required',
     });
     if (error) {
+      console.warn(`[booking] Stripe error — ${error.message}`);
       setStripeError(error.message);
       setPaying(false);
     } else if (paymentIntent?.status === 'succeeded') {
@@ -211,6 +212,7 @@ export default function BookingScreen(props) {
         images: uploadedUrls,
       });
       setBooking(createdBooking);
+      console.log(`[booking] Created — ${createdBooking._id}, ${dateKey} ${selectedSlot} for ${formData.email}`);
 
       const { data: piData } = await Axios.post(
         `/api/bookings/${createdBooking._id}/create-payment-intent`,
@@ -223,7 +225,9 @@ export default function BookingScreen(props) {
 
       setStep(STEPS.PAYMENT);
     } catch (err) {
-      setSubmitError(err.response?.data?.message || 'Something went wrong.');
+      const msg = err.response?.data?.message || 'Something went wrong.';
+      console.warn(`[booking] Form submit error — ${msg}`);
+      setSubmitError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -235,9 +239,12 @@ export default function BookingScreen(props) {
         paymentIntentId,
         confirmToken: booking.confirmToken,
       });
+      console.log(`[booking] Payment confirmed — ${booking._id}`);
       setStep(STEPS.CONFIRMED);
     } catch (err) {
-      setSubmitError(err.response?.data?.message || 'Payment verification failed.');
+      const msg = err.response?.data?.message || 'Payment verification failed.';
+      console.warn(`[booking] Payment verification failed — ${booking._id} — ${msg}`);
+      setSubmitError(msg);
     }
   };
 

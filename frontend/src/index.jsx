@@ -13,6 +13,15 @@ import './style/index.scss';
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   sendDefaultPii: true,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.browserProfilingIntegration(),
+    Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+  ],
+  enableLogs: true,
+  tracesSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
+  profileSessionSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
+  tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
 });
 
 smoothscroll.polyfill();

@@ -5,14 +5,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend": "nodemon --watch backend --exec node backend/server.js",
-    "backend:debug": "nodemon --inspect backend/server.js",
+    "backend": "nodemon --watch backend --exec \"node --import ./backend/instrument.js backend/server.js\"",
+    "backend:debug": "nodemon --inspect --import ./backend/instrument.js backend/server.js",
     "frontend": "node scripts/start-frontend.mjs",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "start:debug": "concurrently \"npm run backend:debug\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
-    "deploy": "npm run build && git push heroku master --force",
+    "sentry:release": "VERSION=$(git rev-parse HEAD) && npx @sentry/cli releases new $VERSION --org $SENTRY_ORG --project sweevil-backend && npx @sentry/cli releases set-commits $VERSION --auto --org $SENTRY_ORG --project sweevil-backend && npx @sentry/cli releases finalize $VERSION --org $SENTRY_ORG --project sweevil-backend",
+    "deploy": "npm run build && git push heroku master --force && npm run sentry:release",
     "prepare": "husky"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "@aws-sdk/lib-storage": "^3.713.0",
     "@better-auth/passkey": "^1.6.9",
     "@sentry/node": "^9.47.1",
+    "@sentry/profiling-node": "^9.47.1",
     "@simplewebauthn/server": "^13.3.0",
     "bcryptjs": "^2.4.3",
     "better-auth": "^1.6.9",

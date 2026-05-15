@@ -37,11 +37,11 @@ export const createOrder = (order) => async (dispatch) => {
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: data.order });
     dispatch({ type: CART_EMPTY });
     localStorage.removeItem('cartItems');
+    console.log(`[order] Created — ${data.order._id}`);
   } catch (error) {
-    dispatch({
-      type: ORDER_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
+    const msg = error.response?.data?.message || error.message;
+    console.warn(`[order] Create failed — ${msg}`);
+    dispatch({ type: ORDER_CREATE_FAIL, payload: msg });
   }
 };
 
@@ -64,17 +64,18 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
   try {
     const { data } = await Axios.put(`/api/orders/${order._id}/pay`, paymentResult);
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
+    console.log(`[order] Paid — ${order._id}`);
   } catch (error) {
     if (error.response?.data?.message === 'Order already paid') {
       const { data } = await Axios.get(
         `/api/orders/${order._id}?token=${paymentResult.confirmToken}`
       );
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
+      console.log(`[order] Paid (already confirmed) — ${order._id}`);
     } else {
-      dispatch({
-        type: ORDER_PAY_FAIL,
-        payload: error.response?.data?.message || error.message,
-      });
+      const msg = error.response?.data?.message || error.message;
+      console.warn(`[order] Pay failed — ${order._id} — ${msg}`);
+      dispatch({ type: ORDER_PAY_FAIL, payload: msg });
     }
   }
 };
@@ -117,6 +118,7 @@ export const cancelOrder = (orderId, token) => async (dispatch) => {
       token ? { confirmToken: token } : {}
     );
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
+    console.log(`[order] Cancelled — ${orderId}`);
   } catch (error) {
     dispatch({
       type: ORDER_CANCEL_FAIL,
