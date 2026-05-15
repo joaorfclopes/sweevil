@@ -197,7 +197,9 @@ orderRouter.post(
       }),
     });
 
-    console.log(`[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingAddress.email} (${shippingAddress.country})`);
+    console.log(
+      `[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingAddress.email} (${shippingAddress.country})`
+    );
     res
       .status(201)
       .send({ message: 'New order created', order: { ...createdOrder.toObject(), confirmToken } });
@@ -417,7 +419,9 @@ orderRouter.put(
       });
       await Order.findByIdAndUpdate(updatedOrder._id, { confirmationEmailSent: true });
     }
-    console.log(`[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingAddress.email}`);
+    console.log(
+      `[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingAddress.email}`
+    );
 
     res.send({ message: 'Order paid', order: updatedOrder });
   })
@@ -446,7 +450,9 @@ orderRouter.put(
       }
     }
     const updatedOrder = await order.save();
-    console.log(`[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: ${isAdminUser ? 'admin' : 'customer'}`);
+    console.log(
+      `[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: ${isAdminUser ? 'admin' : 'customer'}`
+    );
 
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,

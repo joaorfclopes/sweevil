@@ -212,7 +212,9 @@ export default function BookingScreen(props) {
         images: uploadedUrls,
       });
       setBooking(createdBooking);
-      console.log(`[booking] Created — ${createdBooking._id}, ${dateKey} ${selectedSlot} for ${formData.email}`);
+      console.log(
+        `[booking] Created — ${createdBooking._id}, ${dateKey} ${selectedSlot} for ${formData.email}`
+      );
 
       const { data: piData } = await Axios.post(
         `/api/bookings/${createdBooking._id}/create-payment-intent`,
