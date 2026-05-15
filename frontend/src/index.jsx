@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import 'notyf/notyf.min.css';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -9,6 +10,12 @@ import App from './App';
 import store from './store';
 import './style/index.scss';
 
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  enabled: Boolean(import.meta.env.VITE_SENTRY_DSN),
+  tracesSampleRate: 0,
+});
+
 smoothscroll.polyfill();
 
 window.__forceSmoothScrollPolyfill__ = true;
@@ -16,6 +23,8 @@ window.__forceSmoothScrollPolyfill__ = true;
 const root = createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <App />
+    <Sentry.ErrorBoundary fallback={<p>Something went wrong. Please refresh.</p>}>
+      <App />
+    </Sentry.ErrorBoundary>
   </Provider>
 );
