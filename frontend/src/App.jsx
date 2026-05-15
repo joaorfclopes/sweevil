@@ -90,16 +90,12 @@ function AppContent() {
   };
 
   const pageVariants = {
-    in: {
-      opacity: 1,
-    },
-    out: {
-      opacity: 0,
-    },
+    in: { opacity: 1 },
+    out: { opacity: 1 },
   };
 
   const pageTransition = {
-    transition: "linear",
+    duration: 0,
   };
 
   useEffect(() => {

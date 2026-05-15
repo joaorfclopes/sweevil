@@ -138,7 +138,7 @@ function PlainCard({ item }) {
   return (
     <div className="gallery-image gallery-admin-card-wrapper">
       <div className="gallery-image-inner">
-        <img src={item.image} alt={item.description || item.category} />
+        <img src={item.image} alt={item.description || item.category} loading="lazy" />
       </div>
     </div>
   );
@@ -168,7 +168,7 @@ function SortableCard({ item, onEdit, onDelete, isActive }) {
       className="gallery-image gallery-admin-card-wrapper"
     >
       <div className="gallery-image-inner">
-        <img src={item.image} alt={item.description || item.category} />
+        <img src={item.image} alt={item.description || item.category} loading="lazy" />
       </div>
       {item.category && (
         <span className="gallery-admin-category-badge">{item.category}</span>

@@ -355,6 +355,7 @@ export default function ProductsTable() {
                               <img
                                 src={safeSrc}
                                 alt={product.name}
+                                loading="lazy"
                                 style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }}
                               />
                             ) : (

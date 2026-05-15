@@ -349,7 +349,7 @@ export default function BookingsAdminTab() {
           ) : errorAvail ? (
             <MessageBox variant="error">{errorAvail}</MessageBox>
           ) : (
-            <Paper sx={{ background: "#fff", display: "inline-block", margin: "0 auto", display: "block", width: "fit-content" }}>
+            <Paper sx={{ background: "#fff", display: "block", margin: "0 auto", width: "fit-content" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateCalendar
                   onChange={handleDayClick}
@@ -396,7 +396,7 @@ export default function BookingsAdminTab() {
         ) : (
           <>
             <TableContainer sx={{ maxHeight: 520 }}>
-              <Table size="small" stickyHeader>
+              <Table stickyHeader>
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
@@ -417,13 +417,13 @@ export default function BookingsAdminTab() {
                           direction={orderBy === id ? sortDir : 'asc'}
                           onClick={() => handleSort(id)}
                         >
-                          {label}
+                          <b>{label}</b>
                         </TableSortLabel>
                       </TableCell>
                     ))}
-                    <TableCell>Notes</TableCell>
-                    <TableCell>Photos</TableCell>
-                    <TableCell align="right">Actions</TableCell>
+                    <TableCell><b>Notes</b></TableCell>
+                    <TableCell><b>Photos</b></TableCell>
+                    <TableCell align="right"><b>Actions</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -571,6 +571,7 @@ export default function BookingsAdminTab() {
                 <img
                   src={safeUrl === '#' ? '' : safeUrl}
                   alt=""
+                  loading="lazy"
                   style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 4, border: "1px solid #e0e0e0", display: "block" }}
                 />
               </a>
