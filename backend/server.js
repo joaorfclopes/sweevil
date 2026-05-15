@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import * as Sentry from '@sentry/node';
+import './instrument.js';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
@@ -175,6 +177,8 @@ if (process.env.NODE_ENV === 'production') {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.get('*', (_req, res) => res.redirect(frontendUrl));
 }
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use((err, req, res, next) => {
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
