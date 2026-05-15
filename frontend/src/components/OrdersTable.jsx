@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import Collapse from '@mui/material/Collapse';
@@ -161,33 +162,37 @@ export default function OrdersTable() {
         ) : (
           <>
             {/* Toolbar */}
-            <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                <b>Orders ({filtered.length})</b>
-              </Typography>
-              {selected.size > 0 && (
-                <button className="dangerous-outline" onClick={handleBulkDelete}>
-                  Delete {selected.size} selected
-                </button>
-              )}
-              <TextField
-                size="small"
-                placeholder="Search customer, status…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
-                style={{ width: 220 }}
-              />
-              <Tooltip title="Export CSV">
-                <IconButton onClick={handleExportCSV}>
-                  <DownloadIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={open ? "Collapse" : "Expand"}>
-                <IconButton onClick={() => setOpen((v) => !v)}>
+            <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => setOpen((v) => !v)}>
+                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                  <b>Orders ({filtered.length})</b>
+                </Typography>
+                <IconButton tabIndex={-1}>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                 </IconButton>
-              </Tooltip>
+              </Box>
+              {open && (
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  {selected.size > 0 && (
+                    <button className="dangerous-outline" onClick={handleBulkDelete}>
+                      Delete {selected.size} selected
+                    </button>
+                  )}
+                  <TextField
+                    size="small"
+                    placeholder="Search customer, status…"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+                    sx={{ flexGrow: 1 }}
+                  />
+                  <Tooltip title="Export CSV">
+                    <IconButton onClick={handleExportCSV}>
+                      <DownloadIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
             </Toolbar>
 
             <Collapse in={open}>

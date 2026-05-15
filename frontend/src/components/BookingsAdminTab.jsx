@@ -308,15 +308,32 @@ export default function BookingsAdminTab() {
   return (
     <div className="bookings-admin" style={{ marginBottom: "50px" }}>
       <Paper className="paper" style={{ backgroundColor: "#F4F4F4" }}>
-        <Toolbar>
-          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
-            <b>Bookings</b>
-          </Typography>
-          <Tooltip title={sectionOpen ? "Collapse" : "Expand"}>
-            <IconButton onClick={() => setSectionOpen((v) => !v)}>
+        <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => setSectionOpen((v) => !v)}>
+            <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
+              <b>Bookings</b>
+            </Typography>
+            <IconButton tabIndex={-1}>
               {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
-          </Tooltip>
+          </Box>
+          {sectionOpen && (
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <TextField
+                size="small"
+                placeholder="Search guest, email, status…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tooltip title="Export CSV">
+                <IconButton onClick={handleExportBookingsCSV}>
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
         </Toolbar>
 
         <Collapse in={sectionOpen}>
@@ -332,7 +349,7 @@ export default function BookingsAdminTab() {
           ) : errorAvail ? (
             <MessageBox variant="error">{errorAvail}</MessageBox>
           ) : (
-            <Paper sx={{ background: "#fff", display: "inline-block" }}>
+            <Paper sx={{ background: "#fff", display: "inline-block", margin: "0 auto", display: "block", width: "fit-content" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateCalendar
                   onChange={handleDayClick}
@@ -347,7 +364,7 @@ export default function BookingsAdminTab() {
 
         <Divider />
 
-        <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
+        <Toolbar sx={{ gap: 1, py: 1 }}>
           <Typography variant="subtitle2" style={{ color: '#555' }} sx={{ flexGrow: 1 }}>
             <b>Bookings ({filteredBookings.length})</b>
           </Typography>
@@ -356,19 +373,6 @@ export default function BookingsAdminTab() {
               Delete {selected.size} selected
             </button>
           )}
-          <TextField
-            size="small"
-            placeholder="Search guest, email, status…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
-            style={{ width: 240 }}
-          />
-          <Tooltip title="Export CSV">
-            <IconButton onClick={handleExportBookingsCSV}>
-              <DownloadIcon />
-            </IconButton>
-          </Tooltip>
         </Toolbar>
 
         {/* Status filter chips */}

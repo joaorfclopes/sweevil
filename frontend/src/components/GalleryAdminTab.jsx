@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "axios";
 import { convertIfHeic } from "../utils/convertHeic";
+import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
@@ -521,28 +522,32 @@ export default function GalleryAdminTab() {
         {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
         {errorCatCreate && errorCatCreate !== "Category already exists" && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
 
-        <Toolbar sx={{ gap: 1, flexWrap: 'wrap', py: 1 }}>
-          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
-            <b>Gallery</b>
-          </Typography>
-          <TextField
-            size="small"
-            placeholder="Search description…"
-            value={filterDesc}
-            onChange={(e) => setFilterDesc(e.target.value)}
-            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
-            style={{ width: 200 }}
-          />
-          <Tooltip title="Add image">
-            <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
-              <AddIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={sectionOpen ? "Collapse" : "Expand"}>
-            <IconButton onClick={() => setSectionOpen((v) => !v)}>
+        <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => setSectionOpen((v) => !v)}>
+            <Typography className="title" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <b>Gallery</b>
+            </Typography>
+            <IconButton tabIndex={-1}>
               {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
-          </Tooltip>
+          </Box>
+          {sectionOpen && (
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <TextField
+                size="small"
+                placeholder="Search description…"
+                value={filterDesc}
+                onChange={(e) => setFilterDesc(e.target.value)}
+                InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} /> }}
+                sx={{ flexGrow: 1 }}
+              />
+              <Tooltip title="Add image">
+                <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
         </Toolbar>
 
         <Collapse in={sectionOpen}>
