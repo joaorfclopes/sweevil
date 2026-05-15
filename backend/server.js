@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import * as Sentry from '@sentry/node';
 import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
@@ -8,6 +9,7 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import path from 'path';
 import { getAuth } from './auth.js';
+import './instrument.js';
 import aboutRoute from './routes/aboutRoute.js';
 import availabilityRoute from './routes/availabilityRoute.js';
 import bookingRoute from './routes/bookingRoute.js';
@@ -175,6 +177,8 @@ if (process.env.NODE_ENV === 'production') {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.get('*', (_req, res) => res.redirect(frontendUrl));
 }
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use((err, req, res, next) => {
   if (err.name === 'CastError' && err.kind === 'ObjectId') {

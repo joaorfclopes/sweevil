@@ -160,22 +160,31 @@ export default function ProductsTable() {
       : (p.countInStock?.stock ?? 0);
 
   useEffect(() => {
+    dispatch(listProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (successDelete) {
       dispatch({ type: PRODUCT_DELETE_RESET });
+      dispatch(listProducts());
     }
-    dispatch(listProducts());
   }, [dispatch, successDelete]);
+
+  useEffect(() => {
+    dispatch(listProductCategories());
+  }, [dispatch]);
 
   useEffect(() => {
     if (successCatCreate) {
       dispatch({ type: PRODUCT_CATEGORY_CREATE_RESET });
       setNewCatName('');
       setNewCatIsClothing(false);
+      dispatch(listProductCategories());
     }
     if (successCatDelete) {
       dispatch({ type: PRODUCT_CATEGORY_DELETE_RESET });
+      dispatch(listProductCategories());
     }
-    dispatch(listProductCategories());
   }, [dispatch, successCatCreate, successCatDelete]);
 
   const handleAddCategory = () => {
