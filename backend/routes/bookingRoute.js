@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import crypto from 'crypto';
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
@@ -127,6 +128,7 @@ bookingRouter.post(
       confirmToken,
     });
     const created = await booking.save();
+    Sentry.metrics.count('booking.form_submitted', 1);
     console.log(
       `[booking] Created booking ${created._id} — ${slot} on ${date} for ${guestInfo.email}`
     );
@@ -297,6 +299,8 @@ bookingRouter.put(
       await sendBookingEmails(updated, invoicePdfBuffer, invoiceNumber);
       await Booking.findByIdAndUpdate(updated._id, { confirmationEmailSent: true });
     }
+    Sentry.metrics.count('booking.completed', 1);
+    Sentry.metrics.gauge('booking.amount', updated.price);
     console.log(
       `[booking] Booking ${updated._id} confirmed — ${updated.slot} on ${updated.date.toISOString().split('T')[0]} for ${updated.guestInfo.email}`
     );

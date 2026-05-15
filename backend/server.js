@@ -187,11 +187,17 @@ Sentry.setupExpressErrorHandler(app);
 
 app.use((err, req, res, next) => {
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    Sentry.metrics.count('api.error', 1, {
+      tags: { status_code: '404', method: req.method, route: req.path },
+    });
     return res.status(404).send({ message: 'Resource not found' });
   }
   console.error('Error:', err.message);
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
+  Sentry.metrics.count('api.error', 1, {
+    tags: { status_code: String(statusCode), method: req.method, route: req.path },
+  });
   res.status(statusCode).send({
     message: err.message || 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),

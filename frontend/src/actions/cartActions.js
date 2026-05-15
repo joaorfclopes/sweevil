@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import Axios from 'axios';
 import {
   CART_ADD_ITEM,
@@ -21,6 +22,7 @@ export const addToCart = (productId, qty, size) => async (dispatch, getState) =>
       size,
     },
   });
+  Sentry.metrics.count('cart.item_added', 1, { tags: { product_name: data.name } });
   console.log(`[cart] Added "${data.name}" x${qty}${size ? ` (${size})` : ''} — €${data.price}`);
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
 };
@@ -30,6 +32,7 @@ export const removeFromCart = (productId, name) => async (dispatch, getState) =>
     type: CART_REMOVE_ITEM,
     payload: productId,
   });
+  Sentry.metrics.count('cart.item_removed', 1, { tags: { product_name: name } });
   console.log(`[cart] Removed "${name}"`);
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
 };

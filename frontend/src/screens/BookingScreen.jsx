@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DateCalendar, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import * as Sentry from '@sentry/react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
@@ -43,6 +44,7 @@ function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
     if (!stripe || !elements) return;
     setPaying(true);
     setStripeError('');
+    Sentry.metrics.count('booking.payment_initiated', 1);
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: { return_url: window.location.href },
@@ -212,6 +214,7 @@ export default function BookingScreen(props) {
         images: uploadedUrls,
       });
       setBooking(createdBooking);
+      Sentry.metrics.count('booking.form_submitted', 1);
       console.log(
         `[booking] Created — ${createdBooking._id}, ${dateKey} ${selectedSlot} for ${formData.email}`
       );
@@ -241,6 +244,8 @@ export default function BookingScreen(props) {
         paymentIntentId,
         confirmToken: booking.confirmToken,
       });
+      Sentry.metrics.count('booking.completed', 1);
+      Sentry.metrics.gauge('booking.amount', booking.price);
       console.log(`[booking] Payment confirmed — ${booking._id}`);
       setStep(STEPS.CONFIRMED);
     } catch (err) {

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect, useState } from 'react';
@@ -43,6 +44,12 @@ export default function ProductScreen(props) {
     setCurrentIndex(0);
     dispatch(detailsProduct(productId));
   }, [dispatch, productId]);
+
+  useEffect(() => {
+    if (product && product._id) {
+      Sentry.metrics.count('product.viewed', 1, { tags: { product_name: product.name } });
+    }
+  }, [product?._id]);
 
   const availability = (val) => {
     return val <= 0;

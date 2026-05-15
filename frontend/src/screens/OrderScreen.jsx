@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
@@ -37,6 +38,7 @@ function StripeCheckoutForm({ order, dispatch, token }) {
     if (!stripe || !elements) return;
     setPaying(true);
     setStripeError('');
+    Sentry.metrics.count('order.payment_initiated', 1);
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: { return_url: window.location.href },
@@ -46,6 +48,8 @@ function StripeCheckoutForm({ order, dispatch, token }) {
       setStripeError(error.message);
       setPaying(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      Sentry.metrics.count('order.completed', 1);
+      Sentry.metrics.gauge('order.amount', order.totalPrice);
       dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
     }
   };

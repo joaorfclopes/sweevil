@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { fromNodeHeaders } from 'better-auth/node';
 import crypto from 'crypto';
 import express from 'express';
@@ -170,6 +171,7 @@ orderRouter.post(
       confirmToken,
     });
     const createdOrder = await order.save();
+    Sentry.metrics.count('order.placed', 1);
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
@@ -419,6 +421,8 @@ orderRouter.put(
       });
       await Order.findByIdAndUpdate(updatedOrder._id, { confirmationEmailSent: true });
     }
+    Sentry.metrics.count('order.completed', 1);
+    Sentry.metrics.gauge('order.amount', updatedOrder.totalPrice);
     console.log(
       `[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingAddress.email}`
     );

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect } from 'react';
@@ -39,6 +40,7 @@ export default function PlaceOrderScreen(props) {
   const tax = getTax(shippingAddress.country, cart.itemsPrice);
 
   const placeOrderHandler = () => {
+    Sentry.metrics.count('order.placed', 1);
     dispatch(
       createOrder({
         orderItems: cartItems.map(({ product, qty, size }) => ({ product, qty, size })),
