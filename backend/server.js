@@ -106,6 +106,8 @@ app.use(
           'https://m.stripe.com',
           'https://m.stripe.network',
           'https://cdn.jsdelivr.net',
+          'https://*.ingest.de.sentry.io',
+          'https://*.ingest.sentry.io',
         ],
         frameSrc: ['https://js.stripe.com', 'https://m.stripe.com', 'https://m.stripe.network'],
         objectSrc: ["'none'"],
