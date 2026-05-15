@@ -71,8 +71,8 @@ export default function ProductsTable() {
   const [newCatIsClothing, setNewCatIsClothing] = useState(false);
 
   const [search, setSearch] = useState('');
-  const [sortDir, setSortDir] = useState('asc');
-  const [orderBy, setOrderBy] = useState('name');
+  const [sortDir, setSortDir] = useState('desc');
+  const [orderBy, setOrderBy] = useState('updatedAt');
   const [selected, setSelected] = useState(new Set());
 
   const handleSort = (col) => {
