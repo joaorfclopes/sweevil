@@ -10,26 +10,27 @@ availabilityRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
     const availability = await Availability.find({}).sort({ date: 1 });
-    const result = await Promise.all(
-      availability.map(async (avail) => {
-        const bookings = await Booking.find({
-          date: avail.date,
-          status: 'CONFIRMED',
-        });
-        const isDayBooked = bookings.length > 0;
-        const bookedSlots = bookings.map((b) => b.slot);
-        return {
-          _id: avail._id,
-          date: avail.date,
-          price: avail.price,
-          slots: avail.slots.map((s) => ({
-            time: s.time,
-            isAvailable: s.isAvailable,
-            isBooked: isDayBooked || bookedSlots.includes(s.time),
-          })),
-        };
-      })
-    );
+    const dates = availability.map((a) => a.date);
+    const bookings = await Booking.find({ date: { $in: dates }, status: 'CONFIRMED' });
+    const bookingsByDate = bookings.reduce((acc, b) => {
+      const key = b.date.toISOString();
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(b.slot);
+      return acc;
+    }, {});
+    const result = availability.map((avail) => {
+      const bookedSlots = bookingsByDate[avail.date.toISOString()] || [];
+      return {
+        _id: avail._id,
+        date: avail.date,
+        price: avail.price,
+        slots: avail.slots.map((s) => ({
+          time: s.time,
+          isAvailable: s.isAvailable,
+          isBooked: bookedSlots.includes(s.time),
+        })),
+      };
+    });
     res.json(result);
   })
 );
