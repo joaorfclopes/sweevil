@@ -19,8 +19,8 @@ Sentry.init({
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
   ],
   enableLogs: true,
-  tracesSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
-  profileSessionSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
+  tracesSampleRate: 1.0,
+  profileSessionSampleRate: 1.0,
   tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
 });
 
