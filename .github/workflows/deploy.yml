@@ -27,6 +27,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Set Sentry release on Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          curl -s -X PATCH https://api.heroku.com/apps/sweevil/config-vars \
+            -H "Authorization: Bearer $HEROKU_API_KEY" \
+            -H "Accept: application/vnd.heroku+json; version=3" \
+            -H "Content-Type: application/json" \
+            -d "{\"SENTRY_RELEASE\": \"$(git rev-parse HEAD)\"}"
+
       - name: Push to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
