@@ -1,5 +1,5 @@
-@use '../general/globals' as *;
-@use '../general/phone-input' as *;
+@use "../general/globals" as *;
+@use "../general/phone-input" as *;
 
 .shipping {
   .shipping-container {
@@ -9,7 +9,7 @@
     padding-right: 1rem;
 
     @include md {
-      padding-top: 150px;
+      padding-top: 50px;
       padding-left: 3vw;
       padding-right: 3vw;
       display: flex;

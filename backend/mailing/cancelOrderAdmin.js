@@ -5,6 +5,7 @@ export const cancelOrderAdmin = ({
   order: {
     orderId,
     orderDate,
+    isPaid,
     shippingAddress: { fullName, email, phoneNumber },
     orderItems,
     itemsPrice,
@@ -140,7 +141,7 @@ export const cancelOrderAdmin = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Refund Request
+                                  ${isPaid ? "Refund Request" : "Order Canceled"}
                                 </font>
                               </td>
                             </tr>
@@ -169,9 +170,7 @@ export const cancelOrderAdmin = ({
                                 >
                                   Hi ${
                                     process.env.BRAND_NAME
-                                  }, you recieved a refund request from ${formatName(
-    fullName
-  )}!
+                                  }, ${isPaid ? `you recieved a refund request from ${formatName(fullName)}` : `an order was canceled by ${formatName(fullName)}`}!
                                 </font>
                               </td>
                             </tr>
@@ -472,12 +471,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Access your Stripe Dashboard and refund ${totalPrice.toFixed(
-                                                    2
-                                                  )}€ to ${formatName(
-    fullName
-  )} here:
-                                                  https://dashboard.stripe.com/payments
+                                                  ${isPaid ? `Access your Stripe Dashboard and refund ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} here: https://dashboard.stripe.com/payments` : "No payment was made — no refund required."}
                                                 </font>
                                               </td>
                                           </tr>

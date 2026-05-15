@@ -112,12 +112,6 @@ export const cancelOrder = (orderId, token) => async (dispatch) => {
   try {
     const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, token ? { confirmToken: token } : {});
     dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
-    // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post("/api/email/cancelOrder", { order: data.order });
-    if (data.order.isPaid) {
-      // eslint-disable-next-line no-unused-vars
-      const { sendEmailAdmin } = await Axios.post("/api/email/cancelOrderAdmin", { order: data.order });
-    }
   } catch (error) {
     dispatch({
       type: ORDER_CANCEL_FAIL,

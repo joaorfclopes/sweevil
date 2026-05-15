@@ -162,14 +162,17 @@ bookingRouter.post(
     });
 
     // Create invoice for record-keeping and PDF — decoupled from payment collection
-    const invoice = await stripe.invoices.create({
-      customer: customer.id,
-      currency: "eur",
-      collection_method: "send_invoice",
-      days_until_due: 30,
-      auto_advance: false,
-      metadata: { bookingId: booking._id.toString() },
-    });
+    const invoice = await stripe.invoices.create(
+      {
+        customer: customer.id,
+        currency: "eur",
+        collection_method: "send_invoice",
+        days_until_due: 30,
+        auto_advance: false,
+        metadata: { bookingId: booking._id.toString() },
+      },
+      { idempotencyKey: `inv-${booking._id}` }
+    );
 
     await stripe.invoiceItems.create({
       customer: customer.id,
@@ -190,12 +193,16 @@ bookingRouter.post(
     await stripe.invoices.finalizeInvoice(invoice.id);
 
     // Standard PaymentIntent for Stripe Elements checkout
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalCents,
-      currency: "eur",
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      metadata: { bookingId: booking._id.toString(), stripeInvoiceId: invoice.id },
-    });
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: totalCents,
+        currency: "eur",
+        automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+        statement_descriptor_suffix: "Booking",
+        metadata: { bookingId: booking._id.toString(), stripeInvoiceId: invoice.id },
+      },
+      { idempotencyKey: `pi-${booking._id}` }
+    );
 
     booking.stripeInvoiceId = invoice.id;
     booking.paymentResult = { id: paymentIntent.id };

@@ -509,7 +509,7 @@ export default function BookingScreen(props) {
             </div>
           </div>
           <p className="booking-contact-info">
-            <em>Please note that the artist only does one tattoo per day and the booking value is non-refundable.</em>
+            <em>Please note that the booking value is non-refundable.</em>
             <br />
             For price inquiries before booking, please contact:{" "}
             <a href={`mailto:${import.meta.env.VITE_SENDER_EMAIL_ADDRESS}`}>

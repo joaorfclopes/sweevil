@@ -12,6 +12,8 @@ import { getAuth } from "../auth.js";
 import { placedOrder } from "../mailing/placedOrder.js";
 import { placedOrderAdmin } from "../mailing/placedOrderAdmin.js";
 import { orderPendingPayment } from "../mailing/orderPendingPayment.js";
+import { cancelOrder as cancelOrderEmail } from "../mailing/cancelOrder.js";
+import { cancelOrderAdmin as cancelOrderAdminEmail } from "../mailing/cancelOrderAdmin.js";
 import { sendMail } from "../mailing/sendMail.js";
 import { getTax } from "../mailing/taxRates.js";
 
@@ -254,14 +256,17 @@ orderRouter.post(
       metadata: { orderId: order._id.toString() },
     });
 
-    const invoice = await stripe.invoices.create({
-      customer: customer.id,
-      currency: "eur",
-      collection_method: "send_invoice",
-      days_until_due: 30,
-      auto_advance: false,
-      metadata: { orderId: order._id.toString() },
-    });
+    const invoice = await stripe.invoices.create(
+      {
+        customer: customer.id,
+        currency: "eur",
+        collection_method: "send_invoice",
+        days_until_due: 30,
+        auto_advance: false,
+        metadata: { orderId: order._id.toString() },
+      },
+      { idempotencyKey: `inv-${order._id}` }
+    );
 
     await stripe.invoiceItems.create({
       customer: customer.id,
@@ -291,12 +296,16 @@ orderRouter.post(
 
     await stripe.invoices.finalizeInvoice(invoice.id);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalCents,
-      currency: "eur",
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
-    });
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: totalCents,
+        currency: "eur",
+        automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+        statement_descriptor_suffix: "Order",
+        metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
+      },
+      { idempotencyKey: `pi-${order._id}` }
+    );
 
     order.stripeInvoiceId = invoice.id;
     order.paymentResult = { id: paymentIntent.id };
@@ -428,6 +437,50 @@ orderRouter.put(
       }
     }
     const updatedOrder = await order.save();
+
+    sendMail({
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: updatedOrder.shippingAddress.email,
+      subject: "Order Canceled!",
+      html: cancelOrderEmail({
+        order: {
+          orderId: updatedOrder._id,
+          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+          isPaid: updatedOrder.isPaid,
+          shippingAddress: {
+            fullName: updatedOrder.shippingAddress.fullName,
+            country: updatedOrder.shippingAddress.country,
+          },
+          orderItems: updatedOrder.orderItems,
+          itemsPrice: updatedOrder.itemsPrice,
+          shippingPrice: updatedOrder.shippingPrice,
+          totalPrice: updatedOrder.totalPrice,
+        },
+      }),
+    });
+
+    sendMail({
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+      subject: updatedOrder.isPaid ? "Refund Request" : "Order Canceled",
+      html: cancelOrderAdminEmail({
+        order: {
+          orderId: updatedOrder._id,
+          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+          isPaid: updatedOrder.isPaid,
+          shippingAddress: {
+            fullName: updatedOrder.shippingAddress.fullName,
+            email: updatedOrder.shippingAddress.email,
+            phoneNumber: updatedOrder.shippingAddress.phoneNumber,
+          },
+          orderItems: updatedOrder.orderItems,
+          itemsPrice: updatedOrder.itemsPrice,
+          shippingPrice: updatedOrder.shippingPrice,
+          totalPrice: updatedOrder.totalPrice,
+        },
+      }),
+    });
+
     res.send({ message: "Order canceled", order: updatedOrder });
   })
 );
