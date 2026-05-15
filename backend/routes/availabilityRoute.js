@@ -41,6 +41,9 @@ availabilityRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const { date, slots, price } = req.body;
+    if (!Array.isArray(slots)) {
+      return res.status(400).json({ message: 'slots must be an array' });
+    }
     const existing = await Availability.findOne({ date: new Date(date) });
     if (existing) {
       return res.status(400).json({ message: 'Availability already exists for this date' });
@@ -68,7 +71,12 @@ availabilityRouter.put(
       return res.status(404).json({ message: 'Availability not found' });
     }
     const { slots, price } = req.body;
-    if (slots !== undefined) availability.slots = slots;
+    if (slots !== undefined) {
+      if (!Array.isArray(slots)) {
+        return res.status(400).json({ message: 'slots must be an array' });
+      }
+      availability.slots = slots;
+    }
     if (price !== undefined) availability.price = price;
     const updated = await availability.save();
     console.log(
