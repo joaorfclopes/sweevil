@@ -17,10 +17,13 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
     Sentry.browserProfilingIntegration(),
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    Sentry.replayIntegration(),
   ],
   enableLogs: true,
   tracesSampleRate: 1.0,
   profilesSampleRate: 1.0,
+  replaysSessionSampleRate: 1.0,
+  replaysOnErrorSampleRate: 1.0,
   tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
 });
 
