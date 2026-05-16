@@ -1,5 +1,6 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import mongoose from 'mongoose';
 import Product from '../models/productModel.js';
 import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth, optionalAuth } from '../utils.js';
@@ -41,6 +42,9 @@ productRouter.get(
   '/:id',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({ message: 'Product not Found' });
+    }
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not Found' });
@@ -87,6 +91,9 @@ productRouter.put(
   isAdmin,
   validate(productSchema),
   expressAsyncHandler(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).send({ message: 'Product not Found' });
+    }
     const product = await Product.findById(req.params.id);
     if (product) {
       product.name = req.body.name;
@@ -113,6 +120,9 @@ productRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).send({ message: 'Product not Found' });
+    }
     const product = await Product.findById(req.params.id);
     if (product) {
       await product.deleteOne();
