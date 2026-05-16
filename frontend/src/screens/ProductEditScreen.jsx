@@ -220,7 +220,7 @@ export default function ProductEditScreen(props) {
       setFinalPrice(product.finalPrice);
       setVisible(product.visible);
     }
-  }, [dispatch, navigate, product, productId, successUpdate, successCreate, isNew, props]);
+  }, [dispatch, navigate, product, productId, successUpdate, successCreate, isNew]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -331,18 +331,14 @@ export default function ProductEditScreen(props) {
     const selected = e.target.value;
     setCategory(selected);
     const cat = productCategories.find((c) => c.name === selected);
-    if (cat?.isClothing) {
-      setIsClothing(true);
-      setCountInStock('');
-    } else {
-      setIsClothing(false);
-      setCountInStockXS('');
-      setCountInStockS('');
-      setCountInStockM('');
-      setCountInStockL('');
-      setCountInStockXL('');
-      setCountInStockXXL('');
-    }
+    setIsClothing(!!cat?.isClothing);
+    setCountInStock('');
+    setCountInStockXS('');
+    setCountInStockS('');
+    setCountInStockM('');
+    setCountInStockL('');
+    setCountInStockXL('');
+    setCountInStockXXL('');
   };
 
   return (

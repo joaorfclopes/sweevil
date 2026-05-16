@@ -33,5 +33,9 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+bookingSchema.index({ confirmToken: 1 });
+bookingSchema.index({ status: 1, createdAt: -1 });
+bookingSchema.index({ date: 1, slot: 1 });
+
 const Booking = mongoose.model('Booking', bookingSchema);
 export default Booking;

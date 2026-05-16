@@ -136,7 +136,7 @@ export default function ShippingScreen(props) {
                   <PhoneInput
                     country={phoneCountry}
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => field.onChange(value ? `+${value}` : value)}
                     inputProps={{ id: 'phoneNumber' }}
                     containerClass="phone-input-container"
                     inputClass="phone-input-field"

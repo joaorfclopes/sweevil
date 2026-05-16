@@ -250,7 +250,11 @@ export default function OrderScreen(props) {
             <div className="card">
               <h3>Contact Information</h3>
               <p>{order.shippingAddress.email}</p>
-              <p>{order.shippingAddress.phoneNumber}</p>
+              <p>
+                {order.shippingAddress.phoneNumber?.startsWith('+')
+                  ? order.shippingAddress.phoneNumber
+                  : `+${order.shippingAddress.phoneNumber}`}
+              </p>
             </div>
             <div className="card">
               <h3>Items</h3>

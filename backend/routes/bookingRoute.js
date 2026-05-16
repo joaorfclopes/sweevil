@@ -13,6 +13,7 @@ import Availability from '../models/availabilityModel.js';
 import Booking from '../models/bookingModel.js';
 import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth } from '../utils.js';
+import { createBookingSchema, validate } from '../validation.js';
 
 const bookingRouter = express.Router();
 
@@ -96,11 +97,9 @@ bookingRouter.get(
 bookingRouter.post(
   '/',
   createBookingLimiter,
+  validate(createBookingSchema),
   expressAsyncHandler(async (req, res) => {
     const { date, slot, guestInfo, images } = req.body;
-    if (!date || !slot || !guestInfo?.name || !guestInfo?.email || !guestInfo?.phone) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
     const avail = await Availability.findOne({ date: new Date(date) });
     if (!avail) {
       return res.status(400).json({ message: 'No availability for this date' });

@@ -3,6 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
 import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth, optionalAuth } from '../utils.js';
+import { productSchema, validate } from '../validation.js';
 
 const productRouter = express.Router();
 
@@ -58,6 +59,7 @@ productRouter.post(
   '/',
   isAuth,
   isAdmin,
+  validate(productSchema),
   expressAsyncHandler(async (req, res) => {
     const { name, price, images, category, isClothing, countInStock, description, visible } =
       req.body;
@@ -83,6 +85,7 @@ productRouter.put(
   '/:id',
   isAuth,
   isAdmin,
+  validate(productSchema),
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {

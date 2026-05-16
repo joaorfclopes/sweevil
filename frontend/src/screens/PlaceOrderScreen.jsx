@@ -83,7 +83,11 @@ export default function PlaceOrderScreen(props) {
           <div className="card">
             <h3>Contact Information</h3>
             <p>{shippingAddress.email}</p>
-            <p>{shippingAddress.phoneNumber}</p>
+            <p>
+              {shippingAddress.phoneNumber?.startsWith('+')
+                ? shippingAddress.phoneNumber
+                : `+${shippingAddress.phoneNumber}`}
+            </p>
           </div>
           <div className="card">
             <h3>Items</h3>

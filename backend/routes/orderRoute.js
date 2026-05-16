@@ -17,6 +17,7 @@ import { getTax } from '../mailing/taxRates.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { formatDate, isAdmin, isAuth } from '../utils.js';
+import { createOrderSchema, validate } from '../validation.js';
 
 const getAdminSession = async (req) => {
   try {
@@ -128,17 +129,12 @@ orderRouter.get(
 orderRouter.post(
   '/',
   createOrderLimiter,
+  validate(createOrderSchema),
   expressAsyncHandler(async (req, res) => {
     const { orderItems, shippingAddress } = req.body;
-    if (!Array.isArray(orderItems) || orderItems.length === 0) {
-      return res.status(400).send({ message: 'Cart is empty' });
-    }
     const builtItems = [];
     for (const item of orderItems) {
       const qty = item.qty;
-      if (!Number.isInteger(qty) || qty <= 0) {
-        return res.status(400).send({ message: 'Invalid quantity' });
-      }
       const product = await Product.findById(item.product);
       if (!product) {
         return res.status(400).send({ message: 'Product not found' });
