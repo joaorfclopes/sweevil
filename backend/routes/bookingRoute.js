@@ -126,7 +126,15 @@ bookingRouter.post(
       images: safeImages,
       confirmToken,
     });
-    const created = await booking.save();
+    let created;
+    try {
+      created = await booking.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({ message: 'This slot is already booked' });
+      }
+      throw err;
+    }
     Sentry.metrics.count('booking.created', 1);
     console.log(
       `[booking] Created booking ${created._id} — ${slot} on ${date} for ${guestInfo.email}`

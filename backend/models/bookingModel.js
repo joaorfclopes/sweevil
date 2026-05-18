@@ -35,7 +35,10 @@ const bookingSchema = new mongoose.Schema(
 
 bookingSchema.index({ confirmToken: 1 });
 bookingSchema.index({ status: 1, createdAt: -1 });
-bookingSchema.index({ date: 1, slot: 1 });
+bookingSchema.index(
+  { date: 1, slot: 1 },
+  { unique: true, partialFilterExpression: { status: { $in: ['PENDING_PAYMENT', 'CONFIRMED'] } } }
+);
 
 const Booking = mongoose.model('Booking', bookingSchema);
 export default Booking;
