@@ -105,6 +105,7 @@ app.use(
           'https://api.stripe.com',
           'https://m.stripe.com',
           'https://m.stripe.network',
+          'https://q.stripe.com',
           'https://cdn.jsdelivr.net',
           'https://*.ingest.de.sentry.io',
           'https://*.ingest.sentry.io',
