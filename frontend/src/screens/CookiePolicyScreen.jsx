@@ -136,7 +136,7 @@ export default function CookiePolicyScreen() {
           <strong>shippingAddress</strong> — Remembers your shipping address during checkout.
         </li>
         <li>
-          <strong>cookieConsent</strong> — Records your cookie consent choice.
+          <strong>trackingConsent</strong> — Records your cookie consent choice.
         </li>
       </ul>
 
