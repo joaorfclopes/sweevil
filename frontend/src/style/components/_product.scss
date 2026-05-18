@@ -62,6 +62,6 @@
     }
   }
   .show {
-    @include fade-in;
+    opacity: 1;
   }
 }

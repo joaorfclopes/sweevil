@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -59,14 +58,7 @@ export default function SigninScreen(props) {
   }, [userInfo, navigate, redirect]);
 
   return (
-    <motion.section
-      className="signin"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="signin">
       <div className="row center signin-container">
         <div className="signin-inner">
           <h1>Sign In</h1>
@@ -88,6 +80,6 @@ export default function SigninScreen(props) {
           </button>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

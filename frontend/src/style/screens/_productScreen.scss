@@ -43,7 +43,6 @@
           height: 500px;
         }
         .product-image-inner {
-          opacity: 0;
           img {
             width: 100%;
             height: 100%;
@@ -94,7 +93,6 @@
           height: 96px;
         }
         .image-preview-inner {
-          opacity: 0;
           img {
             width: 100%;
             height: 100%;
@@ -159,8 +157,5 @@
   .carousel-control-prev,
   .carousel-control-next {
     border: none !important;
-  }
-  .show {
-    @include fade-in;
   }
 }

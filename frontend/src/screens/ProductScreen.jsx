@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -117,14 +116,7 @@ export default function ProductScreen(props) {
   };
 
   return (
-    <motion.section
-      className="product-screen"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="product-screen">
       {loading ? (
         <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
@@ -292,6 +284,6 @@ export default function ProductScreen(props) {
           </div>
         </div>
       )}
-    </motion.section>
+    </section>
   );
 }

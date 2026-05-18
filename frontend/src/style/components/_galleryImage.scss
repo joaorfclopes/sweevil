@@ -10,10 +10,4 @@
       height: 100%;
     }
   }
-  &:not(.gallery-admin-card-wrapper) .gallery-image-inner {
-    opacity: 0;
-  }
-  .show {
-    @include fade-in;
-  }
 }
