@@ -4,7 +4,8 @@ import { defineConfig, loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '../', '');
+  // process.env takes precedence so Docker compose environment vars override .env file
+  const env = { ...loadEnv(mode, '../', ''), ...process.env };
   return {
     plugins: [
       react(),
@@ -17,12 +18,21 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     server: {
+      host: '0.0.0.0',
       port: parseInt(env.FRONTEND_PORT) || 3000,
+      hmr:
+        env.CHOKIDAR_USEPOLLING === 'true'
+          ? { host: 'localhost', port: parseInt(env.FRONTEND_PORT) || parseInt(env.PORT) || 3000 }
+          : true,
       proxy: {
         '/api': {
-          target: `http://127.0.0.1:${env.BACKEND_PORT || '8123'}`,
+          target: `http://${env.BACKEND_HOST || '127.0.0.1'}:${env.BACKEND_PORT || '8123'}`,
           changeOrigin: true,
         },
+      },
+      watch: {
+        usePolling: env.CHOKIDAR_USEPOLLING === 'true',
+        interval: 300,
       },
     },
     envDir: '../',

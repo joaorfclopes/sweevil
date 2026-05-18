@@ -27,14 +27,20 @@ import {
   BOOKING_LIST_SUCCESS,
 } from '../constants/bookingConstants';
 
-export const bookingListReducer = (state = { bookings: [] }, action) => {
+export const bookingListReducer = (state = { bookings: [], total: 0 }, action) => {
   switch (action.type) {
     case BOOKING_LIST_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
     case BOOKING_LIST_SUCCESS:
-      return { loading: false, bookings: action.payload };
+      return {
+        loading: false,
+        bookings: action.payload.items,
+        total: action.payload.total,
+        page: action.payload.page,
+        pages: action.payload.pages,
+      };
     case BOOKING_LIST_FAIL:
-      return { loading: false, error: action.payload };
+      return { loading: false, error: action.payload, bookings: [], total: 0 };
     default:
       return state;
   }

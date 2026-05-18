@@ -41,6 +41,7 @@ import {
   productCategoryListReducer,
 } from './reducers/productCategoryReducers';
 import {
+  productAdminListReducer,
   productCreateReducer,
   productDeleteReducer,
   productDetailsReducer,
@@ -75,6 +76,7 @@ const initialState = {
 };
 
 const reducer = combineReducers({
+  productAdminList: productAdminListReducer,
   productList: productListReducer,
   productDetails: productDetailsReducer,
   productCreate: productCreateReducer,

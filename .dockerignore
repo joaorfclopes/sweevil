@@ -1,0 +1,9 @@
+node_modules
+frontend/node_modules
+frontend/build
+.env
+docker/mongo-data
+.git
+.claude
+docs
+*.log

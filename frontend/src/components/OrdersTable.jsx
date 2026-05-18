@@ -29,7 +29,7 @@ import Swal from 'sweetalert2';
 import { deleteOrder, listOrders } from '../actions/orderActions';
 import { ORDER_DELETE_RESET } from '../constants/orderConstants';
 import { formatDateDay, formatName } from '../utils';
-import { downloadCSV, getComparator, isNewRow, normalize } from '../utils/adminTableUtils';
+import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
@@ -38,25 +38,41 @@ export default function OrdersTable() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const orderAdminList = useSelector((state) => state.orderAdminList);
-  const { loading, orders, error } = orderAdminList;
+  const { loading, orders, error, total = 0 } = orderAdminList;
   const orderDelete = useSelector((state) => state.orderDelete);
   const { loading: loadingDelete, success: successDelete, error: errorDelete } = orderDelete;
 
   const [open, setOpen] = useState(true);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [sortDir, setSortDir] = useState('desc');
   const [orderBy, setOrderBy] = useState('createdAt');
   const [selected, setSelected] = useState(new Set());
 
   useEffect(() => {
-    dispatch(listOrders());
-    if (successDelete) {
-      dispatch({ type: ORDER_DELETE_RESET });
-    }
-  }, [dispatch, successDelete]);
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(0);
+    setSelected(new Set());
+  }, [debouncedSearch, statusFilter]);
+
+  useEffect(() => {
+    if (successDelete) dispatch({ type: ORDER_DELETE_RESET });
+    dispatch(
+      listOrders({
+        page: page + 1,
+        limit: rowsPerPage,
+        search: debouncedSearch,
+        status: statusFilter,
+      })
+    );
+  }, [dispatch, successDelete, page, rowsPerPage, debouncedSearch, statusFilter]);
 
   const deleteHandler = (order) => {
     Swal.fire({
@@ -66,10 +82,6 @@ export default function OrdersTable() {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteOrder(order._id));
-        const counter = Math.min(rowsPerPage, (orders && orders.length) - page * rowsPerPage) - 1;
-        if (counter === 0 && page !== 0) {
-          setPage(page - 1);
-        }
         Swal.fire('Deleted!', '', 'success');
       }
     });
@@ -84,27 +96,12 @@ export default function OrdersTable() {
     setPage(0);
   };
 
-  const filtered = useMemo(() => {
-    let arr = orders ?? [];
-    if (statusFilter) arr = arr.filter((o) => o.status === statusFilter);
-    if (search) {
-      const q = normalize(search);
-      arr = arr.filter(
-        (o) =>
-          normalize(formatName(o.shippingAddress?.fullName ?? '')).includes(q) ||
-          normalize(o.status ?? '').includes(q)
-      );
-    }
-    return [...arr].sort(getComparator(sortDir, orderBy));
-  }, [orders, search, statusFilter, sortDir, orderBy]);
+  const filtered = useMemo(
+    () => [...(orders ?? [])].sort(getComparator(sortDir, orderBy)),
+    [orders, sortDir, orderBy]
+  );
 
-  useEffect(() => {
-    setPage(0);
-    setSelected(new Set());
-  }, [search, statusFilter]);
-
-  const visibleRows = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  const visibleIds = visibleRows.map((r) => r._id);
+  const visibleIds = filtered.map((r) => r._id);
   const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
 
   const toggleSelectAll = () => {
@@ -181,7 +178,7 @@ export default function OrdersTable() {
                 onClick={() => setOpen((v) => !v)}
               >
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  <b>Orders ({filtered.length})</b>
+                  <b>Orders ({total})</b>
                 </Typography>
                 <IconButton tabIndex={-1}>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -274,7 +271,7 @@ export default function OrdersTable() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      visibleRows.map((order) => (
+                      filtered.map((order) => (
                         <TableRow
                           key={order._id}
                           sx={isNewRow(order) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
@@ -322,9 +319,9 @@ export default function OrdersTable() {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[10, 20, 50, 100]}
                 component="div"
-                count={filtered.length}
+                count={total}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={(_, p) => {

@@ -14,7 +14,11 @@
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
     "sentry:release": "VERSION=$(git rev-parse HEAD) && npx @sentry/cli releases new $VERSION --org $SENTRY_ORG && npx @sentry/cli releases set-commits $VERSION --auto --org $SENTRY_ORG && npx @sentry/cli releases finalize $VERSION --org $SENTRY_ORG",
     "deploy": "npm run build && git push heroku master --force && npm run sentry:release",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker": "docker compose up --build",
+    "docker:debug": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build",
+    "export-prod": "node scripts/export-prod.js",
+    "seed": "node scripts/seed.js --force"
   },
   "repository": {
     "type": "git",

@@ -56,7 +56,7 @@ import {
   BOOKING_DELETE_RESET,
 } from '../constants/bookingConstants';
 import { formatDateDay } from '../utils.js';
-import { downloadCSV, getComparator, isNewRow, normalize } from '../utils/adminTableUtils';
+import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
@@ -87,7 +87,12 @@ export default function BookingsAdminTab() {
   const dispatch = useDispatch();
 
   const bookingList = useSelector((s) => s.bookingList);
-  const { loading: loadingBookings, bookings = [], error: errorBookings } = bookingList;
+  const {
+    loading: loadingBookings,
+    bookings = [],
+    error: errorBookings,
+    total: bookingsTotal = 0,
+  } = bookingList;
 
   const bookingCancel = useSelector((s) => s.bookingCancel);
   const { success: successCancel } = bookingCancel;
@@ -109,7 +114,8 @@ export default function BookingsAdminTab() {
 
   const [sectionOpen, setSectionOpen] = useState(true);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [photosDialog, setPhotosDialog] = useState({ open: false, images: [], name: '' });
   const [notesDialog, setNotesDialog] = useState({ open: false, notes: '', name: '' });
@@ -130,17 +136,34 @@ export default function BookingsAdminTab() {
   const [expanded, setExpanded] = useState(new Set());
 
   useEffect(() => {
-    dispatch(listBookings());
     dispatch(listAvailability());
   }, [dispatch]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(0);
+    setSelected(new Set());
+    setExpanded(new Set());
+  }, [debouncedSearch, statusFilter]);
 
   useEffect(() => {
     if (successCancel || successDelete) {
       dispatch({ type: BOOKING_CANCEL_RESET });
       dispatch({ type: BOOKING_DELETE_RESET });
-      dispatch(listBookings());
     }
-  }, [dispatch, successCancel, successDelete]);
+    dispatch(
+      listBookings({
+        page: page + 1,
+        limit: rowsPerPage,
+        search: debouncedSearch,
+        status: statusFilter,
+      })
+    );
+  }, [dispatch, successCancel, successDelete, page, rowsPerPage, debouncedSearch, statusFilter]);
 
   useEffect(() => {
     if (successCreate || successUpdate || successAvailDelete) {
@@ -167,33 +190,12 @@ export default function BookingsAdminTab() {
     setPage(0);
   };
 
-  const filteredBookings = useMemo(() => {
-    let arr = bookings ?? [];
-    if (statusFilter) arr = arr.filter((b) => b.status === statusFilter);
-    if (search) {
-      const q = normalize(search);
-      arr = arr.filter(
-        (b) =>
-          normalize(b.guestInfo?.name ?? '').includes(q) ||
-          normalize(b.guestInfo?.email ?? '').includes(q) ||
-          normalize(formatDateDay(b.date)).includes(q) ||
-          normalize(b.status ?? '').includes(q)
-      );
-    }
-    return [...arr].sort(getComparator(sortDir, orderBy));
-  }, [bookings, search, statusFilter, sortDir, orderBy]);
-
-  useEffect(() => {
-    setPage(0);
-    setSelected(new Set());
-    setExpanded(new Set());
-  }, [search, statusFilter]);
-
-  const visibleBookingRows = filteredBookings.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+  const filteredBookings = useMemo(
+    () => [...(bookings ?? [])].sort(getComparator(sortDir, orderBy)),
+    [bookings, sortDir, orderBy]
   );
-  const visibleBookingIds = visibleBookingRows.map((r) => r._id);
+
+  const visibleBookingIds = filteredBookings.map((r) => r._id);
   const allBookingsSelected =
     visibleBookingIds.length > 0 && visibleBookingIds.every((id) => selected.has(id));
 
@@ -405,7 +407,7 @@ export default function BookingsAdminTab() {
 
           <Toolbar sx={{ gap: 1, py: 1 }}>
             <Typography variant="subtitle2" style={{ color: '#555' }} sx={{ flexGrow: 1 }}>
-              <b>Bookings ({filteredBookings.length})</b>
+              <b>Bookings ({bookingsTotal})</b>
             </Typography>
             {selected.size > 0 && (
               <button className="dangerous-outline" onClick={handleBulkDeleteBookings}>
@@ -483,7 +485,7 @@ export default function BookingsAdminTab() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      visibleBookingRows.map((b) => (
+                      filteredBookings.map((b) => (
                         <React.Fragment key={b._id}>
                           <TableRow
                             sx={isNewRow(b) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
@@ -629,8 +631,9 @@ export default function BookingsAdminTab() {
                 </Table>
               </TableContainer>
               <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
                 component="div"
-                count={filteredBookings.length}
+                count={bookingsTotal}
                 page={page}
                 onPageChange={(_, p) => {
                   setPage(p);

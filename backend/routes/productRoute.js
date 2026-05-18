@@ -30,8 +30,22 @@ productRouter.get(
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
     if (req.user?.isAdmin) {
-      const products = await Product.find({});
-      return res.send(products);
+      const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+      const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+      const { search = '' } = req.query;
+      const query = {};
+      if (search) query.name = { $regex: search, $options: 'i' };
+      const total = await Product.countDocuments(query);
+      const products = await Product.find(query)
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum);
+      return res.json({
+        items: products,
+        total,
+        page: pageNum,
+        pages: Math.ceil(total / limitNum),
+      });
     }
     const products = await Product.find({ visible: true });
     res.send(products.map(toPublic));

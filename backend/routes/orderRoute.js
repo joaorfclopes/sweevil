@@ -59,8 +59,19 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find({}).populate('user', 'name');
-    res.send(orders);
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const { search = '', status = '' } = req.query;
+    const query = {};
+    if (status) query.status = status;
+    if (search) query['shippingAddress.fullName'] = { $regex: search, $options: 'i' };
+    const total = await Order.countDocuments(query);
+    const orders = await Order.find(query)
+      .populate('user', 'name')
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
+    res.json({ items: orders, total, page: pageNum, pages: Math.ceil(total / limitNum) });
   })
 );
 

@@ -140,18 +140,23 @@ export const listOrder = () => async (dispatch) => {
   }
 };
 
-export const listOrders = () => async (dispatch) => {
-  dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
-  try {
-    const { data } = await Axios.get('/api/orders');
-    dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data.reverse() });
-  } catch (error) {
-    dispatch({
-      type: ORDER_ADMIN_LIST_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
-};
+export const listOrders =
+  ({ page = 1, limit = 20, search = '', status = '' } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: ORDER_ADMIN_LIST_REQUEST });
+    try {
+      const params = new URLSearchParams({ page, limit });
+      if (search) params.set('search', search);
+      if (status) params.set('status', status);
+      const { data } = await Axios.get(`/api/orders?${params}`);
+      dispatch({ type: ORDER_ADMIN_LIST_SUCCESS, payload: data });
+    } catch (error) {
+      dispatch({
+        type: ORDER_ADMIN_LIST_FAIL,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
 
 export const deleteOrder = (orderId) => async (dispatch) => {
   dispatch({ type: ORDER_DELETE_REQUEST, payload: orderId });

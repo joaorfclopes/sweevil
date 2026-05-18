@@ -1,5 +1,8 @@
 import Axios from 'axios';
 import {
+  PRODUCT_ADMIN_LIST_FAIL,
+  PRODUCT_ADMIN_LIST_REQUEST,
+  PRODUCT_ADMIN_LIST_SUCCESS,
   PRODUCT_CREATE_FAIL,
   PRODUCT_CREATE_REQUEST,
   PRODUCT_CREATE_SUCCESS,
@@ -16,6 +19,20 @@ import {
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants';
+
+export const listAdminProducts =
+  ({ page = 1, limit = 20, search = '' } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: PRODUCT_ADMIN_LIST_REQUEST });
+    try {
+      const params = new URLSearchParams({ page, limit });
+      if (search) params.set('search', search);
+      const { data } = await Axios.get(`/api/products?${params}`);
+      dispatch({ type: PRODUCT_ADMIN_LIST_SUCCESS, payload: data });
+    } catch (error) {
+      dispatch({ type: PRODUCT_ADMIN_LIST_FAIL, payload: error.message });
+    }
+  };
 
 export const listProducts = () => async (dispatch) => {
   dispatch({ type: PRODUCT_LIST_REQUEST });

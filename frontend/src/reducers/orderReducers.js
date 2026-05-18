@@ -90,14 +90,20 @@ export const orderListReducer = (state = { orders: [] }, action) => {
   }
 };
 
-export const orderAdminListReducer = (state = { orders: [] }, action) => {
+export const orderAdminListReducer = (state = { orders: [], total: 0 }, action) => {
   switch (action.type) {
     case ORDER_ADMIN_LIST_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
     case ORDER_ADMIN_LIST_SUCCESS:
-      return { loading: false, orders: action.payload };
+      return {
+        loading: false,
+        orders: action.payload.items,
+        total: action.payload.total,
+        page: action.payload.page,
+        pages: action.payload.pages,
+      };
     case ORDER_ADMIN_LIST_FAIL:
-      return { loading: false, error: action.payload };
+      return { loading: false, error: action.payload, orders: [], total: 0 };
     default:
       return state;
   }

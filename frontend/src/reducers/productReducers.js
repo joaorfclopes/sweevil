@@ -1,4 +1,7 @@
 import {
+  PRODUCT_ADMIN_LIST_FAIL,
+  PRODUCT_ADMIN_LIST_REQUEST,
+  PRODUCT_ADMIN_LIST_SUCCESS,
   PRODUCT_CREATE_FAIL,
   PRODUCT_CREATE_REQUEST,
   PRODUCT_CREATE_RESET,
@@ -27,6 +30,25 @@ export const productListReducer = (state = { products: [] }, action) => {
     case PRODUCT_LIST_SUCCESS:
       return { loading: false, products: action.payload };
     case PRODUCT_LIST_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const productAdminListReducer = (state = { products: [] }, action) => {
+  switch (action.type) {
+    case PRODUCT_ADMIN_LIST_REQUEST:
+      return { loading: true };
+    case PRODUCT_ADMIN_LIST_SUCCESS:
+      return {
+        loading: false,
+        products: action.payload.items,
+        total: action.payload.total,
+        page: action.payload.page,
+        pages: action.payload.pages,
+      };
+    case PRODUCT_ADMIN_LIST_FAIL:
       return { loading: false, error: action.payload };
     default:
       return state;

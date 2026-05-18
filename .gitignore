@@ -37,3 +37,9 @@ frontend/.env
 
 # Superpowers
 docs/superpowers/
+
+# Docker
+docker/mongo-data/
+
+# Seed export data (may contain prod data)
+scripts/data

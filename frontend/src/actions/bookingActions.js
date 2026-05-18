@@ -23,18 +23,23 @@ import {
   BOOKING_LIST_SUCCESS,
 } from '../constants/bookingConstants';
 
-export const listBookings = () => async (dispatch) => {
-  dispatch({ type: BOOKING_LIST_REQUEST });
-  try {
-    const { data } = await Axios.get('/api/bookings');
-    dispatch({ type: BOOKING_LIST_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: BOOKING_LIST_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
-};
+export const listBookings =
+  ({ page = 1, limit = 20, search = '', status = '' } = {}) =>
+  async (dispatch) => {
+    dispatch({ type: BOOKING_LIST_REQUEST });
+    try {
+      const params = new URLSearchParams({ page, limit });
+      if (search) params.set('search', search);
+      if (status) params.set('status', status);
+      const { data } = await Axios.get(`/api/bookings?${params}`);
+      dispatch({ type: BOOKING_LIST_SUCCESS, payload: data });
+    } catch (error) {
+      dispatch({
+        type: BOOKING_LIST_FAIL,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
 
 export const cancelBooking = (bookingId) => async (dispatch) => {
   dispatch({ type: BOOKING_CANCEL_REQUEST });

@@ -1,0 +1,15 @@
+services:
+  backend:
+    ports:
+      - "9229:9229"
+    command:
+      [
+        "npx",
+        "nodemon",
+        "--watch",
+        "backend",
+        "--watch",
+        ".env",
+        "--exec",
+        "node --inspect=0.0.0.0:9229 --import ./backend/instrument.js backend/server.js",
+      ]

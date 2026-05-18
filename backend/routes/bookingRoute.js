@@ -89,8 +89,22 @@ bookingRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const bookings = await Booking.find({}).sort({ date: -1 });
-    res.json(bookings);
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const { search = '', status = '' } = req.query;
+    const query = {};
+    if (status) query.status = status;
+    if (search)
+      query.$or = [
+        { 'guestInfo.name': { $regex: search, $options: 'i' } },
+        { 'guestInfo.email': { $regex: search, $options: 'i' } },
+      ];
+    const total = await Booking.countDocuments(query);
+    const bookings = await Booking.find(query)
+      .sort({ date: -1 })
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
+    res.json({ items: bookings, total, page: pageNum, pages: Math.ceil(total / limitNum) });
   })
 );
 

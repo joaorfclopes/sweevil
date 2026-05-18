@@ -23,11 +23,11 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { deleteProduct, listProducts } from '../actions/productActions';
+import { deleteProduct, listAdminProducts } from '../actions/productActions';
 import {
   createProductCategory,
   deleteProductCategory,
@@ -39,7 +39,7 @@ import {
 } from '../constants/productCategoryConstants';
 import { PRODUCT_DELETE_RESET } from '../constants/productConstants';
 import { formatDateDay } from '../utils';
-import { downloadCSV, getComparator, isNewRow, normalize } from '../utils/adminTableUtils';
+import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
 
@@ -47,8 +47,8 @@ export default function ProductsTable() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const productList = useSelector((state) => state.productList);
-  const { loading, products, error } = productList;
+  const productAdminList = useSelector((state) => state.productAdminList);
+  const { loading, products, error, total = 0 } = productAdminList;
   const productDelete = useSelector((state) => state.productDelete);
   const { loading: loadingDelete, success: successDelete, error: errorDelete } = productDelete;
 
@@ -65,12 +65,13 @@ export default function ProductsTable() {
   } = useSelector((state) => state.productCategoryDelete);
 
   const [open, setOpen] = useState(true);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [newCatName, setNewCatName] = useState('');
   const [newCatIsClothing, setNewCatIsClothing] = useState(false);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortDir, setSortDir] = useState('desc');
   const [orderBy, setOrderBy] = useState('updatedAt');
   const [selected, setSelected] = useState(new Set());
@@ -84,24 +85,22 @@ export default function ProductsTable() {
     setPage(0);
   };
 
-  const filtered = useMemo(() => {
-    let arr = products ?? [];
-    if (search) {
-      const q = normalize(search);
-      arr = arr.filter(
-        (p) => normalize(p.name ?? '').includes(q) || normalize(p.category ?? '').includes(q)
-      );
-    }
-    return [...arr].sort(getComparator(sortDir, orderBy));
-  }, [products, search, sortDir, orderBy]);
+  const filtered = useMemo(
+    () => [...(products ?? [])].sort(getComparator(sortDir, orderBy)),
+    [products, sortDir, orderBy]
+  );
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
   useEffect(() => {
     setPage(0);
     setSelected(new Set());
-  }, [search]);
+  }, [debouncedSearch]);
 
-  const visibleRows = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  const visibleIds = visibleRows.map((r) => r._id);
+  const visibleIds = filtered.map((r) => r._id);
   const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
 
   const toggleSelectAll = () => {
@@ -160,15 +159,9 @@ export default function ProductsTable() {
       : (p.countInStock?.stock ?? 0);
 
   useEffect(() => {
-    dispatch(listProducts());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (successDelete) {
-      dispatch({ type: PRODUCT_DELETE_RESET });
-      dispatch(listProducts());
-    }
-  }, [dispatch, successDelete]);
+    if (successDelete) dispatch({ type: PRODUCT_DELETE_RESET });
+    dispatch(listAdminProducts({ page: page + 1, limit: rowsPerPage, search: debouncedSearch }));
+  }, [dispatch, successDelete, page, rowsPerPage, debouncedSearch]);
 
   useEffect(() => {
     dispatch(listProductCategories());
@@ -245,7 +238,7 @@ export default function ProductsTable() {
                 onClick={() => setOpen((v) => !v)}
               >
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  <b>Products ({filtered.length})</b>
+                  <b>Products ({total})</b>
                 </Typography>
                 <IconButton tabIndex={-1}>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -428,7 +421,7 @@ export default function ProductsTable() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      visibleRows.map((product) => (
+                      filtered.map((product) => (
                         <TableRow
                           key={product._id}
                           sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
@@ -499,9 +492,9 @@ export default function ProductsTable() {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[10, 20, 50, 100]}
                 component="div"
-                count={filtered.length}
+                count={total}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={(_, p) => {
