@@ -54,7 +54,6 @@ function AppContent() {
   const { loading: ordersLoading } = useSelector((state) => state.orderAdminList);
 
   const { data: session, isPending: sessionPending } = authClient.useSession();
-  const { isPending: passkeysPending } = authClient.useListPasskeys();
 
   useEffect(() => {
     if (sessionPending) return;
@@ -152,10 +151,9 @@ function AppContent() {
 
   useEffect(() => {
     if (!minTimeElapsed) return;
-    const adminReady =
-      !isAdminPage || (productsLoading === false && ordersLoading === false && !passkeysPending);
+    const adminReady = !isAdminPage || (productsLoading === false && ordersLoading === false);
     if (adminReady) doHideSpinner();
-  }, [minTimeElapsed, productsLoading, ordersLoading, passkeysPending]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [minTimeElapsed, productsLoading, ordersLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     if (!location.hash) {
