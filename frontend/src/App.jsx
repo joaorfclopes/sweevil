@@ -36,6 +36,14 @@ import { scrollWithOffset } from './utils';
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
+function PasskeyPreloader({ onReady }) {
+  const { isPending } = authClient.useListPasskeys();
+  useEffect(() => {
+    if (!isPending) onReady();
+  }, [isPending]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
 function AppContent() {
   const dispatch = useDispatch();
   const userSignin = useSelector((state) => state.userSignin);
@@ -54,6 +62,7 @@ function AppContent() {
   const { loading: ordersLoading } = useSelector((state) => state.orderAdminList);
 
   const { data: session, isPending: sessionPending } = authClient.useSession();
+  const [passkeysReady, setPasskeysReady] = useState(false);
 
   useEffect(() => {
     if (sessionPending) return;
@@ -129,7 +138,12 @@ function AppContent() {
     const loadingEl = document.querySelector('.loading');
     if (loadingEl) loadingEl.style.display = 'none';
     document.body.classList.add('scroll');
-    document.getElementById('root').classList.add('show');
+    const root = document.getElementById('root');
+    if (isAdminPage) {
+      root.style.opacity = '1';
+    } else {
+      root.classList.add('show');
+    }
     scroll();
   };
 
@@ -151,9 +165,11 @@ function AppContent() {
 
   useEffect(() => {
     if (!minTimeElapsed) return;
-    const adminReady = !isAdminPage || (productsLoading === false && ordersLoading === false);
+    const adminReady =
+      !isAdminPage ||
+      (productsLoading === false && ordersLoading === false && (!session || passkeysReady));
     if (adminReady) doHideSpinner();
-  }, [minTimeElapsed, productsLoading, ordersLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [minTimeElapsed, productsLoading, ordersLoading, session, passkeysReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     if (!location.hash) {
@@ -177,6 +193,7 @@ function AppContent() {
   return (
     <div className="App">
       <div className="grid-container">
+        {session && <PasskeyPreloader onReady={() => setPasskeysReady(true)} />}
         <Navbar scrolled={scrolled} />
         <MenuMobile />
         {!loading && (

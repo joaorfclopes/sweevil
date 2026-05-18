@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -26,14 +25,7 @@ export default function AdminScreen(props) {
   }, []);
 
   return (
-    <motion.section
-      className="admin-screen"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="admin-screen">
       <div className="logout-container">
         <PasskeyRegister />
         <Link to="/">
@@ -49,6 +41,6 @@ export default function AdminScreen(props) {
         <GalleryAdminTab />
         <AboutAdminTab />
       </>
-    </motion.section>
+    </section>
   );
 }
