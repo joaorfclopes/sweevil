@@ -38,7 +38,8 @@ export const listProducts = () => async (dispatch) => {
   dispatch({ type: PRODUCT_LIST_REQUEST });
   try {
     const { data } = await Axios.get('/api/products');
-    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data.reverse() });
+    const products = Array.isArray(data) ? data : (data.items ?? []);
+    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: products.reverse() });
   } catch (error) {
     dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }

@@ -11,6 +11,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -225,291 +226,294 @@ export default function ProductsTable() {
       <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
-        {loading ? (
-          <LoadingBox lineHeight="60vh" />
-        ) : error ? (
-          <MessageBox variant="error">{error}</MessageBox>
-        ) : (
-          <>
-            {/* Toolbar */}
-            <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-                onClick={() => setOpen((v) => !v)}
-              >
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  <b>Products ({total})</b>
-                </Typography>
-                <IconButton tabIndex={-1}>
-                  {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                </IconButton>
+        <>
+          {/* Toolbar */}
+          <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              onClick={() => setOpen((v) => !v)}
+            >
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                <b>Products ({total})</b>
+              </Typography>
+              <IconButton tabIndex={-1}>
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </Box>
+            {open && (
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                {selected.size > 0 && (
+                  <button className="dangerous-outline" onClick={handleBulkDelete}>
+                    Delete {selected.size} selected
+                  </button>
+                )}
+                <TextField
+                  size="small"
+                  placeholder="Search name, category…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  InputProps={{
+                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
+                  }}
+                  sx={{ flexGrow: 1 }}
+                />
+                <Tooltip title="Export CSV">
+                  <IconButton onClick={handleExportCSV}>
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Create Product">
+                  <IconButton aria-label="create" onClick={createHandler}>
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
               </Box>
-              {open && (
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                  {selected.size > 0 && (
-                    <button className="dangerous-outline" onClick={handleBulkDelete}>
-                      Delete {selected.size} selected
-                    </button>
-                  )}
-                  <TextField
-                    size="small"
-                    placeholder="Search name, category…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
-                      ),
-                    }}
-                    sx={{ flexGrow: 1 }}
-                  />
-                  <Tooltip title="Export CSV">
-                    <IconButton onClick={handleExportCSV}>
-                      <DownloadIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Create Product">
-                    <IconButton aria-label="create" onClick={createHandler}>
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              )}
-            </Toolbar>
+            )}
+          </Toolbar>
 
-            <Collapse in={open}>
-              <div style={{ padding: '0 16px 16px', borderBottom: '1px solid #e0e0e0' }}>
-                <Typography variant="subtitle2" style={{ color: '#555', marginBottom: 8 }}>
-                  <b>Categories</b>
-                </Typography>
-                {(loadingCatCreate || loadingCatDelete) && <LoadingBox />}
-                {errorCatCreate && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
-                {errorCatDelete && <MessageBox variant="error">{errorCatDelete}</MessageBox>}
-                {[
-                  { label: 'Clothing', items: categories.filter((c) => c.isClothing) },
-                  { label: 'Other', items: categories.filter((c) => !c.isClothing) },
-                ].map(({ label, items }) => (
-                  <div key={label} style={{ marginBottom: 10 }}>
-                    <Typography variant="caption" style={{ color: '#888' }}>
-                      {label}
-                    </Typography>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                      {items.map((cat) => (
-                        <div
-                          key={cat._id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            border: '1px solid rgba(0,0,0,0.12)',
-                            borderRadius: 16,
-                            padding: '2px 4px 2px 10px',
-                            background: '#e0e0e0',
-                            fontSize: '0.8rem',
-                            fontFamily: 'inherit',
-                          }}
-                        >
-                          <span style={{ userSelect: 'none' }}>{cat.name}</span>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              size="small"
-                              sx={{ padding: '2px' }}
-                              onClick={() => handleDeleteCategory(cat)}
-                            >
-                              <DeleteIcon sx={{ fontSize: 13 }} />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      ))}
-                      {items.length === 0 && (
-                        <span style={{ color: '#aaa', fontSize: '0.85rem' }}>None</span>
-                      )}
-                    </div>
+          <Collapse in={open}>
+            <div style={{ padding: '0 16px 16px', borderBottom: '1px solid #e0e0e0' }}>
+              <Typography variant="subtitle2" style={{ color: '#555', marginBottom: 8 }}>
+                <b>Categories</b>
+              </Typography>
+              {(loadingCatCreate || loadingCatDelete) && <LoadingBox />}
+              {errorCatCreate && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
+              {errorCatDelete && <MessageBox variant="error">{errorCatDelete}</MessageBox>}
+              {[
+                { label: 'Clothing', items: categories.filter((c) => c.isClothing) },
+                { label: 'Other', items: categories.filter((c) => !c.isClothing) },
+              ].map(({ label, items }) => (
+                <div key={label} style={{ marginBottom: 10 }}>
+                  <Typography variant="caption" style={{ color: '#888' }}>
+                    {label}
+                  </Typography>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                    {items.map((cat) => (
+                      <div
+                        key={cat._id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: '1px solid rgba(0,0,0,0.12)',
+                          borderRadius: 16,
+                          padding: '2px 4px 2px 10px',
+                          background: '#e0e0e0',
+                          fontSize: '0.8rem',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        <span style={{ userSelect: 'none' }}>{cat.name}</span>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            sx={{ padding: '2px' }}
+                            onClick={() => handleDeleteCategory(cat)}
+                          >
+                            <DeleteIcon sx={{ fontSize: 13 }} />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    ))}
+                    {items.length === 0 && (
+                      <span style={{ color: '#aaa', fontSize: '0.85rem' }}>None</span>
+                    )}
                   </div>
-                ))}
-                <div
+                </div>
+              ))}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginTop: 8,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <TextField
+                  size="small"
+                  placeholder="New category name"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          onClick={handleAddCategory}
+                          disabled={!newCatName.trim() || loadingCatCreate}
+                        >
+                          <AddIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  style={{ width: 220 }}
+                />
+                <label
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 12,
-                    marginTop: 8,
-                    flexWrap: 'wrap',
+                    gap: 6,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
                   }}
                 >
-                  <TextField
-                    size="small"
-                    placeholder="New category name"
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            size="small"
-                            onClick={handleAddCategory}
-                            disabled={!newCatName.trim() || loadingCatCreate}
-                          >
-                            <AddIcon fontSize="small" />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    style={{ width: 220 }}
+                  <input
+                    type="checkbox"
+                    checked={newCatIsClothing}
+                    onChange={(e) => setNewCatIsClothing(e.target.checked)}
                   />
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      fontSize: '0.85rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={newCatIsClothing}
-                      onChange={(e) => setNewCatIsClothing(e.target.checked)}
-                    />
-                    Size-based stock (clothing)
-                  </label>
-                </div>
+                  Size-based stock (clothing)
+                </label>
               </div>
+            </div>
 
-              {/* Table */}
-              <TableContainer sx={{ maxHeight: 520 }}>
-                <Table className="table" stickyHeader aria-label="products table">
-                  <TableHead>
+            {error && <MessageBox variant="error">{error}</MessageBox>}
+            {/* Table */}
+            <TableContainer sx={{ maxHeight: 520 }}>
+              <Table className="table" stickyHeader aria-label="products table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={allSelected}
+                        indeterminate={selected.size > 0 && !allSelected}
+                        onChange={toggleSelectAll}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Image</b>
+                    </TableCell>
+                    {[
+                      { id: 'name', label: 'Name' },
+                      { id: 'price', label: 'Price' },
+                      { id: 'category', label: 'Category' },
+                      { id: 'countInStock.stock', label: 'Stock' },
+                      { id: 'visible', label: 'Visible' },
+                      { id: 'updatedAt', label: 'Updated' },
+                    ].map(({ id, label }) => (
+                      <TableCell key={id} align="center">
+                        <TableSortLabel
+                          active={orderBy === id}
+                          direction={orderBy === id ? sortDir : 'asc'}
+                          onClick={() => handleSort(id)}
+                        >
+                          <b>{label}</b>
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    <TableCell align="right">
+                      <b>Actions</b>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={i} sx={{ height: 56 }}>
+                        {Array.from({ length: 9 }).map((_, j) => (
+                          <TableCell key={j}>
+                            <Skeleton animation="wave" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={allSelected}
-                          indeterminate={selected.size > 0 && !allSelected}
-                          onChange={toggleSelectAll}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <b>Image</b>
-                      </TableCell>
-                      {[
-                        { id: 'name', label: 'Name' },
-                        { id: 'price', label: 'Price' },
-                        { id: 'category', label: 'Category' },
-                        { id: 'countInStock.stock', label: 'Stock' },
-                        { id: 'visible', label: 'Visible' },
-                        { id: 'updatedAt', label: 'Updated' },
-                      ].map(({ id, label }) => (
-                        <TableCell key={id} align="center">
-                          <TableSortLabel
-                            active={orderBy === id}
-                            direction={orderBy === id ? sortDir : 'asc'}
-                            onClick={() => handleSort(id)}
-                          >
-                            <b>{label}</b>
-                          </TableSortLabel>
-                        </TableCell>
-                      ))}
-                      <TableCell align="right">
-                        <b>Actions</b>
+                      <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
+                        No products found.
                       </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filtered.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
-                          No products found.
+                  ) : (
+                    filtered.map((product) => (
+                      <TableRow
+                        key={product._id}
+                        sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selected.has(product._id)}
+                            onChange={() => toggleSelect(product._id)}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          {(() => {
+                            let safeSrc = null;
+                            try {
+                              const u = new URL(product.images?.[0]);
+                              if (u.protocol === 'https:') safeSrc = u.href;
+                            } catch {}
+                            return safeSrc ? (
+                              <img
+                                src={safeSrc}
+                                alt={product.name}
+                                loading="lazy"
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  objectFit: 'cover',
+                                  borderRadius: 4,
+                                }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  background: '#e0e0e0',
+                                  borderRadius: 4,
+                                  display: 'inline-block',
+                                }}
+                              />
+                            );
+                          })()}
+                        </TableCell>
+                        <TableCell align="center">{product.name}</TableCell>
+                        <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
+                        <TableCell align="center">{product.category}</TableCell>
+                        <TableCell align="center">{getStock(product)}</TableCell>
+                        <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Edit">
+                            <IconButton
+                              size="small"
+                              onClick={() => navigate(`/admin/product/${product._id}/edit`)}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton size="small" onClick={() => deleteHandler(product)}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filtered.map((product) => (
-                        <TableRow
-                          key={product._id}
-                          sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selected.has(product._id)}
-                              onChange={() => toggleSelect(product._id)}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            {(() => {
-                              let safeSrc = null;
-                              try {
-                                const u = new URL(product.images?.[0]);
-                                if (u.protocol === 'https:') safeSrc = u.href;
-                              } catch {}
-                              return safeSrc ? (
-                                <img
-                                  src={safeSrc}
-                                  alt={product.name}
-                                  loading="lazy"
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    objectFit: 'cover',
-                                    borderRadius: 4,
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    background: '#e0e0e0',
-                                    borderRadius: 4,
-                                    display: 'inline-block',
-                                  }}
-                                />
-                              );
-                            })()}
-                          </TableCell>
-                          <TableCell align="center">{product.name}</TableCell>
-                          <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
-                          <TableCell align="center">{product.category}</TableCell>
-                          <TableCell align="center">{getStock(product)}</TableCell>
-                          <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
-                          <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
-                          <TableCell align="right">
-                            <Tooltip title="Edit">
-                              <IconButton
-                                size="small"
-                                onClick={() => navigate(`/admin/product/${product._id}/edit`)}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                              <IconButton size="small" onClick={() => deleteHandler(product)}>
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
-                component="div"
-                count={total}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={(_, p) => {
-                  setPage(p);
-                  setSelected(new Set());
-                }}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPage(parseInt(e.target.value, 10));
-                  setPage(0);
-                  setSelected(new Set());
-                }}
-              />
-            </Collapse>
-          </>
-        )}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              component="div"
+              count={total}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(_, p) => {
+                setPage(p);
+                setSelected(new Set());
+              }}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+                setSelected(new Set());
+              }}
+            />
+          </Collapse>
+        </>
       </Paper>
     </div>
   );

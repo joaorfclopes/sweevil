@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import Axios from 'axios';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { thunk } from 'redux-thunk';
@@ -49,6 +50,16 @@ import {
   productUpdateReducer,
 } from './reducers/productReducers';
 import { userDetailsReducer, userSigninReducer, userUpdateReducer } from './reducers/userReducers';
+
+const sentryMiddleware = () => (next) => (action) => {
+  if (typeof action.type === 'string' && action.type.endsWith('_FAIL') && action.payload) {
+    Sentry.captureMessage(`Redux: ${action.type}`, {
+      level: 'error',
+      extra: { payload: action.payload },
+    });
+  }
+  return next(action);
+};
 
 const storedUserInfo = (() => {
   try {
@@ -117,7 +128,11 @@ const reducer = combineReducers({
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(reducer, initialState, composeEnhancer(applyMiddleware(thunk)));
+const store = createStore(
+  reducer,
+  initialState,
+  composeEnhancer(applyMiddleware(thunk, sentryMiddleware))
+);
 
 Axios.interceptors.response.use(
   (res) => res,

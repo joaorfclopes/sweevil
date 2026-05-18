@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { lazy, Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signout } from '../actions/userActions';
@@ -7,11 +7,11 @@ import PasskeyRegister from '../components/PasskeyRegister';
 import { useFeatures } from '../FeaturesContext';
 import { scrollTop } from '../utils.js';
 
-const AboutAdminTab = lazy(() => import('../components/AboutAdminTab'));
-const BookingsAdminTab = lazy(() => import('../components/BookingsAdminTab'));
-const GalleryAdminTab = lazy(() => import('../components/GalleryAdminTab'));
-const OrdersTable = lazy(() => import('../components/OrdersTable'));
-const ProductsTable = lazy(() => import('../components/ProductsTable'));
+import AboutAdminTab from '../components/AboutAdminTab';
+import BookingsAdminTab from '../components/BookingsAdminTab';
+import GalleryAdminTab from '../components/GalleryAdminTab';
+import OrdersTable from '../components/OrdersTable';
+import ProductsTable from '../components/ProductsTable';
 
 export default function AdminScreen(props) {
   const { bookingEnabled } = useFeatures();
@@ -42,13 +42,13 @@ export default function AdminScreen(props) {
           </button>
         </Link>
       </div>
-      <Suspense fallback={null}>
+      <>
         {bookingEnabled && <BookingsAdminTab />}
         <OrdersTable />
         <ProductsTable />
         <GalleryAdminTab />
         <AboutAdminTab />
-      </Suspense>
+      </>
     </motion.section>
   );
 }

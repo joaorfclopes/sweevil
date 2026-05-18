@@ -3,6 +3,8 @@ import $ from 'jquery';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { listOrders } from './actions/orderActions';
+import { listAdminProducts } from './actions/productActions';
 import { signout } from './actions/userActions';
 import ArrowUp from './components/ArrowUp';
 import Footer from './components/Footer';
@@ -43,8 +45,15 @@ function AppContent() {
 
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const spinnerHidden = useRef(false);
+  const isAdminPage = useRef(window.location.pathname.startsWith('/admin')).current;
+
+  const { loading: productsLoading } = useSelector((state) => state.productAdminList);
+  const { loading: ordersLoading } = useSelector((state) => state.orderAdminList);
 
   const { data: session, isPending: sessionPending } = authClient.useSession();
+  const { isPending: passkeysPending } = authClient.useListPasskeys();
 
   useEffect(() => {
     if (sessionPending) return;
@@ -113,19 +122,39 @@ function AppContent() {
     };
   }, [userInfo, dispatch]);
 
+  const doHideSpinner = () => {
+    if (spinnerHidden.current) return;
+    spinnerHidden.current = true;
+    setLoading(false);
+    const loadingEl = document.querySelector('.loading');
+    if (loadingEl) loadingEl.style.display = 'none';
+    document.body.classList.add('scroll');
+    document.getElementById('root').classList.add('show');
+    scroll();
+  };
+
   useEffect(() => {
+    if (isAdminPage) {
+      dispatch(listAdminProducts());
+      dispatch(listOrders());
+    }
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
-    setTimeout(() => {
-      setLoading(false);
-      const loadingEl = document.querySelector('.loading');
-      if (loadingEl) loadingEl.style.display = 'none';
-      document.body.classList.add('scroll');
-      document.getElementById('root').classList.add('show');
-      scroll();
-    }, 1200);
-  }, []);
+    const minTimer = setTimeout(() => setMinTimeElapsed(true), 1200);
+    const fallback = setTimeout(doHideSpinner, 5000);
+    return () => {
+      clearTimeout(minTimer);
+      clearTimeout(fallback);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!minTimeElapsed) return;
+    const adminReady =
+      !isAdminPage || (productsLoading === false && ordersLoading === false && !passkeysPending);
+    if (adminReady) doHideSpinner();
+  }, [minTimeElapsed, productsLoading, ordersLoading, passkeysPending]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     if (!location.hash) {

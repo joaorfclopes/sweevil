@@ -4,17 +4,19 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  release: process.env.SENTRY_RELEASE,
-  sendDefaultPii: true,
-  tracesSampleRate: 1.0,
-  profileSessionSampleRate: 1.0,
-  integrations: [
-    nodeProfilingIntegration(),
-    Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
-  ],
-  enableLogs: true,
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    release: process.env.SENTRY_RELEASE,
+    sendDefaultPii: true,
+    tracesSampleRate: 1.0,
+    profileSessionSampleRate: 1.0,
+    integrations: [
+      nodeProfilingIntegration(),
+      Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    ],
+    enableLogs: true,
+  });
 
-Sentry.profiler.startProfiler();
+  Sentry.profiler.startProfiler();
+}

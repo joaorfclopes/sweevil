@@ -10,33 +10,35 @@ import App from './App';
 import store from './store';
 import './style/index.scss';
 
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  sendDefaultPii: true,
-  beforeSend(event) {
-    const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
-    if (frames.length === 0) return event;
-    const fromExtension = frames.some((f) =>
-      /^(chrome|moz|safari|edge)-extension:\/\//.test(f.filename ?? '')
-    );
-    if (fromExtension) return null;
-    const allAnonymous = frames.every((f) => !f.filename || f.filename === '<anonymous>');
-    if (allAnonymous) return null;
-    return event;
-  },
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.browserProfilingIntegration(),
-    Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
-    Sentry.replayIntegration(),
-  ],
-  enableLogs: true,
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-  tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
-});
+if (import.meta.env.MODE === 'production') {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    sendDefaultPii: true,
+    beforeSend(event) {
+      const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
+      if (frames.length === 0) return event;
+      const fromExtension = frames.some((f) =>
+        /^(chrome|moz|safari|edge)-extension:\/\//.test(f.filename ?? '')
+      );
+      if (fromExtension) return null;
+      const allAnonymous = frames.every((f) => !f.filename || f.filename === '<anonymous>');
+      if (allAnonymous) return null;
+      return event;
+    },
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.browserProfilingIntegration(),
+      Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+      Sentry.replayIntegration(),
+    ],
+    enableLogs: true,
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+    tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
+  });
+}
 
 smoothscroll.polyfill();
 

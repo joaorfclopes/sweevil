@@ -32,6 +32,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import { DateCalendar, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -430,226 +431,228 @@ export default function BookingsAdminTab() {
             ))}
           </div>
 
-          {loadingBookings ? (
-            <LoadingBox />
-          ) : errorBookings ? (
-            <MessageBox variant="error">{errorBookings}</MessageBox>
-          ) : (
-            <>
-              <TableContainer sx={{ maxHeight: 520 }}>
-                <Table stickyHeader>
-                  <TableHead>
+          {errorBookings && <MessageBox variant="error">{errorBookings}</MessageBox>}
+          <>
+            <TableContainer sx={{ maxHeight: 520 }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={allBookingsSelected}
+                        indeterminate={selected.size > 0 && !allBookingsSelected}
+                        onChange={toggleSelectAll}
+                      />
+                    </TableCell>
+                    <TableCell padding="checkbox" />
+                    {[
+                      { id: 'date', label: 'Date' },
+                      { id: 'slot', label: 'Time' },
+                      { id: 'guestInfo.name', label: 'Guest' },
+                      { id: 'guestInfo.email', label: 'Email' },
+                      { id: 'status', label: 'Status' },
+                      { id: 'updatedAt', label: 'Updated' },
+                    ].map(({ id, label }) => (
+                      <TableCell key={id}>
+                        <TableSortLabel
+                          active={orderBy === id}
+                          direction={orderBy === id ? sortDir : 'asc'}
+                          onClick={() => handleSort(id)}
+                        >
+                          <b>{label}</b>
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    <TableCell>
+                      <b>Notes</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Photos</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Actions</b>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loadingBookings ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={i} sx={{ height: 56 }}>
+                        {Array.from({ length: 11 }).map((_, j) => (
+                          <TableCell key={j}>
+                            <Skeleton animation="wave" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : filteredBookings.length === 0 ? (
                     <TableRow>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={allBookingsSelected}
-                          indeterminate={selected.size > 0 && !allBookingsSelected}
-                          onChange={toggleSelectAll}
-                        />
-                      </TableCell>
-                      <TableCell padding="checkbox" />
-                      {[
-                        { id: 'date', label: 'Date' },
-                        { id: 'slot', label: 'Time' },
-                        { id: 'guestInfo.name', label: 'Guest' },
-                        { id: 'guestInfo.email', label: 'Email' },
-                        { id: 'status', label: 'Status' },
-                        { id: 'updatedAt', label: 'Updated' },
-                      ].map(({ id, label }) => (
-                        <TableCell key={id}>
-                          <TableSortLabel
-                            active={orderBy === id}
-                            direction={orderBy === id ? sortDir : 'asc'}
-                            onClick={() => handleSort(id)}
-                          >
-                            <b>{label}</b>
-                          </TableSortLabel>
-                        </TableCell>
-                      ))}
-                      <TableCell>
-                        <b>Notes</b>
-                      </TableCell>
-                      <TableCell>
-                        <b>Photos</b>
-                      </TableCell>
-                      <TableCell align="right">
-                        <b>Actions</b>
+                      <TableCell colSpan={11} align="center" sx={{ py: 4, color: '#888' }}>
+                        No bookings found.
                       </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredBookings.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={11} align="center" sx={{ py: 4, color: '#888' }}>
-                          No bookings found.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredBookings.map((b) => (
-                        <React.Fragment key={b._id}>
-                          <TableRow
-                            sx={isNewRow(b) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                checked={selected.has(b._id)}
-                                onChange={() => toggleSelect(b._id)}
-                              />
-                            </TableCell>
-                            <TableCell padding="checkbox">
-                              <IconButton size="small" onClick={() => toggleExpand(b._id)}>
-                                {expanded.has(b._id) ? (
-                                  <KeyboardArrowUpIcon fontSize="small" />
-                                ) : (
-                                  <KeyboardArrowDownIcon fontSize="small" />
-                                )}
-                              </IconButton>
-                            </TableCell>
-                            <TableCell>{formatDateDay(b.date)}</TableCell>
-                            <TableCell>{b.slot}</TableCell>
-                            <TableCell>{b.guestInfo?.name}</TableCell>
-                            <TableCell>{b.guestInfo?.email}</TableCell>
-                            <TableCell>
-                              <StatusChip status={b.status} />
-                            </TableCell>
-                            <TableCell>{formatDateDay(b.updatedAt)}</TableCell>
-                            <TableCell>
-                              {b.guestInfo?.notes && (
-                                <Tooltip title="View notes">
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      setNotesDialog({
-                                        open: true,
-                                        notes: b.guestInfo.notes,
-                                        name: b.guestInfo?.name,
-                                      })
-                                    }
-                                  >
-                                    <NoteAltIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
+                  ) : (
+                    filteredBookings.map((b) => (
+                      <React.Fragment key={b._id}>
+                        <TableRow
+                          sx={isNewRow(b) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selected.has(b._id)}
+                              onChange={() => toggleSelect(b._id)}
+                            />
+                          </TableCell>
+                          <TableCell padding="checkbox">
+                            <IconButton size="small" onClick={() => toggleExpand(b._id)}>
+                              {expanded.has(b._id) ? (
+                                <KeyboardArrowUpIcon fontSize="small" />
+                              ) : (
+                                <KeyboardArrowDownIcon fontSize="small" />
                               )}
-                            </TableCell>
-                            <TableCell>
-                              {b.images?.length > 0 && (
-                                <Tooltip title={`${b.images.length} photo(s)`}>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      setPhotosDialog({
-                                        open: true,
-                                        images: b.images,
-                                        name: b.guestInfo?.name,
-                                      })
-                                    }
-                                  >
-                                    <PhotoLibraryIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </TableCell>
-                            <TableCell align="right">
-                              {b.status === 'CONFIRMED' && (
-                                <Tooltip title="Cancel">
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleCancelBooking(b._id)}
-                                  >
-                                    <BlockIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                              <Tooltip title="Delete">
-                                <IconButton size="small" onClick={() => handleDeleteBooking(b._id)}>
-                                  <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>{formatDateDay(b.date)}</TableCell>
+                          <TableCell>{b.slot}</TableCell>
+                          <TableCell>{b.guestInfo?.name}</TableCell>
+                          <TableCell>{b.guestInfo?.email}</TableCell>
+                          <TableCell>
+                            <StatusChip status={b.status} />
+                          </TableCell>
+                          <TableCell>{formatDateDay(b.updatedAt)}</TableCell>
+                          <TableCell>
+                            {b.guestInfo?.notes && (
+                              <Tooltip title="View notes">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    setNotesDialog({
+                                      open: true,
+                                      notes: b.guestInfo.notes,
+                                      name: b.guestInfo?.name,
+                                    })
+                                  }
+                                >
+                                  <NoteAltIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
-                            </TableCell>
-                          </TableRow>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {b.images?.length > 0 && (
+                              <Tooltip title={`${b.images.length} photo(s)`}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    setPhotosDialog({
+                                      open: true,
+                                      images: b.images,
+                                      name: b.guestInfo?.name,
+                                    })
+                                  }
+                                >
+                                  <PhotoLibraryIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {b.status === 'CONFIRMED' && (
+                              <Tooltip title="Cancel">
+                                <IconButton size="small" onClick={() => handleCancelBooking(b._id)}>
+                                  <BlockIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            <Tooltip title="Delete">
+                              <IconButton size="small" onClick={() => handleDeleteBooking(b._id)}>
+                                <DeleteOutlineIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
 
-                          {/* Expandable row */}
-                          <TableRow>
-                            <TableCell
-                              colSpan={11}
-                              sx={{ py: 0, borderBottom: expanded.has(b._id) ? undefined : 'none' }}
-                            >
-                              <Collapse in={expanded.has(b._id)} timeout="auto" unmountOnExit>
-                                <Box sx={{ p: 2, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                                  <div>
-                                    <Typography
-                                      variant="caption"
-                                      sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
-                                    >
-                                      Contact
-                                    </Typography>
+                        {/* Expandable row */}
+                        <TableRow>
+                          <TableCell
+                            colSpan={11}
+                            sx={{ py: 0, borderBottom: expanded.has(b._id) ? undefined : 'none' }}
+                          >
+                            <Collapse in={expanded.has(b._id)} timeout="auto" unmountOnExit>
+                              <Box sx={{ p: 2, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                <div>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
+                                  >
+                                    Contact
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    Phone: {b.guestInfo?.phone || '—'}
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    Email: {b.guestInfo?.email}
+                                  </Typography>
+                                </div>
+                                <div>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
+                                  >
+                                    Payment
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    Paid: {b.isPaid ? formatDateDay(b.paidAt) : 'No'}
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    Price: {b.price?.toFixed(2)}€
+                                  </Typography>
+                                  {b.stripeInvoiceId && (
                                     <Typography variant="body2">
-                                      Phone: {b.guestInfo?.phone || '—'}
+                                      Invoice: {b.stripeInvoiceId}
                                     </Typography>
-                                    <Typography variant="body2">
-                                      Email: {b.guestInfo?.email}
-                                    </Typography>
-                                  </div>
-                                  <div>
-                                    <Typography
-                                      variant="caption"
-                                      sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
-                                    >
-                                      Payment
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      Paid: {b.isPaid ? formatDateDay(b.paidAt) : 'No'}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      Price: {b.price?.toFixed(2)}€
-                                    </Typography>
-                                    {b.stripeInvoiceId && (
-                                      <Typography variant="body2">
-                                        Invoice: {b.stripeInvoiceId}
-                                      </Typography>
-                                    )}
-                                  </div>
-                                  {b.guestInfo?.notes && (
-                                    <div>
-                                      <Typography
-                                        variant="caption"
-                                        sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
-                                      >
-                                        Notes
-                                      </Typography>
-                                      <Typography variant="body2">{b.guestInfo.notes}</Typography>
-                                    </div>
                                   )}
-                                </Box>
-                              </Collapse>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50, 100]}
-                component="div"
-                count={bookingsTotal}
-                page={page}
-                onPageChange={(_, p) => {
-                  setPage(p);
-                  setSelected(new Set());
-                  setExpanded(new Set());
-                }}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPage(parseInt(e.target.value, 10));
-                  setPage(0);
-                  setSelected(new Set());
-                  setExpanded(new Set());
-                }}
-              />
-            </>
-          )}
+                                </div>
+                                {b.guestInfo?.notes && (
+                                  <div>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
+                                    >
+                                      Notes
+                                    </Typography>
+                                    <Typography variant="body2">{b.guestInfo.notes}</Typography>
+                                  </div>
+                                )}
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              component="div"
+              count={bookingsTotal}
+              page={page}
+              onPageChange={(_, p) => {
+                setPage(p);
+                setSelected(new Set());
+                setExpanded(new Set());
+              }}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+                setSelected(new Set());
+                setExpanded(new Set());
+              }}
+            />
+          </>
         </Collapse>
       </Paper>
 
