@@ -4,18 +4,26 @@
   width: 50px;
   height: 50px;
   position: fixed;
-  bottom: 0;
-  right: 0;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 999;
   background-color: white;
-  border: 1.5px solid $darkColor;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
   box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.16),
-    0 3px 6px rgba(0, 0, 0, 0.23);
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   cursor: pointer;
   text-align: center;
   transition: 0.2s;
-  margin: 20px;
+
+  @media (max-width: 600px) {
+    bottom: 0;
+    right: 0;
+    margin: 1rem;
+  }
   svg {
     width: 30px;
     padding: 2px;

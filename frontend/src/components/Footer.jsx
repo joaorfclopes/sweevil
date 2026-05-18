@@ -58,11 +58,11 @@ export default function Footer({ showShopNow = false }) {
         </div>
       </div>
       <div className="legal-links">
-        <Link to="/termos-e-condicoes">Terms &amp; Conditions</Link>
-        <Link to="/politica-de-privacidade">Privacy Policy</Link>
-        <Link to="/politica-de-cookies">Cookie Policy</Link>
-        <Link to="/direito-de-arrependimento">Right of Withdrawal</Link>
-        <Link to="/politica-de-devolucoes">Returns &amp; Refunds</Link>
+        <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
+        <Link to="/privacy-policy">Privacy Policy</Link>
+        <Link to="/cookie-policy">Cookie Policy</Link>
+        <Link to="/right-of-withdrawal">Right of Withdrawal</Link>
+        <Link to="/returns-policy">Returns &amp; Refunds</Link>
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">
           Complaints Book
         </a>

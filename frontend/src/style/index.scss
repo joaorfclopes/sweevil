@@ -32,6 +32,7 @@
 @use './components/video';
 @use './components/footer';
 @use './components/arrowUp';
+@use './components/consentNotice';
 
 #root {
   &.show {

@@ -54,7 +54,7 @@ export default function TermosCondicoesScreen() {
       <p>
         The customer has 14 calendar days from the date of receipt of the item to exercise the right
         to withdraw from the contract, without providing any reason. For more information, please
-        see our <a href="/direito-de-arrependimento">Right of Withdrawal Policy</a>.
+        see our <a href="/right-of-withdrawal">Right of Withdrawal Policy</a>.
       </p>
 
       <h2>7. Returns and Refunds</h2>
@@ -62,7 +62,7 @@ export default function TermosCondicoesScreen() {
         Returned items must be in perfect condition, unused, and in their original packaging. Return
         shipping costs are borne by the customer. Refunds are issued via the same payment method
         used for the purchase, within 14 days of receiving the returned item. For more details,
-        please see our <a href="/politica-de-devolucoes">Returns and Refunds Policy</a>.
+        please see our <a href="/returns-policy">Returns and Refunds Policy</a>.
       </p>
 
       <h2>8. Dispute Resolution</h2>

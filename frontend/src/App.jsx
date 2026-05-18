@@ -7,6 +7,7 @@ import { listOrders } from './actions/orderActions';
 import { listAdminProducts } from './actions/productActions';
 import { signout } from './actions/userActions';
 import ArrowUp from './components/ArrowUp';
+import ConsentNotice from './components/ConsentNotice';
 import Footer from './components/Footer';
 import MenuMobile from './components/MenuMobile';
 import Navbar from './components/Navbar';
@@ -16,21 +17,21 @@ import { authClient } from './lib/authClient';
 import AdminScreen from './screens/AdminScreen';
 import BookingScreen from './screens/BookingScreen';
 import CartScreen from './screens/CartScreen';
-import DireitoArrependimentoScreen from './screens/DireitoArrependimentoScreen';
+import CookiePolicyScreen from './screens/CookiePolicyScreen';
 import MainScreen from './screens/MainScreen';
 import MaintenanceScreen from './screens/MaintenanceScreen';
 import NotFoundScreen from './screens/NotFoundScreen';
 import OrderScreen from './screens/OrderScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
-import PoliticaCookiesScreen from './screens/PoliticaCookiesScreen';
-import PoliticaDevolucoes from './screens/PoliticaDevolucoes';
-import PoliticaPrivacidadeScreen from './screens/PoliticaPrivacidadeScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
 import ProductScreen from './screens/ProductScreen';
+import ReturnPolicyScreen from './screens/ReturnPolicyScreen';
 import ShippingScreen from './screens/ShippingScreen';
 import ShopScreen from './screens/ShopScreen';
 import SigninScreen from './screens/SigninScreen';
-import TermosCondicoesScreen from './screens/TermosCondicoesScreen';
+import TermsAndConditionsScreen from './screens/TermsAndConditionsScreen';
+import WithdrawalRightScreen from './screens/WithdrawalRightScreen';
 import { scrollWithOffset } from './utils';
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
@@ -275,14 +276,11 @@ function AppContent() {
                       <BookingScreen pageVariants={pageVariants} pageTransition={pageTransition} />
                     }
                   />
-                  <Route path="/termos-e-condicoes" element={<TermosCondicoesScreen />} />
-                  <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadeScreen />} />
-                  <Route path="/politica-de-cookies" element={<PoliticaCookiesScreen />} />
-                  <Route
-                    path="/direito-de-arrependimento"
-                    element={<DireitoArrependimentoScreen />}
-                  />
-                  <Route path="/politica-de-devolucoes" element={<PoliticaDevolucoes />} />
+                  <Route path="/terms-and-conditions" element={<TermsAndConditionsScreen />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
+                  <Route path="/cookie-policy" element={<CookiePolicyScreen />} />
+                  <Route path="/right-of-withdrawal" element={<WithdrawalRightScreen />} />
+                  <Route path="/returns-policy" element={<ReturnPolicyScreen />} />
                   <Route
                     path="*"
                     element={
@@ -297,6 +295,7 @@ function AppContent() {
         )}
       </div>
       <ArrowUp />
+      <ConsentNotice />
     </div>
   );
 }
