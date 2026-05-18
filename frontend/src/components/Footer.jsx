@@ -58,16 +58,16 @@ export default function Footer({ showShopNow = false }) {
         </div>
       </div>
       <div className="legal-links">
-        <Link to="/termos-e-condicoes">Termos e Condições</Link>
-        <Link to="/politica-de-privacidade">Política de Privacidade</Link>
-        <Link to="/politica-de-cookies">Política de Cookies</Link>
-        <Link to="/direito-de-arrependimento">Direito de Arrependimento</Link>
-        <Link to="/politica-de-devolucoes">Devoluções e Reembolsos</Link>
+        <Link to="/termos-e-condicoes">Terms &amp; Conditions</Link>
+        <Link to="/politica-de-privacidade">Privacy Policy</Link>
+        <Link to="/politica-de-cookies">Cookie Policy</Link>
+        <Link to="/direito-de-arrependimento">Right of Withdrawal</Link>
+        <Link to="/politica-de-devolucoes">Returns &amp; Refunds</Link>
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">
-          Livro de Reclamações
+          Complaints Book
         </a>
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-          Resolução de Litígios
+          Dispute Resolution
         </a>
       </div>
       <div className="brand-notice" style={isShop ? { paddingBottom: '50px' } : undefined}>

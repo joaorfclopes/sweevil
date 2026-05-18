@@ -1,92 +1,84 @@
 export default function PoliticaPrivacidadeScreen() {
   return (
     <section className="legal-screen custom-font">
-      <h1>Política de Privacidade</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>Privacy Policy</h1>
+      <span className="last-updated">Last updated: 8 April 2026</span>
 
-      <h2>1. Responsável pelo Tratamento</h2>
+      <h2>1. Data Controller</h2>
       <p>
         Sílvia Seixas Pinho Peralta (Sweevil), NIF 247 911 780, Rua das Eirinhas, 157, Casa 6,
         4300-166 Porto, Portugal.
       </p>
       <p>
-        Contacto para questões de privacidade:{' '}
+        Privacy enquiries:{' '}
         <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>
       </p>
 
-      <h2>2. Dados Pessoais Recolhidos</h2>
+      <h2>2. Personal Data Collected</h2>
       <p>
-        Recolhemos apenas os dados estritamente necessários para o processamento das encomendas e
-        comunicação com o cliente:
+        We collect only the data strictly necessary for order processing and customer communication:
       </p>
       <ul>
-        <li>Nome completo</li>
-        <li>Endereço de entrega</li>
-        <li>Endereço de e-mail</li>
-        <li>Número de telefone (opcional)</li>
+        <li>Full name</li>
+        <li>Delivery address</li>
+        <li>Email address</li>
+        <li>Phone number (optional)</li>
+        <li>Payment data (processed by the payment provider; not stored by Sweevil)</li>
+      </ul>
+
+      <h2>3. Purpose and Legal Basis for Processing</h2>
+      <p>Data is processed for the following purposes:</p>
+      <ul>
+        <li>Order processing and management (performance of a contract — Art. 6(1)(b) GDPR)</li>
         <li>
-          Dados de pagamento (processados pela entidade de pagamento, não armazenados pela Sweevil)
+          Order-related communication, such as confirmations and shipping updates (legitimate
+          interest — Art. 6(1)(f) GDPR)
+        </li>
+        <li>
+          Compliance with legal obligations, such as invoicing (legal obligation — Art. 6(1)(c)
+          GDPR)
         </li>
       </ul>
 
-      <h2>3. Finalidade e Base Legal do Tratamento</h2>
-      <p>Os dados são tratados para as seguintes finalidades:</p>
-      <ul>
-        <li>
-          Processamento e gestão de encomendas (execução de contrato — art. 6.º, n.º 1, al. b) do
-          RGPD)
-        </li>
-        <li>
-          Comunicação relacionada com a encomenda, como confirmações e atualizações de envio
-          (interesse legítimo — art. 6.º, n.º 1, al. f) do RGPD)
-        </li>
-        <li>
-          Cumprimento de obrigações legais, como emissão de faturas (obrigação legal — art. 6.º, n.º
-          1, al. c) do RGPD)
-        </li>
-      </ul>
-
-      <h2>4. Partilha de Dados com Terceiros</h2>
+      <h2>4. Sharing Data with Third Parties</h2>
       <p>
-        Os dados pessoais poderão ser partilhados com as transportadoras (CTT, DPD, DHL, GLS)
-        exclusivamente para efeitos de entrega da encomenda, e com o processador de pagamentos
-        (Stripe) para processamento da transação. Não partilhamos dados com terceiros para fins de
-        marketing ou publicidade.
+        Personal data may be shared with carriers (CTT, DPD, DHL, GLS) solely for delivery purposes,
+        and with the payment processor (Stripe) for transaction processing. We do not share data
+        with third parties for marketing or advertising purposes.
       </p>
 
-      <h2>5. Prazo de Conservação</h2>
+      <h2>5. Retention Period</h2>
       <p>
-        Os dados são conservados pelo prazo mínimo necessário ao cumprimento das obrigações legais
-        (nomeadamente fiscais e contabilísticas), em regra por um período não superior a 10 anos,
-        nos termos da legislação fiscal portuguesa.
+        Data is retained for the minimum period required to fulfil legal obligations (in particular
+        tax and accounting obligations), generally no longer than 10 years, in accordance with
+        Portuguese tax legislation.
       </p>
 
-      <h2>6. Direitos do Titular dos Dados</h2>
-      <p>Nos termos do RGPD, o titular dos dados tem direito a:</p>
+      <h2>6. Data Subject Rights</h2>
+      <p>Under the GDPR, data subjects have the right to:</p>
       <ul>
-        <li>Aceder aos seus dados pessoais</li>
-        <li>Retificar dados inexatos ou incompletos</li>
-        <li>Solicitar o apagamento dos dados ("direito a ser esquecido")</li>
-        <li>Limitar ou opor-se ao tratamento</li>
-        <li>Portabilidade dos dados</li>
+        <li>Access their personal data</li>
+        <li>Rectify inaccurate or incomplete data</li>
+        <li>Request erasure of their data ("right to be forgotten")</li>
+        <li>Restrict or object to processing</li>
+        <li>Data portability</li>
         <li>
-          Apresentar reclamação junto da CNPD (Comissão Nacional de Proteção de Dados) em{' '}
+          Lodge a complaint with the CNPD (National Data Protection Commission) at{' '}
           <a href="https://www.cnpd.pt" target="_blank" rel="noreferrer">
             www.cnpd.pt
           </a>
         </li>
       </ul>
       <p>
-        Para exercer qualquer um destes direitos, contacte-nos através de{' '}
+        To exercise any of these rights, contact us at{' '}
         <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>.
       </p>
 
-      <h2>7. Segurança</h2>
+      <h2>7. Security</h2>
       <p>
-        Adotamos medidas técnicas e organizativas adequadas para proteger os seus dados pessoais
-        contra acesso não autorizado, perda ou destruição. Os dados de pagamento são processados
-        diretamente pelas entidades de pagamento em ambiente seguro e não são armazenados nos nossos
-        sistemas.
+        We implement appropriate technical and organisational measures to protect your personal data
+        against unauthorised access, loss, or destruction. Payment data is processed directly by
+        payment providers in a secure environment and is not stored in our systems.
       </p>
     </section>
   );

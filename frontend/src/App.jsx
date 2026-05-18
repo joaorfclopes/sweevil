@@ -1,6 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import $ from 'jquery';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { signout } from './actions/userActions';
@@ -30,9 +30,6 @@ import ShopScreen from './screens/ShopScreen';
 import SigninScreen from './screens/SigninScreen';
 import TermosCondicoesScreen from './screens/TermosCondicoesScreen';
 import { scrollWithOffset } from './utils';
-const CookieConsent = React.lazy(() =>
-  import('react-cookie-consent').catch(() => ({ default: () => null }))
-);
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -271,15 +268,6 @@ function AppContent() {
         )}
       </div>
       <ArrowUp />
-      <React.Suspense fallback={null}>
-        <CookieConsent
-          containerClasses="cookie-consent"
-          contentClasses="cookie-consent-content custom-font"
-          buttonClasses="cookie-consent-btn custom-font"
-        >
-          This website uses cookies to enhance the user experience.
-        </CookieConsent>
-      </React.Suspense>
     </div>
   );
 }

@@ -1,52 +1,49 @@
 export default function PoliticaCookiesScreen() {
   return (
     <section className="legal-screen custom-font">
-      <h1>Política de Cookies</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>Cookie Policy</h1>
+      <span className="last-updated">Last updated: 8 April 2026</span>
 
-      <h2>1. O que são Cookies?</h2>
+      <h2>1. What Are Cookies?</h2>
       <p>
-        Cookies são pequenos ficheiros de texto que um website armazena no seu dispositivo
-        (computador, telemóvel ou tablet) quando o visita. São amplamente utilizados para fazer os
-        websites funcionar de forma mais eficiente e para fornecer informações aos proprietários do
-        site.
+        Cookies are small text files that a website stores on your device (computer, mobile phone,
+        or tablet) when you visit it. They are widely used to make websites work more efficiently
+        and to provide information to site owners.
       </p>
 
-      <h2>2. Cookies que Utilizamos</h2>
+      <h2>2. Cookies We Use</h2>
       <p>
-        O website Sweevil (sweevil.pt) utiliza exclusivamente cookies estritamente necessários ao
-        funcionamento da plataforma. Não utilizamos cookies de análise, publicidade ou rastreamento
-        de terceiros.
+        The Sweevil website (sweevil.pt) uses exclusively strictly necessary cookies for the
+        platform to function. We do not use analytics, advertising, or third-party tracking cookies.
       </p>
-      <p>Os cookies estritamente necessários que utilizamos incluem:</p>
+      <p>The strictly necessary cookies we use include:</p>
       <ul>
         <li>
-          <strong>Sessão de autenticação</strong> — Mantém a sua sessão ativa enquanto navega no
-          site, evitando que tenha de iniciar sessão a cada página.
+          <strong>Authentication session</strong> — Keeps your session active while browsing the
+          site, so you do not need to log in on every page.
         </li>
         <li>
-          <strong>Carrinho de compras</strong> — Guarda os artigos adicionados ao carrinho durante a
-          sua visita.
+          <strong>Shopping cart</strong> — Saves the items added to your cart during your visit.
         </li>
         <li>
-          <strong>Preferência de cookies</strong> — Regista que já aceitou esta política, para não
-          lhe mostrar o aviso repetidamente.
+          <strong>Cookie preference</strong> — Records that you have already accepted this policy,
+          so the notice is not shown repeatedly.
         </li>
       </ul>
 
-      <h2>3. Base Legal</h2>
+      <h2>3. Legal Basis</h2>
       <p>
-        Os cookies estritamente necessários não requerem o seu consentimento, uma vez que são
-        indispensáveis para o correto funcionamento do website e para a prestação do serviço
-        solicitado, nos termos da Lei n.º 41/2004 e da Diretiva ePrivacy 2002/58/CE.
+        Strictly necessary cookies do not require your consent, as they are essential for the
+        correct functioning of the website and for providing the requested service, pursuant to Law
+        No. 41/2004 and the ePrivacy Directive 2002/58/EC.
       </p>
 
-      <h2>4. Como Gerir os Cookies</h2>
+      <h2>4. Managing Cookies</h2>
       <p>
-        Pode configurar o seu browser para bloquear ou eliminar cookies. Contudo, tenha em atenção
-        que desativar cookies estritamente necessários pode afetar o funcionamento da loja online,
-        impedindo funcionalidades como o carrinho de compras ou a autenticação. As instruções para
-        gerir cookies variam consoante o browser:
+        You can configure your browser to block or delete cookies. However, please note that
+        disabling strictly necessary cookies may affect the functioning of the online store,
+        preventing features such as the shopping cart or authentication. Instructions for managing
+        cookies vary by browser:
       </p>
       <ul>
         <li>
@@ -83,9 +80,9 @@ export default function PoliticaCookiesScreen() {
         </li>
       </ul>
 
-      <h2>5. Contacto</h2>
+      <h2>5. Contact</h2>
       <p>
-        Para questões relacionadas com esta política, contacte-nos em{' '}
+        For questions related to this policy, contact us at{' '}
         <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>.
       </p>
     </section>

@@ -1,97 +1,92 @@
 export default function TermosCondicoesScreen() {
   return (
     <section className="legal-screen custom-font">
-      <h1>Termos e Condições Gerais de Venda</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>General Terms and Conditions of Sale</h1>
+      <span className="last-updated">Last updated: 8 April 2026</span>
 
-      <h2>1. Identificação do Vendedor</h2>
+      <h2>1. Seller Identification</h2>
       <p>
-        Sílvia Seixas Pinho Peralta, a exercer atividade sob a marca Sweevil, com NIF 247 911 780,
-        com sede em Rua das Eirinhas, 157, Casa 6, 4300-166 Porto, Portugal.
+        Sílvia Seixas Pinho Peralta, trading under the brand Sweevil, NIF 247 911 780, registered
+        address at Rua das Eirinhas, 157, Casa 6, 4300-166 Porto, Portugal.
       </p>
       <p>
-        Contacto:{' '}
+        Contact:{' '}
         <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a> | +351
         916 828 734
       </p>
 
-      <h2>2. Âmbito de Aplicação</h2>
+      <h2>2. Scope</h2>
       <p>
-        Os presentes Termos e Condições regem todas as compras realizadas na loja online Sweevil
-        (sweevil.pt). Ao concluir uma encomenda, o cliente aceita integralmente estes termos.
+        These Terms and Conditions govern all purchases made in the Sweevil online store
+        (sweevil.pt). By completing an order, the customer fully accepts these terms.
       </p>
 
-      <h2>3. Produtos e Preços</h2>
+      <h2>3. Products and Prices</h2>
       <p>
-        Todos os preços indicados incluem IVA à taxa legal em vigor. A Sweevil reserva-se o direito
-        de alterar os preços sem aviso prévio, sendo aplicável o preço vigente no momento da
-        encomenda. As imagens dos produtos são meramente ilustrativas e podem diferir ligeiramente
-        dos artigos reais.
+        All prices shown include VAT at the applicable legal rate. Sweevil reserves the right to
+        change prices without prior notice; the price applicable is the one in effect at the time of
+        the order. Product images are for illustrative purposes only and may differ slightly from
+        the actual items.
       </p>
 
-      <h2>4. Métodos de Pagamento</h2>
-      <p>São aceites os seguintes métodos de pagamento:</p>
+      <h2>4. Payment Methods</h2>
+      <p>The following payment methods are accepted:</p>
       <ul>
-        <li>Cartão de crédito/débito (Stripe)</li>
-        <li>Cartão de débito</li>
+        <li>Credit/debit card (Stripe)</li>
+        <li>Debit card</li>
         <li>MB Way</li>
         <li>Revolut</li>
       </ul>
       <p>
-        O pagamento é processado no momento da encomenda. Caso o pagamento não seja confirmado, a
-        encomenda será cancelada automaticamente.
+        Payment is processed at the time of the order. If payment is not confirmed, the order will
+        be automatically cancelled.
       </p>
 
-      <h2>5. Envio e Entrega</h2>
+      <h2>5. Shipping and Delivery</h2>
       <p>
-        Os envios são realizados para toda a Europa através das transportadoras CTT, DPD, DHL e GLS.
-        O prazo estimado de entrega é de 5 dias úteis após confirmação do pagamento, podendo variar
-        em função do destino e da transportadora selecionada.
+        Orders are shipped across Europe via CTT, DPD, DHL, and GLS carriers. The estimated delivery
+        time is 5 business days after payment confirmation, and may vary depending on the
+        destination and selected carrier.
       </p>
+      <p>Shipping costs are calculated at checkout based on the destination and order weight.</p>
+
+      <h2>6. Right of Withdrawal</h2>
       <p>
-        Os custos de envio são calculados no momento do checkout com base no destino e peso da
-        encomenda.
+        The customer has 14 calendar days from the date of receipt of the item to exercise the right
+        to withdraw from the contract, without providing any reason. For more information, please
+        see our <a href="/direito-de-arrependimento">Right of Withdrawal Policy</a>.
       </p>
 
-      <h2>6. Direito de Arrependimento</h2>
+      <h2>7. Returns and Refunds</h2>
       <p>
-        O cliente dispõe de 14 dias de calendário, a contar da data de receção do artigo, para
-        exercer o direito de livre resolução do contrato, sem necessidade de apresentar qualquer
-        justificação. Para mais informações, consulte a nossa{' '}
-        <a href="/direito-de-arrependimento">Política de Direito de Arrependimento</a>.
+        Returned items must be in perfect condition, unused, and in their original packaging. Return
+        shipping costs are borne by the customer. Refunds are issued via the same payment method
+        used for the purchase, within 14 days of receiving the returned item. For more details,
+        please see our <a href="/politica-de-devolucoes">Returns and Refunds Policy</a>.
       </p>
 
-      <h2>7. Devoluções e Reembolsos</h2>
+      <h2>8. Dispute Resolution</h2>
       <p>
-        Os artigos devolvidos devem encontrar-se em perfeito estado, sem utilização e na embalagem
-        original. Os custos de devolução são suportados pelo cliente. O reembolso é efetuado através
-        do mesmo método de pagamento utilizado na compra, no prazo máximo de 14 dias após receção do
-        artigo devolvido. Para mais detalhes, consulte a nossa{' '}
-        <a href="/politica-de-devolucoes">Política de Devoluções e Reembolsos</a>.
-      </p>
-
-      <h2>8. Resolução de Litígios</h2>
-      <p>
-        Em caso de litígio, o consumidor pode recorrer a uma entidade de Resolução Alternativa de
-        Litígios (RAL). A plataforma europeia de resolução de litígios em linha está disponível em{' '}
+        In the event of a dispute, the consumer may contact an Alternative Dispute Resolution (ADR)
+        entity. The European online dispute resolution platform is available at{' '}
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
           ec.europa.eu/consumers/odr
         </a>
         .
       </p>
       <p>
-        Pode ainda apresentar reclamação através do Livro de Reclamações Eletrónico em{' '}
+        You may also file a complaint through the Electronic Complaints Book at{' '}
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">
           www.livroreclamacoes.pt
         </a>
         .
       </p>
 
-      <h2>9. Lei Aplicável</h2>
+      <h2>9. Applicable Law</h2>
       <p>
-        Os presentes Termos e Condições são regidos pela lei portuguesa. Para quaisquer litígios
-        emergentes da relação contratual, é competente o tribunal da comarca do Porto, sem prejuízo
-        do disposto na legislação de defesa do consumidor.
+        These Terms and Conditions are governed by Portuguese law. For any disputes arising from the
+        contractual relationship, the courts of Porto shall have jurisdiction, without prejudice to
+        applicable consumer protection legislation.
       </p>
     </section>
   );

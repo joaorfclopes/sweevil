@@ -1,5 +1,26 @@
 # TODO
 
+## Cookie consent compliance (EU/Portugal RGPD + ePrivacy)
+
+**Status:** Old `react-cookie-consent` banner removed (was legally invalid — no reject option, vague copy). No banner currently shown.
+
+**Audit findings:**
+- Current cookies are all strictly necessary: `better-auth.session_token` (8h, auth), `_stripe_mid`/`_stripe_sid` (payment pages only, fraud prevention). No consent required for these.
+- `localStorage` keys (`userInfo`, `cartItems`, `shippingAddress`) are strictly necessary. No consent required.
+- **Gap:** No analytics or marketing tracking — client is missing conversion data and ad attribution.
+
+**Agreed plan:**
+1. **Axeptio** for consent management (project ID: `6a0ad0ef93464d56e8c72ef0`). GDPR-native, free tier, client can access consent stats dashboard.
+2. **GA4** — free, client-accessible analytics dashboard. Client needs to create a GA4 property (Google Analytics → Create property → Web) and share the `G-XXXXXXXXXX` measurement ID.
+3. **Meta Pixel** — for Instagram/Facebook ad attribution. Client to provide Pixel ID from Meta Business Manager → Events Manager.
+4. **GTM** — consider loading GA4 + Meta Pixel via Google Tag Manager with Axeptio's GTM integration for cleaner consent gating (optional, discuss with client).
+
+**Implementation scope (pending IDs from client):**
+- Add Axeptio widget script with two consent categories: Analytics (GA4) and Marketing (Meta Pixel)
+- GA4 + Meta Pixel scripts fire only inside Axeptio `axeptio_cookies_complete` consent callback — not on page load
+- Update Cookie Policy page with real cookie table: name, provider, purpose, duration for all cookies including `better-auth.session_token`, `_stripe_mid`, `_stripe_sid`, `_ga*`, `_fbp`/`_fbc`
+- No cookie walls — site fully accessible without accepting non-necessary cookies
+
 ## Pre-deploy smoke test suite (CI gate before Heroku push)
 The deploy workflow (`.github/workflows/deploy.yml`) currently pushes to Heroku immediately after a successful build with no runtime verification. Add a test job that runs before the deploy step and blocks it on failure. Coverage should include: (1) **auth** — login with valid credentials returns a JWT, invalid credentials return 401; (2) **products** — create a product (POST `/api/products`), verify it appears in the list, delete it; (3) **bookings** — create a booking (POST `/api/bookings`), verify it persists, cancel it; (4) **image upload** — POST a small JPEG to `/api/uploads/s3`, verify an S3 URL is returned; (5) **payment intent creation** — POST to the order/booking payment-intent route, verify a `clientSecret` is returned (Stripe test-mode key required in CI secrets); (6) **webhook signature** — send a synthetic Stripe webhook event with a valid `stripe-signature` header, verify 200 and that the handler fires correctly. Use Jest + Supertest against a real test MongoDB (MongoDB Memory Server) and real Stripe test-mode keys stored as GitHub Actions secrets (`STRIPE_TEST_SECRET_KEY`, `MONGO_TEST_URI`, `JWT_SECRET`, `AWS_*`). Wire the new `test` job into `deploy.yml` as a `needs: test` dependency on the existing deploy job so a failed test blocks the push.
 

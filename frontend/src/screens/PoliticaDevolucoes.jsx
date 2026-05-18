@@ -1,67 +1,66 @@
 export default function PoliticaDevolucoes() {
   return (
     <section className="legal-screen custom-font">
-      <h1>Política de Devoluções e Reembolsos</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>Returns and Refunds Policy</h1>
+      <span className="last-updated">Last updated: 8 April 2026</span>
 
-      <h2>1. Condições de Devolução</h2>
+      <h2>1. Return Conditions</h2>
       <p>
-        Pode devolver qualquer artigo adquirido na loja Sweevil no prazo de
-        <strong> 14 dias de calendário</strong> após a receção da encomenda, desde que:
+        You may return any item purchased from the Sweevil store within
+        <strong> 14 calendar days</strong> of receiving the order, provided that:
       </p>
       <ul>
-        <li>O artigo se encontre em perfeito estado, sem sinais de utilização</li>
-        <li>O artigo seja devolvido na embalagem original</li>
-        <li>Seja apresentada prova de compra (e-mail de confirmação da encomenda)</li>
+        <li>The item is in perfect condition, with no signs of use</li>
+        <li>The item is returned in its original packaging</li>
+        <li>Proof of purchase is provided (order confirmation email)</li>
       </ul>
 
-      <h2>2. Como Iniciar uma Devolução</h2>
-      <p>Para iniciar o processo de devolução, contacte-nos através de:</p>
+      <h2>2. How to Start a Return</h2>
+      <p>To start the return process, contact us at:</p>
       <ul>
         <li>
-          E-mail:{' '}
+          Email:{' '}
           <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>
         </li>
-        <li>Telefone: +351 916 828 734</li>
+        <li>Phone: +351 916 828 734</li>
       </ul>
       <p>
-        Indique o número da encomenda, os artigos que pretende devolver e o motivo da devolução.
-        Após confirmação da devolução, enviaremos as instruções de envio.
+        Please provide your order number, the items you wish to return, and the reason for the
+        return. Once the return is confirmed, we will send you shipping instructions.
       </p>
 
-      <h2>3. Custos de Devolução</h2>
+      <h2>3. Return Shipping Costs</h2>
       <p>
-        Os custos de envio da devolução são da responsabilidade do cliente. Recomendamos que utilize
-        um serviço de envio com rastreamento, uma vez que não nos responsabilizamos por artigos
-        perdidos durante o transporte de devolução.
+        Return shipping costs are the customer's responsibility. We recommend using a tracked
+        shipping service, as we are not liable for items lost during return transit.
       </p>
 
-      <h2>4. Reembolsos</h2>
+      <h2>4. Refunds</h2>
       <p>
-        Após receção e verificação do estado do artigo devolvido, processaremos o reembolso no prazo
-        máximo de <strong>14 dias</strong>. O reembolso será efetuado através do mesmo método de
-        pagamento utilizado na compra original:
+        After receiving and inspecting the returned item, we will process the refund within a
+        maximum of <strong>14 days</strong>. The refund will be issued via the same payment method
+        used in the original purchase:
       </p>
       <ul>
-        <li>Cartão de crédito/débito (Stripe) — reembolso para o cartão utilizado</li>
-        <li>Cartão de débito — reembolso para o cartão utilizado</li>
-        <li>MB Way — reembolso para o número de telefone associado</li>
-        <li>Revolut — reembolso para a conta Revolut utilizada</li>
+        <li>Credit/debit card (Stripe) — refunded to the card used</li>
+        <li>Debit card — refunded to the card used</li>
+        <li>MB Way — refunded to the associated phone number</li>
+        <li>Revolut — refunded to the Revolut account used</li>
       </ul>
 
-      <h2>5. Artigos com Defeito ou Danificados</h2>
+      <h2>5. Defective or Damaged Items</h2>
       <p>
-        Se receber um artigo com defeito ou danificado durante o transporte, contacte-nos
-        imediatamente (no prazo máximo de 48 horas após receção) com fotografias do artigo e da
-        embalagem. Neste caso, os custos de devolução serão suportados pela Sweevil e procederemos à
-        substituição do artigo ou reembolso total, consoante a sua preferência.
+        If you receive a defective or damaged item, contact us immediately (within 48 hours of
+        receipt) with photos of the item and the packaging. In this case, return shipping costs will
+        be covered by Sweevil and we will arrange a replacement or full refund, according to your
+        preference.
       </p>
 
-      <h2>6. Encomendas Não Entregues</h2>
+      <h2>6. Undelivered Orders</h2>
       <p>
-        Caso a encomenda não seja entregue dentro do prazo estimado, contacte-nos através de{' '}
-        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a> para
-        acompanharmos a situação junto da transportadora.
+        If your order has not been delivered within the estimated timeframe, contact us at{' '}
+        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a> so we
+        can follow up with the carrier.
       </p>
     </section>
   );
