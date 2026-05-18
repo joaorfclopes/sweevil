@@ -1,3 +1,4 @@
+import { AnimatePresence } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -103,6 +104,15 @@ function AppContent() {
     });
   };
 
+  const pageVariants = {
+    in: { opacity: 1 },
+    out: { opacity: 1 },
+  };
+
+  const pageTransition = {
+    duration: 0,
+  };
+
   useEffect(() => {
     if (!userInfo) return;
     const reset = () => {
@@ -189,31 +199,111 @@ function AppContent() {
         {!loading && (
           <>
             <main>
-              <Routes>
-                <Route
-                  path="/"
-                  element={isAuthError ? <Navigate to="/not-found" replace /> : <MainScreen />}
-                />
-                <Route path="/shop" element={<ShopScreen />} />
-                <Route path="/shop/product/:id" element={<ProductScreen />} />
-                <Route path="/cart" element={<CartScreen />} />
-                <Route path="/cart/shipping" element={<ShippingScreen />} />
-                <Route path="/cart/placeorder" element={<PlaceOrderScreen />} />
-                <Route path="/cart/order/:id" element={<OrderScreen />} />
-                <Route path="/signin" element={<SigninScreen />} />
-                <Route path="/admin" element={userInfo ? <AdminScreen /> : <NotFoundScreen />} />
-                <Route
-                  path="/admin/product/:id/edit"
-                  element={userInfo ? <ProductEditScreen /> : <NotFoundScreen />}
-                />
-                <Route path="/booking" element={<BookingScreen />} />
-                <Route path="/terms-and-conditions" element={<TermsAndConditionsScreen />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
-                <Route path="/cookie-policy" element={<CookiePolicyScreen />} />
-                <Route path="/right-of-withdrawal" element={<WithdrawalRightScreen />} />
-                <Route path="/returns-policy" element={<ReturnPolicyScreen />} />
-                <Route path="*" element={<NotFoundScreen />} />
-              </Routes>
+              <AnimatePresence>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      isAuthError ? (
+                        <Navigate to="/not-found" replace />
+                      ) : (
+                        <MainScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/shop"
+                    element={
+                      <ShopScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/shop/product/:id"
+                    element={
+                      <ProductScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/cart"
+                    element={
+                      <CartScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/cart/shipping"
+                    element={
+                      <ShippingScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/cart/placeorder"
+                    element={
+                      <PlaceOrderScreen
+                        pageVariants={pageVariants}
+                        pageTransition={pageTransition}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/cart/order/:id"
+                    element={
+                      <OrderScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/signin"
+                    element={
+                      <SigninScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route
+                    path="/admin"
+                    element={
+                      userInfo ? (
+                        <AdminScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                      ) : (
+                        <NotFoundScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/admin/product/:id/edit"
+                    element={
+                      userInfo ? (
+                        <ProductEditScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      ) : (
+                        <NotFoundScreen
+                          pageVariants={pageVariants}
+                          pageTransition={pageTransition}
+                        />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/booking"
+                    element={
+                      <BookingScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                  <Route path="/terms-and-conditions" element={<TermsAndConditionsScreen />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
+                  <Route path="/cookie-policy" element={<CookiePolicyScreen />} />
+                  <Route path="/right-of-withdrawal" element={<WithdrawalRightScreen />} />
+                  <Route path="/returns-policy" element={<ReturnPolicyScreen />} />
+                  <Route
+                    path="*"
+                    element={
+                      <NotFoundScreen pageVariants={pageVariants} pageTransition={pageTransition} />
+                    }
+                  />
+                </Routes>
+              </AnimatePresence>
             </main>
             {!isAdmin && <Footer showShopNow={isMain} />}
           </>

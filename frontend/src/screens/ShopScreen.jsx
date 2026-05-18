@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { listProducts } from '../actions/productActions';
@@ -35,7 +36,14 @@ export default function ShopScreen(props) {
       : visibleProducts.filter((p) => p.category === selectedCategory);
 
   return (
-    <section className="shop">
+    <motion.section
+      className="shop"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <div className="free-shipping-banner">Free shipping on orders over €40</div>
       <div className="shop-container">
         {categoriesInUse.length > 0 && (
@@ -67,6 +75,6 @@ export default function ShopScreen(props) {
           )}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getCountryDataList } from 'countries-list';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import PhoneInput from 'react-phone-input-2';
@@ -109,7 +110,14 @@ export default function ShippingScreen(props) {
   };
 
   return (
-    <section className="shipping">
+    <motion.section
+      className="shipping"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <div className="shipping-container">
         <div className="shipping-inner">
           <h1 className="custom-font">Shipping Details</h1>
@@ -192,6 +200,6 @@ export default function ShippingScreen(props) {
           </form>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

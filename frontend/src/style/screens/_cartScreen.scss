@@ -112,5 +112,6 @@
     }
   }
   .show {
+    @include fade-in;
   }
 }

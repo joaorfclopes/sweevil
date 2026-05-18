@@ -6,6 +6,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
 import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import PhoneInput from 'react-phone-input-2';
@@ -296,7 +297,14 @@ export default function BookingScreen(props) {
     : [];
 
   return (
-    <section className="booking-screen">
+    <motion.section
+      className="booking-screen"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <div className="booking-container">
         {step === STEPS.CONFIRMED ? (
           <div className="booking-confirmed">
@@ -535,6 +543,6 @@ export default function BookingScreen(props) {
           </div>
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }

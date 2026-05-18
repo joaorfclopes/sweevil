@@ -68,7 +68,11 @@
     }
   }
 
+  .hide {
+    @include fade-out;
+  }
   .show {
+    @include fade-in;
     position: relative;
     visibility: visible;
     z-index: 1;

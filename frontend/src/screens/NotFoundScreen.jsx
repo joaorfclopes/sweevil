@@ -1,8 +1,16 @@
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 export default function NotFoundScreen(props) {
   return (
-    <section className="not-found-screen">
+    <motion.section
+      className="not-found-screen"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       <div className="row center not-found-screen-container">
         <div className="not-found">
           <img src="/404.avif" alt="Page not found" className="not-found-image" />
@@ -12,6 +20,6 @@ export default function NotFoundScreen(props) {
           </Link>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

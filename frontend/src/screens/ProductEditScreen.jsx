@@ -15,6 +15,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Axios from 'axios';
+import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/opacity.css';
@@ -341,7 +342,14 @@ export default function ProductEditScreen(props) {
   };
 
   return (
-    <section className="product-edit">
+    <motion.section
+      className="product-edit"
+      initial="out"
+      animate="in"
+      exit="out"
+      variants={props.pageVariants}
+      transition={props.pageTransition}
+    >
       {!isNew && loading ? (
         <LoadingBox lineHeight="75vh" width="100px" />
       ) : !isNew && error ? (
@@ -571,6 +579,6 @@ export default function ProductEditScreen(props) {
           </form>
         </>
       )}
-    </section>
+    </motion.section>
   );
 }
