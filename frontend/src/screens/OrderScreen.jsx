@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
-import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -194,14 +193,7 @@ export default function OrderScreen(props) {
   };
 
   return (
-    <motion.section
-      className="order cards-section"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="order cards-section">
       {loading ? (
         <LoadingBox lineHeight="75vh" width="100px" />
       ) : error ? (
@@ -356,6 +348,6 @@ export default function OrderScreen(props) {
           </div>
         </div>
       )}
-    </motion.section>
+    </section>
   );
 }

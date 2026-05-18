@@ -36,7 +36,7 @@
 
 #root {
   &.show {
-    @include show-root;
+    opacity: 1;
   }
 }
 a {

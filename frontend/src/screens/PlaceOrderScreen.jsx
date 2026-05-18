@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -61,14 +60,7 @@ export default function PlaceOrderScreen(props) {
   };
 
   return (
-    <motion.section
-      className="place-order cards-section"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="place-order cards-section">
       <div className="row center place-order-container">
         <div className="place-order-inner">
           <h1 className="custom-font">Place Order</h1>
@@ -151,6 +143,6 @@ export default function PlaceOrderScreen(props) {
           </button>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

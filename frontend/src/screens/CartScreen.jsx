@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import $ from 'jquery';
 import { useEffect, useRef } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -88,14 +87,7 @@ export default function CartScreen(props) {
   }, []);
 
   return (
-    <motion.section
-      className="cart"
-      initial="out"
-      animate="in"
-      exit="out"
-      variants={props.pageVariants}
-      transition={props.pageTransition}
-    >
+    <section className="cart">
       <h1 className="custom-font">Cart</h1>
       {cartItems.length === 0 ? (
         <div>
@@ -202,6 +194,6 @@ export default function CartScreen(props) {
           </ul>
         </>
       )}
-    </motion.section>
+    </section>
   );
 }
