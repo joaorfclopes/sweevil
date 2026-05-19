@@ -5,7 +5,7 @@
   height: 50px;
   position: fixed;
   bottom: 1.5rem;
-  right: 1.5rem;
+  right: calc(1.5rem + var(--scroll-lock-offset, 0px));
   z-index: 999;
   background-color: white;
   border: 1px solid #e0e0e0;
