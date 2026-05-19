@@ -1,11 +1,12 @@
 @use '../general/globals' as *;
 
 header {
-  width: 100%;
+  position: fixed;
+  left: 0;
+  right: var(--scroll-lock-offset, 0px);
   font-family: $font;
   font-weight: bold;
   text-transform: uppercase;
-  position: fixed;
   z-index: 1000;
   background-color: white;
   .brand-logo {

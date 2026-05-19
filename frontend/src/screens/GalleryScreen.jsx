@@ -45,7 +45,6 @@ export default function GalleryScreen() {
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const colCount = useColCount();
-
   useScrollLock(lightboxOpen);
 
   // Use ordered DB categories; fall back to image-derived names for any not yet synced
@@ -177,13 +176,13 @@ export default function GalleryScreen() {
                   view: ({ index }) => setLightboxIndex(index),
                 }}
                 plugins={[Captions, Zoom]}
+                noScroll={{ disabled: true }}
                 zoom={{
                   maxZoomPixelRatio: 5,
                   zoomInMultiplier: 2,
                   pinchZoomDistanceFactor: 100,
                   wheelZoomDistanceFactor: 100,
                 }}
-                noScroll={{ disabled: true }}
               />
             </div>
             {(hasMore || visibleRows > INITIAL_ROWS) && (

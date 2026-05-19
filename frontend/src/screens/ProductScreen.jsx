@@ -54,7 +54,6 @@ export default function ProductScreen(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadedCarousel, setLoadedCarousel] = useState(new Set());
   const [loadedPreviews, setLoadedPreviews] = useState(new Set());
-
   useScrollLock(isOpen);
 
   useEffect(() => {
@@ -218,13 +217,13 @@ export default function ProductScreen(props) {
               view: ({ index }) => setImageIndex(index),
             }}
             plugins={[Zoom]}
+            noScroll={{ disabled: true }}
             zoom={{
               maxZoomPixelRatio: 5,
               zoomInMultiplier: 2,
               pinchZoomDistanceFactor: 100,
               wheelZoomDistanceFactor: 100,
             }}
-            noScroll={{ disabled: true }}
           />
           <div className="product-details">
             <h2 className="name custom-font">

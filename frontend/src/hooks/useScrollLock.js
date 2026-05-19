@@ -3,20 +3,16 @@ import { useEffect } from 'react';
 export default function useScrollLock(active) {
   useEffect(() => {
     if (!active) return;
-
-    const scrollY = window.scrollY;
-
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflowY = 'scroll'; // keep scrollbar visible
-
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.documentElement.style.setProperty('--scroll-lock-offset', `${scrollbarWidth}px`);
+    }
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      window.scrollTo({ top: scrollY, behavior: 'instant' });
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.documentElement.style.removeProperty('--scroll-lock-offset');
     };
   }, [active]);
 }
