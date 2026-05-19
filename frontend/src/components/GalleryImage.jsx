@@ -2,21 +2,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import Placeholder from './Placeholder';
 
-function isCached(url) {
-  if (!url) return false;
-  const img = new Image();
-  img.src = url;
-  return img.complete;
-}
+const loadedUrls = new Set();
 
 export default function GalleryImage({ galleryImage }) {
-  const cached = isCached(galleryImage.image);
-  const [containerRef, inView] = useLazyLoad('300px', cached);
+  const alreadyLoaded = loadedUrls.has(galleryImage.image);
+  const [containerRef, inView] = useLazyLoad('300px', alreadyLoaded);
   const imgRef = useRef(null);
-  const [loaded, setLoaded] = useState(cached);
+  const [loaded, setLoaded] = useState(alreadyLoaded);
 
   useEffect(() => {
-    if (inView && imgRef.current?.complete && !loaded) setLoaded(true);
+    if (!inView) return;
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) {
+      loadedUrls.add(galleryImage.image);
+      setLoaded(true);
+      return;
+    }
+    const onLoad = () => {
+      loadedUrls.add(galleryImage.image);
+      setLoaded(true);
+    };
+    img.addEventListener('load', onLoad);
+    return () => img.removeEventListener('load', onLoad);
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const aspectRatio = loaded
@@ -33,7 +41,6 @@ export default function GalleryImage({ galleryImage }) {
             ref={imgRef}
             src={inView ? galleryImage.image : undefined}
             alt={galleryImage.description || ''}
-            onLoad={() => setLoaded(true)}
           />
         </div>
       </Placeholder>

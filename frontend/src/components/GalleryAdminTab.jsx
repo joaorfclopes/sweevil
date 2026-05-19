@@ -171,19 +171,12 @@ const _lazyObserver =
       )
     : null;
 
-function isCachedUrl(url) {
-  if (!url) return false;
-  const img = new Image();
-  img.src = url;
-  return img.complete;
-}
-
 // Persists across remounts so images don't blink when columns recalculate
 const loadedImageCache = new Set();
 
-function LazyImg({ src, alt, ...props }) {
+function LazyImg({ src, alt, initialVisible = false, onLoad, ...props }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(() => isCachedUrl(src));
+  const [visible, setVisible] = useState(initialVisible);
 
   useEffect(() => {
     if (visible) return;
@@ -196,6 +189,18 @@ function LazyImg({ src, alt, ...props }) {
       _lazyCallbacks.delete(el);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!visible || !onLoad) return;
+    const img = ref.current;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) {
+      onLoad();
+      return;
+    }
+    img.addEventListener('load', onLoad);
+    return () => img.removeEventListener('load', onLoad);
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <img ref={ref} src={visible ? src : undefined} alt={alt} {...props} />;
 }
@@ -220,9 +225,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item._id,
   });
-  const [imgLoaded, setImgLoaded] = useState(
-    () => isCachedUrl(item.image) || loadedImageCache.has(item._id)
-  );
+  const [imgLoaded, setImgLoaded] = useState(() => loadedImageCache.has(item._id));
 
   const aspectRatio =
     !imgLoaded && item.width && item.height ? `${item.width}/${item.height}` : undefined;
@@ -239,6 +242,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
         <LazyImg
           src={item.image}
           alt={item.description || item.category}
+          initialVisible={imgLoaded}
           style={{ display: 'block', width: '100%' }}
           onLoad={() => {
             loadedImageCache.add(item._id);
