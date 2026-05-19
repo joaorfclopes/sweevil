@@ -19,13 +19,14 @@ galleryImageRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { image, description, category } = req.body;
+    const { image, description, category, width, height } = req.body;
     await GalleryImage.updateMany({}, { $inc: { order: 1 } });
     const galleryImage = new GalleryImage({
       image,
       description: description || '',
       category,
       order: 0,
+      ...(width && height ? { width, height } : {}),
     });
     const created = await galleryImage.save();
     res.status(201).json(created);

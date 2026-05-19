@@ -4,7 +4,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
 import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -25,6 +24,36 @@ import {
   ORDER_PAY_RESET,
   ORDER_SEND_RESET,
 } from '../constants/orderConstants';
+import { useLazyLoad } from '../hooks/useLazyLoad';
+
+function OrderItemImage({ item }) {
+  const [containerRef, inView] = useLazyLoad('300px');
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (inView && imgRef.current?.complete) {
+      $(`#${item.product}-order-img`).addClass('show');
+    }
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div ref={containerRef} className="item-image">
+      <PlaceHolder height="100%" hide={inView}>
+        <div id={`${item.product}-order-img`} className="item-image-inner">
+          <Link to={`/shop/product/${item.product}`}>
+            <img
+              ref={imgRef}
+              className="small"
+              src={inView ? item.image : undefined}
+              alt={item.name}
+              onLoad={() => $(`#${item.product}-order-img`).addClass('show')}
+            />
+          </Link>
+        </div>
+      </PlaceHolder>
+    </div>
+  );
+}
 
 function StripeCheckoutForm({ order, dispatch, token }) {
   const stripe = useStripe();
@@ -188,10 +217,6 @@ export default function OrderScreen(props) {
     });
   };
 
-  const imageLoaded = (id) => {
-    $(`#${id}-order-img`).addClass('show');
-  };
-
   return (
     <section className="order cards-section">
       {loading ? (
@@ -253,20 +278,7 @@ export default function OrderScreen(props) {
               <ul className="cart-items">
                 {order.orderItems.map((item, index) => (
                   <li key={item.product}>
-                    <div className="item-image">
-                      <PlaceHolder height="100%">
-                        <div id={`${item.product}-order-img`} className="item-image-inner">
-                          <Link to={`/shop/product/${item.product}`}>
-                            <LazyLoadImage
-                              className="small"
-                              src={item.image}
-                              alt={item.name}
-                              afterLoad={() => imageLoaded(item.product)}
-                            />
-                          </Link>
-                        </div>
-                      </PlaceHolder>
-                    </div>
+                    <OrderItemImage item={item} />
                     <div className="item-content">
                       <div className="item-name">
                         <p>{item.name}</p>

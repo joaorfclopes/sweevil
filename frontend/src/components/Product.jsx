@@ -1,6 +1,4 @@
-import $ from 'jquery';
-import { useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Placeholder from './Placeholder';
 
@@ -13,34 +11,63 @@ function isSoldOut(product) {
   return !s.stock || s.stock <= 0;
 }
 
+function isCached(url) {
+  if (!url) return false;
+  const img = new Image();
+  img.src = url;
+  return img.complete;
+}
+
 export default function Product(props) {
   const { product } = props;
   const soldOut = isSoldOut(product);
+  const containerRef = useRef(null);
+  const imgRef = useRef(null);
+  const cached = isCached(product.images[0]);
 
-  const [hidePlaceholder, setHidePlaceholder] = useState(false);
+  const [inView, setInView] = useState(cached);
+  const [loaded, setLoaded] = useState(cached);
 
-  const imageLoaded = (id) => {
-    $(`#${id}-product-img`).addClass('show');
-    $(`#${id}-product-desc`).addClass('show');
-    setHidePlaceholder(true);
-  };
+  useEffect(() => {
+    if (cached) return;
+    const node = containerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '300px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (inView && imgRef.current?.complete && !loaded) {
+      setLoaded(true);
+    }
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="product" key={product._id}>
+    <div ref={containerRef} className="product" key={product._id}>
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
           {soldOut && <span className="sold-out-pill">Sold Out</span>}
-          <Placeholder hide={hidePlaceholder}>
-            <div id={`${product._id}-product-img`} className="product-image">
-              <LazyLoadImage
-                src={product.images[0]}
-                alt={product.image}
-                afterLoad={() => imageLoaded(product._id)}
+          <Placeholder hide={loaded}>
+            <div className={`product-image ${loaded ? 'show' : ''}`}>
+              <img
+                ref={imgRef}
+                src={inView ? product.images[0] : undefined}
+                alt={product.name}
+                onLoad={() => setLoaded(true)}
               />
             </div>
           </Placeholder>
-          <Placeholder height="100%" hide={hidePlaceholder} text>
-            <div id={`${product._id}-product-desc`} className="product-description">
+          <Placeholder height="100%" hide={loaded} text>
+            <div className={`product-description ${loaded ? 'show' : ''}`}>
               <p className="product-name">{product.name}</p>
               <div className="line"></div>
               <p className="product-price">{product.price && product.price.toFixed(2)}€</p>

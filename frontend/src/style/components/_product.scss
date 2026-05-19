@@ -26,12 +26,17 @@
   transition: 0.3s;
   font-family: $font;
   font-weight: 300;
-  .product-image {
-    opacity: 0;
+  .product-image,
+  .product-image-skeleton {
     width: 235px;
-    height: 235px;
     @media (max-width: 767px) {
       width: min(80vw, 320px);
+    }
+  }
+  .product-image {
+    opacity: 0;
+    height: 235px;
+    @media (max-width: 767px) {
       height: min(80vw, 320px);
     }
     img {

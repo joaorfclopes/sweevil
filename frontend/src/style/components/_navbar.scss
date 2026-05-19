@@ -7,21 +7,11 @@ header {
   text-transform: uppercase;
   position: fixed;
   z-index: 1000;
-  transition: 0.1s;
-  &.scrolled {
-    background-color: white;
-  }
+  background-color: white;
   .brand-logo {
-    transition: 0.1s;
-    width: 11rem;
+    width: 8.8rem;
     @include lg {
-      width: 14rem;
-    }
-    &.scrolled {
-      width: 8rem;
-      @include lg {
-        width: 10rem;
-      }
+      width: 11.2rem;
     }
     .logo-cls-18 {
       fill: $primaryColor;
@@ -44,6 +34,11 @@ header {
     padding: 0 4.5px;
     vertical-align: top;
     margin-left: -10px;
+  }
+  a,
+  li,
+  .icon-mobile {
+    cursor: pointer;
   }
   @include nav-options;
   .icon {

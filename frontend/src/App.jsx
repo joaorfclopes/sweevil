@@ -8,7 +8,6 @@ import { signout } from './actions/userActions';
 import ArrowUp from './components/ArrowUp';
 import ConsentNotice from './components/ConsentNotice';
 import Footer from './components/Footer';
-import MenuMobile from './components/MenuMobile';
 import Navbar from './components/Navbar';
 import { USER_SIGNIN_SUCCESS, USER_SIGNOUT } from './constants/userConstants';
 import { FeaturesProvider, useFeatures } from './FeaturesContext';
@@ -31,7 +30,7 @@ import ShopScreen from './screens/ShopScreen';
 import SigninScreen from './screens/SigninScreen';
 import TermsAndConditionsScreen from './screens/TermsAndConditionsScreen';
 import WithdrawalRightScreen from './screens/WithdrawalRightScreen';
-import { scrollWithOffset } from './utils';
+import { mainOptions, scrollWithOffset } from './utils';
 
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -53,6 +52,7 @@ function AppContent() {
 
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
   const spinnerHidden = useRef(false);
   const isAdminPage = useRef(window.location.pathname.startsWith('/admin')).current;
@@ -86,6 +86,19 @@ function AppContent() {
   const isAuthError =
     new URLSearchParams(location.search).get('error') === 'Registration_not_allowed_for_this_email';
 
+  const updateActiveSection = () => {
+    if (window.location.pathname !== '/') return;
+    const midpoint = window.innerHeight / 2;
+    let current = 'home';
+    for (const opt of mainOptions) {
+      const el = document.getElementById(opt);
+      if (el && el.getBoundingClientRect().top <= midpoint) {
+        current = opt;
+      }
+    }
+    setActiveSection(current);
+  };
+
   const scroll = () => {
     $(window).on('scroll', function () {
       if ($(window).scrollTop() >= 30) {
@@ -100,6 +113,7 @@ function AppContent() {
         $('.arrow-up').addClass('hide');
         $('.arrow-up').removeClass('show');
       }
+      updateActiveSection();
     });
   };
 
@@ -167,6 +181,9 @@ function AppContent() {
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     }
+    if (location.pathname === '/') {
+      setActiveSection('home');
+    }
   }, [location.pathname]);
 
   // Scroll to hash section once content is rendered
@@ -184,8 +201,7 @@ function AppContent() {
     <div className="App">
       <div className="grid-container">
         {session && <PasskeyPreloader onReady={() => setPasskeysReady(true)} />}
-        <Navbar scrolled={scrolled} />
-        <MenuMobile />
+        <Navbar scrolled={scrolled} activeSection={activeSection} />
         {!loading && (
           <>
             <main>

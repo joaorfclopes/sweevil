@@ -7,10 +7,10 @@ import Cart from '../assets/svg/cart.svg?react';
 import Logo from '../assets/svg/logo.svg?react';
 import Menu from '../assets/svg/menu.svg?react';
 import { useFeatures } from '../FeaturesContext';
-import { disableScroll } from '../scroll';
+import { disableScroll, enableScroll } from '../scroll';
 import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
-export default function Navbar(props) {
+export default function Navbar({ scrolled, activeSection }) {
   const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -19,18 +19,32 @@ export default function Navbar(props) {
 
   const [counter, setCounter] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
   const openMenu = () => {
     document
       .querySelector('meta[name="viewport"]')
       .setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
-    $('.nav-mobile').addClass('show');
+    setMenuOpen(true);
     disableScroll();
+  };
+
+  const closeMenu = () => {
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute('content', 'width=device-width, initial-scale=1');
+    setMenuOpen(false);
+    enableScroll();
   };
 
   const logoClick = () => {
     setCounter(counter + 1);
+    scrollTop();
+  };
+
+  const homeClick = () => {
+    closeMenu();
     scrollTop();
   };
 
@@ -50,39 +64,95 @@ export default function Navbar(props) {
   }, [userInfo, counter]);
 
   return (
-    <header className={`row ${props.scrolled && 'scrolled'}`}>
-      <div className="icon-mobile">
-        <NavLink to="/cart" className={({ isActive }) => (isActive ? 'active' : '')}>
-          <Cart className="icon fill" />
-          <span className="badge">{cartItems.length}</span>
-        </NavLink>
-      </div>
-      <div>
-        <NavLink end className="brand" to={!isAdmin ? '/' : '/signin'}>
-          <Logo className={`brand-logo ${props.scrolled && 'scrolled'}`} onClick={logoClick} />
-        </NavLink>
-      </div>
-      <div>
-        <ul className="nav-desktop">
+    <>
+      <header className={`row ${scrolled && 'scrolled'}`}>
+        <div className="icon-mobile">
+          <NavLink to="/cart" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <Cart className="icon fill" />
+            <span className="badge">{cartItems.length}</span>
+          </NavLink>
+        </div>
+        <div>
+          <NavLink end className="brand" to={!isAdmin ? '/' : '/signin'}>
+            <Logo className="brand-logo" onClick={logoClick} />
+          </NavLink>
+        </div>
+        <div>
+          <ul className="nav-desktop">
+            {userInfo && (
+              <li>
+                <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  admin
+                </NavLink>
+              </li>
+            )}
+            {mainOptions.map((option) => {
+              const isHome = option === 'home';
+              const isActive = location.pathname === '/' && activeSection === option;
+              return (
+                <li key={option}>
+                  <HashLink
+                    scroll={(el) => scrollWithOffset(el)}
+                    to={isHome ? '/' : `/#${option}`}
+                    className={isActive ? 'active' : ''}
+                    onClick={() => isHome && scrollTop()}
+                  >
+                    {option}
+                  </HashLink>
+                </li>
+              );
+            })}
+            <li>
+              <NavLink to="/shop" className={({ isActive }) => (isActive ? 'active' : '')}>
+                shop
+              </NavLink>
+            </li>
+            {bookingEnabled && (
+              <li>
+                <NavLink to="/booking" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  booking
+                </NavLink>
+              </li>
+            )}
+            <li>
+              <NavLink to="/cart" className={({ isActive }) => (isActive ? 'active' : '')}>
+                <Cart className="icon" />
+                <span className="badge">{cartItems.length}</span>
+              </NavLink>
+            </li>
+          </ul>
+          <div onClick={openMenu} className="icon-mobile">
+            <Menu className="icon" />
+          </div>
+        </div>
+      </header>
+
+      <div className={`nav-mobile ${menuOpen ? 'show' : ''}`}>
+        <div className="close" onClick={closeMenu}>
+          →
+        </div>
+        <ul>
           {userInfo && (
             <li>
-              <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => (isActive ? 'active' : '')}
+                onClick={closeMenu}
+              >
                 admin
               </NavLink>
             </li>
           )}
           {mainOptions.map((option) => {
             const isHome = option === 'home';
-            const isActive =
-              location.pathname === '/' &&
-              (isHome ? !location.hash || location.hash === '#' : location.hash === `#${option}`);
+            const isActive = location.pathname === '/' && activeSection === option;
             return (
               <li key={option}>
                 <HashLink
                   scroll={(el) => scrollWithOffset(el)}
                   to={isHome ? '/' : `/#${option}`}
                   className={isActive ? 'active' : ''}
-                  onClick={() => isHome && scrollTop()}
+                  onClick={isHome ? homeClick : closeMenu}
                 >
                   {option}
                 </HashLink>
@@ -90,28 +160,27 @@ export default function Navbar(props) {
             );
           })}
           <li>
-            <NavLink to="/shop" className={({ isActive }) => (isActive ? 'active' : '')}>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+              onClick={closeMenu}
+            >
               shop
             </NavLink>
           </li>
           {bookingEnabled && (
             <li>
-              <NavLink to="/booking" className={({ isActive }) => (isActive ? 'active' : '')}>
+              <NavLink
+                to="/booking"
+                className={({ isActive }) => (isActive ? 'active' : '')}
+                onClick={closeMenu}
+              >
                 booking
               </NavLink>
             </li>
           )}
-          <li>
-            <NavLink to="/cart" className={({ isActive }) => (isActive ? 'active' : '')}>
-              <Cart className="icon" />
-              <span className="badge">{cartItems.length}</span>
-            </NavLink>
-          </li>
         </ul>
-        <div onClick={openMenu} className="icon-mobile">
-          <Menu className="icon" />
-        </div>
       </div>
-    </header>
+    </>
   );
 }

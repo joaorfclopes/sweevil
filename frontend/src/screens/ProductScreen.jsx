@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/react';
 import $ from 'jquery';
-import { useEffect, useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
@@ -12,9 +11,35 @@ import { detailsProduct } from '../actions/productActions';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import Placeholder from '../components/Placeholder';
+import { useLazyLoad } from '../hooks/useLazyLoad';
 import useScrollLock from '../hooks/useScrollLock';
 import { scrollTop, sizes } from '../utils';
 import { notyf } from '../utils/notyf';
+
+function PreviewThumb({ image, index, onLoaded, onClick }) {
+  const [containerRef, inView] = useLazyLoad('300px');
+  const imgRef = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+
+  const handleLoaded = () => {
+    setLoaded(true);
+    onLoaded(index);
+  };
+
+  useEffect(() => {
+    if (inView && imgRef.current?.complete && !loaded) handleLoaded();
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div ref={containerRef} className="image-preview" onClick={onClick}>
+      <Placeholder height="100%" hide={loaded}>
+        <div id={`${index}-preview-img`} className="image-preview-inner">
+          <img ref={imgRef} src={inView ? image : undefined} alt="product" onLoad={handleLoaded} />
+        </div>
+      </Placeholder>
+    </div>
+  );
+}
 
 export default function ProductScreen(props) {
   const dispatch = useDispatch();
@@ -137,10 +162,13 @@ export default function ProductScreen(props) {
                         className="carousel-image product-image-inner"
                         onClick={() => openLightbox(index)}
                       >
-                        <LazyLoadImage
+                        <img
+                          ref={(node) => {
+                            if (node?.complete && !loadedCarousel.has(index)) imageLoaded(index);
+                          }}
                           src={image}
                           alt="product"
-                          afterLoad={() => imageLoaded(index)}
+                          onLoad={() => imageLoaded(index)}
                         />
                       </div>
                     </Placeholder>
@@ -171,17 +199,13 @@ export default function ProductScreen(props) {
             </div>
             <div className="image-preview-container">
               {product.images.map((image, index) => (
-                <div key={image} className="image-preview" onClick={() => setCurrentIndex(index)}>
-                  <Placeholder height="100%" hide={loadedPreviews.has(index)}>
-                    <div id={`${index}-preview-img`} className="image-preview-inner">
-                      <LazyLoadImage
-                        src={image}
-                        alt="product"
-                        afterLoad={() => previewImageLoaded(index)}
-                      />
-                    </div>
-                  </Placeholder>
-                </div>
+                <PreviewThumb
+                  key={image}
+                  image={image}
+                  index={index}
+                  onLoaded={previewImageLoaded}
+                  onClick={() => setCurrentIndex(index)}
+                />
               ))}
             </div>
           </div>

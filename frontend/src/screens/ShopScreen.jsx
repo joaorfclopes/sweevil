@@ -2,10 +2,23 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { listProducts } from '../actions/productActions';
 import { listProductCategories } from '../actions/productCategoryActions';
-import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
+import Placeholder from '../components/Placeholder';
 import Product from '../components/Product';
 import { scrollTop } from '../utils.js';
+
+function ProductSkeleton() {
+  return (
+    <div className="product">
+      <div className="product-body">
+        <div className="product-image-skeleton">
+          <Placeholder aspectRatio="1/1" />
+        </div>
+        <Placeholder height="59px" text />
+      </div>
+    </div>
+  );
+}
 
 export default function ShopScreen(props) {
   const dispatch = useDispatch();
@@ -58,8 +71,8 @@ export default function ShopScreen(props) {
           </div>
         )}
         <div className="row center">
-          {loading ? (
-            <LoadingBox lineHeight="75vh" width="100px" />
+          {loading && !products?.length ? (
+            Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)
           ) : error ? (
             <MessageBox variant="error">{error}</MessageBox>
           ) : (

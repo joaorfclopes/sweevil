@@ -31,16 +31,16 @@
 
 // Replicate the public gallery masonry column layout (column-count is scoped
 // under .gallery in _galleryScreen.scss so we define it standalone here).
-.gallery-admin-flex {
+.gallery-admin-grid {
   display: flex;
   gap: 10px;
   align-items: flex-start;
   margin-top: 12px;
 }
+
 .gallery-admin-col {
   flex: 1;
   min-width: 0;
-  contain: layout style;
 }
 
 .gallery-admin-card-wrapper {

@@ -64,6 +64,7 @@ import {
 } from '../constants/galleryConstants';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
+import Placeholder from './Placeholder';
 
 // ─── Column layout helpers ────────────────────────────────────────────────────
 
@@ -170,11 +171,22 @@ const _lazyObserver =
       )
     : null;
 
+function isCachedUrl(url) {
+  if (!url) return false;
+  const img = new Image();
+  img.src = url;
+  return img.complete;
+}
+
+// Persists across remounts so images don't blink when columns recalculate
+const loadedImageCache = new Set();
+
 function LazyImg({ src, alt, ...props }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => isCachedUrl(src));
 
   useEffect(() => {
+    if (visible) return;
     const el = ref.current;
     if (!el || !_lazyObserver) return;
     _lazyCallbacks.set(el, () => setVisible(true));
@@ -183,7 +195,7 @@ function LazyImg({ src, alt, ...props }) {
       _lazyObserver.unobserve(el);
       _lazyCallbacks.delete(el);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <img ref={ref} src={visible ? src : undefined} alt={alt} {...props} />;
 }
@@ -193,9 +205,11 @@ function LazyImg({ src, alt, ...props }) {
 function PlainCard({ item }) {
   return (
     <div className="gallery-image gallery-admin-card-wrapper">
-      <div className="gallery-image-inner">
-        <img src={item.image} alt={item.description || item.category} />
-      </div>
+      <img
+        src={item.image}
+        alt={item.description || item.category}
+        style={{ display: 'block', width: '100%' }}
+      />
     </div>
   );
 }
@@ -206,6 +220,12 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item._id,
   });
+  const [imgLoaded, setImgLoaded] = useState(
+    () => isCachedUrl(item.image) || loadedImageCache.has(item._id)
+  );
+
+  const aspectRatio =
+    !imgLoaded && item.width && item.height ? `${item.width}/${item.height}` : undefined;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -215,9 +235,17 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
 
   return (
     <div ref={setNodeRef} style={style} className="gallery-image gallery-admin-card-wrapper">
-      <div className="gallery-image-inner">
-        <LazyImg src={item.image} alt={item.description || item.category} />
-      </div>
+      <Placeholder hide={imgLoaded} aspectRatio={aspectRatio}>
+        <LazyImg
+          src={item.image}
+          alt={item.description || item.category}
+          style={{ display: 'block', width: '100%' }}
+          onLoad={() => {
+            loadedImageCache.add(item._id);
+            setImgLoaded(true);
+          }}
+        />
+      </Placeholder>
       {item.category && <span className="gallery-admin-category-badge">{item.category}</span>}
       <div className="gallery-admin-overlay">
         <div className="gallery-admin-overlay-actions">
@@ -337,30 +365,6 @@ export default function GalleryAdminTab() {
     return arr;
   }, [items, filterCategory, filterDesc]);
 
-  // Distribute items across columns: full rows round-robin, last partial row right-aligned
-  // so the visual gap (if any) is spread from the left rather than piling on col 0
-  const adminColumns = useMemo(() => {
-    const n = displayItems.length;
-    const fullRows = Math.floor(n / colCount);
-    const extra = n % colCount;
-    const cols = Array.from({ length: colCount }, () => []);
-
-    // Fill complete rows the same way as the public gallery
-    for (let row = 0; row < fullRows; row++) {
-      for (let ci = 0; ci < colCount; ci++) {
-        cols[ci].push(displayItems[row * colCount + ci]);
-      }
-    }
-
-    // Place remaining items right-aligned so they end in the rightmost columns
-    const startCol = colCount - extra;
-    for (let i = 0; i < extra; i++) {
-      cols[startCol + i].push(displayItems[fullRows * colCount + i]);
-    }
-
-    return cols;
-  }, [displayItems, colCount]);
-
   useEffect(() => {
     setItems(gallery);
   }, [gallery]);
@@ -469,6 +473,7 @@ export default function GalleryAdminTab() {
           image: data.location,
           description: uploadDescription,
           category: uploadCategory,
+          ...(data.width && data.height ? { width: data.width, height: data.height } : {}),
         })
       );
     } catch (err) {
@@ -586,6 +591,23 @@ export default function GalleryAdminTab() {
   );
 
   const sortableIds = useMemo(() => displayItems.map((i) => i._id), [displayItems]);
+
+  const columns = useMemo(() => {
+    const n = displayItems.length;
+    const cols = Array.from({ length: colCount }, () => []);
+    const fullRows = Math.floor(n / colCount);
+    const extra = n % colCount;
+    for (let row = 0; row < fullRows; row++) {
+      for (let ci = 0; ci < colCount; ci++) {
+        cols[ci].push(displayItems[row * colCount + ci]);
+      }
+    }
+    const startCol = colCount - extra;
+    for (let i = 0; i < extra; i++) {
+      cols[startCol + i].push(displayItems[fullRows * colCount + i]);
+    }
+    return cols;
+  }, [displayItems, colCount]);
 
   const handleAddCategory = () => {
     const name = newCategoryName.trim();
@@ -858,8 +880,8 @@ export default function GalleryAdminTab() {
                 onDragCancel={() => setActiveId(null)}
               >
                 <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
-                  <div className="gallery-admin-flex">
-                    {adminColumns.map((col, ci) => (
+                  <div className="gallery-admin-grid">
+                    {columns.map((col, ci) => (
                       <div key={ci} className="gallery-admin-col">
                         {col.map((item) => (
                           <SortableCard

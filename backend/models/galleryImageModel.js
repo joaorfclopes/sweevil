@@ -6,6 +6,8 @@ const galleryImageSchema = new mongoose.Schema(
     image: { type: String, required: true, unique: true },
     category: { type: String, required: true },
     order: { type: Number, default: 0 },
+    width: { type: Number },
+    height: { type: Number },
   },
   {
     timestamps: true,

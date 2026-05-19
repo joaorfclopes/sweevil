@@ -67,6 +67,7 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
       const key = `${folder}/${randomUUID()}.avif`;
 
       let processed;
+      let galleryDimensions = {};
       if (folder === 'store') {
         const bgPath = path.join(path.resolve(), 'frontend', 'public', 'background.png');
         const productImg = await sharp(req.file.buffer)
@@ -83,7 +84,7 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
           .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
           .toBuffer();
       } else {
-        processed = await sharp(req.file.buffer)
+        const { data: imgData, info } = await sharp(req.file.buffer)
           .resize({
             width: IMAGE_MAX_SIZE,
             height: IMAGE_MAX_SIZE,
@@ -91,7 +92,9 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
             withoutEnlargement: true,
           })
           .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
-          .toBuffer();
+          .toBuffer({ resolveWithObject: true });
+        processed = imgData;
+        galleryDimensions = { width: info.width, height: info.height };
       }
 
       await s3.send(
@@ -106,7 +109,7 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
       const region = process.env.AWS_REGION || 'us-east-1';
       const location = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
       console.log(`[upload] Image uploaded to ${folder}/ — ${key}`);
-      res.json({ location });
+      res.json({ location, ...galleryDimensions });
     } catch (processingErr) {
       next(processingErr);
     }

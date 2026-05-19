@@ -14,19 +14,23 @@
   padding-bottom: env(safe-area-inset-bottom);
   font-size: $largeMobile;
   transition: 0.3s;
-  z-index: 1000;
+  z-index: 1001;
   &.show {
     right: 0;
     transition: 0.3s;
   }
   @include nav-options;
+  a,
+  li {
+    cursor: pointer;
+  }
   .close {
-    text-align: right;
-    margin-right: 1.8rem;
-    margin-top: 1.8rem;
-    @include md {
-      margin-top: 2.4rem;
-    }
+    position: absolute;
+    top: 2.4rem;
+    right: 4vw;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
   }
   ul {
     position: absolute;

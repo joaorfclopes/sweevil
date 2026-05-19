@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/react';
 import $ from 'jquery';
-import { useEffect } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
@@ -9,7 +8,37 @@ import Placeholder from '../components/Placeholder';
 import { getShippingLabel, getShippingPrice } from '../config/shippingZones';
 import { getTax } from '../config/taxRates';
 import { ORDER_CREATE_RESET } from '../constants/orderConstants';
+import { useLazyLoad } from '../hooks/useLazyLoad';
 import { toPrice } from '../utils';
+
+function PlaceOrderItemImage({ item }) {
+  const [containerRef, inView] = useLazyLoad('300px');
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (inView && imgRef.current?.complete) {
+      $(`#${item.product}-place-order-img`).addClass('show');
+    }
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div ref={containerRef} className="item-image">
+      <Placeholder height="100%" hide={inView}>
+        <div id={`${item.product}-place-order-img`} className="item-image-inner">
+          <Link to={`/shop/product/${item.product}`}>
+            <img
+              ref={imgRef}
+              className="small"
+              src={inView ? item.image : undefined}
+              alt={item.name}
+              onLoad={() => $(`#${item.product}-place-order-img`).addClass('show')}
+            />
+          </Link>
+        </div>
+      </Placeholder>
+    </div>
+  );
+}
 
 export default function PlaceOrderScreen(props) {
   const dispatch = useDispatch();
@@ -55,10 +84,6 @@ export default function PlaceOrderScreen(props) {
     }
   }, [success, navigate, order, dispatch]);
 
-  const imageLoaded = (id) => {
-    $(`#${id}-place-order-img`).addClass('show');
-  };
-
   return (
     <section className="place-order cards-section">
       <div className="row center place-order-container">
@@ -86,20 +111,7 @@ export default function PlaceOrderScreen(props) {
             <ul className="cart-items">
               {cartItems.map((item, index) => (
                 <li key={item.product}>
-                  <div className="item-image">
-                    <Placeholder height="100%">
-                      <div id={`${item.product}-place-order-img`} className="item-image-inner">
-                        <Link to={`/shop/product/${item.product}`}>
-                          <LazyLoadImage
-                            className="small"
-                            src={item.image}
-                            alt={item.name}
-                            afterLoad={() => imageLoaded(item.product)}
-                          />
-                        </Link>
-                      </div>
-                    </Placeholder>
-                  </div>
+                  <PlaceOrderItemImage item={item} />
                   <div className="item-content">
                     <div className="item-name">
                       <p>{item.name}</p>

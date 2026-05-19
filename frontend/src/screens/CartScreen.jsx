@@ -1,14 +1,43 @@
 import $ from 'jquery';
 import { useEffect, useRef } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { addToCart, removeFromCart } from '../actions/cartActions';
 import Remove from '../assets/svg/remove.svg?react';
 import MessageBox from '../components/MessageBox';
 import PlaceHolder from '../components/Placeholder';
+import { useLazyLoad } from '../hooks/useLazyLoad';
 import { scrollTop, sizes, toPrice } from '../utils';
 import { notyf } from '../utils/notyf';
+
+function CartItemImage({ item }) {
+  const [containerRef, inView] = useLazyLoad('300px');
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (inView && imgRef.current?.complete) {
+      $(`#${item.product}-cart-img`).addClass('show');
+    }
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div ref={containerRef} className="item-image">
+      <PlaceHolder height="100%" hide={inView}>
+        <div id={`${item.product}-cart-img`} className="item-image-inner">
+          <Link to={`/shop/product/${item.product}`}>
+            <img
+              ref={imgRef}
+              className="small"
+              src={inView ? item.image : undefined}
+              alt={item.name}
+              onLoad={() => $(`#${item.product}-cart-img`).addClass('show')}
+            />
+          </Link>
+        </div>
+      </PlaceHolder>
+    </div>
+  );
+}
 
 export default function CartScreen(props) {
   const dispatch = useDispatch();
@@ -78,10 +107,6 @@ export default function CartScreen(props) {
     navigate('/cart/shipping');
   };
 
-  const imageLoaded = (id) => {
-    $(`#${id}-cart-img`).addClass('show');
-  };
-
   useEffect(() => {
     scrollTop();
   }, []);
@@ -100,20 +125,7 @@ export default function CartScreen(props) {
           <ul className="cart-items">
             {cartItems.map((item) => (
               <li key={item.product}>
-                <div className="item-image">
-                  <PlaceHolder height="100%">
-                    <div id={`${item.product}-cart-img`} className="item-image-inner">
-                      <Link to={`/shop/product/${item.product}`}>
-                        <LazyLoadImage
-                          className="small"
-                          src={item.image}
-                          alt={item.name}
-                          afterLoad={() => imageLoaded(item.product)}
-                        />
-                      </Link>
-                    </div>
-                  </PlaceHolder>
-                </div>
+                <CartItemImage item={item} />
                 <div className="item-content">
                   <div className="item-name">
                     <h3>{item.name}</h3>

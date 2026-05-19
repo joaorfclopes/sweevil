@@ -16,8 +16,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/opacity.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -39,7 +37,7 @@ function ImageCard({ item, isCover }) {
   return (
     <div className={`product-image-card${isCover ? ' product-image-card--cover' : ''}`}>
       {item.type === 'saved' ? (
-        <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+        <img src={item.url} alt="" width="100%" height="100%" style={{ display: 'block' }} />
       ) : (
         <img
           src={item.preview}
@@ -68,7 +66,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
       className={`product-image-card${isCover ? ' product-image-card--cover' : ''}`}
     >
       {item.type === 'saved' ? (
-        <LazyLoadImage src={item.url} alt="" effect="opacity" width="100%" height="100%" />
+        <img src={item.url} alt="" width="100%" height="100%" style={{ display: 'block' }} />
       ) : (
         <img
           src={item.preview}

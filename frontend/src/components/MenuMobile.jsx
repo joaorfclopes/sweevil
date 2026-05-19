@@ -6,7 +6,7 @@ import { useFeatures } from '../FeaturesContext';
 import { enableScroll } from '../scroll';
 import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
-export default function MenuMobile() {
+export default function MenuMobile({ activeSection }) {
   const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -44,9 +44,7 @@ export default function MenuMobile() {
         )}
         {mainOptions.map((option) => {
           const isHome = option === 'home';
-          const isActive =
-            location.pathname === '/' &&
-            (isHome ? !location.hash || location.hash === '#' : location.hash === `#${option}`);
+          const isActive = location.pathname === '/' && activeSection === option;
           return (
             <li key={option}>
               <HashLink

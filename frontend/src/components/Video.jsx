@@ -1,10 +1,10 @@
 import $ from 'jquery';
-import { useEffect, useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useEffect, useRef, useState } from 'react';
 import Placeholder from '../components/Placeholder';
 
 export default function Video(props) {
   const [hidePlaceholder, setHidePlaceholder] = useState(false);
+  const imgRef = useRef(null);
 
   const videoLoaded = () => {
     $('.video-desktop').addClass('show');
@@ -12,6 +12,10 @@ export default function Video(props) {
     $('.video-subtitle').addClass('show');
     setHidePlaceholder(true);
   };
+
+  useEffect(() => {
+    if (imgRef.current?.complete) videoLoaded();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const videoElem = document.getElementById('video');
@@ -36,7 +40,7 @@ export default function Video(props) {
           Your browser does not support the video tag.
         </video>
         <div className="poster">
-          <LazyLoadImage src={props.poster} afterLoad={videoLoaded} />
+          <img ref={imgRef} src={props.poster} alt="" onLoad={videoLoaded} />
         </div>
       </Placeholder>
       <div className="video-subtitle-container">
