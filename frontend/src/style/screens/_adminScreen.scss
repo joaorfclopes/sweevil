@@ -6,11 +6,101 @@
   @include md {
     padding-top: 150px;
   }
-  .logout-container {
-    text-align: right;
-    button {
-      margin-bottom: 1rem;
+}
+
+.admin-section-nav {
+  position: sticky;
+  top: 86px;
+  z-index: 100;
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 12px;
+  @include md {
+    top: 100px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  &__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 100%;
+    order: 1;
+    @include md {
+      flex: 1 1 auto;
+      justify-content: flex-start;
+      order: 0;
     }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    > div,
+    > a {
+      display: flex;
+      align-items: stretch;
+    }
+    button {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      line-height: 1;
+      height: 100%;
+    }
+    flex-shrink: 0;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 12px;
+    order: 0;
+    @include md {
+      width: auto;
+      justify-content: flex-end;
+      margin-bottom: 0;
+      margin-left: auto;
+      order: 1;
+    }
+  }
+
+  &__item {
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid #1a1a1a;
+    background: #1a1a1a;
+    color: white;
+    font-size: 0.78rem;
+    font-family: inherit;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+
+    &:hover {
+      background: #333;
+      border-color: #333;
+    }
+  }
+}
+
+.admin-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem !important;
+  border-radius: 0;
+
+  svg {
+    display: block;
   }
 }
 

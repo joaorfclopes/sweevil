@@ -1,10 +1,15 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
+import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import Product from '../models/productModel.js';
 import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth, optionalAuth } from '../utils.js';
 import { productSchema, validate } from '../validation.js';
+
+const LIST_KEY = 'products:list';
+const itemKey = (id) => `products:${id}`;
+const TTL = 60 * 5;
 
 const productRouter = express.Router();
 
@@ -47,8 +52,12 @@ productRouter.get(
         pages: Math.ceil(total / limitNum),
       });
     }
+    const cached = await cacheGet(LIST_KEY);
+    if (cached) return res.send(cached);
     const products = await Product.find({ visible: true });
-    res.send(products.map(toPublic));
+    const result = products.map(toPublic);
+    await cacheSet(LIST_KEY, result, TTL);
+    res.send(result);
   })
 );
 
@@ -58,6 +67,10 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(404).json({ message: 'Product not Found' });
+    }
+    if (!req.user?.isAdmin) {
+      const cached = await cacheGet(itemKey(req.params.id));
+      if (cached) return res.json(cached);
     }
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -69,7 +82,9 @@ productRouter.get(
     if (!product.visible) {
       return res.status(404).json({ message: 'Product not Found' });
     }
-    res.json(toPublic(product));
+    const result = toPublic(product);
+    await cacheSet(itemKey(req.params.id), result, TTL);
+    res.json(result);
   })
 );
 
@@ -95,6 +110,7 @@ productRouter.post(
     console.log(
       `[product] Created "${createdProduct.name}" (${createdProduct._id}) — €${createdProduct.price}, visible: ${createdProduct.visible}`
     );
+    await cacheDel(LIST_KEY);
     res.send({ message: 'Product created', product: createdProduct });
   })
 );
@@ -122,6 +138,7 @@ productRouter.put(
       console.log(
         `[product] Updated "${updatedProduct.name}" (${updatedProduct._id}) — €${updatedProduct.price}, visible: ${updatedProduct.visible}`
       );
+      await cacheDel(LIST_KEY, itemKey(req.params.id));
       res.send({ message: 'Product updated', product: updatedProduct });
     } else {
       res.status(404).send({ message: 'Product not Found' });
@@ -142,6 +159,7 @@ productRouter.delete(
       await product.deleteOne();
       await deleteAllFromS3(product.images);
       console.log(`[product] Deleted "${product.name}" (${product._id})`);
+      await cacheDel(LIST_KEY, itemKey(req.params.id));
       res.send({ message: 'Product deleted', product });
     } else {
       res.status(404).send({ message: 'Product not Found' });

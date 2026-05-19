@@ -1,15 +1,21 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import GalleryImage from '../models/galleryImageModel.js';
 import { deleteFromS3 } from '../s3.js';
 import { isAdmin, isAuth } from '../utils.js';
 
 const galleryImageRouter = express.Router();
+const CACHE_KEY = 'gallery:list';
+const TTL = 60 * 10;
 
 galleryImageRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
+    const cached = await cacheGet(CACHE_KEY);
+    if (cached) return res.json(cached);
     const gallery = await GalleryImage.find({}).sort({ order: 1, createdAt: 1 });
+    await cacheSet(CACHE_KEY, gallery, TTL);
     res.json(gallery);
   })
 );
@@ -29,6 +35,7 @@ galleryImageRouter.post(
       ...(width && height ? { width, height } : {}),
     });
     const created = await galleryImage.save();
+    await cacheDel(CACHE_KEY);
     res.status(201).json(created);
   })
 );
@@ -46,6 +53,7 @@ galleryImageRouter.patch(
     await Promise.all(
       items.map(({ _id, order }) => GalleryImage.findByIdAndUpdate(_id, { order }))
     );
+    await cacheDel(CACHE_KEY);
     res.json({ message: 'Order updated' });
   })
 );
@@ -64,6 +72,7 @@ galleryImageRouter.put(
     galleryImage.description = description ?? galleryImage.description;
     galleryImage.category = category ?? galleryImage.category;
     const updated = await galleryImage.save();
+    await cacheDel(CACHE_KEY);
     res.json(updated);
   })
 );
@@ -80,6 +89,7 @@ galleryImageRouter.delete(
     }
     await galleryImage.deleteOne();
     await deleteFromS3(galleryImage.image);
+    await cacheDel(CACHE_KEY);
     res.json({ message: 'Image deleted' });
   })
 );

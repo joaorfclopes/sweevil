@@ -1,5 +1,6 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import ProductCategory from '../models/productCategoryModel.js';
 import Product from '../models/productModel.js';
 import { isAdmin, isAuth } from '../utils.js';
@@ -28,10 +29,16 @@ async function seedIfEmpty() {
 }
 seedIfEmpty().catch(console.error);
 
+const CACHE_KEY = 'productcategories:list';
+const TTL = 60 * 30;
+
 productCategoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
+    const cached = await cacheGet(CACHE_KEY);
+    if (cached) return res.json(cached);
     const categories = await ProductCategory.find({}).sort({ name: 1 });
+    await cacheSet(CACHE_KEY, categories, TTL);
     res.json(categories);
   })
 );
@@ -50,7 +57,40 @@ productCategoryRouter.post(
       return res.status(400).json({ message: 'Category already exists' });
     }
     const category = await ProductCategory.create({ name: name.trim(), isClothing: !!isClothing });
+    await cacheDel(CACHE_KEY);
     res.status(201).json(category);
+  })
+);
+
+productCategoryRouter.put(
+  '/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const { name, isClothing } = req.body;
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    const category = await ProductCategory.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    const duplicate = await ProductCategory.findOne({
+      name: name.trim(),
+      _id: { $ne: req.params.id },
+    });
+    if (duplicate) {
+      return res.status(400).json({ message: 'Category already exists' });
+    }
+    const oldName = category.name;
+    category.name = name.trim();
+    if (isClothing !== undefined) category.isClothing = !!isClothing;
+    await category.save();
+    if (oldName !== category.name) {
+      await Product.updateMany({ category: oldName }, { $set: { category: category.name } });
+    }
+    await cacheDel(CACHE_KEY);
+    res.json(category);
   })
 );
 
@@ -68,6 +108,7 @@ productCategoryRouter.delete(
       return res.status(400).json({ message: 'Category is in use by one or more products' });
     }
     await category.deleteOne();
+    await cacheDel(CACHE_KEY);
     res.json({ message: 'Category deleted' });
   })
 );

@@ -10,6 +10,10 @@ import {
   PRODUCT_CATEGORY_LIST_FAIL,
   PRODUCT_CATEGORY_LIST_REQUEST,
   PRODUCT_CATEGORY_LIST_SUCCESS,
+  PRODUCT_CATEGORY_UPDATE_FAIL,
+  PRODUCT_CATEGORY_UPDATE_REQUEST,
+  PRODUCT_CATEGORY_UPDATE_RESET,
+  PRODUCT_CATEGORY_UPDATE_SUCCESS,
 } from '../constants/productCategoryConstants';
 
 export const productCategoryListReducer = (state = { categories: [] }, action) => {
@@ -34,6 +38,21 @@ export const productCategoryCreateReducer = (state = {}, action) => {
     case PRODUCT_CATEGORY_CREATE_FAIL:
       return { loading: false, error: action.payload };
     case PRODUCT_CATEGORY_CREATE_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const productCategoryUpdateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case PRODUCT_CATEGORY_UPDATE_REQUEST:
+      return { loading: true };
+    case PRODUCT_CATEGORY_UPDATE_SUCCESS:
+      return { loading: false, success: true, category: action.payload };
+    case PRODUCT_CATEGORY_UPDATE_FAIL:
+      return { loading: false, error: action.payload };
+    case PRODUCT_CATEGORY_UPDATE_RESET:
       return {};
     default:
       return state;

@@ -1,15 +1,21 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import Category from '../models/categoryModel.js';
 import GalleryImage from '../models/galleryImageModel.js';
 import { isAdmin, isAuth } from '../utils.js';
 
 const categoryRouter = express.Router();
+const CACHE_KEY = 'categories:list';
+const TTL = 60 * 30;
 
 categoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
+    const cached = await cacheGet(CACHE_KEY);
+    if (cached) return res.json(cached);
     const categories = await Category.find({}).sort({ order: 1, name: 1 });
+    await cacheSet(CACHE_KEY, categories, TTL);
     res.json(categories);
   })
 );
@@ -31,6 +37,7 @@ categoryRouter.post(
     }
     const category = new Category({ name: name.trim() });
     const created = await category.save();
+    await cacheDel(CACHE_KEY);
     res.status(201).json(created);
   })
 );
@@ -46,6 +53,7 @@ categoryRouter.patch(
       return;
     }
     await Promise.all(items.map(({ _id, order }) => Category.findByIdAndUpdate(_id, { order })));
+    await cacheDel(CACHE_KEY);
     res.json({ message: 'Order updated' });
   })
 );
@@ -70,6 +78,7 @@ categoryRouter.put(
     category.name = newName;
     const updated = await category.save();
     await GalleryImage.updateMany({ category: oldName }, { category: newName });
+    await cacheDel(CACHE_KEY);
     res.json(updated);
   })
 );
@@ -84,7 +93,13 @@ categoryRouter.delete(
       res.status(404).json({ message: 'Category not found' });
       return;
     }
+    const inUse = await GalleryImage.exists({ category: category.name });
+    if (inUse) {
+      res.status(400).json({ message: 'Category is in use by one or more images' });
+      return;
+    }
     await category.deleteOne();
+    await cacheDel(CACHE_KEY);
     res.json({ message: 'Category deleted' });
   })
 );

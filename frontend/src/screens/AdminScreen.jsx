@@ -12,7 +12,7 @@ import GalleryAdminTab from '../components/GalleryAdminTab';
 import OrdersTable from '../components/OrdersTable';
 import ProductsTable from '../components/ProductsTable';
 
-export default function AdminScreen(props) {
+export default function AdminScreen() {
   const { bookingEnabled } = useFeatures();
   const dispatch = useDispatch();
 
@@ -24,23 +24,69 @@ export default function AdminScreen(props) {
     scrollTop();
   }, []);
 
+  const sections = [
+    ...(bookingEnabled ? [{ id: 'section-bookings', label: 'Bookings' }] : []),
+    { id: 'section-orders', label: 'Orders' },
+    { id: 'section-products', label: 'Products' },
+    { id: 'section-gallery', label: 'Gallery' },
+    { id: 'section-about', label: 'About' },
+  ];
+
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navHeight = 130;
+    const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
+
   return (
     <section className="admin-screen">
-      <div className="logout-container">
-        <PasskeyRegister />
-        <Link to="/">
-          <button className="primary" onClick={signoutHandler}>
-            Log Out
-          </button>
-        </Link>
-      </div>
-      <>
-        {bookingEnabled && <BookingsAdminTab />}
+      <nav className="admin-section-nav">
+        <div className="admin-section-nav__pills">
+          {sections.map(({ id, label }) => (
+            <button key={id} className="admin-section-nav__item" onClick={() => scrollTo(id)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="admin-section-nav__actions">
+          <PasskeyRegister />
+          <Link to="/">
+            <button className="secondary admin-logout-btn" onClick={signoutHandler} title="Log Out">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          </Link>
+        </div>
+      </nav>
+
+      <div id="section-bookings">{bookingEnabled && <BookingsAdminTab />}</div>
+      <div id="section-orders">
         <OrdersTable />
+      </div>
+      <div id="section-products">
         <ProductsTable />
+      </div>
+      <div id="section-gallery">
         <GalleryAdminTab />
+      </div>
+      <div id="section-about">
         <AboutAdminTab />
-      </>
+      </div>
     </section>
   );
 }

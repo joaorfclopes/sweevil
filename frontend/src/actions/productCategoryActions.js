@@ -9,6 +9,9 @@ import {
   PRODUCT_CATEGORY_LIST_FAIL,
   PRODUCT_CATEGORY_LIST_REQUEST,
   PRODUCT_CATEGORY_LIST_SUCCESS,
+  PRODUCT_CATEGORY_UPDATE_FAIL,
+  PRODUCT_CATEGORY_UPDATE_REQUEST,
+  PRODUCT_CATEGORY_UPDATE_SUCCESS,
 } from '../constants/productCategoryConstants';
 
 export const listProductCategories = () => async (dispatch) => {
@@ -29,6 +32,19 @@ export const createProductCategory = (name, isClothing) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_CATEGORY_CREATE_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const updateProductCategory = (id, name, isClothing) => async (dispatch) => {
+  dispatch({ type: PRODUCT_CATEGORY_UPDATE_REQUEST });
+  try {
+    const { data } = await Axios.put(`/api/product-categories/${id}`, { name, isClothing });
+    dispatch({ type: PRODUCT_CATEGORY_UPDATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_CATEGORY_UPDATE_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }

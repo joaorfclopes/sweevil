@@ -9,6 +9,7 @@ import {
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import EditIcon from '@mui/icons-material/Edit';
@@ -88,7 +89,7 @@ function useColCount() {
 
 // ─── Sortable category chip ───────────────────────────────────────────────────
 
-function SortableCategoryChip({ id, name, dbCat, canDelete, isActive, onEdit, onDelete }) {
+function SortableCategoryChip({ id, name, dbCat, isActive, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -116,34 +117,34 @@ function SortableCategoryChip({ id, name, dbCat, canDelete, isActive, onEdit, on
     >
       <span style={{ marginRight: 2, userSelect: 'none' }}>{name}</span>
       {dbCat && (
-        <Tooltip title="Rename">
-          <IconButton
-            size="small"
-            sx={{ padding: '2px' }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            <EditIcon sx={{ fontSize: 13 }} />
-          </IconButton>
-        </Tooltip>
-      )}
-      {canDelete && (
-        <Tooltip title="Delete">
-          <IconButton
-            size="small"
-            sx={{ padding: '2px' }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            <DeleteIcon sx={{ fontSize: 13 }} />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip title="Rename">
+            <IconButton
+              size="small"
+              sx={{ padding: '2px' }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
+              <EditIcon sx={{ fontSize: 13 }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              sx={{ padding: '2px' }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+            >
+              <DeleteIcon sx={{ fontSize: 13 }} />
+            </IconButton>
+          </Tooltip>
+        </>
       )}
     </div>
   );
@@ -318,7 +319,7 @@ export default function GalleryAdminTab() {
   const { success: successCatUpdate } = categoryUpdateState;
 
   const categoryDeleteState = useSelector((state) => state.categoryDelete);
-  const { success: successCatDelete } = categoryDeleteState;
+  const { success: successCatDelete, error: errorCatDelete } = categoryDeleteState;
 
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -353,6 +354,8 @@ export default function GalleryAdminTab() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editingCatId, setEditingCatId] = useState(null);
   const [editingCatName, setEditingCatName] = useState('');
+  const [localErrorCatDelete, setLocalErrorCatDelete] = useState(null);
+  const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
   const syncedRef = useRef(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -418,6 +421,13 @@ export default function GalleryAdminTab() {
     syncedRef.current = true;
     missing.forEach((name) => dispatch(createCategory(name)));
   }, [dispatch, loading, gallery, categories]);
+
+  useEffect(() => {
+    if (errorCatDelete) {
+      setLocalErrorCatDelete(errorCatDelete);
+      setErrorCatDeleteKey((k) => k + 1);
+    }
+  }, [errorCatDelete]);
 
   // Fetch/refetch categories after mutations
   useEffect(() => {
@@ -584,16 +594,6 @@ export default function GalleryAdminTab() {
     };
   }, [catItems, items]);
 
-  // Usage count per category across all images
-  const categoryUsage = useMemo(
-    () =>
-      items.reduce((acc, img) => {
-        if (img.category) acc[img.category] = (acc[img.category] || 0) + 1;
-        return acc;
-      }, {}),
-    [items]
-  );
-
   const sortableIds = useMemo(() => displayItems.map((i) => i._id), [displayItems]);
 
   const columns = useMemo(() => {
@@ -642,7 +642,6 @@ export default function GalleryAdminTab() {
         {errorCatCreate && errorCatCreate !== 'Category already exists' && (
           <MessageBox variant="error">{errorCatCreate}</MessageBox>
         )}
-
         <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
           <Box
             sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
@@ -681,6 +680,13 @@ export default function GalleryAdminTab() {
             <Typography variant="subtitle2" style={{ marginBottom: 8, color: '#555' }}>
               <b>Categories</b>
             </Typography>
+            {localErrorCatDelete && (
+              <div style={{ marginBottom: 8 }}>
+                <MessageBox key={errorCatDeleteKey} variant="error" autoDismiss={3000}>
+                  {localErrorCatDelete}
+                </MessageBox>
+              </div>
+            )}
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -700,7 +706,6 @@ export default function GalleryAdminTab() {
                 >
                   {allCategoryNames.map((name) => {
                     const dbCat = dbCategoryByName[name];
-                    const canDelete = dbCat && !categoryUsage[name];
                     const isEditing = editingCatId === dbCat?._id;
 
                     if (isEditing) {
@@ -720,6 +725,7 @@ export default function GalleryAdminTab() {
                           <input
                             autoFocus
                             value={editingCatName}
+                            size={Math.max(8, editingCatName.length + 2)}
                             onChange={(e) => setEditingCatName(e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && editingCatName.trim())
@@ -731,7 +737,6 @@ export default function GalleryAdminTab() {
                               outline: 'none',
                               background: 'transparent',
                               fontSize: '0.8rem',
-                              width: 100,
                               fontFamily: 'inherit',
                             }}
                           />
@@ -745,13 +750,15 @@ export default function GalleryAdminTab() {
                           >
                             <EditIcon sx={{ fontSize: 13 }} />
                           </IconButton>
-                          <IconButton
-                            size="small"
-                            sx={{ padding: '2px' }}
-                            onClick={() => setEditingCatId(null)}
-                          >
-                            <DeleteIcon sx={{ fontSize: 13 }} />
-                          </IconButton>
+                          <Tooltip title="Cancel">
+                            <IconButton
+                              size="small"
+                              sx={{ padding: '2px' }}
+                              onClick={() => setEditingCatId(null)}
+                            >
+                              <CloseIcon sx={{ fontSize: 13 }} />
+                            </IconButton>
+                          </Tooltip>
                         </div>
                       );
                     }
@@ -762,7 +769,6 @@ export default function GalleryAdminTab() {
                         id={dbCat?._id || name}
                         name={name}
                         dbCat={dbCat}
-                        canDelete={canDelete}
                         isActive={activeCatId === dbCat?._id}
                         onEdit={() => {
                           setEditingCatId(dbCat._id);

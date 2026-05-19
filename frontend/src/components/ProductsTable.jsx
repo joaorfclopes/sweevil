@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,10 +34,12 @@ import {
   createProductCategory,
   deleteProductCategory,
   listProductCategories,
+  updateProductCategory,
 } from '../actions/productCategoryActions';
 import {
   PRODUCT_CATEGORY_CREATE_RESET,
   PRODUCT_CATEGORY_DELETE_RESET,
+  PRODUCT_CATEGORY_UPDATE_RESET,
 } from '../constants/productCategoryConstants';
 import { PRODUCT_DELETE_RESET } from '../constants/productConstants';
 import { formatDateDay } from '../utils';
@@ -60,6 +63,11 @@ export default function ProductsTable() {
     error: errorCatCreate,
   } = useSelector((state) => state.productCategoryCreate);
   const {
+    loading: loadingCatUpdate,
+    success: successCatUpdate,
+    error: errorCatUpdate,
+  } = useSelector((state) => state.productCategoryUpdate);
+  const {
     loading: loadingCatDelete,
     success: successCatDelete,
     error: errorCatDelete,
@@ -70,6 +78,15 @@ export default function ProductsTable() {
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [newCatName, setNewCatName] = useState('');
   const [newCatIsClothing, setNewCatIsClothing] = useState(false);
+  const [editingCatId, setEditingCatId] = useState(null);
+  const [editingCatName, setEditingCatName] = useState('');
+
+  const [localErrorCatCreate, setLocalErrorCatCreate] = useState(null);
+  const [errorCatCreateKey, setErrorCatCreateKey] = useState(0);
+  const [localErrorCatUpdate, setLocalErrorCatUpdate] = useState(null);
+  const [errorCatUpdateKey, setErrorCatUpdateKey] = useState(0);
+  const [localErrorCatDelete, setLocalErrorCatDelete] = useState(null);
+  const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -169,17 +186,41 @@ export default function ProductsTable() {
   }, [dispatch]);
 
   useEffect(() => {
+    if (errorCatCreate) {
+      setLocalErrorCatCreate(errorCatCreate);
+      setErrorCatCreateKey((k) => k + 1);
+    }
+  }, [errorCatCreate]);
+  useEffect(() => {
+    if (errorCatUpdate) {
+      setLocalErrorCatUpdate(errorCatUpdate);
+      setErrorCatUpdateKey((k) => k + 1);
+    }
+  }, [errorCatUpdate]);
+  useEffect(() => {
+    if (errorCatDelete) {
+      setLocalErrorCatDelete(errorCatDelete);
+      setErrorCatDeleteKey((k) => k + 1);
+    }
+  }, [errorCatDelete]);
+
+  useEffect(() => {
     if (successCatCreate) {
       dispatch({ type: PRODUCT_CATEGORY_CREATE_RESET });
       setNewCatName('');
       setNewCatIsClothing(false);
       dispatch(listProductCategories());
     }
+    if (successCatUpdate) {
+      dispatch({ type: PRODUCT_CATEGORY_UPDATE_RESET });
+      setEditingCatId(null);
+      dispatch(listProductCategories());
+    }
     if (successCatDelete) {
       dispatch({ type: PRODUCT_CATEGORY_DELETE_RESET });
       dispatch(listProductCategories());
     }
-  }, [dispatch, successCatCreate, successCatDelete]);
+  }, [dispatch, successCatCreate, successCatUpdate, successCatDelete]);
 
   const handleAddCategory = () => {
     const name = newCatName.trim();
@@ -197,6 +238,12 @@ export default function ProductsTable() {
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteProductCategory(cat._id));
     });
+  };
+
+  const handleEditCatSave = (cat) => {
+    const name = editingCatName.trim();
+    if (!name) return;
+    dispatch(updateProductCategory(cat._id, name, cat.isClothing));
   };
 
   const deleteHandler = (product) => {
@@ -276,9 +323,22 @@ export default function ProductsTable() {
               <Typography variant="subtitle2" style={{ color: '#555', marginBottom: 8 }}>
                 <b>Categories</b>
               </Typography>
-              {(loadingCatCreate || loadingCatDelete) && <LoadingBox />}
-              {errorCatCreate && <MessageBox variant="error">{errorCatCreate}</MessageBox>}
-              {errorCatDelete && <MessageBox variant="error">{errorCatDelete}</MessageBox>}
+              {(loadingCatCreate || loadingCatUpdate || loadingCatDelete) && <LoadingBox />}
+              {localErrorCatCreate && (
+                <MessageBox key={errorCatCreateKey} variant="error" autoDismiss={3000}>
+                  {localErrorCatCreate}
+                </MessageBox>
+              )}
+              {localErrorCatUpdate && (
+                <MessageBox key={errorCatUpdateKey} variant="error" autoDismiss={3000}>
+                  {localErrorCatUpdate}
+                </MessageBox>
+              )}
+              {localErrorCatDelete && (
+                <MessageBox key={errorCatDeleteKey} variant="error" autoDismiss={3000}>
+                  {localErrorCatDelete}
+                </MessageBox>
+              )}
               {[
                 { label: 'Clothing', items: categories.filter((c) => c.isClothing) },
                 { label: 'Other', items: categories.filter((c) => !c.isClothing) },
@@ -287,33 +347,109 @@ export default function ProductsTable() {
                   <Typography variant="caption" style={{ color: '#888' }}>
                     {label}
                   </Typography>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                    {items.map((cat) => (
-                      <div
-                        key={cat._id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          border: '1px solid rgba(0,0,0,0.12)',
-                          borderRadius: 16,
-                          padding: '2px 4px 2px 10px',
-                          background: '#e0e0e0',
-                          fontSize: '0.8rem',
-                          fontFamily: 'inherit',
-                        }}
-                      >
-                        <span style={{ userSelect: 'none' }}>{cat.name}</span>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            size="small"
-                            sx={{ padding: '2px' }}
-                            onClick={() => handleDeleteCategory(cat)}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 6,
+                      marginTop: 4,
+                      alignItems: 'center',
+                    }}
+                  >
+                    {items.map((cat) => {
+                      const isEditing = editingCatId === cat._id;
+                      if (isEditing) {
+                        return (
+                          <div
+                            key={cat._id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0,
+                              border: '1px solid #bbb',
+                              borderRadius: 16,
+                              padding: '2px 6px',
+                              background: '#e0e0e0',
+                            }}
                           >
-                            <DeleteIcon sx={{ fontSize: 13 }} />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    ))}
+                            <input
+                              autoFocus
+                              value={editingCatName}
+                              size={Math.max(8, editingCatName.length + 2)}
+                              onChange={(e) => setEditingCatName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleEditCatSave(cat);
+                                if (e.key === 'Escape') setEditingCatId(null);
+                              }}
+                              style={{
+                                border: 'none',
+                                outline: 'none',
+                                background: 'transparent',
+                                fontSize: '0.8rem',
+                                fontFamily: 'inherit',
+                              }}
+                            />
+                            <Tooltip title="Save">
+                              <IconButton
+                                size="small"
+                                sx={{ padding: '2px' }}
+                                onClick={() => handleEditCatSave(cat)}
+                                disabled={!editingCatName.trim() || loadingCatUpdate}
+                              >
+                                <EditIcon sx={{ fontSize: 13 }} />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Cancel">
+                              <IconButton
+                                size="small"
+                                sx={{ padding: '2px' }}
+                                onClick={() => setEditingCatId(null)}
+                              >
+                                <CloseIcon sx={{ fontSize: 13 }} />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div
+                          key={cat._id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid rgba(0,0,0,0.12)',
+                            borderRadius: 16,
+                            padding: '2px 4px 2px 10px',
+                            background: '#e0e0e0',
+                            fontSize: '0.8rem',
+                            fontFamily: 'inherit',
+                          }}
+                        >
+                          <span style={{ userSelect: 'none' }}>{cat.name}</span>
+                          <Tooltip title="Rename">
+                            <IconButton
+                              size="small"
+                              sx={{ padding: '2px' }}
+                              onClick={() => {
+                                setEditingCatId(cat._id);
+                                setEditingCatName(cat.name);
+                              }}
+                            >
+                              <EditIcon sx={{ fontSize: 13 }} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              size="small"
+                              sx={{ padding: '2px' }}
+                              onClick={() => handleDeleteCategory(cat)}
+                            >
+                              <DeleteIcon sx={{ fontSize: 13 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
+                      );
+                    })}
                     {items.length === 0 && (
                       <span style={{ color: '#aaa', fontSize: '0.85rem' }}>None</span>
                     )}

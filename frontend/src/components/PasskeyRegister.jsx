@@ -34,7 +34,7 @@ export default function PasskeyRegister() {
   const hasPasskey = passkeys && passkeys.length > 0;
 
   return (
-    <div style={{ marginBottom: '1rem' }}>
+    <div>
       {status === 'error' && <MessageBox variant="error">{error}</MessageBox>}
       {hasPasskey ? (
         <div
