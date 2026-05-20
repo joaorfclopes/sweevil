@@ -75,6 +75,7 @@ emailRouter.post(
       html: placedOrder({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
             fullName: order.shippingAddress.fullName,
@@ -110,6 +111,7 @@ emailRouter.post(
       html: placedOrderAdmin({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
             email: order.shippingAddress.email,
@@ -145,6 +147,7 @@ emailRouter.post(
       html: sendOrder({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
             fullName: order.shippingAddress.fullName,
@@ -178,6 +181,7 @@ emailRouter.post(
       html: deliveredOrder({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
             fullName: order.shippingAddress.fullName,
@@ -213,6 +217,7 @@ emailRouter.post(
       html: cancelOrder({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           isPaid: order.isPaid,
           shippingAddress: {
@@ -246,6 +251,7 @@ emailRouter.post(
       html: cancelOrderAdmin({
         order: {
           orderId: order._id,
+          confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingAddress: {
             fullName: order.shippingAddress.fullName,

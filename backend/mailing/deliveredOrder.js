@@ -261,7 +261,7 @@ export const deliveredOrder = ({
                                         "
                                       >
                                         <a
-                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${confirmToken}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',

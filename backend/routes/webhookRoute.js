@@ -74,6 +74,7 @@ const handleOrderPaid = async (paymentIntent) => {
         : [];
       const orderEmailData = {
         orderId: order._id,
+        confirmToken: order.confirmToken,
         orderDate: formatDate(order.createdAt.toISOString()),
         shippingAddress: order.shippingAddress,
         orderItems: order.orderItems,

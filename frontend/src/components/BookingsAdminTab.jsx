@@ -95,7 +95,8 @@ function ExtraPickerDay({
 }) {
   const dateStr = dayjs(day).format('YYYY-MM-DD');
   const isSelected = extraDates.has(dateStr);
-  const isDisabled = disabledDates.has(dateStr) || outsideCurrentMonth;
+  const isDisabled =
+    disabledDates.has(dateStr) || outsideCurrentMonth || dayjs(day).isBefore(dayjs(), 'day');
   return (
     <PickersDay
       {...pickerDayProps}
@@ -163,6 +164,7 @@ export default function BookingsAdminTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAvail, setEditingAvail] = useState(null);
   const [dialogDate, setDialogDate] = useState(null);
+  const [calendarViewDate, setCalendarViewDate] = useState(null);
   const [slotsInput, setSlotsInput] = useState('');
   const [priceInput, setPriceInput] = useState('');
   const [priceEditing, setPriceEditing] = useState(false);
@@ -332,6 +334,7 @@ export default function BookingsAdminTab() {
     const existing = availMap[dateStr];
     setEditingAvail(existing || null);
     setDialogDate(date);
+    setCalendarViewDate(date);
     setSlotsInput(existing ? existing.slots.map((s) => s.time).join(', ') : '');
     setPriceInput(existing ? String(existing.price) : '50');
     setPriceEditing(false);
@@ -466,6 +469,7 @@ export default function BookingsAdminTab() {
                   <DateCalendar
                     onChange={handleDayClick}
                     disablePast
+                    referenceDate={calendarViewDate ? dayjs(calendarViewDate) : undefined}
                     slots={{ day: AvailableDay }}
                     slotProps={{ day: { availableDates } }}
                   />
@@ -874,6 +878,7 @@ export default function BookingsAdminTab() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateCalendar
                   disablePast
+                  referenceDate={dialogDate ? dayjs(dialogDate) : undefined}
                   onChange={(date) => {
                     const dateStr = dayjs(date).format('YYYY-MM-DD');
                     setExtraDates((prev) => {

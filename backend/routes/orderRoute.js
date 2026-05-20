@@ -196,6 +196,7 @@ orderRouter.post(
       html: placedOrderAdmin({
         order: {
           orderId: createdOrder._id,
+          confirmToken: createdOrder.confirmToken,
           orderDate: formatDate(createdOrder.createdAt.toISOString()),
           shippingAddress: createdOrder.shippingAddress,
           orderItems: createdOrder.orderItems,
@@ -414,6 +415,7 @@ orderRouter.put(
         : [];
       const orderEmailData = {
         orderId: updatedOrder._id,
+        confirmToken: updatedOrder.confirmToken,
         orderDate: formatDate(updatedOrder.createdAt.toISOString()),
         shippingAddress: updatedOrder.shippingAddress,
         orderItems: updatedOrder.orderItems,
@@ -489,6 +491,7 @@ orderRouter.put(
       html: cancelOrderEmail({
         order: {
           orderId: updatedOrder._id,
+          confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
@@ -516,6 +519,7 @@ orderRouter.put(
       html: cancelOrderAdminEmail({
         order: {
           orderId: updatedOrder._id,
+          confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
