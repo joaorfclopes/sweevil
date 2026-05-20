@@ -218,7 +218,8 @@ export default function BookingsAdminTab() {
       setExtraDates(new Set());
       setShowExtraPicker(false);
       if (successBulkCreate && bulkResult) {
-        const { created, skipped } = bulkResult;
+        const created = bulkResult.created ?? [];
+        const skipped = bulkResult.skipped ?? [];
         const msg =
           skipped.length > 0
             ? `Added ${created.length} date(s). ${skipped.length} already existed and were skipped.`
@@ -232,13 +233,18 @@ export default function BookingsAdminTab() {
         });
       }
     }
-  }, [dispatch, successCreate, successUpdate, successAvailDelete, successBulkCreate, bulkResult]);
+  }, [dispatch, successCreate, successUpdate, successAvailDelete, successBulkCreate]);
 
   const availMap = {};
   availability.forEach((a) => {
     availMap[dayjs(a.date).format('YYYY-MM-DD')] = a;
   });
   const availableDates = Object.keys(availMap);
+
+  const extraPickerDisabledDates = useMemo(
+    () => new Set([...availableDates, dialogDate ? dayjs(dialogDate).format('YYYY-MM-DD') : '']),
+    [availableDates, dialogDate]
+  );
 
   const handleSort = (col) => {
     if (orderBy === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -881,10 +887,7 @@ export default function BookingsAdminTab() {
                   slotProps={{
                     day: {
                       extraDates,
-                      disabledDates: new Set([
-                        ...availableDates,
-                        dayjs(dialogDate).format('YYYY-MM-DD'),
-                      ]),
+                      disabledDates: extraPickerDisabledDates,
                     },
                   }}
                 />
