@@ -99,7 +99,7 @@ function StripeCheckoutForm({ order, dispatch, token }) {
 export default function OrderScreen(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id: orderId } = useParams();
+  const { token } = useParams();
   const [searchParams] = useSearchParams();
 
   const [stripePromise, setStripePromise] = useState(null);
@@ -119,8 +119,6 @@ export default function OrderScreen(props) {
   const orderCancel = useSelector((state) => state.orderCancel);
   const { loading: loadingCancel, success: successCancel, error: errorCancel } = orderCancel;
 
-  const token = searchParams.get('token');
-
   useEffect(() => {
     if (errorStatus === 404 || errorStatus === 403) {
       navigate('/not-found');
@@ -128,22 +126,15 @@ export default function OrderScreen(props) {
   }, [errorStatus, navigate]);
 
   useEffect(() => {
-    if (
-      !order ||
-      successPay ||
-      successSend ||
-      successDeliver ||
-      successCancel ||
-      (order && order._id !== orderId)
-    ) {
+    if (!order || successPay || successSend || successDeliver || successCancel) {
       dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_SEND_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
-      dispatch(detailsOrder(orderId, token));
+      dispatch(detailsOrder(token));
       setClientSecret('');
     }
-  }, [dispatch, orderId, order, token, successPay, successSend, successDeliver, successCancel]);
+  }, [dispatch, token, order, successPay, successSend, successDeliver, successCancel]);
 
   useEffect(() => {
     if (!order || order.isPaid || order.status === 'CANCELED') return;
@@ -226,7 +217,7 @@ export default function OrderScreen(props) {
       ) : (
         <div className="row center order-container">
           <div className="order-inner">
-            <h1 className="custom-font">Order {order._id}</h1>
+            <h1 className="custom-font">Your order details</h1>
             {loadingSend && <LoadingBox />}
             {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
             {loadingDeliver && <LoadingBox />}

@@ -216,15 +216,24 @@ orderRouter.post(
 );
 
 orderRouter.get(
+  '/token/:token',
+  expressAsyncHandler(async (req, res) => {
+    const orderWithToken = await Order.findOne({ confirmToken: req.params.token });
+    if (!orderWithToken) return res.status(404).json({ message: 'Order not found' });
+    const { confirmToken: _, ...orderData } = orderWithToken.toObject();
+    res.json(orderData);
+  })
+);
+
+orderRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     const isAdminUser = !!(await getAdminSession(req));
-    const token = req.query.token;
 
     const orderWithToken = await Order.findById(req.params.id);
     if (!orderWithToken) return res.status(404).json({ message: 'Order not found' });
 
-    if (!isAdminUser && !validateToken(orderWithToken, token)) {
+    if (!isAdminUser) {
       return res.status(403).json({ message: 'Access denied' });
     }
 

@@ -215,7 +215,7 @@ function AppContent() {
                 <Route path="/cart" element={<CartScreen />} />
                 <Route path="/cart/shipping" element={<ShippingScreen />} />
                 <Route path="/cart/placeorder" element={<PlaceOrderScreen />} />
-                <Route path="/cart/order/:id" element={<OrderScreen />} />
+                <Route path="/cart/order/:token" element={<OrderScreen />} />
                 <Route path="/signin" element={<SigninScreen />} />
                 <Route path="/admin" element={userInfo ? <AdminScreen /> : <NotFoundScreen />} />
                 <Route

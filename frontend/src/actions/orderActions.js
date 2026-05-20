@@ -48,10 +48,10 @@ export const createOrder = (order) => async (dispatch) => {
   }
 };
 
-export const detailsOrder = (orderId, token) => async (dispatch) => {
-  dispatch({ type: ORDER_DETAILS_REQUEST, payload: orderId });
+export const detailsOrder = (token) => async (dispatch) => {
+  dispatch({ type: ORDER_DETAILS_REQUEST });
   try {
-    const { data } = await Axios.get(`/api/orders/${orderId}${token ? `?token=${token}` : ''}`);
+    const { data } = await Axios.get(`/api/orders/token/${token}`);
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -70,9 +70,7 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
     console.log(`[order] Paid — ${order._id}`);
   } catch (error) {
     if (error.response?.data?.message === 'Order already paid') {
-      const { data } = await Axios.get(
-        `/api/orders/${order._id}?token=${paymentResult.confirmToken}`
-      );
+      const { data } = await Axios.get(`/api/orders/token/${paymentResult.confirmToken}`);
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
       console.log(`[order] Paid (already confirmed) — ${order._id}`);
     } else {

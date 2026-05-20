@@ -4,6 +4,7 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { thunk } from 'redux-thunk';
 import { authClient } from './lib/authClient';
 import {
+  availabilityBulkCreateReducer,
   availabilityCreateReducer,
   availabilityDeleteReducer,
   availabilityListReducer,
@@ -130,6 +131,7 @@ const reducer = combineReducers({
   availabilityCreate: availabilityCreateReducer,
   availabilityUpdate: availabilityUpdateReducer,
   availabilityDelete: availabilityDeleteReducer,
+  availabilityBulkCreate: availabilityBulkCreateReducer,
 });
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

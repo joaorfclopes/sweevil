@@ -1,5 +1,8 @@
 import Axios from 'axios';
 import {
+  AVAILABILITY_BULK_CREATE_FAIL,
+  AVAILABILITY_BULK_CREATE_REQUEST,
+  AVAILABILITY_BULK_CREATE_SUCCESS,
   AVAILABILITY_CREATE_FAIL,
   AVAILABILITY_CREATE_REQUEST,
   AVAILABILITY_CREATE_SUCCESS,
@@ -116,6 +119,19 @@ export const deleteAvailability = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_DELETE_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const createAvailabilityBulk = (bulkData) => async (dispatch) => {
+  dispatch({ type: AVAILABILITY_BULK_CREATE_REQUEST });
+  try {
+    const { data } = await Axios.post('/api/availability/bulk', bulkData);
+    dispatch({ type: AVAILABILITY_BULK_CREATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: AVAILABILITY_BULK_CREATE_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }
