@@ -34,6 +34,7 @@ import {
   orderDetailsReducer,
   orderListReducer,
   orderPayReducer,
+  orderRefundReducer,
   orderSendReducer,
 } from './reducers/orderReducers';
 import {
@@ -109,6 +110,7 @@ const reducer = combineReducers({
   orderSend: orderSendReducer,
   orderDeliver: orderDeliverReducer,
   orderCancel: orderCancelReducer,
+  orderRefund: orderRefundReducer,
   galleryImageList: galleryImageListReducer,
   galleryImageCreate: galleryImageCreateReducer,
   galleryImageUpdate: galleryImageUpdateReducer,
