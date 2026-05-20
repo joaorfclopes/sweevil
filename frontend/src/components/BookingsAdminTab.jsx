@@ -84,6 +84,36 @@ function AvailableDay(props) {
   );
 }
 
+function ExtraPickerDay({
+  day,
+  outsideCurrentMonth,
+  extraDates,
+  disabledDates,
+  ...pickerDayProps
+}) {
+  const dateStr = dayjs(day).format('YYYY-MM-DD');
+  const isSelected = extraDates.has(dateStr);
+  const isDisabled = disabledDates.has(dateStr) || outsideCurrentMonth;
+  return (
+    <PickersDay
+      {...pickerDayProps}
+      day={day}
+      outsideCurrentMonth={outsideCurrentMonth}
+      disabled={isDisabled}
+      selected={isSelected}
+      sx={
+        isSelected
+          ? {
+              backgroundColor: 'primary.main',
+              color: '#fff',
+              '&:hover': { backgroundColor: 'primary.dark' },
+            }
+          : {}
+      }
+    />
+  );
+}
+
 export default function BookingsAdminTab() {
   const dispatch = useDispatch();
 
@@ -803,6 +833,55 @@ export default function BookingsAdminTab() {
                 >
                   Cancel extra dates
                 </button>
+              )}
+            </Box>
+          )}
+          {!editingAvail && showExtraPicker && (
+            <Box sx={{ mt: 1 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar
+                  disablePast
+                  onChange={(date) => {
+                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+                    setExtraDates((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(dateStr)) {
+                        next.delete(dateStr);
+                      } else {
+                        next.add(dateStr);
+                      }
+                      return next;
+                    });
+                  }}
+                  slots={{ day: ExtraPickerDay }}
+                  slotProps={{
+                    day: {
+                      extraDates,
+                      disabledDates: new Set([
+                        ...availableDates,
+                        dayjs(dialogDate).format('YYYY-MM-DD'),
+                      ]),
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+              {extraDates.size > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                  {[...extraDates].sort().map((d) => (
+                    <Chip
+                      key={d}
+                      label={dayjs(d).format('DD/MM/YYYY')}
+                      size="small"
+                      onDelete={() =>
+                        setExtraDates((prev) => {
+                          const next = new Set(prev);
+                          next.delete(d);
+                          return next;
+                        })
+                      }
+                    />
+                  ))}
+                </Box>
               )}
             </Box>
           )}
