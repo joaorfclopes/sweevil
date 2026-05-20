@@ -63,6 +63,7 @@ const countInStockSchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(1),
   price: z.coerce.number().min(0),
+  originalPrice: z.number().positive().optional().nullable(),
   images: z.array(z.string()).optional(),
   category: z.string().min(1),
   isClothing: z.boolean(),

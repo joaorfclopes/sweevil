@@ -94,8 +94,22 @@ productRouter.post(
   isAdmin,
   validate(productSchema),
   expressAsyncHandler(async (req, res) => {
-    const { name, price, images, category, isClothing, countInStock, description, visible } =
-      req.body;
+    const {
+      name,
+      price,
+      images,
+      category,
+      isClothing,
+      countInStock,
+      description,
+      visible,
+      originalPrice,
+    } = req.body;
+    if (originalPrice != null && originalPrice <= price) {
+      return res
+        .status(400)
+        .send({ message: 'Original price must be greater than the current price.' });
+    }
     const product = new Product({
       name,
       price,
@@ -105,6 +119,7 @@ productRouter.post(
       countInStock,
       description,
       visible,
+      originalPrice: originalPrice != null ? originalPrice : undefined,
     });
     const createdProduct = await product.save();
     console.log(
@@ -134,6 +149,13 @@ productRouter.put(
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
       product.visible = req.body.visible;
+      const reqOriginalPrice = req.body.originalPrice;
+      if (reqOriginalPrice != null && reqOriginalPrice <= req.body.price) {
+        return res
+          .status(400)
+          .send({ message: 'Original price must be greater than the current price.' });
+      }
+      product.originalPrice = reqOriginalPrice != null ? reqOriginalPrice : null;
       const updatedProduct = await product.save();
       console.log(
         `[product] Updated "${updatedProduct.name}" (${updatedProduct._id}) — €${updatedProduct.price}, visible: ${updatedProduct.visible}`

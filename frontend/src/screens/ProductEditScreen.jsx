@@ -143,6 +143,7 @@ export default function ProductEditScreen(props) {
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
   // Each item: { id, type: 'saved', url } | { id, type: 'pending', file, preview }
   const [imageItems, setImageItems] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
@@ -188,6 +189,7 @@ export default function ProductEditScreen(props) {
     } else {
       setName(product.name);
       setPrice(product.price);
+      setOriginalPrice(product.originalPrice || '');
       setImageItems((product.images || []).map((url) => ({ id: url, type: 'saved', url })));
       setCategory(product.category || '');
       const cat = productCategories.find((c) => c.name === product.category);
@@ -221,6 +223,10 @@ export default function ProductEditScreen(props) {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (originalPrice !== '' && parseFloat(originalPrice) <= parseFloat(price)) {
+      setErrorUpload('Original price must be greater than the current price.');
+      return;
+    }
     if (loadingUpload) return;
     setLoadingUpload(true);
     setErrorUpload('');
@@ -266,6 +272,7 @@ export default function ProductEditScreen(props) {
       taxPrice,
       finalPrice,
       visible,
+      originalPrice: originalPrice !== '' ? parseFloat(originalPrice) : null,
     };
     if (isNew) {
       dispatch(createProduct(productData));
@@ -375,6 +382,21 @@ export default function ProductEditScreen(props) {
                 />
               </div>
               <div>
+                {errorUpload && <MessageBox variant="error">{errorUpload}</MessageBox>}
+                <label htmlFor="originalPrice">
+                  Original Price (EUR) — leave blank when not on sale
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  id="originalPrice"
+                  placeholder="Enter original price"
+                  value={originalPrice}
+                  onChange={(e) => setOriginalPrice(e.target.value)}
+                />
+              </div>
+              <div>
                 <label>Images</label>
                 <input
                   ref={fileInputRef}
@@ -385,7 +407,6 @@ export default function ProductEditScreen(props) {
                   onChange={(e) => handleFileInput(e.target.files)}
                 />
                 {loadingUpload && <LoadingBox />}
-                {errorUpload && <MessageBox variant="danger">{errorUpload}</MessageBox>}
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}

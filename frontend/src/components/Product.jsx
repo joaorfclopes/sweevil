@@ -21,6 +21,7 @@ function isCached(url) {
 export default function Product(props) {
   const { product } = props;
   const soldOut = isSoldOut(product);
+  const onSale = Boolean(product.originalPrice && product.originalPrice > product.price);
   const containerRef = useRef(null);
   const imgRef = useRef(null);
   const cached = isCached(product.images[0]);
@@ -56,6 +57,7 @@ export default function Product(props) {
       <Link to={`/shop/product/${product._id}`}>
         <div className="product-body">
           {soldOut && <span className="sold-out-pill">Sold Out</span>}
+          {onSale && <span className="sale-pill">Sale</span>}
           <Placeholder hide={loaded}>
             <div className={`product-image ${loaded ? 'show' : ''}`}>
               <img
@@ -70,7 +72,14 @@ export default function Product(props) {
             <div className={`product-description ${loaded ? 'show' : ''}`}>
               <p className="product-name">{product.name}</p>
               <div className="line"></div>
-              <p className="product-price">{product.price && product.price.toFixed(2)}€</p>
+              {onSale ? (
+                <>
+                  <p className="product-price-original">{product.originalPrice.toFixed(2)}€</p>
+                  <p className="product-price">{product.price.toFixed(2)}€</p>
+                </>
+              ) : (
+                <p className="product-price">{product.price && product.price.toFixed(2)}€</p>
+              )}
             </div>
           </Placeholder>
         </div>

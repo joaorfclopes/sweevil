@@ -37,6 +37,9 @@ frontend/.env
 
 # Superpowers
 docs/superpowers/
+.superpowers
+.claude/specs
+.claude/plans
 
 # Docker
 docker/mongo-data/

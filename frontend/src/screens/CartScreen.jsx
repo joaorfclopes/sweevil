@@ -131,6 +131,9 @@ export default function CartScreen(props) {
                     <h3>{item.name}</h3>
                   </div>
                   <div className="item-price">
+                    {item.originalPrice && item.originalPrice > item.price && (
+                      <p className="item-price-original">{item.originalPrice.toFixed(2)}€</p>
+                    )}
                     <h3>{item.price && item.price.toFixed(2)}€</h3>
                   </div>
                 </div>

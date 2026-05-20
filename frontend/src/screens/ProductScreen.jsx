@@ -229,9 +229,18 @@ export default function ProductScreen(props) {
             <h2 className="name custom-font">
               <b>{product.name}</b>
             </h2>
-            <h2 className="price">
-              <b>{product.price && product.price.toFixed(2)}€</b>
-            </h2>
+            {product.originalPrice && product.originalPrice > product.price ? (
+              <>
+                <h2 className="price price--original">{product.originalPrice.toFixed(2)}€</h2>
+                <h2 className="price">
+                  <b>{product.price.toFixed(2)}€</b>
+                </h2>
+              </>
+            ) : (
+              <h2 className="price">
+                <b>{product.price && product.price.toFixed(2)}€</b>
+              </h2>
+            )}
             <p>
               <b>Category:</b> {product.category}
             </p>

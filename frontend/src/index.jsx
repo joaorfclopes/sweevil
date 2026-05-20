@@ -14,6 +14,11 @@ if (import.meta.env.MODE === 'production') {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     sendDefaultPii: true,
+    beforeSendLog(log) {
+      const msg = log.body ?? '';
+      if (/^FBNav|^hxp-chat-suppression|^dom_only/.test(msg)) return null;
+      return log;
+    },
     beforeSend(event) {
       const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (frames.length === 0) return event;

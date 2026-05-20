@@ -84,6 +84,12 @@
           .item-remove {
             float: right;
           }
+          .item-price-original {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: line-through;
+            margin: 0 0 2px;
+          }
           .item-size {
             margin-right: 1rem;
           }

@@ -130,6 +130,12 @@
       .price {
         color: $primaryColor;
       }
+      .price--original {
+        color: #999;
+        text-decoration: line-through;
+        font-weight: 300;
+        margin-bottom: 0;
+      }
       .description {
         white-space: pre-line;
       }

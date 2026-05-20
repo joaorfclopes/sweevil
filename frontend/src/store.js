@@ -54,10 +54,12 @@ import { userDetailsReducer, userSigninReducer, userUpdateReducer } from './redu
 
 const sentryMiddleware = () => (next) => (action) => {
   if (typeof action.type === 'string' && action.type.endsWith('_FAIL') && action.payload) {
-    Sentry.captureMessage(`Redux: ${action.type}`, {
-      level: 'error',
-      extra: { payload: action.payload },
-    });
+    if (action.statusCode !== 404) {
+      Sentry.captureMessage(`Redux: ${action.type}`, {
+        level: 'error',
+        extra: { payload: action.payload },
+      });
+    }
   }
   return next(action);
 };
