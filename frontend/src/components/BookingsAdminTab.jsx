@@ -43,6 +43,7 @@ import isURL from 'validator/lib/isURL';
 import {
   cancelBooking,
   createAvailability,
+  createAvailabilityBulk,
   deleteAvailability,
   deleteBooking,
   listAvailability,
@@ -50,6 +51,7 @@ import {
   updateAvailability,
 } from '../actions/bookingActions';
 import {
+  AVAILABILITY_BULK_CREATE_RESET,
   AVAILABILITY_CREATE_RESET,
   AVAILABILITY_DELETE_RESET,
   AVAILABILITY_UPDATE_RESET,
@@ -206,14 +208,31 @@ export default function BookingsAdminTab() {
   }, [dispatch, successCancel, successDelete, page, rowsPerPage, debouncedSearch, statusFilter]);
 
   useEffect(() => {
-    if (successCreate || successUpdate || successAvailDelete) {
+    if (successCreate || successUpdate || successAvailDelete || successBulkCreate) {
       dispatch({ type: AVAILABILITY_CREATE_RESET });
       dispatch({ type: AVAILABILITY_UPDATE_RESET });
       dispatch({ type: AVAILABILITY_DELETE_RESET });
+      dispatch({ type: AVAILABILITY_BULK_CREATE_RESET });
       dispatch(listAvailability());
       setDialogOpen(false);
+      setExtraDates(new Set());
+      setShowExtraPicker(false);
+      if (successBulkCreate && bulkResult) {
+        const { created, skipped } = bulkResult;
+        const msg =
+          skipped.length > 0
+            ? `Added ${created.length} date(s). ${skipped.length} already existed and were skipped.`
+            : `Added ${created.length} date(s).`;
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: msg,
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
     }
-  }, [dispatch, successCreate, successUpdate, successAvailDelete]);
+  }, [dispatch, successCreate, successUpdate, successAvailDelete, successBulkCreate, bulkResult]);
 
   const availMap = {};
   availability.forEach((a) => {
@@ -331,6 +350,9 @@ export default function BookingsAdminTab() {
     const dateStr = dayjs(dialogDate).format('YYYY-MM-DD');
     if (editingAvail) {
       dispatch(updateAvailability(editingAvail._id, { slots, price }));
+    } else if (extraDates.size > 0) {
+      const allDates = [dateStr, ...extraDates];
+      dispatch(createAvailabilityBulk({ dates: allDates, slots, price }));
     } else {
       dispatch(createAvailability({ date: dateStr, slots, price }));
     }
@@ -779,8 +801,10 @@ export default function BookingsAdminTab() {
           {dialogDate ? dayjs(dialogDate).format('DD/MM/YYYY') : ''}
         </DialogTitle>
         <DialogContent>
-          {(errorCreate || errorUpdate || dialogError) && (
-            <MessageBox variant="error">{dialogError || errorCreate || errorUpdate}</MessageBox>
+          {(errorCreate || errorUpdate || errorBulkCreate || dialogError) && (
+            <MessageBox variant="error">
+              {dialogError || errorCreate || errorUpdate || errorBulkCreate}
+            </MessageBox>
           )}
           <TextField
             label="Time slots (comma-separated)"
