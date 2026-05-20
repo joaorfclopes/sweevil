@@ -242,7 +242,8 @@ export default function BookingsAdminTab() {
   const availableDates = Object.keys(availMap);
 
   const extraPickerDisabledDates = useMemo(
-    () => new Set([...availableDates, dialogDate ? dayjs(dialogDate).format('YYYY-MM-DD') : '']),
+    () =>
+      new Set([...availableDates, ...(dialogDate ? [dayjs(dialogDate).format('YYYY-MM-DD')] : [])]),
     [availableDates, dialogDate]
   );
 
@@ -335,6 +336,8 @@ export default function BookingsAdminTab() {
     setPriceInput(existing ? String(existing.price) : '50');
     setPriceEditing(false);
     setDialogError('');
+    setExtraDates(new Set());
+    setShowExtraPicker(false);
     setDialogOpen(true);
   };
 

@@ -4,6 +4,7 @@ import itemsDetails from './itemsDetails.js';
 export const cancelOrderAdmin = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     isPaid,
     cancelledByAdmin,

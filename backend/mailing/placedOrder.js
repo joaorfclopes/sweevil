@@ -5,6 +5,7 @@ import { getTax } from './taxRates.js';
 export const placedOrder = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     shippingAddress: { fullName, address, country, postalCode, city },
     orderItems,

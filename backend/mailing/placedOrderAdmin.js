@@ -3,6 +3,7 @@ import itemsDetails from './itemsDetails.js';
 export const placedOrderAdmin = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     shippingAddress: { email, phoneNumber, fullName, address, country, postalCode, city },
     orderItems,

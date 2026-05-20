@@ -5,6 +5,7 @@ import { getTax } from './taxRates.js';
 export const cancelOrder = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     isPaid,
     cancelledByAdmin,
