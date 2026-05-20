@@ -6,6 +6,7 @@ export const cancelOrderAdmin = ({
     orderId,
     orderDate,
     isPaid,
+    cancelledByAdmin,
     shippingAddress: { fullName, email, phoneNumber },
     orderItems,
     itemsPrice,
@@ -141,7 +142,7 @@ export const cancelOrderAdmin = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  ${isPaid ? 'Refund Request' : 'Order Canceled'}
+                                  ${cancelledByAdmin && isPaid ? 'Order Cancelled — Refund Issued' : !cancelledByAdmin && isPaid ? 'Refund Request' : 'Order Canceled'}
                                 </font>
                               </td>
                             </tr>
@@ -170,7 +171,7 @@ export const cancelOrderAdmin = ({
                                 >
                                   Hi ${
                                     process.env.BRAND_NAME
-                                  }, ${isPaid ? `you recieved a refund request from ${formatName(fullName)}` : `an order was canceled by ${formatName(fullName)}`}!
+                                  }, ${cancelledByAdmin && isPaid ? `you cancelled an order and a refund was issued automatically to ${formatName(fullName)}` : !cancelledByAdmin && isPaid ? `you received a refund request from ${formatName(fullName)}` : `an order was canceled by ${formatName(fullName)}`}!
                                 </font>
                               </td>
                             </tr>
@@ -469,7 +470,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  ${isPaid ? `Access your Stripe Dashboard and refund ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} here: https://dashboard.stripe.com/payments` : 'No payment was made — no refund required.'}
+                                                  ${cancelledByAdmin && isPaid ? 'Refund was issued automatically via Stripe.' : !cancelledByAdmin && isPaid ? `Use the admin panel to issue a refund of ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} if applicable.` : 'No payment was made — no refund required.'}
                                                 </font>
                                               </td>
                                           </tr>
