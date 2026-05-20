@@ -1,3 +1,4 @@
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DownloadIcon from '@mui/icons-material/Download';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -27,8 +28,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { deleteOrder, listOrders } from '../actions/orderActions';
-import { ORDER_DELETE_RESET } from '../constants/orderConstants';
+import { deleteOrder, listOrders, refundOrder } from '../actions/orderActions';
+import { ORDER_DELETE_RESET, ORDER_REFUND_RESET } from '../constants/orderConstants';
 import { formatDateDay, formatName } from '../utils';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import LoadingBox from './LoadingBox';
@@ -42,6 +43,8 @@ export default function OrdersTable() {
   const { loading, orders, error, total = 0 } = orderAdminList;
   const orderDelete = useSelector((state) => state.orderDelete);
   const { loading: loadingDelete, success: successDelete, error: errorDelete } = orderDelete;
+  const orderRefund = useSelector((state) => state.orderRefund);
+  const { loading: loadingRefund, success: successRefund, error: errorRefund } = orderRefund;
 
   const [open, setOpen] = useState(true);
   const [page, setPage] = useState(0);
@@ -65,6 +68,7 @@ export default function OrdersTable() {
 
   useEffect(() => {
     if (successDelete) dispatch({ type: ORDER_DELETE_RESET });
+    if (successRefund) dispatch({ type: ORDER_REFUND_RESET });
     dispatch(
       listOrders({
         page: page + 1,
@@ -73,7 +77,7 @@ export default function OrdersTable() {
         status: statusFilter,
       })
     );
-  }, [dispatch, successDelete, page, rowsPerPage, debouncedSearch, statusFilter]);
+  }, [dispatch, successDelete, successRefund, page, rowsPerPage, debouncedSearch, statusFilter]);
 
   const deleteHandler = (order) => {
     Swal.fire({
@@ -85,6 +89,18 @@ export default function OrdersTable() {
         dispatch(deleteOrder(order._id));
         Swal.fire('Deleted!', '', 'success');
       }
+    });
+  };
+
+  const refundHandler = (order) => {
+    Swal.fire({
+      title: `Refund €${order.totalPrice?.toFixed(2)} to ${formatName(order.shippingAddress.fullName)}?`,
+      text: 'This will issue a full refund via Stripe. This cannot be undone.',
+      showCancelButton: true,
+      confirmButtonText: 'Refund',
+      confirmButtonColor: '#1976d2',
+    }).then((result) => {
+      if (result.isConfirmed) dispatch(refundOrder(order._id));
     });
   };
 
@@ -166,6 +182,7 @@ export default function OrdersTable() {
       <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+        {errorRefund && <MessageBox variant="error">{errorRefund}</MessageBox>}
         <>
           {/* Toolbar */}
           <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
@@ -243,6 +260,7 @@ export default function OrdersTable() {
                           { id: 'totalPrice', label: 'Total' },
                           { id: 'isPaid', label: 'Paid' },
                           { id: 'isDelivered', label: 'Delivered' },
+                          { id: 'isRefunded', label: 'Refunded' },
                           { id: 'status', label: 'Status' },
                           { id: 'updatedAt', label: 'Updated' },
                         ].map(({ id, label }) => (
@@ -265,7 +283,7 @@ export default function OrdersTable() {
                       {loading ? (
                         Array.from({ length: 5 }).map((_, i) => (
                           <TableRow key={i} sx={{ height: 56 }}>
-                            {Array.from({ length: 9 }).map((_, j) => (
+                            {Array.from({ length: 10 }).map((_, j) => (
                               <TableCell key={j}>
                                 <Skeleton animation="wave" />
                               </TableCell>
@@ -274,7 +292,7 @@ export default function OrdersTable() {
                         ))
                       ) : filtered.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
+                          <TableCell colSpan={10} align="center" sx={{ py: 4, color: '#888' }}>
                             No orders found.
                           </TableCell>
                         </TableRow>
@@ -302,6 +320,11 @@ export default function OrdersTable() {
                               {order.isDelivered ? formatDateDay(order.deliveredAt) : 'No'}
                             </TableCell>
                             <TableCell align="center">
+                              {order.isRefunded ? (
+                                <Chip label="Refunded" color="success" size="small" />
+                              ) : null}
+                            </TableCell>
+                            <TableCell align="center">
                               <StatusChip status={order.status} />
                             </TableCell>
                             <TableCell align="center">{formatDateDay(order.updatedAt)}</TableCell>
@@ -314,6 +337,17 @@ export default function OrdersTable() {
                                   <VisibilityIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
+                              {order.status === 'CANCELED' && order.isPaid && !order.isRefunded && (
+                                <Tooltip title="Issue Refund">
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => refundHandler(order)}
+                                    disabled={loadingRefund}
+                                  >
+                                    <CurrencyExchangeIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
                               <Tooltip title="Delete">
                                 <IconButton size="small" onClick={() => deleteHandler(order)}>
                                   <DeleteOutlineIcon fontSize="small" />
