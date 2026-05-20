@@ -332,7 +332,7 @@ export default function OrdersTable() {
                               <Tooltip title="View details">
                                 <IconButton
                                   size="small"
-                                  onClick={() => navigate(`/cart/order/${order._id}`)}
+                                  onClick={() => navigate(`/cart/order/${order.confirmToken}`)}
                                 >
                                   <VisibilityIcon fontSize="small" />
                                 </IconButton>
