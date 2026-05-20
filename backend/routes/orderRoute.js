@@ -181,7 +181,7 @@ orderRouter.post(
     Sentry.metrics.count('order.created', 1);
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
+    const paymentUrl = `${frontendUrl}/cart/order/${confirmToken}`;
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
     await sendMail({
       from,

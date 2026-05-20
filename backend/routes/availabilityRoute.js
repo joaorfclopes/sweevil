@@ -61,6 +61,37 @@ availabilityRouter.post(
   })
 );
 
+availabilityRouter.post(
+  '/bulk',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const { dates, slots, price } = req.body;
+    if (!Array.isArray(dates) || dates.length === 0) {
+      return res.status(400).json({ message: 'dates must be a non-empty array' });
+    }
+    if (!Array.isArray(slots)) {
+      return res.status(400).json({ message: 'slots must be an array' });
+    }
+    const created = [];
+    const skipped = [];
+    for (const dateStr of dates) {
+      const existing = await Availability.findOne({ date: new Date(dateStr) });
+      if (existing) {
+        skipped.push(dateStr);
+        continue;
+      }
+      const avail = new Availability({ date: new Date(dateStr), slots, price });
+      await avail.save();
+      created.push(dateStr);
+    }
+    console.log(
+      `[availability] Bulk added ${created.length} date(s), skipped ${skipped.length} — €${price}, ${slots.length} slot(s)`
+    );
+    res.status(201).json({ created, skipped });
+  })
+);
+
 availabilityRouter.put(
   '/:id',
   isAuth,
