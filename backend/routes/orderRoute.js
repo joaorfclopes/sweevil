@@ -459,6 +459,14 @@ orderRouter.put(
           : 'countInStock.stock';
         await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
       }
+      if (isAdminUser && !order.isRefunded) {
+        try {
+          await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+          order.isRefunded = true;
+        } catch (refundErr) {
+          console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+        }
+      }
     }
     const updatedOrder = await order.save();
     console.log(
@@ -474,6 +482,7 @@ orderRouter.put(
           orderId: updatedOrder._id,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: isAdminUser,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             country: updatedOrder.shippingAddress.country,
@@ -489,12 +498,18 @@ orderRouter.put(
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: updatedOrder.isPaid ? 'Refund Request' : 'Order Canceled',
+      subject:
+        isAdminUser && updatedOrder.isPaid
+          ? 'Order Cancelled — Refund Issued'
+          : updatedOrder.isPaid
+            ? 'Refund Request'
+            : 'Order Canceled',
       html: cancelOrderAdminEmail({
         order: {
           orderId: updatedOrder._id,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: isAdminUser,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             email: updatedOrder.shippingAddress.email,
@@ -509,6 +524,24 @@ orderRouter.put(
     });
 
     res.send({ message: 'Order canceled', order: updatedOrder });
+  })
+);
+
+orderRouter.post(
+  '/:id/refund',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).send({ message: 'Order not found' });
+    if (!order.isPaid) return res.status(400).send({ message: 'Order is not paid' });
+    if (order.isRefunded) return res.status(400).send({ message: 'Order already refunded' });
+
+    await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+    order.isRefunded = true;
+    const updatedOrder = await order.save();
+    console.log(`[order] Manual refund issued for ${order._id} — €${order.totalPrice}`);
+    res.send({ message: 'Refund issued', order: updatedOrder });
   })
 );
 
