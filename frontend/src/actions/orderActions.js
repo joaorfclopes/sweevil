@@ -25,6 +25,9 @@ import {
   ORDER_PAY_FAIL,
   ORDER_PAY_REQUEST,
   ORDER_PAY_SUCCESS,
+  ORDER_REFUND_FAIL,
+  ORDER_REFUND_REQUEST,
+  ORDER_REFUND_SUCCESS,
   ORDER_SEND_FAIL,
   ORDER_SEND_REQUEST,
   ORDER_SEND_SUCCESS,
@@ -122,6 +125,19 @@ export const cancelOrder = (orderId, token) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_CANCEL_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const refundOrder = (orderId) => async (dispatch) => {
+  dispatch({ type: ORDER_REFUND_REQUEST });
+  try {
+    const { data } = await Axios.post(`/api/orders/${orderId}/refund`);
+    dispatch({ type: ORDER_REFUND_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: ORDER_REFUND_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }
