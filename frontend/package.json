@@ -17,7 +17,7 @@
     "@sentry/react": "^10.53.1",
     "@simplewebauthn/browser": "^13.3.0",
     "@stripe/react-stripe-js": "^6.2.0",
-    "@stripe/stripe-js": "^9.2.0",
+    "@stripe/stripe-js": "^9.6.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
