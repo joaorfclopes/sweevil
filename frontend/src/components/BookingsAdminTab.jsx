@@ -107,6 +107,13 @@ export default function BookingsAdminTab() {
   const availabilityCreate = useSelector((s) => s.availabilityCreate);
   const { success: successCreate, error: errorCreate } = availabilityCreate;
 
+  const availabilityBulkCreate = useSelector((s) => s.availabilityBulkCreate);
+  const {
+    success: successBulkCreate,
+    result: bulkResult,
+    error: errorBulkCreate,
+  } = availabilityBulkCreate;
+
   const availabilityUpdate = useSelector((s) => s.availabilityUpdate);
   const { success: successUpdate, error: errorUpdate } = availabilityUpdate;
 
@@ -128,6 +135,8 @@ export default function BookingsAdminTab() {
   const [priceInput, setPriceInput] = useState('');
   const [priceEditing, setPriceEditing] = useState(false);
   const [dialogError, setDialogError] = useState('');
+  const [extraDates, setExtraDates] = useState(new Set());
+  const [showExtraPicker, setShowExtraPicker] = useState(false);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -728,6 +737,8 @@ export default function BookingsAdminTab() {
         onClose={() => {
           setDialogOpen(false);
           setPriceEditing(false);
+          setExtraDates(new Set());
+          setShowExtraPicker(false);
         }}
         maxWidth="xs"
         fullWidth
@@ -769,6 +780,32 @@ export default function BookingsAdminTab() {
             }}
             sx={!priceEditing ? { '& .MuiInputBase-input': { color: '#555' } } : {}}
           />
+          {!editingAvail && (
+            <Box sx={{ mt: 1 }}>
+              {!showExtraPicker ? (
+                <button
+                  type="button"
+                  className="secondary"
+                  style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                  onClick={() => setShowExtraPicker(true)}
+                >
+                  Apply to more dates
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="secondary"
+                  style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                  onClick={() => {
+                    setShowExtraPicker(false);
+                    setExtraDates(new Set());
+                  }}
+                >
+                  Cancel extra dates
+                </button>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           {editingAvail && (
