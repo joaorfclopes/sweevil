@@ -37,7 +37,7 @@
     "@sentry/node": "^10.53.1",
     "@sentry/profiling-node": "^10.53.1",
     "@simplewebauthn/server": "^13.3.0",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.11",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
