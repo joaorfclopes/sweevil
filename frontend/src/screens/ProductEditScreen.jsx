@@ -25,7 +25,7 @@ import {
   updateProduct,
 } from '../actions/productActions';
 import { listProductCategories } from '../actions/productCategoryActions';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import {
   PRODUCT_CREATE_RESET,
@@ -353,15 +353,15 @@ export default function ProductEditScreen(props) {
 
   return (
     <section className="product-edit">
-      {!isNew && loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : !isNew && error ? (
+      {!isNew && error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <>
+        <LoadingOverlay
+          loading={(!isNew && loading) || loadingUpdate || loadingCreate || loadingUpload}
+          minHeight="75vh"
+        >
           <h1>{isNew ? 'New Product' : `Edit ${product?.name || ''}`}</h1>
           <form className="form" onSubmit={submitHandler}>
-            {(loadingUpdate || loadingCreate) && <LoadingBox lineHeight="100vh" width="100px" />}
             {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
             {errorCreate && <MessageBox variant="error">{errorCreate}</MessageBox>}
             <>
@@ -412,7 +412,6 @@ export default function ProductEditScreen(props) {
                   style={{ display: 'none' }}
                   onChange={(e) => handleFileInput(e.target.files)}
                 />
-                {loadingUpload && <LoadingBox />}
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -594,7 +593,7 @@ export default function ProductEditScreen(props) {
               </div>
             </>
           </form>
-        </>
+        </LoadingOverlay>
       )}
     </section>
   );

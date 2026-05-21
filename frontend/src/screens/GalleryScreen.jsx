@@ -8,7 +8,7 @@ import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { listCategories } from '../actions/categoryActions';
 import { listGalleryImages } from '../actions/galleryActions';
 import GalleryImage from '../components/GalleryImage';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
 
@@ -121,92 +121,92 @@ export default function GalleryScreen() {
 
   return (
     <section className="gallery" id="gallery">
-      {loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
+      {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="row center">
-          <div className="gallery-container">
-            <div className="filters">
-              {gallery.length > 0 && (
-                <div id="filter-all" className="filter active" onClick={() => handleClick('*')}>
-                  All
-                </div>
-              )}
-              {categories.map((cat) => (
-                <div
-                  key={cat}
-                  id={`filter-${cat}`}
-                  className="filter"
-                  onClick={() => handleClick(cat)}
-                >
-                  {cat}
-                </div>
-              ))}
-            </div>
-            <div className="gallery-images-container show">
-              <div className="gallery-images-flex">
-                {columns.map((col, ci) => (
-                  <div key={ci} className="gallery-images-col">
-                    {col.map(({ img, idx }) => (
-                      <div
-                        key={img._id}
-                        onClick={() => {
-                          setLightboxIndex(idx);
-                          setLightboxOpen(true);
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <GalleryImage galleryImage={img} />
-                      </div>
-                    ))}
+        <LoadingOverlay loading={loading} minHeight="75vh">
+          <div className="row center">
+            <div className="gallery-container">
+              <div className="filters">
+                {gallery?.length > 0 && (
+                  <div id="filter-all" className="filter active" onClick={() => handleClick('*')}>
+                    All
+                  </div>
+                )}
+                {categories.map((cat) => (
+                  <div
+                    key={cat}
+                    id={`filter-${cat}`}
+                    className="filter"
+                    onClick={() => handleClick(cat)}
+                  >
+                    {cat}
                   </div>
                 ))}
               </div>
-              <Lightbox
-                open={lightboxOpen}
-                close={() => setLightboxOpen(false)}
-                slides={visibleGallery.map((img) => ({
-                  src: img.image,
-                  description: img.description || undefined,
-                }))}
-                index={lightboxIndex}
-                on={{
-                  view: ({ index }) => setLightboxIndex(index),
-                }}
-                plugins={[Captions, Zoom]}
-                noScroll={{ disabled: true }}
-                zoom={{
-                  maxZoomPixelRatio: 5,
-                  zoomInMultiplier: 2,
-                  pinchZoomDistanceFactor: 100,
-                  wheelZoomDistanceFactor: 100,
-                }}
-              />
-            </div>
-            {(hasMore || visibleRows > INITIAL_ROWS) && (
-              <div className="gallery-collapse-toggle-row">
-                {visibleRows > INITIAL_ROWS && (
-                  <div
-                    className="gallery-collapse-toggle"
-                    onClick={() => setVisibleRows(INITIAL_ROWS)}
-                  >
-                    Show less ↑
-                  </div>
-                )}
-                {hasMore && (
-                  <div
-                    className="gallery-collapse-toggle"
-                    onClick={() => setVisibleRows((prev) => prev + ROWS_INCREMENT)}
-                  >
-                    Show more ↓
-                  </div>
-                )}
+              <div className="gallery-images-container show">
+                <div className="gallery-images-flex">
+                  {columns.map((col, ci) => (
+                    <div key={ci} className="gallery-images-col">
+                      {col.map(({ img, idx }) => (
+                        <div
+                          key={img._id}
+                          onClick={() => {
+                            setLightboxIndex(idx);
+                            setLightboxOpen(true);
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <GalleryImage galleryImage={img} />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                <Lightbox
+                  open={lightboxOpen}
+                  close={() => setLightboxOpen(false)}
+                  slides={visibleGallery.map((img) => ({
+                    src: img.image,
+                    description: img.description || undefined,
+                  }))}
+                  index={lightboxIndex}
+                  on={{
+                    view: ({ index }) => setLightboxIndex(index),
+                  }}
+                  plugins={[Captions, Zoom]}
+                  noScroll={{ disabled: true }}
+                  zoom={{
+                    maxZoomPixelRatio: 5,
+                    zoomInMultiplier: 2,
+                    pinchZoomDistanceFactor: 100,
+                    wheelZoomDistanceFactor: 100,
+                  }}
+                />
               </div>
-            )}
+              {(hasMore || visibleRows > INITIAL_ROWS) && (
+                <div className="gallery-collapse-toggle-row">
+                  {visibleRows > INITIAL_ROWS && (
+                    <div
+                      className="gallery-collapse-toggle"
+                      onClick={() => setVisibleRows(INITIAL_ROWS)}
+                    >
+                      Show less ↑
+                    </div>
+                  )}
+                  {hasMore && (
+                    <div
+                      className="gallery-collapse-toggle"
+                      onClick={() => setVisibleRows((prev) => prev + ROWS_INCREMENT)}
+                    >
+                      Show more ↓
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </LoadingOverlay>
       )}
     </section>
   );

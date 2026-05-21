@@ -61,7 +61,7 @@ import useScrollLock from '../hooks/useScrollLock';
 import { formatDateDay } from '../utils.js';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import Swal from '../utils/swal';
-import LoadingBox from './LoadingBox';
+import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
 
@@ -454,29 +454,29 @@ export default function BookingsAdminTab() {
             <Typography variant="body2" style={{ color: '#666', marginBottom: 12 }}>
               Click any date to set availability and price for that day.
             </Typography>
-            {loadingAvail ? (
-              <LoadingBox />
-            ) : errorAvail ? (
+            {errorAvail ? (
               <MessageBox variant="error">{errorAvail}</MessageBox>
             ) : (
-              <Paper
-                sx={{
-                  background: '#fff',
-                  display: 'block',
-                  margin: '0 auto',
-                  width: 'fit-content',
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateCalendar
-                    onChange={handleDayClick}
-                    disablePast
-                    referenceDate={calendarViewDate ? dayjs(calendarViewDate) : undefined}
-                    slots={{ day: AvailableDay }}
-                    slotProps={{ day: { availableDates } }}
-                  />
-                </LocalizationProvider>
-              </Paper>
+              <LoadingOverlay loading={loadingAvail} minHeight="300px">
+                <Paper
+                  sx={{
+                    background: '#fff',
+                    display: 'block',
+                    margin: '0 auto',
+                    width: 'fit-content',
+                  }}
+                >
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                      onChange={handleDayClick}
+                      disablePast
+                      referenceDate={calendarViewDate ? dayjs(calendarViewDate) : undefined}
+                      slots={{ day: AvailableDay }}
+                      slotProps={{ day: { availableDates } }}
+                    />
+                  </LocalizationProvider>
+                </Paper>
+              </LoadingOverlay>
             )}
           </div>
 

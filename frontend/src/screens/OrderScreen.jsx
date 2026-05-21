@@ -16,7 +16,7 @@ import {
   refundOrder,
   sendOrder,
 } from '../actions/orderActions';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import PlaceHolder from '../components/Placeholder';
 import { getTax } from '../config/taxRates';
@@ -314,168 +314,176 @@ export default function OrderScreen(props) {
 
   return (
     <section className="order cards-section">
-      {loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
+      {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="row center order-container">
-          <div className="order-inner">
-            <h1 className="custom-font">Your order details</h1>
-            {loadingSend && <LoadingBox />}
-            {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
-            {loadingDeliver && <LoadingBox />}
-            {errorDeliver && <MessageBox variant="error">{errorDeliver}</MessageBox>}
-            {loadingCancel && <LoadingBox />}
-            {errorCancel && <MessageBox variant="error">{errorCancel}</MessageBox>}
-            {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
-            {errorRefund && <MessageBox variant="error">{errorRefund}</MessageBox>}
-            {errorDismiss && <MessageBox variant="error">{errorDismiss}</MessageBox>}
-            {order.status === 'PAID' && (
-              <div style={{ marginBottom: '0.5rem' }}>
-                <MessageBox variant="success">
-                  Order successfully paid! Check your email Inbox (if you can't find it check your
-                  Spam) for more information.
-                </MessageBox>
-              </div>
-            )}
-            {order.status?.startsWith('CANCELED') && (
-              <div style={{ marginBottom: '0.5rem' }}>
-                <MessageBox variant="error">Order canceled.</MessageBox>
-              </div>
-            )}
-            {order.status === 'SENT' && (
-              <div style={{ marginBottom: '0.5rem' }}>
-                <MessageBox variant="success">Order sent!</MessageBox>
-              </div>
-            )}
-            {order.status === 'DELIVERED' && (
-              <div style={{ marginBottom: '0.5rem' }}>
-                <MessageBox variant="success">Order delivered!</MessageBox>
-              </div>
-            )}
-            <div className="card">
-              <h3>Shipping Address</h3>
-              <p>{order.shippingAddress.fullName}</p>
-              <p>{order.shippingAddress.address}</p>
-              <p>{order.shippingAddress.city}</p>
-              <p>{order.shippingAddress.postalCode}</p>
-              <p>{order.shippingAddress.country}</p>
-            </div>
-            <div className="card">
-              <h3>Contact Information</h3>
-              <p>{order.shippingAddress.email}</p>
-              <p>
-                {order.shippingAddress.phoneNumber?.startsWith('+')
-                  ? order.shippingAddress.phoneNumber
-                  : `+${order.shippingAddress.phoneNumber}`}
-              </p>
-            </div>
-            <div className="card">
-              <h3>Items</h3>
-              <ul className="cart-items">
-                {order.orderItems.map((item, index) => (
-                  <li key={item.product}>
-                    <OrderItemImage item={item} />
-                    <div className="item-content">
-                      <div className="item-name">
-                        <p>{item.name}</p>
-                      </div>
-                      <div className="item-price">
-                        <p>{item.price && item.price.toFixed(2)}€</p>
-                      </div>
-                    </div>
-                    <div className="item-content">
-                      {item.size !== '' && <div className="item-size">Size: {item.size}</div>}
-                      <div className="item-qty">
-                        <p>Quantity: {item.qty}</p>
-                      </div>
-                    </div>
-                    {order.orderItems[index + 1] && <hr />}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="card total-amount">
-              <p>
-                Subtotal ({order.itemsQty} {order.itemsQty > 1 ? 'items' : 'item'}) :{' '}
-                {order.itemsPrice && order.itemsPrice.toFixed(2)}€
-              </p>
-              {(() => {
-                const tax = getTax(order.shippingAddress.country, order.itemsPrice);
-                return tax ? (
+        <LoadingOverlay
+          loading={loading || loadingSend || loadingDeliver || loadingCancel}
+          minHeight="75vh"
+        >
+          {order && (
+            <div className="row center order-container">
+              <div className="order-inner">
+                <h1 className="custom-font">Your order details</h1>
+                {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
+                {errorDeliver && <MessageBox variant="error">{errorDeliver}</MessageBox>}
+                {errorCancel && <MessageBox variant="error">{errorCancel}</MessageBox>}
+                {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+                {errorRefund && <MessageBox variant="error">{errorRefund}</MessageBox>}
+                {errorDismiss && <MessageBox variant="error">{errorDismiss}</MessageBox>}
+                {order.status === 'PAID' && (
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <MessageBox variant="success">
+                      Order successfully paid! Check your email Inbox (if you can't find it check
+                      your Spam) for more information.
+                    </MessageBox>
+                  </div>
+                )}
+                {order.status?.startsWith('CANCELED') && (
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <MessageBox variant="error">Order canceled.</MessageBox>
+                  </div>
+                )}
+                {order.status === 'SENT' && (
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <MessageBox variant="success">Order sent!</MessageBox>
+                  </div>
+                )}
+                {order.status === 'DELIVERED' && (
+                  <div style={{ marginBottom: '0.5rem' }}>
+                    <MessageBox variant="success">Order delivered!</MessageBox>
+                  </div>
+                )}
+                <div className="card">
+                  <h3>Shipping Address</h3>
+                  <p>{order.shippingAddress.fullName}</p>
+                  <p>{order.shippingAddress.address}</p>
+                  <p>{order.shippingAddress.city}</p>
+                  <p>{order.shippingAddress.postalCode}</p>
+                  <p>{order.shippingAddress.country}</p>
+                </div>
+                <div className="card">
+                  <h3>Contact Information</h3>
+                  <p>{order.shippingAddress.email}</p>
                   <p>
-                    {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+                    {order.shippingAddress.phoneNumber?.startsWith('+')
+                      ? order.shippingAddress.phoneNumber
+                      : `+${order.shippingAddress.phoneNumber}`}
                   </p>
-                ) : null;
-              })()}
-              <p>Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}€</p>
-              <h3 className="total">Total : {order.totalPrice && order.totalPrice.toFixed(2)}€</h3>
-            </div>
-            {!order.status?.startsWith('CANCELED') && !order.isPaid && (
-              <div className="stripe-payment">
-                {!clientSecret || !stripePromise ? (
-                  <LoadingBox />
-                ) : (
-                  <>
-                    {errorPay && <MessageBox variant="error">{errorPay}</MessageBox>}
-                    {loadingPay && <LoadingBox />}
-                    <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <StripeCheckoutForm order={order} dispatch={dispatch} token={token} />
-                    </Elements>
-                  </>
+                </div>
+                <div className="card">
+                  <h3>Items</h3>
+                  <ul className="cart-items">
+                    {order.orderItems.map((item, index) => (
+                      <li key={item.product}>
+                        <OrderItemImage item={item} />
+                        <div className="item-content">
+                          <div className="item-name">
+                            <p>{item.name}</p>
+                          </div>
+                          <div className="item-price">
+                            <p>{item.price && item.price.toFixed(2)}€</p>
+                          </div>
+                        </div>
+                        <div className="item-content">
+                          {item.size && <div className="item-size">Size: {item.size}</div>}
+                          <div className="item-qty">
+                            <p>Quantity: {item.qty}</p>
+                          </div>
+                        </div>
+                        {order.orderItems[index + 1] && <hr />}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="card total-amount">
+                  <p>
+                    Subtotal ({order.itemsQty} {order.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+                    {order.itemsPrice && order.itemsPrice.toFixed(2)}€
+                  </p>
+                  {(() => {
+                    const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+                    return tax ? (
+                      <p>
+                        {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+                      </p>
+                    ) : null;
+                  })()}
+                  <p>Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}€</p>
+                  <h3 className="total">
+                    Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
+                  </h3>
+                </div>
+                {!order.status?.startsWith('CANCELED') && !order.isPaid && (
+                  <div className="stripe-payment">
+                    {!clientSecret || !stripePromise ? (
+                      <LoadingOverlay loading minHeight="120px">
+                        <div />
+                      </LoadingOverlay>
+                    ) : (
+                      <LoadingOverlay loading={loadingPay}>
+                        {errorPay && <MessageBox variant="error">{errorPay}</MessageBox>}
+                        <Elements stripe={stripePromise} options={{ clientSecret }}>
+                          <StripeCheckoutForm order={order} dispatch={dispatch} token={token} />
+                        </Elements>
+                      </LoadingOverlay>
+                    )}
+                  </div>
                 )}
-              </div>
-            )}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-                gap: '0.5rem',
-                marginTop: '0.5rem',
-              }}
-            >
-              {userInfo?.isAdmin &&
-                order.isPaid &&
-                !order.status?.startsWith('CANCELED') &&
-                !order.isSent &&
-                !order.isDelivered && (
-                  <button className="primary" onClick={sendHandler}>
-                    Send Order
-                  </button>
-                )}
-              {order.isSent && !order.isDelivered && (
-                <button className="primary" onClick={deliverHandler}>
-                  Deliver Order
-                </button>
-              )}
-              {!order.status?.startsWith('CANCELED') && !order.isDelivered && (
-                <button className="dangerous-outline" onClick={cancelHandler}>
-                  Cancel Order
-                </button>
-              )}
-              {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
-                <button className="primary" onClick={refundHandler} disabled={loadingRefund}>
-                  Issue Refund
-                </button>
-              )}
-              {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
-                <button
-                  className="dangerous-outline"
-                  onClick={dismissRefundHandler}
-                  disabled={loadingDismiss}
+                <div
+                  style={{
+                    clear: 'both',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                    gap: '0.5rem',
+                    marginTop: '0.5rem',
+                  }}
                 >
-                  Cancel Refund
-                </button>
-              )}
-              {userInfo?.isAdmin && (
-                <button className="dangerous" onClick={deleteHandler} disabled={loadingDelete}>
-                  Delete Order
-                </button>
-              )}
+                  {userInfo?.isAdmin &&
+                    order.isPaid &&
+                    !order.status?.startsWith('CANCELED') &&
+                    !order.isSent &&
+                    !order.isDelivered && (
+                      <button className="primary" onClick={sendHandler}>
+                        Send Order
+                      </button>
+                    )}
+                  {order.isSent && !order.isDelivered && (
+                    <button className="primary" onClick={deliverHandler}>
+                      Deliver Order
+                    </button>
+                  )}
+                  {!order.status?.startsWith('CANCELED') &&
+                    !order.isDelivered &&
+                    (order.isPaid || userInfo?.isAdmin) && (
+                      <button className="dangerous-outline" onClick={cancelHandler}>
+                        Cancel Order
+                      </button>
+                    )}
+                  {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
+                    <button className="primary" onClick={refundHandler} disabled={loadingRefund}>
+                      Issue Refund
+                    </button>
+                  )}
+                  {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
+                    <button
+                      className="dangerous-outline"
+                      onClick={dismissRefundHandler}
+                      disabled={loadingDismiss}
+                    >
+                      Cancel Refund
+                    </button>
+                  )}
+                  {userInfo?.isAdmin && (
+                    <button className="dangerous" onClick={deleteHandler} disabled={loadingDelete}>
+                      Delete Order
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </LoadingOverlay>
       )}
     </section>
   );

@@ -193,7 +193,9 @@ bookingRouter.post(
   validate(createBookingSchema),
   expressAsyncHandler(async (req, res) => {
     const { date, slot, guestInfo, images } = req.body;
-    const avail = await Availability.findOne({ date: new Date(date) });
+    const dayStart = new Date(date + 'T00:00:00.000Z');
+    const dayEnd = new Date(date + 'T23:59:59.999Z');
+    const avail = await Availability.findOne({ date: { $gte: dayStart, $lte: dayEnd } });
     if (!avail) {
       return res.status(400).json({ message: 'No availability for this date' });
     }
@@ -202,7 +204,7 @@ bookingRouter.post(
       return res.status(400).json({ message: 'Slot not available' });
     }
     const existing = await Booking.findOne({
-      date: new Date(date),
+      date: avail.date,
       slot,
       status: 'CONFIRMED',
     });
@@ -212,7 +214,7 @@ bookingRouter.post(
     const safeImages = Array.isArray(images) ? images.slice(0, 10) : [];
     const confirmToken = crypto.randomBytes(32).toString('hex');
     const booking = new Booking({
-      date: new Date(date),
+      date: avail.date,
       slot,
       price: avail.price,
       guestInfo,

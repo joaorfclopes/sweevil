@@ -64,7 +64,7 @@ import {
   GALLERY_IMAGE_DELETE_RESET,
   GALLERY_IMAGE_UPDATE_RESET,
 } from '../constants/galleryConstants';
-import LoadingBox from './LoadingBox';
+import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
 import Placeholder from './Placeholder';
 
@@ -645,300 +645,303 @@ export default function GalleryAdminTab() {
 
   return (
     <div className="gallery-admin-table" style={{ marginBottom: '50px' }}>
-      <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
-        {(loadingDelete || loadingCreate || loadingUpdate || loadingCatCreate) && <LoadingBox />}
-        {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
-        {errorCreate && <MessageBox variant="error">{errorCreate}</MessageBox>}
-        {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
-        {errorCatCreate && errorCatCreate !== 'Category already exists' && (
-          <MessageBox variant="error">{errorCatCreate}</MessageBox>
-        )}
-        <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-            onClick={() => setSectionOpen((v) => !v)}
-          >
-            <Typography className="title" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <b>Gallery</b>
-            </Typography>
-            <IconButton tabIndex={-1}>
-              {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </Box>
-          {sectionOpen && (
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <TextField
-                size="small"
-                placeholder="Search description…"
-                value={filterDesc}
-                onChange={(e) => setFilterDesc(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
-                }}
-                sx={{ flexGrow: 1 }}
-              />
-              <Tooltip title="Add image">
-                <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
-                  <AddIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
+      <LoadingOverlay loading={loadingDelete || loadingCreate || loadingUpdate || loadingCatCreate}>
+        <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
+          {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+          {errorCreate && <MessageBox variant="error">{errorCreate}</MessageBox>}
+          {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
+          {errorCatCreate && errorCatCreate !== 'Category already exists' && (
+            <MessageBox variant="error">{errorCatCreate}</MessageBox>
           )}
-        </Toolbar>
-
-        <Collapse in={sectionOpen}>
-          <div style={{ padding: '0 16px 12px', borderBottom: '1px solid #e0e0e0' }}>
-            <Typography variant="subtitle2" style={{ marginBottom: 8, color: '#555' }}>
-              <b>Categories</b>
-            </Typography>
-            {localErrorCatDelete && (
-              <div style={{ marginBottom: 8 }}>
-                <MessageBox key={errorCatDeleteKey} variant="error" autoDismiss={3000}>
-                  {localErrorCatDelete}
-                </MessageBox>
-              </div>
-            )}
-            {localErrorCatUpdate && (
-              <div style={{ marginBottom: 8 }}>
-                <MessageBox key={errorCatUpdateKey} variant="error" autoDismiss={3000}>
-                  {localErrorCatUpdate}
-                </MessageBox>
-              </div>
-            )}
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={({ active }) => setActiveCatId(active.id)}
-              onDragEnd={handleCatDragEnd}
-              onDragCancel={() => setActiveCatId(null)}
+          <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              onClick={() => setSectionOpen((v) => !v)}
             >
-              <SortableContext items={catItems.map((c) => c._id)} strategy={rectSortingStrategy}>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 8,
-                    alignItems: 'center',
-                    marginBottom: 10,
+              <Typography className="title" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <b>Gallery</b>
+              </Typography>
+              <IconButton tabIndex={-1}>
+                {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </Box>
+            {sectionOpen && (
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <TextField
+                  size="small"
+                  placeholder="Search description…"
+                  value={filterDesc}
+                  onChange={(e) => setFilterDesc(e.target.value)}
+                  InputProps={{
+                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
                   }}
-                >
-                  {allCategoryNames.map((name) => {
-                    const dbCat = dbCategoryByName[name];
-                    const isEditing = editingCatId === dbCat?._id;
+                  sx={{ flexGrow: 1 }}
+                />
+                <Tooltip title="Add image">
+                  <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+          </Toolbar>
 
-                    if (isEditing) {
-                      return (
-                        <div
-                          key={name}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0,
-                            border: '1px solid #bbb',
-                            borderRadius: 16,
-                            padding: '2px 6px',
-                            background: '#e0e0e0',
-                          }}
-                        >
-                          <input
-                            autoFocus
-                            value={editingCatName}
-                            size={Math.max(8, editingCatName.length + 2)}
-                            onChange={(e) => setEditingCatName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && editingCatName.trim())
-                                dispatch(updateCategory(dbCat._id, editingCatName));
-                              if (e.key === 'Escape') setEditingCatId(null);
-                            }}
+          <Collapse in={sectionOpen}>
+            <div style={{ padding: '0 16px 12px', borderBottom: '1px solid #e0e0e0' }}>
+              <Typography variant="subtitle2" style={{ marginBottom: 8, color: '#555' }}>
+                <b>Categories</b>
+              </Typography>
+              {localErrorCatDelete && (
+                <div style={{ marginBottom: 8 }}>
+                  <MessageBox key={errorCatDeleteKey} variant="error" autoDismiss={3000}>
+                    {localErrorCatDelete}
+                  </MessageBox>
+                </div>
+              )}
+              {localErrorCatUpdate && (
+                <div style={{ marginBottom: 8 }}>
+                  <MessageBox key={errorCatUpdateKey} variant="error" autoDismiss={3000}>
+                    {localErrorCatUpdate}
+                  </MessageBox>
+                </div>
+              )}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={({ active }) => setActiveCatId(active.id)}
+                onDragEnd={handleCatDragEnd}
+                onDragCancel={() => setActiveCatId(null)}
+              >
+                <SortableContext items={catItems.map((c) => c._id)} strategy={rectSortingStrategy}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 8,
+                      alignItems: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
+                    {allCategoryNames.map((name) => {
+                      const dbCat = dbCategoryByName[name];
+                      const isEditing = editingCatId === dbCat?._id;
+
+                      if (isEditing) {
+                        return (
+                          <div
+                            key={name}
                             style={{
-                              border: 'none',
-                              outline: 'none',
-                              background: 'transparent',
-                              fontSize: '0.8rem',
-                              fontFamily: 'inherit',
-                            }}
-                          />
-                          <IconButton
-                            size="small"
-                            sx={{ padding: '2px' }}
-                            onClick={() => {
-                              if (editingCatName.trim())
-                                dispatch(updateCategory(dbCat._id, editingCatName));
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0,
+                              border: '1px solid #bbb',
+                              borderRadius: 16,
+                              padding: '2px 6px',
+                              background: '#e0e0e0',
                             }}
                           >
-                            <EditIcon sx={{ fontSize: 13 }} />
-                          </IconButton>
-                          <Tooltip title="Cancel">
+                            <input
+                              autoFocus
+                              value={editingCatName}
+                              size={Math.max(8, editingCatName.length + 2)}
+                              onChange={(e) => setEditingCatName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && editingCatName.trim())
+                                  dispatch(updateCategory(dbCat._id, editingCatName));
+                                if (e.key === 'Escape') setEditingCatId(null);
+                              }}
+                              style={{
+                                border: 'none',
+                                outline: 'none',
+                                background: 'transparent',
+                                fontSize: '0.8rem',
+                                fontFamily: 'inherit',
+                              }}
+                            />
                             <IconButton
                               size="small"
                               sx={{ padding: '2px' }}
-                              onClick={() => setEditingCatId(null)}
+                              onClick={() => {
+                                if (editingCatName.trim())
+                                  dispatch(updateCategory(dbCat._id, editingCatName));
+                              }}
                             >
-                              <CloseIcon sx={{ fontSize: 13 }} />
+                              <EditIcon sx={{ fontSize: 13 }} />
                             </IconButton>
-                          </Tooltip>
-                        </div>
-                      );
-                    }
+                            <Tooltip title="Cancel">
+                              <IconButton
+                                size="small"
+                                sx={{ padding: '2px' }}
+                                onClick={() => setEditingCatId(null)}
+                              >
+                                <CloseIcon sx={{ fontSize: 13 }} />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        );
+                      }
 
-                    return (
-                      <SortableCategoryChip
-                        key={name}
-                        id={dbCat?._id || name}
-                        name={name}
-                        dbCat={dbCat}
-                        isActive={activeCatId === dbCat?._id}
-                        onEdit={() => {
-                          setEditingCatId(dbCat._id);
-                          setEditingCatName(name);
-                        }}
-                        onDelete={() => handleDeleteCategory(dbCat)}
-                      />
-                    );
-                  })}
-                  {allCategoryNames.length === 0 && (
-                    <span style={{ color: '#aaa', fontSize: '0.85rem' }}>No categories yet.</span>
-                  )}
-                </div>
-              </SortableContext>
-              <DragOverlay>
-                {activeCatId ? (
+                      return (
+                        <SortableCategoryChip
+                          key={name}
+                          id={dbCat?._id || name}
+                          name={name}
+                          dbCat={dbCat}
+                          isActive={activeCatId === dbCat?._id}
+                          onEdit={() => {
+                            setEditingCatId(dbCat._id);
+                            setEditingCatName(name);
+                          }}
+                          onDelete={() => handleDeleteCategory(dbCat)}
+                        />
+                      );
+                    })}
+                    {allCategoryNames.length === 0 && (
+                      <span style={{ color: '#aaa', fontSize: '0.85rem' }}>No categories yet.</span>
+                    )}
+                  </div>
+                </SortableContext>
+                <DragOverlay>
+                  {activeCatId ? (
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        border: '1px solid rgba(0,0,0,0.12)',
+                        borderRadius: 16,
+                        padding: '2px 10px',
+                        background: '#e0e0e0',
+                        fontSize: '0.8rem',
+                        fontFamily: 'inherit',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        cursor: 'grabbing',
+                      }}
+                    >
+                      {catItems.find((c) => c._id === activeCatId)?.name}
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
+              <TextField
+                size="small"
+                placeholder="New category name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        onClick={handleAddCategory}
+                        disabled={!newCategoryName.trim() || loadingCatCreate}
+                      >
+                        <AddIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                style={{ width: 240 }}
+              />
+            </div>
+
+            {/* ── Category filter ── */}
+            {allCategoryNames.length > 0 && (
+              <div
+                style={{
+                  padding: '4px 16px 12px',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 6,
+                  alignItems: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#888',
+                    marginRight: 4,
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  Filter:
+                </span>
+                {[
+                  { label: 'All', value: '*' },
+                  ...allCategoryNames.map((n) => ({ label: n, value: n })),
+                ].map(({ label, value }) => (
                   <div
+                    key={value}
+                    onClick={() => setFilterCategory(value)}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       border: '1px solid rgba(0,0,0,0.12)',
                       borderRadius: 16,
                       padding: '2px 10px',
-                      background: '#e0e0e0',
                       fontSize: '0.8rem',
                       fontFamily: 'inherit',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      cursor: 'grabbing',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      background: filterCategory === value ? '#555' : '#e0e0e0',
+                      color: filterCategory === value ? '#fff' : 'inherit',
+                      transition: 'background 0.15s, color 0.15s',
                     }}
                   >
-                    {catItems.find((c) => c._id === activeCatId)?.name}
+                    {label}
                   </div>
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-            <TextField
-              size="small"
-              placeholder="New category name"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      onClick={handleAddCategory}
-                      disabled={!newCategoryName.trim() || loadingCatCreate}
+                ))}
+              </div>
+            )}
+
+            <div style={{ padding: '0 16px 16px' }}>
+              <div className="gallery-admin-scroll-container">
+                {error ? (
+                  <MessageBox variant="error">{error}</MessageBox>
+                ) : (
+                  <LoadingOverlay loading={loading} minHeight="30vh">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDragCancel={() => setActiveId(null)}
                     >
-                      <AddIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              style={{ width: 240 }}
-            />
-          </div>
-
-          {/* ── Category filter ── */}
-          {allCategoryNames.length > 0 && (
-            <div
-              style={{
-                padding: '4px 16px 12px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 6,
-                alignItems: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  color: '#888',
-                  marginRight: 4,
-                  fontFamily: 'inherit',
-                }}
-              >
-                Filter:
-              </span>
-              {[
-                { label: 'All', value: '*' },
-                ...allCategoryNames.map((n) => ({ label: n, value: n })),
-              ].map(({ label, value }) => (
-                <div
-                  key={value}
-                  onClick={() => setFilterCategory(value)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    border: '1px solid rgba(0,0,0,0.12)',
-                    borderRadius: 16,
-                    padding: '2px 10px',
-                    fontSize: '0.8rem',
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    background: filterCategory === value ? '#555' : '#e0e0e0',
-                    color: filterCategory === value ? '#fff' : 'inherit',
-                    transition: 'background 0.15s, color 0.15s',
-                  }}
-                >
-                  {label}
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div style={{ padding: '0 16px 16px' }}>
-            <div className="gallery-admin-scroll-container">
-              {loading ? (
-                <LoadingBox lineHeight="30vh" />
-              ) : error ? (
-                <MessageBox variant="error">{error}</MessageBox>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDragCancel={() => setActiveId(null)}
-                >
-                  <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
-                    <div className="gallery-admin-grid">
-                      {columns.map((col, ci) => (
-                        <div key={ci} className="gallery-admin-col">
-                          {col.map((item) => (
-                            <SortableCard
-                              key={item._id}
-                              item={item}
-                              onEdit={openEdit}
-                              onDelete={handleDelete}
-                              isActive={item._id === activeId}
-                            />
+                      <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
+                        <div className="gallery-admin-grid">
+                          {columns.map((col, ci) => (
+                            <div key={ci} className="gallery-admin-col">
+                              {col.map((item) => (
+                                <SortableCard
+                                  key={item._id}
+                                  item={item}
+                                  onEdit={openEdit}
+                                  onDelete={handleDelete}
+                                  isActive={item._id === activeId}
+                                />
+                              ))}
+                            </div>
                           ))}
                         </div>
-                      ))}
-                    </div>
-                  </SortableContext>
-                  <DragOverlay>{activeItem ? <PlainCard item={activeItem} /> : null}</DragOverlay>
-                </DndContext>
-              )}
-              {!loading && !error && displayItems.length === 0 && (
-                <p style={{ textAlign: 'center', color: '#888', padding: '40px 0' }}>
-                  {filterCategory === '*' && !filterDesc
-                    ? 'No images yet. Click + to add one.'
-                    : `No images match the current filter.`}
-                </p>
-              )}
+                      </SortableContext>
+                      <DragOverlay>
+                        {activeItem ? <PlainCard item={activeItem} /> : null}
+                      </DragOverlay>
+                    </DndContext>
+                  </LoadingOverlay>
+                )}
+                {!loading && !error && displayItems.length === 0 && (
+                  <p style={{ textAlign: 'center', color: '#888', padding: '40px 0' }}>
+                    {filterCategory === '*' && !filterDesc
+                      ? 'No images yet. Click + to add one.'
+                      : `No images match the current filter.`}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        </Collapse>
-      </Paper>
+          </Collapse>
+        </Paper>
+      </LoadingOverlay>
 
       {/* ── Upload dialog ── */}
       <Dialog
@@ -953,36 +956,37 @@ export default function GalleryAdminTab() {
       >
         <DialogTitle>Add Gallery Image</DialogTitle>
         <DialogContent>
-          <div
-            className="gallery-admin-dropzone"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploadPreview ? (
-              <img src={uploadPreview} alt="preview" className="gallery-admin-preview" />
-            ) : (
-              <span>Click or drop an image here</span>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
+          <LoadingOverlay loading={uploadingToS3}>
+            <div
+              className="gallery-admin-dropzone"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploadPreview ? (
+                <img src={uploadPreview} alt="preview" className="gallery-admin-preview" />
+              ) : (
+                <span>Click or drop an image here</span>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+            </div>
+            {uploadS3Error && <MessageBox variant="error">{uploadS3Error}</MessageBox>}
+            <TextField
+              label="Description"
+              value={uploadDescription}
+              onChange={(e) => setUploadDescription(e.target.value)}
+              fullWidth
+              margin="normal"
+              size="small"
             />
-          </div>
-          {uploadingToS3 && <LoadingBox width="30px" />}
-          {uploadS3Error && <MessageBox variant="error">{uploadS3Error}</MessageBox>}
-          <TextField
-            label="Description"
-            value={uploadDescription}
-            onChange={(e) => setUploadDescription(e.target.value)}
-            fullWidth
-            margin="normal"
-            size="small"
-          />
-          {categorySelect(uploadCategory, setUploadCategory)}
+            {categorySelect(uploadCategory, setUploadCategory)}
+          </LoadingOverlay>
         </DialogContent>
         <DialogActions>
           <button

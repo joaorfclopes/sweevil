@@ -12,7 +12,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
@@ -165,7 +165,8 @@ export default function BookingScreen(props) {
 
   const shouldDisableDate = (date) => {
     const key = dayjs(date).format('YYYY-MM-DD');
-    return !availableDates.includes(key) || dayjs(date).isBefore(dayjs(), 'day');
+    const minDate = dayjs().add(7, 'day');
+    return !availableDates.includes(key) || dayjs(date).isBefore(minDate, 'day');
   };
 
   const handleDateSelect = (date) => {
@@ -335,20 +336,20 @@ export default function BookingScreen(props) {
                 {step === STEPS.CALENDAR && (
                   <div className="booking-step booking-step--calendar">
                     <h2>Select a date</h2>
-                    {loadingAvail ? (
-                      <LoadingBox />
-                    ) : availError ? (
+                    {availError ? (
                       <MessageBox variant="error">{availError}</MessageBox>
                     ) : (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar
-                          disablePast
-                          shouldDisableDate={shouldDisableDate}
-                          onChange={handleDateSelect}
-                          slots={{ day: AvailableDay }}
-                          slotProps={{ day: { availableDates } }}
-                        />
-                      </LocalizationProvider>
+                      <LoadingOverlay loading={loadingAvail} minHeight="300px">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DateCalendar
+                            minDate={dayjs().add(7, 'day')}
+                            shouldDisableDate={shouldDisableDate}
+                            onChange={handleDateSelect}
+                            slots={{ day: AvailableDay }}
+                            slotProps={{ day: { availableDates } }}
+                          />
+                        </LocalizationProvider>
+                      </LoadingOverlay>
                     )}
                   </div>
                 )}
@@ -483,14 +484,15 @@ export default function BookingScreen(props) {
                       </div>
                     )}
                     {awaitingMbway ? (
-                      <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                        <LoadingBox />
-                        <p style={{ marginTop: '1rem' }}>
+                      <LoadingOverlay loading minHeight="120px">
+                        <p style={{ marginTop: '1rem', textAlign: 'center' }}>
                           Waiting for MBWay confirmation in your app…
                         </p>
-                      </div>
+                      </LoadingOverlay>
                     ) : !clientSecret || !stripePromise ? (
-                      <LoadingBox />
+                      <LoadingOverlay loading minHeight="120px">
+                        <div />
+                      </LoadingOverlay>
                     ) : (
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
                         <StripeCheckoutForm
