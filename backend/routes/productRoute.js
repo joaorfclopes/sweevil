@@ -35,14 +35,20 @@ productRouter.get(
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
     if (req.user?.isAdmin) {
-      const pageNum = Math.max(1, parseInt(req.query.page) || 1);
-      const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
-      const { search = '' } = req.query;
+      const { search = '', all } = req.query;
       const query = {};
       if (search) query.name = { $regex: search, $options: 'i' };
+
+      if (all === 'true') {
+        const products = await Product.find(query).sort({ sortOrder: 1 });
+        return res.json({ items: products, total: products.length, page: 1, pages: 1 });
+      }
+
+      const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+      const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
       const total = await Product.countDocuments(query);
       const products = await Product.find(query)
-        .sort({ createdAt: -1 })
+        .sort({ sortOrder: 1 })
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum);
       return res.json({
@@ -54,7 +60,7 @@ productRouter.get(
     }
     const cached = await cacheGet(LIST_KEY);
     if (cached) return res.send(cached);
-    const products = await Product.find({ visible: true });
+    const products = await Product.find({ visible: true }).sort({ sortOrder: 1 });
     const result = products.map(toPublic);
     await cacheSet(LIST_KEY, result, TTL);
     res.send(result);
@@ -110,6 +116,8 @@ productRouter.post(
         .status(400)
         .send({ message: 'Original price must be greater than the current price.' });
     }
+    const lowestProduct = await Product.findOne({}, { sortOrder: 1 }).sort({ sortOrder: 1 });
+    const newSortOrder = lowestProduct ? lowestProduct.sortOrder - 1 : 0;
     const product = new Product({
       name,
       price,
@@ -120,6 +128,7 @@ productRouter.post(
       description,
       visible,
       originalPrice: originalPrice != null ? originalPrice : undefined,
+      sortOrder: newSortOrder,
     });
     const createdProduct = await product.save();
     console.log(
@@ -186,6 +195,30 @@ productRouter.delete(
     } else {
       res.status(404).send({ message: 'Product not Found' });
     }
+  })
+);
+
+productRouter.patch(
+  '/reorder',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const items = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Body must be a non-empty array' });
+    }
+    for (const item of items) {
+      if (!mongoose.isValidObjectId(item._id) || typeof item.sortOrder !== 'number') {
+        return res
+          .status(400)
+          .json({ message: 'Each item must have a valid _id and numeric sortOrder' });
+      }
+    }
+    await Promise.all(
+      items.map(({ _id, sortOrder }) => Product.updateOne({ _id }, { $set: { sortOrder } }))
+    );
+    await cacheDel(LIST_KEY);
+    res.json({ message: 'Order updated' });
   })
 );
 
