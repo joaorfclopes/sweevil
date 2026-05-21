@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SearchIcon from '@mui/icons-material/Search';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
@@ -28,7 +29,7 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { deleteProduct, listAdminProducts } from '../actions/productActions';
+import { deleteProduct, listAdminProducts, reorderProducts } from '../actions/productActions';
 import {
   createProductCategory,
   deleteProductCategory,
@@ -40,7 +41,7 @@ import {
   PRODUCT_CATEGORY_DELETE_RESET,
   PRODUCT_CATEGORY_UPDATE_RESET,
 } from '../constants/productCategoryConstants';
-import { PRODUCT_DELETE_RESET } from '../constants/productConstants';
+import { PRODUCT_DELETE_RESET, PRODUCT_REORDER_RESET } from '../constants/productConstants';
 import { formatDateDay } from '../utils';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import Swal from '../utils/swal';
@@ -55,6 +56,8 @@ export default function ProductsTable() {
   const { loading, products, error, total = 0 } = productAdminList;
   const productDelete = useSelector((state) => state.productDelete);
   const { loading: loadingDelete, success: successDelete, error: errorDelete } = productDelete;
+  const productReorder = useSelector((state) => state.productReorder);
+  const { loading: loadingReorder, success: successReorder, error: errorReorder } = productReorder;
 
   const { categories = [] } = useSelector((state) => state.productCategoryList);
   const {
@@ -88,6 +91,7 @@ export default function ProductsTable() {
   const [localErrorCatDelete, setLocalErrorCatDelete] = useState(null);
   const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
 
+  const [reorderMode, setReorderMode] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortDir, setSortDir] = useState('desc');
@@ -104,8 +108,11 @@ export default function ProductsTable() {
   };
 
   const filtered = useMemo(
-    () => [...(products ?? [])].sort(getComparator(sortDir, orderBy)),
-    [products, sortDir, orderBy]
+    () =>
+      reorderMode
+        ? [...(products ?? [])]
+        : [...(products ?? [])].sort(getComparator(sortDir, orderBy)),
+    [products, sortDir, orderBy, reorderMode]
   );
 
   useEffect(() => {
@@ -178,8 +185,13 @@ export default function ProductsTable() {
 
   useEffect(() => {
     if (successDelete) dispatch({ type: PRODUCT_DELETE_RESET });
-    dispatch(listAdminProducts({ page: page + 1, limit: rowsPerPage, search: debouncedSearch }));
-  }, [dispatch, successDelete, page, rowsPerPage, debouncedSearch]);
+    if (successReorder) dispatch({ type: PRODUCT_REORDER_RESET });
+    if (reorderMode) {
+      dispatch(listAdminProducts({ all: true }));
+    } else {
+      dispatch(listAdminProducts({ page: page + 1, limit: rowsPerPage, search: debouncedSearch }));
+    }
+  }, [dispatch, successDelete, successReorder, reorderMode, page, rowsPerPage, debouncedSearch]);
 
   useEffect(() => {
     dispatch(listProductCategories());
@@ -268,11 +280,41 @@ export default function ProductsTable() {
     navigate('/admin/product/new/edit');
   };
 
+  const handleToggleReorderMode = () => {
+    setReorderMode((prev) => !prev);
+    setSelected(new Set());
+  };
+
+  const handleMoveUp = (index) => {
+    if (index === 0) return;
+    const a = filtered[index];
+    const b = filtered[index - 1];
+    dispatch(
+      reorderProducts([
+        { _id: a._id, sortOrder: b.sortOrder },
+        { _id: b._id, sortOrder: a.sortOrder },
+      ])
+    );
+  };
+
+  const handleMoveDown = (index) => {
+    if (index === filtered.length - 1) return;
+    const a = filtered[index];
+    const b = filtered[index + 1];
+    dispatch(
+      reorderProducts([
+        { _id: a._id, sortOrder: b.sortOrder },
+        { _id: b._id, sortOrder: a.sortOrder },
+      ])
+    );
+  };
+
   return (
     <div className="products-table" style={{ marginBottom: '50px' }}>
       <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
         {loadingDelete && <LoadingBox />}
         {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+        {errorReorder && <MessageBox variant="error">{errorReorder}</MessageBox>}
         <>
           {/* Toolbar */}
           <Toolbar sx={{ flexDirection: 'column', alignItems: 'stretch', py: 1, gap: 1 }}>
@@ -308,6 +350,17 @@ export default function ProductsTable() {
                   <IconButton onClick={handleExportCSV}>
                     <DownloadIcon />
                   </IconButton>
+                </Tooltip>
+                <Tooltip title={reorderMode ? 'Exit reorder mode' : 'Reorder products'}>
+                  <span>
+                    <IconButton
+                      onClick={handleToggleReorderMode}
+                      disabled={!reorderMode && search.trim().length > 0}
+                      color={reorderMode ? 'primary' : 'default'}
+                    >
+                      <SwapVertIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
                 <Tooltip title="Create Product">
                   <IconButton aria-label="create" onClick={createHandler}>
@@ -511,6 +564,7 @@ export default function ProductsTable() {
               <Table className="table" stickyHeader aria-label="products table">
                 <TableHead>
                   <TableRow>
+                    {reorderMode && <TableCell />}
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={allSelected}
@@ -530,13 +584,17 @@ export default function ProductsTable() {
                       { id: 'updatedAt', label: 'Updated' },
                     ].map(({ id, label }) => (
                       <TableCell key={id} align="center">
-                        <TableSortLabel
-                          active={orderBy === id}
-                          direction={orderBy === id ? sortDir : 'asc'}
-                          onClick={() => handleSort(id)}
-                        >
+                        {reorderMode ? (
                           <b>{label}</b>
-                        </TableSortLabel>
+                        ) : (
+                          <TableSortLabel
+                            active={orderBy === id}
+                            direction={orderBy === id ? sortDir : 'asc'}
+                            onClick={() => handleSort(id)}
+                          >
+                            <b>{label}</b>
+                          </TableSortLabel>
+                        )}
                       </TableCell>
                     ))}
                     <TableCell align="right">
@@ -548,7 +606,7 @@ export default function ProductsTable() {
                   {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i} sx={{ height: 56 }}>
-                        {Array.from({ length: 9 }).map((_, j) => (
+                        {Array.from({ length: reorderMode ? 10 : 9 }).map((_, j) => (
                           <TableCell key={j}>
                             <Skeleton animation="wave" />
                           </TableCell>
@@ -557,16 +615,50 @@ export default function ProductsTable() {
                     ))
                   ) : filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
+                      <TableCell
+                        colSpan={reorderMode ? 10 : 9}
+                        align="center"
+                        sx={{ py: 4, color: '#888' }}
+                      >
                         No products found.
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((product) => (
+                    filtered.map((product, index) => (
                       <TableRow
                         key={product._id}
                         sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
                       >
+                        {reorderMode && (
+                          <TableCell padding="none" sx={{ width: 48 }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {index > 0 && (
+                                <IconButton
+                                  size="small"
+                                  disabled={loadingReorder}
+                                  onClick={() => handleMoveUp(index)}
+                                >
+                                  <KeyboardArrowUpIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                              {index < filtered.length - 1 && (
+                                <IconButton
+                                  size="small"
+                                  disabled={loadingReorder}
+                                  onClick={() => handleMoveDown(index)}
+                                >
+                                  <KeyboardArrowDownIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                            </Box>
+                          </TableCell>
+                        )}
                         <TableCell padding="checkbox">
                           <Checkbox
                             checked={selected.has(product._id)}
@@ -632,22 +724,24 @@ export default function ProductsTable() {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 20, 50, 100]}
-              component="div"
-              count={total}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(_, p) => {
-                setPage(p);
-                setSelected(new Set());
-              }}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10));
-                setPage(0);
-                setSelected(new Set());
-              }}
-            />
+            {!reorderMode && (
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, 100]}
+                component="div"
+                count={total}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, p) => {
+                  setPage(p);
+                  setSelected(new Set());
+                }}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                  setSelected(new Set());
+                }}
+              />
+            )}
           </Collapse>
         </>
       </Paper>
