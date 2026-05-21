@@ -1,6 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import Product from '../models/productModel.js';
 import { deleteAllFromS3 } from '../s3.js';
@@ -19,6 +20,11 @@ const TTL = 60 * 5;
  */
 
 const productRouter = express.Router();
+
+const findByIdOrSlug = (idOrSlug) =>
+  mongoose.isValidObjectId(idOrSlug)
+    ? Product.findById(idOrSlug)
+    : Product.findOne({ slug: idOrSlug });
 
 // Cap each stock value at 5 and strip internal fields from public responses
 const toPublic = (product) => {
@@ -125,14 +131,11 @@ productRouter.get(
   '/:id',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(404).json({ message: 'Product not Found' });
-    }
     if (!req.user?.isAdmin) {
       const cached = await cacheGet(itemKey(req.params.id));
       if (cached) return res.json(cached);
     }
-    const product = await Product.findById(req.params.id);
+    const product = await findByIdOrSlug(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not Found' });
     }
@@ -212,6 +215,7 @@ productRouter.post(
       visible,
       originalPrice: originalPrice != null ? originalPrice : undefined,
       sortOrder: newSortOrder,
+      slug: nanoid(12),
     });
     const createdProduct = await product.save();
     console.log(
@@ -263,10 +267,7 @@ productRouter.put(
   isAdmin,
   validate(productSchema),
   expressAsyncHandler(async (req, res) => {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(404).send({ message: 'Product not Found' });
-    }
-    const product = await Product.findById(req.params.id);
+    const product = await findByIdOrSlug(req.params.id);
     if (product) {
       product.name = req.body.name;
       product.price = req.body.price;
@@ -317,10 +318,7 @@ productRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(404).send({ message: 'Product not Found' });
-    }
-    const product = await Product.findById(req.params.id);
+    const product = await findByIdOrSlug(req.params.id);
     if (product) {
       await product.deleteOne();
       await deleteAllFromS3(product.images);
