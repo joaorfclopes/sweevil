@@ -54,6 +54,50 @@ const paymentLimiter = rateLimit({
 
 const validateToken = (order, token) => token && order.confirmToken && token === order.confirmToken;
 
+/**
+ * @swagger
+ * tags:
+ *   name: Orders
+ *   description: Order management (admin only)
+ */
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: List all orders (paginated)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Filter by recipient full name
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [PENDING, PAID, SENT, DELIVERED, CANCELLED] }
+ *     responses:
+ *       200:
+ *         description: Paginated order list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items: { type: array }
+ *                 total: { type: integer }
+ *                 page: { type: integer }
+ *                 pages: { type: integer }
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not admin
+ */
 orderRouter.get(
   '/',
   isAuth,

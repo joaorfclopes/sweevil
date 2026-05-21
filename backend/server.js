@@ -139,7 +139,7 @@ const authLimiter = rateLimit({
 
 // better-auth handler must be before express.json()
 app.use('/api/auth', authLimiter);
-app.all('/api/auth/*', toNodeHandler(auth));
+app.all('/api/auth/{*path}', toNodeHandler(auth));
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -177,18 +177,24 @@ app.get('/api/config/features', (req, res) => {
   });
 });
 
+if (process.env.NODE_ENV !== 'production') {
+  const { swaggerSpec } = await import('./swagger.js');
+  const swaggerUi = (await import('swagger-ui-express')).default;
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
 const __dirname = path.resolve();
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '/frontend/build'), { index: false }));
-  app.get('*', (req, res) => {
+  app.get('/{*path}', (req, res) => {
     res.set('Document-Policy', 'js-profiling');
     res.sendFile(path.join(__dirname, '/frontend/build/index.html'));
   });
 } else {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  app.get('*', (_req, res) => res.redirect(frontendUrl));
+  app.get('/{*path}', (_req, res) => res.redirect(frontendUrl));
 }
 
 Sentry.setupExpressErrorHandler(app);

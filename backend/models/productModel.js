@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema(
       xxl: { type: Number },
     },
     visible: { type: Boolean },
+    sortOrder: { type: Number, default: 0 },
   },
   {
     timestamps: true,
