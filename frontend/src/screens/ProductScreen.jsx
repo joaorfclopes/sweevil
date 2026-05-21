@@ -63,6 +63,12 @@ export default function ProductScreen(props) {
   }, [errorStatus, navigate]);
 
   useEffect(() => {
+    if (product?.slug && /^[a-f0-9]{24}$/.test(productId)) {
+      navigate(`/shop/product/${product.slug}`, { replace: true });
+    }
+  }, [product?.slug, productId, navigate]);
+
+  useEffect(() => {
     scrollTop();
     setCurrentIndex(0);
     dispatch(detailsProduct(productId));

@@ -278,7 +278,7 @@ export default function ProductsTable() {
       confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteProduct(product._id));
+        dispatch(deleteProduct(product.slug));
         const counter =
           Math.min(rowsPerPage, (products && products.length) - page * rowsPerPage) - 1;
         if (counter === 0 && page !== 0) {
@@ -740,7 +740,7 @@ export default function ProductsTable() {
                           <Tooltip title="Edit">
                             <IconButton
                               size="small"
-                              onClick={() => navigate(`/admin/product/${product._id}/edit`)}
+                              onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
                             >
                               <EditIcon fontSize="small" />
                             </IconButton>

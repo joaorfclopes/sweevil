@@ -141,6 +141,12 @@ export default function ProductEditScreen(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId]);
 
+  useEffect(() => {
+    if (product?.slug && /^[a-f0-9]{24}$/.test(productId)) {
+      navigate(`/admin/product/${product.slug}/edit`, { replace: true });
+    }
+  }, [product?.slug, productId, navigate]);
+
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
@@ -184,7 +190,7 @@ export default function ProductEditScreen(props) {
       return;
     }
     if (isNew) return;
-    if (!product || product._id !== productId) {
+    if (!product || product.slug !== productId) {
       dispatch(detailsProduct(productId));
     } else {
       setName(product.name);

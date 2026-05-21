@@ -54,7 +54,7 @@ export default function Product(props) {
 
   return (
     <div ref={containerRef} className="product" key={product._id}>
-      <Link to={`/shop/product/${product._id}`}>
+      <Link to={`/shop/product/${product.slug}`}>
         <div className="product-body">
           {soldOut && <span className="sold-out-pill">Sold Out</span>}
           {onSale && <span className="sale-pill">Sale</span>}
