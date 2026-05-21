@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
 import mongoose from 'mongoose';
+import { nanoid } from 'nanoid';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import About from '../backend/models/aboutModel.js';
@@ -168,7 +169,7 @@ const productsData = await loadJSON('products.json');
 let insertedProducts = [];
 if (productsData) {
   insertedProducts = await Product.insertMany(
-    productsData.map(({ _id, __v, ...rest }, i) => ({ ...rest, sortOrder: i }))
+    productsData.map(({ _id, __v, ...rest }, i) => ({ ...rest, sortOrder: i, slug: nanoid(12) }))
   );
   console.log(`  Inserted ${insertedProducts.length} products`);
 }
@@ -257,6 +258,7 @@ if (insertedProducts.length === 0) {
           image: product.images?.[0] ?? '',
           price: product.price,
           product: product._id,
+          slug: product.slug,
         },
       ],
       shippingAddress: { ...customer },
