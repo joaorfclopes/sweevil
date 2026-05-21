@@ -26,7 +26,7 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteProduct, listAdminProducts, reorderProducts } from '../actions/productActions';
@@ -92,10 +92,13 @@ export default function ProductsTable() {
   const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
 
   const [reorderMode, setReorderMode] = useState(false);
+  const [localProducts, setLocalProducts] = useState(null);
+  const [reorderInitLoading, setReorderInitLoading] = useState(false);
+  const prevLoadingRef = useRef(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortDir, setSortDir] = useState('desc');
-  const [orderBy, setOrderBy] = useState('updatedAt');
+  const [sortDir, setSortDir] = useState('asc');
+  const [orderBy, setOrderBy] = useState('sortOrder');
   const [selected, setSelected] = useState(new Set());
 
   const handleSort = (col) => {
@@ -107,13 +110,11 @@ export default function ProductsTable() {
     setPage(0);
   };
 
-  const filtered = useMemo(
-    () =>
-      reorderMode
-        ? [...(products ?? [])]
-        : [...(products ?? [])].sort(getComparator(sortDir, orderBy)),
-    [products, sortDir, orderBy, reorderMode]
-  );
+  const filtered = useMemo(() => {
+    if (reorderMode) return localProducts ?? [...(products ?? [])];
+    if (orderBy === 'sortOrder') return [...(products ?? [])];
+    return [...(products ?? [])].sort(getComparator(sortDir, orderBy));
+  }, [localProducts, products, sortDir, orderBy, reorderMode]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -184,14 +185,26 @@ export default function ProductsTable() {
       : (p.countInStock?.stock ?? 0);
 
   useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
+    if (reorderMode && wasLoading && !loading && products) {
+      setLocalProducts([...products]);
+      setReorderInitLoading(false);
+    }
+  }, [reorderMode, loading, products]);
+
+  useEffect(() => {
     if (successDelete) dispatch({ type: PRODUCT_DELETE_RESET });
-    if (successReorder) dispatch({ type: PRODUCT_REORDER_RESET });
     if (reorderMode) {
       dispatch(listAdminProducts({ all: true }));
     } else {
       dispatch(listAdminProducts({ page: page + 1, limit: rowsPerPage, search: debouncedSearch }));
     }
-  }, [dispatch, successDelete, successReorder, reorderMode, page, rowsPerPage, debouncedSearch]);
+  }, [dispatch, successDelete, reorderMode, page, rowsPerPage, debouncedSearch]);
+
+  useEffect(() => {
+    if (successReorder) dispatch({ type: PRODUCT_REORDER_RESET });
+  }, [dispatch, successReorder]);
 
   useEffect(() => {
     dispatch(listProductCategories());
@@ -281,30 +294,50 @@ export default function ProductsTable() {
   };
 
   const handleToggleReorderMode = () => {
+    if (!reorderMode) {
+      setLocalProducts(null);
+      setReorderInitLoading(true);
+      prevLoadingRef.current = false;
+    } else {
+      setLocalProducts(null);
+      setReorderInitLoading(false);
+    }
     setReorderMode((prev) => !prev);
     setSelected(new Set());
   };
 
   const handleMoveUp = (index) => {
-    if (index === 0) return;
-    const a = filtered[index];
-    const b = filtered[index - 1];
+    if (index === 0 || !localProducts) return;
+    const list = [...localProducts];
+    const a = list[index];
+    const b = list[index - 1];
+    const aOrder = a.sortOrder;
+    const bOrder = b.sortOrder;
+    list[index - 1] = { ...a, sortOrder: bOrder };
+    list[index] = { ...b, sortOrder: aOrder };
+    setLocalProducts(list);
     dispatch(
       reorderProducts([
-        { _id: a._id, sortOrder: b.sortOrder },
-        { _id: b._id, sortOrder: a.sortOrder },
+        { _id: a._id, sortOrder: bOrder },
+        { _id: b._id, sortOrder: aOrder },
       ])
     );
   };
 
   const handleMoveDown = (index) => {
-    if (index === filtered.length - 1) return;
-    const a = filtered[index];
-    const b = filtered[index + 1];
+    if (!localProducts || index === localProducts.length - 1) return;
+    const list = [...localProducts];
+    const a = list[index];
+    const b = list[index + 1];
+    const aOrder = a.sortOrder;
+    const bOrder = b.sortOrder;
+    list[index] = { ...b, sortOrder: aOrder };
+    list[index + 1] = { ...a, sortOrder: bOrder };
+    setLocalProducts(list);
     dispatch(
       reorderProducts([
-        { _id: a._id, sortOrder: b.sortOrder },
-        { _id: b._id, sortOrder: a.sortOrder },
+        { _id: a._id, sortOrder: bOrder },
+        { _id: b._id, sortOrder: aOrder },
       ])
     );
   };
@@ -603,7 +636,7 @@ export default function ProductsTable() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {loading ? (
+                  {loading || reorderInitLoading ? (
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i} sx={{ height: 56 }}>
                         {Array.from({ length: reorderMode ? 10 : 9 }).map((_, j) => (

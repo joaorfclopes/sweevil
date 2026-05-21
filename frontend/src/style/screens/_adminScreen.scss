@@ -121,6 +121,12 @@
 
 // Replicate the public gallery masonry column layout (column-count is scoped
 // under .gallery in _galleryScreen.scss so we define it standalone here).
+.gallery-admin-scroll-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .gallery-admin-grid {
   display: flex;
   gap: 10px;

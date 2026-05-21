@@ -70,6 +70,12 @@ await db
     { $set: { accessToken: null, refreshToken: null, idToken: null, accessTokenExpiresAt: null } }
   );
 
+if (process.env.NODE_ENV !== 'production') {
+  const { swaggerSpec } = await import('./swagger.js');
+  const swaggerUi = (await import('swagger-ui-express')).default;
+  app.use('/api-docs', ...swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     const appDomain = process.env.APP_DOMAIN;
@@ -120,7 +126,7 @@ app.use(
         frameSrc: ['https://js.stripe.com', 'https://m.stripe.com', 'https://m.stripe.network'],
         workerSrc: ["'self'", 'blob:'],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
+        ...(process.env.NODE_ENV === 'production' && { upgradeInsecureRequests: [] }),
       },
     },
   })
@@ -176,12 +182,6 @@ app.get('/api/config/features', (req, res) => {
     maintenanceMode: process.env.MAINTENANCE_MODE === 'true',
   });
 });
-
-if (process.env.NODE_ENV !== 'production') {
-  const { swaggerSpec } = await import('./swagger.js');
-  const swaggerUi = (await import('swagger-ui-express')).default;
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-}
 
 const __dirname = path.resolve();
 

@@ -5,10 +5,28 @@ import GalleryImage from '../models/galleryImageModel.js';
 import { deleteFromS3 } from '../s3.js';
 import { isAdmin, isAuth } from '../utils.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Gallery
+ *   description: Gallery image management
+ */
+
 const galleryImageRouter = express.Router();
 const CACHE_KEY = 'gallery:list';
 const TTL = 60 * 10;
 
+/**
+ * @swagger
+ * /gallery:
+ *   get:
+ *     summary: List all gallery images sorted by order
+ *     tags: [Gallery]
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Array of gallery images
+ */
 galleryImageRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -20,6 +38,29 @@ galleryImageRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /gallery:
+ *   post:
+ *     summary: Add a new gallery image (prepended at order 0)
+ *     tags: [Gallery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [image, category]
+ *             properties:
+ *               image: { type: string, description: S3 URL }
+ *               description: { type: string }
+ *               category: { type: string }
+ *               width: { type: integer }
+ *               height: { type: integer }
+ *     responses:
+ *       201:
+ *         description: Gallery image created
+ */
 galleryImageRouter.post(
   '/',
   isAuth,
@@ -40,6 +81,34 @@ galleryImageRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /gallery/reorder:
+ *   patch:
+ *     summary: Bulk-update gallery image display order
+ *     tags: [Gallery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [items]
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id, order]
+ *                   properties:
+ *                     _id: { type: string }
+ *                     order: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Order updated
+ *       400:
+ *         description: Items must be an array
+ */
 galleryImageRouter.patch(
   '/reorder',
   isAuth,
@@ -58,6 +127,32 @@ galleryImageRouter.patch(
   })
 );
 
+/**
+ * @swagger
+ * /gallery/{id}:
+ *   put:
+ *     summary: Update a gallery image's description or category
+ *     tags: [Gallery]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description: { type: string }
+ *               category: { type: string }
+ *     responses:
+ *       200:
+ *         description: Gallery image updated
+ *       404:
+ *         description: Image not found
+ */
 galleryImageRouter.put(
   '/:id',
   isAuth,
@@ -77,6 +172,23 @@ galleryImageRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /gallery/{id}:
+ *   delete:
+ *     summary: Delete a gallery image and its S3 file
+ *     tags: [Gallery]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Image deleted
+ *       404:
+ *         description: Image not found
+ */
 galleryImageRouter.delete(
   '/:id',
   isAuth,

@@ -11,6 +11,13 @@ const LIST_KEY = 'products:list';
 const itemKey = (id) => `products:${id}`;
 const TTL = 60 * 5;
 
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: Product catalogue management
+ */
+
 const productRouter = express.Router();
 
 // Cap each stock value at 5 and strip internal fields from public responses
@@ -30,17 +37,46 @@ const toPublic = (product) => {
   return { ...rest, countInStock: stock };
 };
 
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: List products (public — visible only; admin gets all with pagination/search)
+ *     tags: [Products]
+ *     security: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *         description: Admin only
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *         description: Admin only
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Admin only — filter by product name
+ *       - in: query
+ *         name: all
+ *         schema: { type: string, enum: [true] }
+ *         description: Admin only — return all products without pagination
+ *     responses:
+ *       200:
+ *         description: Array of products (public) or paginated result (admin)
+ */
 productRouter.get(
   '/',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
-    if (req.user?.isAdmin) {
+    const hasAdminParams = req.query.page || req.query.limit || req.query.search || req.query.all;
+    if (req.user?.isAdmin && hasAdminParams) {
       const { search = '', all } = req.query;
       const query = {};
       if (search) query.name = { $regex: search, $options: 'i' };
 
       if (all === 'true') {
-        const products = await Product.find(query).sort({ sortOrder: 1 });
+        const products = await Product.find(query).sort({ sortOrder: 1, _id: 1 });
         return res.json({ items: products, total: products.length, page: 1, pages: 1 });
       }
 
@@ -48,7 +84,7 @@ productRouter.get(
       const limitNum = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
       const total = await Product.countDocuments(query);
       const products = await Product.find(query)
-        .sort({ sortOrder: 1 })
+        .sort({ sortOrder: 1, _id: 1 })
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum);
       return res.json({
@@ -60,13 +96,31 @@ productRouter.get(
     }
     const cached = await cacheGet(LIST_KEY);
     if (cached) return res.send(cached);
-    const products = await Product.find({ visible: true }).sort({ sortOrder: 1 });
+    const products = await Product.find({ visible: true }).sort({ sortOrder: 1, _id: 1 });
     const result = products.map(toPublic);
     await cacheSet(LIST_KEY, result, TTL);
     res.send(result);
   })
 );
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get a single product by ID
+ *     tags: [Products]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Product data (stock values capped at 5 for public users)
+ *       404:
+ *         description: Product not found or not visible
+ */
 productRouter.get(
   '/:id',
   optionalAuth,
@@ -94,6 +148,35 @@ productRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Create a new product
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, price, images, category, isClothing, countInStock, visible]
+ *             properties:
+ *               name: { type: string }
+ *               price: { type: number }
+ *               originalPrice: { type: number, description: Must be greater than price if set }
+ *               images: { type: array, items: { type: string } }
+ *               category: { type: string }
+ *               isClothing: { type: boolean }
+ *               countInStock: { type: object }
+ *               description: { type: string }
+ *               visible: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Product created
+ *       400:
+ *         description: Validation error
+ */
 productRouter.post(
   '/',
   isAuth,
@@ -139,6 +222,41 @@ productRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   put:
+ *     summary: Update a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               price: { type: number }
+ *               originalPrice: { type: number }
+ *               images: { type: array, items: { type: string } }
+ *               category: { type: string }
+ *               isClothing: { type: boolean }
+ *               countInStock: { type: object }
+ *               description: { type: string }
+ *               visible: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Product updated
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Product not found
+ */
 productRouter.put(
   '/:id',
   isAuth,
@@ -177,6 +295,23 @@ productRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     summary: Delete a product and its S3 images
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Product deleted
+ *       404:
+ *         description: Product not found
+ */
 productRouter.delete(
   '/:id',
   isAuth,
@@ -198,6 +333,30 @@ productRouter.delete(
   })
 );
 
+/**
+ * @swagger
+ * /products/reorder:
+ *   patch:
+ *     summary: Bulk-update product sort order
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               required: [_id, sortOrder]
+ *               properties:
+ *                 _id: { type: string }
+ *                 sortOrder: { type: number }
+ *     responses:
+ *       200:
+ *         description: Sort order updated
+ *       400:
+ *         description: Invalid body
+ */
 productRouter.patch(
   '/reorder',
   isAuth,

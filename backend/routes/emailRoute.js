@@ -10,6 +10,13 @@ import { sendOrder } from '../mailing/sendOrder.js';
 import Order from '../models/orderModel.js';
 import { formatDate, isAdmin, isAuth } from '../utils.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Email
+ *   description: Trigger transactional order notification emails
+ */
+
 const emailRouter = express.Router();
 
 let _etherealAccount = null;
@@ -59,6 +66,32 @@ const sendEmail = async (res, mailOptions) => {
   });
 };
 
+/**
+ * @swagger
+ * /emails/placedOrder:
+ *   post:
+ *     summary: Send order confirmation email to the customer
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/placedOrder',
   isAuth,
@@ -95,6 +128,32 @@ emailRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /emails/placedOrderAdmin:
+ *   post:
+ *     summary: Send new-order notification email to the admin
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/placedOrderAdmin',
   isAuth,
@@ -133,6 +192,30 @@ emailRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /emails/sentOrder:
+ *   post:
+ *     summary: Send shipping dispatch email to the customer (admin only)
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/sentOrder',
   isAuth,
@@ -167,6 +250,30 @@ emailRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /emails/deliveredOrder:
+ *   post:
+ *     summary: Send delivery confirmation email to the customer (admin only)
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/deliveredOrder',
   isAuth,
@@ -201,6 +308,32 @@ emailRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /emails/cancelOrder:
+ *   post:
+ *     summary: Send order cancellation email to the customer
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/cancelOrder',
   isAuth,
@@ -235,6 +368,32 @@ emailRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /emails/cancelOrderAdmin:
+ *   post:
+ *     summary: Send refund request / cancellation notification to the admin
+ *     tags: [Email]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order]
+ *             properties:
+ *               order:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email sent
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 emailRouter.post(
   '/cancelOrderAdmin',
   isAuth,

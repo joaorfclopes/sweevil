@@ -4,8 +4,44 @@ import Availability from '../models/availabilityModel.js';
 import Booking from '../models/bookingModel.js';
 import { isAdmin, isAuth } from '../utils.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Availability
+ *   description: Tattoo booking availability management
+ */
+
 const availabilityRouter = express.Router();
 
+/**
+ * @swagger
+ * /availability:
+ *   get:
+ *     summary: List all available dates with slots and booking status
+ *     tags: [Availability]
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Array of availability records with booked-slot markers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id: { type: string }
+ *                   date: { type: string, format: date-time }
+ *                   price: { type: number }
+ *                   slots:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         time: { type: string }
+ *                         isAvailable: { type: boolean }
+ *                         isBooked: { type: boolean }
+ */
 availabilityRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -35,6 +71,35 @@ availabilityRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /availability:
+ *   post:
+ *     summary: Add an availability date with slots
+ *     tags: [Availability]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [date, slots, price]
+ *             properties:
+ *               date: { type: string, format: date }
+ *               price: { type: number }
+ *               slots:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     time: { type: string }
+ *                     isAvailable: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Availability created
+ *       400:
+ *         description: Availability already exists for this date or invalid slots
+ */
 availabilityRouter.post(
   '/',
   isAuth,
@@ -61,6 +126,44 @@ availabilityRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /availability/bulk:
+ *   post:
+ *     summary: Add availability for multiple dates at once (skips already-existing dates)
+ *     tags: [Availability]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [dates, slots, price]
+ *             properties:
+ *               dates:
+ *                 type: array
+ *                 items: { type: string, format: date }
+ *               price: { type: number }
+ *               slots:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     time: { type: string }
+ *                     isAvailable: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Bulk creation result with created and skipped date lists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 created: { type: array, items: { type: string } }
+ *                 skipped: { type: array, items: { type: string } }
+ *       400:
+ *         description: Invalid dates or slots
+ */
 availabilityRouter.post(
   '/bulk',
   isAuth,
@@ -92,6 +195,40 @@ availabilityRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /availability/{id}:
+ *   put:
+ *     summary: Update slots or price for an availability date
+ *     tags: [Availability]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               price: { type: number }
+ *               slots:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     time: { type: string }
+ *                     isAvailable: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Availability updated
+ *       400:
+ *         description: Invalid slots
+ *       404:
+ *         description: Availability not found
+ */
 availabilityRouter.put(
   '/:id',
   isAuth,
@@ -117,6 +254,23 @@ availabilityRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /availability/{id}:
+ *   delete:
+ *     summary: Remove an availability date
+ *     tags: [Availability]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Availability removed
+ *       404:
+ *         description: Availability not found
+ */
 availabilityRouter.delete(
   '/:id',
   isAuth,

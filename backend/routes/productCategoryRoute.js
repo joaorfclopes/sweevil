@@ -5,6 +5,13 @@ import ProductCategory from '../models/productCategoryModel.js';
 import Product from '../models/productModel.js';
 import { isAdmin, isAuth } from '../utils.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: ProductCategories
+ *   description: Product category management
+ */
+
 const productCategoryRouter = express.Router();
 
 const DEFAULTS = [
@@ -32,6 +39,17 @@ seedIfEmpty().catch(console.error);
 const CACHE_KEY = 'productcategories:list';
 const TTL = 60 * 30;
 
+/**
+ * @swagger
+ * /product-categories:
+ *   get:
+ *     summary: List all product categories sorted alphabetically
+ *     tags: [ProductCategories]
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Array of product categories
+ */
 productCategoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -43,6 +61,28 @@ productCategoryRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /product-categories:
+ *   post:
+ *     summary: Create a new product category
+ *     tags: [ProductCategories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string }
+ *               isClothing: { type: boolean, default: false }
+ *     responses:
+ *       201:
+ *         description: Product category created
+ *       400:
+ *         description: Invalid name or category already exists
+ */
 productCategoryRouter.post(
   '/',
   isAuth,
@@ -62,6 +102,35 @@ productCategoryRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /product-categories/{id}:
+ *   put:
+ *     summary: Update a product category (also renames the category on all products)
+ *     tags: [ProductCategories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string }
+ *               isClothing: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Product category updated
+ *       400:
+ *         description: Invalid name or duplicate
+ *       404:
+ *         description: Category not found
+ */
 productCategoryRouter.put(
   '/:id',
   isAuth,
@@ -94,6 +163,25 @@ productCategoryRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /product-categories/{id}:
+ *   delete:
+ *     summary: Delete a product category (blocked if any products use it)
+ *     tags: [ProductCategories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Category deleted
+ *       400:
+ *         description: Category is in use by one or more products
+ *       404:
+ *         description: Category not found
+ */
 productCategoryRouter.delete(
   '/:id',
   isAuth,

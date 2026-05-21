@@ -15,6 +15,13 @@ import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth } from '../utils.js';
 import { createBookingSchema, validate } from '../validation.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Bookings
+ *   description: Tattoo session booking management
+ */
+
 const bookingRouter = express.Router();
 
 const createBookingLimiter = rateLimit({
@@ -84,6 +91,39 @@ export const sendBookingEmails = async (
   });
 };
 
+/**
+ * @swagger
+ * /bookings:
+ *   get:
+ *     summary: List all bookings (paginated, admin only)
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Filter by guest name or email
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [PENDING, CONFIRMED, CANCELED] }
+ *     responses:
+ *       200:
+ *         description: Paginated booking list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items: { type: array }
+ *                 total: { type: integer }
+ *                 page: { type: integer }
+ *                 pages: { type: integer }
+ */
 bookingRouter.get(
   '/',
   isAuth,
@@ -108,6 +148,45 @@ bookingRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /bookings:
+ *   post:
+ *     summary: Create a new booking (public)
+ *     tags: [Bookings]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [date, slot, guestInfo]
+ *             properties:
+ *               date: { type: string, format: date }
+ *               slot: { type: string }
+ *               images:
+ *                 type: array
+ *                 items: { type: string }
+ *                 description: Up to 10 S3 reference image URLs
+ *               guestInfo:
+ *                 type: object
+ *                 required: [name, email, phone]
+ *                 properties:
+ *                   name: { type: string }
+ *                   email: { type: string }
+ *                   phone: { type: string }
+ *                   description: { type: string }
+ *     responses:
+ *       201:
+ *         description: Booking created (status PENDING, not yet paid)
+ *       400:
+ *         description: No availability for date or slot not available
+ *       409:
+ *         description: Slot already booked
+ *       429:
+ *         description: Rate limit exceeded
+ */
 bookingRouter.post(
   '/',
   createBookingLimiter,
@@ -157,6 +236,45 @@ bookingRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /bookings/{id}/create-payment-intent:
+ *   post:
+ *     summary: Create a Stripe PaymentIntent for the booking
+ *     tags: [Bookings]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [confirmToken]
+ *             properties:
+ *               confirmToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Stripe client secret
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 clientSecret: { type: string }
+ *       400:
+ *         description: Already paid
+ *       403:
+ *         description: Invalid confirm token
+ *       404:
+ *         description: Booking not found
+ *       429:
+ *         description: Rate limit exceeded
+ */
 bookingRouter.post(
   '/:id/create-payment-intent',
   paymentLimiter,
@@ -243,6 +361,31 @@ bookingRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /bookings/{id}/payment-status:
+ *   get:
+ *     summary: Get the payment status of a booking (public)
+ *     tags: [Bookings]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Booking payment status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isPaid: { type: boolean }
+ *                 status: { type: string }
+ *       404:
+ *         description: Booking not found
+ */
 bookingRouter.get(
   '/:id/payment-status',
   expressAsyncHandler(async (req, res) => {
@@ -252,6 +395,44 @@ bookingRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /bookings/{id}/pay:
+ *   put:
+ *     summary: Confirm payment and mark booking as CONFIRMED (public)
+ *     tags: [Bookings]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [paymentIntentId, confirmToken]
+ *             properties:
+ *               paymentIntentId: { type: string }
+ *               confirmToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Booking confirmed and confirmation emails sent
+ *       400:
+ *         description: Missing paymentIntentId
+ *       402:
+ *         description: Payment not succeeded or amount mismatch
+ *       403:
+ *         description: Invalid confirm token
+ *       404:
+ *         description: Booking not found
+ *       409:
+ *         description: Slot was just taken by someone else
+ *       429:
+ *         description: Rate limit exceeded
+ */
 bookingRouter.put(
   '/:id/pay',
   paymentLimiter,
@@ -330,6 +511,23 @@ bookingRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /bookings/{id}/cancel:
+ *   put:
+ *     summary: Cancel a booking and notify the guest (admin only)
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Booking canceled and cancellation email sent to guest
+ *       404:
+ *         description: Booking not found
+ */
 bookingRouter.put(
   '/:id/cancel',
   isAuth,
@@ -353,6 +551,23 @@ bookingRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /bookings/{id}:
+ *   delete:
+ *     summary: Permanently delete a booking and its S3 reference images (admin only)
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Booking deleted
+ *       404:
+ *         description: Booking not found
+ */
 bookingRouter.delete(
   '/:id',
   isAuth,

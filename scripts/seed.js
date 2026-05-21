@@ -167,7 +167,9 @@ if (productCategoriesData) {
 const productsData = await loadJSON('products.json');
 let insertedProducts = [];
 if (productsData) {
-  insertedProducts = await Product.insertMany(productsData.map(({ _id, __v, ...rest }) => rest));
+  insertedProducts = await Product.insertMany(
+    productsData.map(({ _id, __v, ...rest }, i) => ({ ...rest, sortOrder: i }))
+  );
   console.log(`  Inserted ${insertedProducts.length} products`);
 }
 

@@ -10,6 +10,13 @@ import Product from '../models/productModel.js';
 import { formatDate } from '../utils.js';
 import { sendBookingEmails } from './bookingRoute.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Webhooks
+ *   description: Stripe webhook event handler
+ */
+
 const webhookRouter = express.Router();
 
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -185,6 +192,36 @@ const handlePaymentFailed = async (paymentIntent) => {
   console.log(`[webhook] Payment failed notification sent: ${subject}`);
 };
 
+/**
+ * @swagger
+ * /webhooks/stripe:
+ *   post:
+ *     summary: Receive Stripe webhook events
+ *     tags: [Webhooks]
+ *     security: []
+ *     description: >
+ *       Handles `payment_intent.succeeded` (marks orders/bookings as paid, sends confirmation emails)
+ *       and `payment_intent.payment_failed` (notifies admin).
+ *       Requires a valid `Stripe-Signature` header — verified against `STRIPE_WEBHOOK_SECRET`.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Raw Stripe event payload
+ *     responses:
+ *       200:
+ *         description: Event received and processed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 received: { type: boolean }
+ *       400:
+ *         description: Webhook signature verification failed
+ */
 webhookRouter.post('/stripe', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;

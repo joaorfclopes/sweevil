@@ -307,7 +307,7 @@ export default function GalleryAdminTab() {
   const { loading: loadingDelete, success: successDelete, error: errorDelete } = galleryImageDelete;
 
   const categoryListState = useSelector((state) => state.categoryList);
-  const { categories = [] } = categoryListState;
+  const { categories = [], loading: loadingCategories } = categoryListState;
 
   const categoryCreate = useSelector((state) => state.categoryCreate);
   const {
@@ -317,7 +317,7 @@ export default function GalleryAdminTab() {
   } = categoryCreate;
 
   const categoryUpdateState = useSelector((state) => state.categoryUpdate);
-  const { success: successCatUpdate } = categoryUpdateState;
+  const { success: successCatUpdate, error: errorCatUpdate } = categoryUpdateState;
 
   const categoryDeleteState = useSelector((state) => state.categoryDelete);
   const { success: successCatDelete, error: errorCatDelete } = categoryDeleteState;
@@ -358,6 +358,8 @@ export default function GalleryAdminTab() {
   const [editingCatName, setEditingCatName] = useState('');
   const [localErrorCatDelete, setLocalErrorCatDelete] = useState(null);
   const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
+  const [localErrorCatUpdate, setLocalErrorCatUpdate] = useState(null);
+  const [errorCatUpdateKey, setErrorCatUpdateKey] = useState(0);
   const syncedRef = useRef(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -411,7 +413,7 @@ export default function GalleryAdminTab() {
 
   // Auto-sync image-derived categories into DB (runs once after both loads are ready)
   useEffect(() => {
-    if (syncedRef.current || loading || gallery.length === 0) return;
+    if (syncedRef.current || loading || loadingCategories || gallery.length === 0) return;
     const dbNames = new Set(categories.map((c) => c.name));
     const missing = [...new Set(gallery.map((img) => img.category).filter(Boolean))].filter(
       (n) => !dbNames.has(n)
@@ -422,7 +424,7 @@ export default function GalleryAdminTab() {
     }
     syncedRef.current = true;
     missing.forEach((name) => dispatch(createCategory(name)));
-  }, [dispatch, loading, gallery, categories]);
+  }, [dispatch, loading, loadingCategories, gallery, categories]);
 
   useEffect(() => {
     if (errorCatDelete) {
@@ -430,6 +432,13 @@ export default function GalleryAdminTab() {
       setErrorCatDeleteKey((k) => k + 1);
     }
   }, [errorCatDelete]);
+
+  useEffect(() => {
+    if (errorCatUpdate) {
+      setLocalErrorCatUpdate(errorCatUpdate);
+      setErrorCatUpdateKey((k) => k + 1);
+    }
+  }, [errorCatUpdate]);
 
   // Fetch/refetch categories after mutations
   useEffect(() => {
@@ -689,6 +698,13 @@ export default function GalleryAdminTab() {
                 </MessageBox>
               </div>
             )}
+            {localErrorCatUpdate && (
+              <div style={{ marginBottom: 8 }}>
+                <MessageBox key={errorCatUpdateKey} variant="error" autoDismiss={3000}>
+                  {localErrorCatUpdate}
+                </MessageBox>
+              </div>
+            )}
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -879,45 +895,47 @@ export default function GalleryAdminTab() {
           )}
 
           <div style={{ padding: '0 16px 16px' }}>
-            {loading ? (
-              <LoadingBox lineHeight="30vh" />
-            ) : error ? (
-              <MessageBox variant="error">{error}</MessageBox>
-            ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={() => setActiveId(null)}
-              >
-                <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
-                  <div className="gallery-admin-grid">
-                    {columns.map((col, ci) => (
-                      <div key={ci} className="gallery-admin-col">
-                        {col.map((item) => (
-                          <SortableCard
-                            key={item._id}
-                            item={item}
-                            onEdit={openEdit}
-                            onDelete={handleDelete}
-                            isActive={item._id === activeId}
-                          />
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </SortableContext>
-                <DragOverlay>{activeItem ? <PlainCard item={activeItem} /> : null}</DragOverlay>
-              </DndContext>
-            )}
-            {!loading && !error && displayItems.length === 0 && (
-              <p style={{ textAlign: 'center', color: '#888', padding: '40px 0' }}>
-                {filterCategory === '*' && !filterDesc
-                  ? 'No images yet. Click + to add one.'
-                  : `No images match the current filter.`}
-              </p>
-            )}
+            <div className="gallery-admin-scroll-container">
+              {loading ? (
+                <LoadingBox lineHeight="30vh" />
+              ) : error ? (
+                <MessageBox variant="error">{error}</MessageBox>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragCancel={() => setActiveId(null)}
+                >
+                  <SortableContext items={sortableIds} strategy={rectSortingStrategy}>
+                    <div className="gallery-admin-grid">
+                      {columns.map((col, ci) => (
+                        <div key={ci} className="gallery-admin-col">
+                          {col.map((item) => (
+                            <SortableCard
+                              key={item._id}
+                              item={item}
+                              onEdit={openEdit}
+                              onDelete={handleDelete}
+                              isActive={item._id === activeId}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </SortableContext>
+                  <DragOverlay>{activeItem ? <PlainCard item={activeItem} /> : null}</DragOverlay>
+                </DndContext>
+              )}
+              {!loading && !error && displayItems.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#888', padding: '40px 0' }}>
+                  {filterCategory === '*' && !filterDesc
+                    ? 'No images yet. Click + to add one.'
+                    : `No images match the current filter.`}
+                </p>
+              )}
+            </div>
           </div>
         </Collapse>
       </Paper>
