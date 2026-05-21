@@ -119,6 +119,7 @@ orderRouter.put(
       order.isDelivered = true;
       order.deliveredAt = Date.now();
       order.status = 'DELIVERED';
+      order.confirmTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const updatedOrder = await order.save();
       console.log(`[order] Order ${updatedOrder._id} marked as delivered`);
       res.send({ message: 'Order delivered', order: updatedOrder });
@@ -221,7 +222,10 @@ orderRouter.get(
   expressAsyncHandler(async (req, res) => {
     const orderWithToken = await Order.findOne({ confirmToken: req.params.token });
     if (!orderWithToken) return res.status(404).json({ message: 'Order not found' });
-    const { confirmToken: _, ...orderData } = orderWithToken.toObject();
+    if (orderWithToken.confirmTokenExpiresAt && orderWithToken.confirmTokenExpiresAt < new Date()) {
+      return res.status(403).json({ message: 'Order access expired' });
+    }
+    const { confirmToken: _, confirmTokenExpiresAt: __, ...orderData } = orderWithToken.toObject();
     res.json(orderData);
   })
 );
@@ -453,7 +457,7 @@ orderRouter.put(
   '/:id/cancel',
   expressAsyncHandler(async (req, res) => {
     const isAdminUser = !!(await getAdminSession(req));
-    const { confirmToken } = req.body;
+    const { confirmToken, refundChoice } = req.body;
 
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).send({ message: 'Order not found' });
@@ -462,7 +466,6 @@ orderRouter.put(
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    order.status = 'CANCELED';
     if (order.isPaid) {
       for (const item of order.orderItems) {
         const field = item.isClothing
@@ -470,14 +473,26 @@ orderRouter.put(
           : 'countInStock.stock';
         await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
       }
-      if (isAdminUser && !order.isRefunded) {
-        try {
-          await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
-          order.isRefunded = true;
-        } catch (refundErr) {
-          console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+      if (isAdminUser) {
+        if (refundChoice === 'yes' && !order.isRefunded) {
+          try {
+            await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+            order.isRefunded = true;
+            order.status = 'CANCELED_REFUNDED';
+          } catch (refundErr) {
+            console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+            order.status = 'CANCELED_PENDING_REFUND';
+          }
+        } else if (refundChoice === 'no') {
+          order.status = 'CANCELED_NO_REFUND';
+        } else {
+          order.status = 'CANCELED';
         }
+      } else {
+        order.status = 'CANCELED_PENDING_REFUND';
       }
+    } else {
+      order.status = 'CANCELED';
     }
     const updatedOrder = await order.save();
     console.log(
@@ -495,6 +510,7 @@ orderRouter.put(
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
+          refundIssued: updatedOrder.isRefunded,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             country: updatedOrder.shippingAddress.country,
@@ -511,11 +527,13 @@ orderRouter.put(
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
       subject:
-        isAdminUser && updatedOrder.isPaid
+        isAdminUser && updatedOrder.isPaid && updatedOrder.isRefunded
           ? 'Order Cancelled — Refund Issued'
-          : updatedOrder.isPaid
-            ? 'Refund Request'
-            : 'Order Canceled',
+          : isAdminUser && updatedOrder.isPaid && refundChoice === 'no'
+            ? 'Order Cancelled — No Refund'
+            : updatedOrder.isPaid
+              ? 'Refund Request'
+              : 'Order Canceled',
       html: cancelOrderAdminEmail({
         order: {
           orderId: updatedOrder._id,
@@ -523,6 +541,7 @@ orderRouter.put(
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
+          refundIssued: updatedOrder.isRefunded,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             email: updatedOrder.shippingAddress.email,
@@ -540,6 +559,23 @@ orderRouter.put(
   })
 );
 
+orderRouter.put(
+  '/:id/dismiss-refund',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).send({ message: 'Order not found' });
+    if (order.status !== 'CANCELED_PENDING_REFUND') {
+      return res.status(400).send({ message: 'Order is not in pending refund state' });
+    }
+    order.status = 'CANCELED_NO_REFUND';
+    const updatedOrder = await order.save();
+    console.log(`[order] Refund dismissed for ${order._id} — status set to CANCELED_NO_REFUND`);
+    res.send({ message: 'Refund dismissed', order: updatedOrder });
+  })
+);
+
 orderRouter.post(
   '/:id/refund',
   isAuth,
@@ -552,6 +588,7 @@ orderRouter.post(
 
     await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
     order.isRefunded = true;
+    order.status = 'CANCELED_REFUNDED';
     const updatedOrder = await order.save();
     console.log(`[order] Manual refund issued for ${order._id} — €${order.totalPrice}`);
     res.send({ message: 'Refund issued', order: updatedOrder });

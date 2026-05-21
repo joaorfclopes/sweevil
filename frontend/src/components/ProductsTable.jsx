@@ -28,7 +28,6 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { deleteProduct, listAdminProducts } from '../actions/productActions';
 import {
   createProductCategory,
@@ -44,6 +43,7 @@ import {
 import { PRODUCT_DELETE_RESET } from '../constants/productConstants';
 import { formatDateDay } from '../utils';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
+import Swal from '../utils/swal';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
 

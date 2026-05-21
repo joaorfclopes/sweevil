@@ -38,7 +38,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import isURL from 'validator/lib/isURL';
 import {
   cancelBooking,
@@ -58,8 +57,10 @@ import {
   BOOKING_CANCEL_RESET,
   BOOKING_DELETE_RESET,
 } from '../constants/bookingConstants';
+import useScrollLock from '../hooks/useScrollLock';
 import { formatDateDay } from '../utils.js';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
+import Swal from '../utils/swal';
 import LoadingBox from './LoadingBox';
 import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
@@ -178,6 +179,7 @@ export default function BookingsAdminTab() {
   const [orderBy, setOrderBy] = useState('date');
   const [selected, setSelected] = useState(new Set());
   const [expanded, setExpanded] = useState(new Set());
+  useScrollLock(photosDialog.open || notesDialog.open || dialogOpen);
 
   useEffect(() => {
     dispatch(listAvailability());

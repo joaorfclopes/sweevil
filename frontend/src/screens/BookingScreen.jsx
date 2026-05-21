@@ -14,6 +14,7 @@ import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
+import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
 
 const bookingFormSchema = z.object({
@@ -107,6 +108,7 @@ const EXCLUSIVITY_TEXT =
 export default function BookingScreen(props) {
   const [searchParams] = useSearchParams();
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  useScrollLock(infoModalOpen);
 
   const [availability, setAvailability] = useState([]);
   const [loadingAvail, setLoadingAvail] = useState(true);

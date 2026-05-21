@@ -21,6 +21,10 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_DISMISS_REFUND_FAIL,
+  ORDER_DISMISS_REFUND_REQUEST,
+  ORDER_DISMISS_REFUND_RESET,
+  ORDER_DISMISS_REFUND_SUCCESS,
   ORDER_LIST_FAIL,
   ORDER_LIST_REQUEST,
   ORDER_LIST_SUCCESS,
@@ -182,6 +186,21 @@ export const orderRefundReducer = (state = {}, action) => {
     case ORDER_REFUND_FAIL:
       return { loading: false, error: action.payload };
     case ORDER_REFUND_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const orderDismissRefundReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_DISMISS_REFUND_REQUEST:
+      return { loading: true };
+    case ORDER_DISMISS_REFUND_SUCCESS:
+      return { loading: false, success: true };
+    case ORDER_DISMISS_REFUND_FAIL:
+      return { loading: false, error: action.payload };
+    case ORDER_DISMISS_REFUND_RESET:
       return {};
     default:
       return state;

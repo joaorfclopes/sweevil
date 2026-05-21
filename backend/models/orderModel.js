@@ -47,6 +47,7 @@ const orderSchema = new mongoose.Schema(
     isRefunded: { type: Boolean, default: false },
     status: { type: String, required: true },
     confirmToken: { type: String },
+    confirmTokenExpiresAt: { type: Date },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   {

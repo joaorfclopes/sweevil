@@ -19,6 +19,9 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_DISMISS_REFUND_FAIL,
+  ORDER_DISMISS_REFUND_REQUEST,
+  ORDER_DISMISS_REFUND_SUCCESS,
   ORDER_LIST_FAIL,
   ORDER_LIST_REQUEST,
   ORDER_LIST_SUCCESS,
@@ -111,22 +114,23 @@ export const deliverOrder = (orderId) => async (dispatch) => {
   }
 };
 
-export const cancelOrder = (orderId, token) => async (dispatch) => {
-  dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
-  try {
-    const { data } = await Axios.put(
-      `/api/orders/${orderId}/cancel`,
-      token ? { confirmToken: token } : {}
-    );
-    dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
-    console.log(`[order] Cancelled — ${orderId}`);
-  } catch (error) {
-    dispatch({
-      type: ORDER_CANCEL_FAIL,
-      payload: error.response?.data?.message || error.message,
-    });
-  }
-};
+export const cancelOrder =
+  (orderId, token, refundChoice = null) =>
+  async (dispatch) => {
+    dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
+    try {
+      const body = token ? { confirmToken: token } : {};
+      if (refundChoice) body.refundChoice = refundChoice;
+      const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, body);
+      dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
+      console.log(`[order] Cancelled — ${orderId}`);
+    } catch (error) {
+      dispatch({
+        type: ORDER_CANCEL_FAIL,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
 
 export const refundOrder = (orderId) => async (dispatch) => {
   dispatch({ type: ORDER_REFUND_REQUEST });
@@ -171,6 +175,19 @@ export const listOrders =
       });
     }
   };
+
+export const dismissRefund = (orderId) => async (dispatch) => {
+  dispatch({ type: ORDER_DISMISS_REFUND_REQUEST });
+  try {
+    const { data } = await Axios.put(`/api/orders/${orderId}/dismiss-refund`);
+    dispatch({ type: ORDER_DISMISS_REFUND_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: ORDER_DISMISS_REFUND_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
 
 export const deleteOrder = (orderId) => async (dispatch) => {
   dispatch({ type: ORDER_DELETE_REQUEST, payload: orderId });

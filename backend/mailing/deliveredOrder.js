@@ -291,6 +291,27 @@ export const deliveredOrder = ({
                             </tr>
                             <tr>
                               <td
+                                height="16"
+                                style="font-size: 16px; line-height: 16px"
+                              >
+                                &nbsp;
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style="
+                                  font-family: Arial, sans-serif;
+                                  font-size: 11px;
+                                  line-height: 16px;
+                                  color: #888888;
+                                  text-align: center;
+                                "
+                              >
+                                For security reasons, access to your order details will be available for 30 days from delivery.
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
                                 height="24"
                                 style="font-size: 24px; line-height: 24px"
                               >

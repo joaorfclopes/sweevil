@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
 import mongoose from 'mongoose';
@@ -209,7 +210,15 @@ console.log(`  Inserted ${availabilities.length} availabilities`);
 if (insertedProducts.length === 0) {
   console.log('  No products — skipping mock orders');
 } else {
-  const STATUSES = ['PENDING', 'PAID', 'SENT', 'DELIVERED', 'CANCELED'];
+  const STATUSES = [
+    'PENDING',
+    'PAID',
+    'SENT',
+    'DELIVERED',
+    'CANCELED_REFUNDED',
+    'CANCELED_NO_REFUND',
+    'CANCELED_PENDING_REFUND',
+  ];
   const orders = [];
 
   for (let i = 0; i < 30; i++) {
@@ -220,10 +229,22 @@ if (insertedProducts.length === 0) {
     const itemsPrice = +(product.price * qty).toFixed(2);
     const shippingPrice = itemsPrice >= 50 ? 0 : 3.99;
     const totalPrice = +(itemsPrice + shippingPrice).toFixed(2);
-    const isPaid = ['PAID', 'SENT', 'DELIVERED'].includes(status);
+    const isPaid = [
+      'PAID',
+      'SENT',
+      'DELIVERED',
+      'CANCELED_REFUNDED',
+      'CANCELED_PENDING_REFUND',
+    ].includes(status);
+    const isRefunded = status === 'CANCELED_REFUNDED';
     const paidAt = isPaid ? daysAgo(20 - i) : undefined;
     const isDelivered = status === 'DELIVERED';
     const deliveredAt = isDelivered ? daysAgo(10 - (i % 5)) : undefined;
+
+    const confirmToken = crypto.randomBytes(32).toString('hex');
+    const confirmTokenExpiresAt = isDelivered
+      ? new Date(deliveredAt.getTime() + 30 * 24 * 60 * 60 * 1000)
+      : undefined;
 
     orders.push({
       orderItems: [
@@ -243,9 +264,12 @@ if (insertedProducts.length === 0) {
       totalPrice,
       isPaid,
       paidAt,
+      isRefunded,
       isDelivered,
       deliveredAt,
       status,
+      confirmToken,
+      confirmTokenExpiresAt,
       confirmationEmailSent: isPaid,
       createdAt: daysAgo(30 - i),
       updatedAt: daysAgo(28 - i),

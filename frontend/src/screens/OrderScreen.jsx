@@ -6,12 +6,14 @@ import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import {
   cancelOrder,
+  deleteOrder,
   deliverOrder,
   detailsOrder,
+  dismissRefund,
   payOrder,
+  refundOrder,
   sendOrder,
 } from '../actions/orderActions';
 import LoadingBox from '../components/LoadingBox';
@@ -20,11 +22,15 @@ import PlaceHolder from '../components/Placeholder';
 import { getTax } from '../config/taxRates';
 import {
   ORDER_CANCEL_RESET,
+  ORDER_DELETE_RESET,
   ORDER_DELIVER_RESET,
+  ORDER_DISMISS_REFUND_RESET,
   ORDER_PAY_RESET,
+  ORDER_REFUND_RESET,
   ORDER_SEND_RESET,
 } from '../constants/orderConstants';
 import { useLazyLoad } from '../hooks/useLazyLoad';
+import Swal from '../utils/swal';
 
 function OrderItemImage({ item }) {
   const [containerRef, inView] = useLazyLoad('300px');
@@ -105,6 +111,7 @@ export default function OrderScreen(props) {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState('');
   const handledRedirect = useRef(false);
+  const fetchedTokenRef = useRef(null);
 
   const orderDetails = useSelector((state) => state.orderDetails);
   const { loading, order, error, errorStatus } = orderDetails;
@@ -118,6 +125,16 @@ export default function OrderScreen(props) {
   const { loading: loadingDeliver, success: successDeliver, error: errorDeliver } = orderDeliver;
   const orderCancel = useSelector((state) => state.orderCancel);
   const { loading: loadingCancel, success: successCancel, error: errorCancel } = orderCancel;
+  const orderDelete = useSelector((state) => state.orderDelete);
+  const { loading: loadingDelete, success: successDelete, error: errorDelete } = orderDelete;
+  const orderRefund = useSelector((state) => state.orderRefund);
+  const { loading: loadingRefund, success: successRefund, error: errorRefund } = orderRefund;
+  const orderDismissRefund = useSelector((state) => state.orderDismissRefund);
+  const {
+    loading: loadingDismiss,
+    success: successDismiss,
+    error: errorDismiss,
+  } = orderDismissRefund;
 
   useEffect(() => {
     if (errorStatus === 404 || errorStatus === 403) {
@@ -126,18 +143,42 @@ export default function OrderScreen(props) {
   }, [errorStatus, navigate]);
 
   useEffect(() => {
-    if (!order || successPay || successSend || successDeliver || successCancel) {
+    const shouldFetch =
+      fetchedTokenRef.current !== token ||
+      successPay ||
+      successSend ||
+      successDeliver ||
+      successCancel ||
+      successDelete ||
+      successRefund ||
+      successDismiss;
+    if (shouldFetch) {
+      fetchedTokenRef.current = token;
       dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_SEND_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
+      dispatch({ type: ORDER_DELETE_RESET });
+      dispatch({ type: ORDER_REFUND_RESET });
+      dispatch({ type: ORDER_DISMISS_REFUND_RESET });
       dispatch(detailsOrder(token));
       setClientSecret('');
     }
-  }, [dispatch, token, order, successPay, successSend, successDeliver, successCancel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    token,
+    successPay,
+    successSend,
+    successDeliver,
+    successCancel,
+    successDelete,
+    successRefund,
+    successDismiss,
+  ]);
 
   useEffect(() => {
-    if (!order || order.isPaid || order.status === 'CANCELED') return;
+    if (!order || order.isPaid || order.status?.startsWith('CANCELED')) return;
 
     let cancelled = false;
     const setupStripe = async () => {
@@ -194,17 +235,80 @@ export default function OrderScreen(props) {
   };
 
   const cancelHandler = () => {
+    if (userInfo?.isAdmin && order.isPaid) {
+      Swal.fire({
+        title: 'Cancel this order?',
+        html: `
+          <p>Do you want to issue a refund to the client?</p>
+          <p style="color:#d32f2f;font-size:0.85rem;margin-top:0.75rem;">
+            ⚠️ If you choose not to refund now, it will not be possible to refund via this website.
+            You will need to do it directly through your Stripe account.
+          </p>
+        `,
+        showConfirmButton: true,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Cancel & Refund',
+        confirmButtonColor: '#1976d2',
+        denyButtonText: 'Cancel (No Refund)',
+        denyButtonColor: '#d32f2f',
+        cancelButtonText: 'Keep Order',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(cancelOrder(order._id, token, 'yes'));
+        } else if (result.isDenied) {
+          dispatch(cancelOrder(order._id, token, 'no'));
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Cancel Order?',
+        showConfirmButton: false,
+        showDenyButton: true,
+        showCancelButton: true,
+        denyButtonText: 'Yes',
+      }).then((result) => {
+        if (result.isDenied) {
+          dispatch(cancelOrder(order._id, token));
+          Swal.fire('Canceled!', '', 'error');
+        }
+      });
+    }
+  };
+
+  const deleteHandler = () => {
     Swal.fire({
-      title: `Cancel Order?`,
-      showConfirmButton: false,
-      showDenyButton: true,
+      title: 'Delete this order?',
+      text: 'This cannot be undone.',
       showCancelButton: true,
-      denyButtonText: 'Yes',
+      confirmButtonText: 'Delete',
+      confirmButtonColor: '#d32f2f',
     }).then((result) => {
-      if (result.isDenied) {
-        dispatch(cancelOrder(order._id, token));
-        Swal.fire('Canceled!', '', 'error');
-      }
+      if (result.isConfirmed) dispatch(deleteOrder(order._id));
+    });
+  };
+
+  const refundHandler = () => {
+    Swal.fire({
+      title: `Refund €${order.totalPrice?.toFixed(2)} to ${order.shippingAddress?.fullName}?`,
+      text: 'This will issue a full refund via Stripe. This cannot be undone.',
+      showCancelButton: true,
+      confirmButtonText: 'Refund',
+      confirmButtonColor: '#1976d2',
+    }).then((result) => {
+      if (result.isConfirmed) dispatch(refundOrder(order._id));
+    });
+  };
+
+  const dismissRefundHandler = () => {
+    Swal.fire({
+      title: 'Cancel pending refund?',
+      text: 'Status will change to "Cancelled (No Refund)". The refund button will no longer appear.',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel refund',
+      confirmButtonColor: '#d32f2f',
+    }).then((result) => {
+      if (result.isConfirmed) dispatch(dismissRefund(order._id));
     });
   };
 
@@ -224,6 +328,9 @@ export default function OrderScreen(props) {
             {errorDeliver && <MessageBox variant="error">{errorDeliver}</MessageBox>}
             {loadingCancel && <LoadingBox />}
             {errorCancel && <MessageBox variant="error">{errorCancel}</MessageBox>}
+            {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
+            {errorRefund && <MessageBox variant="error">{errorRefund}</MessageBox>}
+            {errorDismiss && <MessageBox variant="error">{errorDismiss}</MessageBox>}
             {order.status === 'PAID' && (
               <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="success">
@@ -232,7 +339,7 @@ export default function OrderScreen(props) {
                 </MessageBox>
               </div>
             )}
-            {order.status === 'CANCELED' && (
+            {order.status?.startsWith('CANCELED') && (
               <div style={{ marginBottom: '0.5rem' }}>
                 <MessageBox variant="error">Order canceled.</MessageBox>
               </div>
@@ -305,7 +412,7 @@ export default function OrderScreen(props) {
               <p>Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}€</p>
               <h3 className="total">Total : {order.totalPrice && order.totalPrice.toFixed(2)}€</h3>
             </div>
-            {order.status !== 'CANCELED' && !order.isPaid && (
+            {!order.status?.startsWith('CANCELED') && !order.isPaid && (
               <div className="stripe-payment">
                 {!clientSecret || !stripePromise ? (
                   <LoadingBox />
@@ -320,34 +427,53 @@ export default function OrderScreen(props) {
                 )}
               </div>
             )}
-            {userInfo &&
-            userInfo.isAdmin &&
-            order.isPaid &&
-            order.status !== 'CANCELED' &&
-            !order.isSent &&
-            !order.isDelivered ? (
-              <div className="deliver-button full-width">
-                <button className="primary" onClick={sendHandler}>
-                  Send Order
-                </button>
-              </div>
-            ) : (
-              order.isSent &&
-              !order.isDelivered && (
-                <div className="deliver-button full-width">
-                  <button className="primary" onClick={deliverHandler}>
-                    Deliver Order
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                gap: '0.5rem',
+                marginTop: '0.5rem',
+              }}
+            >
+              {userInfo?.isAdmin &&
+                order.isPaid &&
+                !order.status?.startsWith('CANCELED') &&
+                !order.isSent &&
+                !order.isDelivered && (
+                  <button className="primary" onClick={sendHandler}>
+                    Send Order
                   </button>
-                </div>
-              )
-            )}
-            {order.status !== 'CANCELED' && !order.isDelivered && (
-              <div className={`cancel-button ${order.isPaid && 'full-width'}`}>
-                <button className="dangerous" onClick={cancelHandler}>
+                )}
+              {order.isSent && !order.isDelivered && (
+                <button className="primary" onClick={deliverHandler}>
+                  Deliver Order
+                </button>
+              )}
+              {!order.status?.startsWith('CANCELED') && !order.isDelivered && (
+                <button className="dangerous-outline" onClick={cancelHandler}>
                   Cancel Order
                 </button>
-              </div>
-            )}
+              )}
+              {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
+                <button className="primary" onClick={refundHandler} disabled={loadingRefund}>
+                  Issue Refund
+                </button>
+              )}
+              {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
+                <button
+                  className="dangerous-outline"
+                  onClick={dismissRefundHandler}
+                  disabled={loadingDismiss}
+                >
+                  Cancel Refund
+                </button>
+              )}
+              {userInfo?.isAdmin && (
+                <button className="dangerous" onClick={deleteHandler} disabled={loadingDelete}>
+                  Delete Order
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -36,8 +36,9 @@ import Typography from '@mui/material/Typography';
 import Axios from 'axios';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
+import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
+import Swal from '../utils/swal';
 
 import {
   createCategory,
@@ -347,6 +348,7 @@ export default function GalleryAdminTab() {
   const [filterCategory, setFilterCategory] = useState('*');
   const [filterDesc, setFilterDesc] = useState('');
   const [sectionOpen, setSectionOpen] = useState(true);
+  useScrollLock(uploadOpen || editOpen);
 
   // Category management
   const [catItems, setCatItems] = useState([]);

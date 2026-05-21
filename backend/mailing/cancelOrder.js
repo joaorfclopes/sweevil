@@ -9,6 +9,7 @@ export const cancelOrder = ({
     orderDate,
     isPaid,
     cancelledByAdmin,
+    refundIssued,
     shippingAddress: { fullName, country },
     orderItems,
     itemsPrice,
@@ -404,7 +405,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                ${cancelledByAdmin ? 'Your order has been cancelled and a refund has been initiated. It should reflect in your original payment method in 5-10 business days.' : 'Your order has been cancelled. This will be reviewed and any applicable refund processed.'}
+                                                ${cancelledByAdmin && refundIssued ? 'Your order has been cancelled and a refund has been initiated. It should reflect in your original payment method in 5-10 business days.' : cancelledByAdmin && !refundIssued ? 'Your order has been cancelled. No refund has been issued for this order. If you have any questions, please contact us.' : 'Your order has been cancelled. This will be reviewed and any applicable refund processed.'}
                                                 </font>
                                               </td>
                                             </tr>
