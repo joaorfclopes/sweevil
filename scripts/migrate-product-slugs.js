@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
 
 dotenv.config();
 
@@ -20,14 +22,17 @@ const Product = mongoose.model('Product', productSchema);
 await mongoose.connect(MONGODB_URL);
 console.log('Connected to MongoDB');
 
-const products = await Product.find({ slug: { $exists: false } });
-console.log(`Found ${products.length} products without slug`);
+const products = await Product.find({
+  $or: [{ slug: { $exists: false } }, { slug: /[^0-9A-Za-z]/ }],
+});
+console.log(`Found ${products.length} products needing new slug`);
 
 let updated = 0;
 for (const product of products) {
+  const oldSlug = product.slug ?? '(none)';
   product.slug = nanoid(12);
   await product.save();
-  console.log(`  ${product.name} → ${product.slug}`);
+  console.log(`  ${product.name}: ${oldSlug} → ${product.slug}`);
   updated++;
 }
 

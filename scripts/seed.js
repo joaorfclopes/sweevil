@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
 import mongoose from 'mongoose';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import About from '../backend/models/aboutModel.js';
@@ -14,6 +14,8 @@ import Order from '../backend/models/orderModel.js';
 import ProductCategory from '../backend/models/productCategoryModel.js';
 import Product from '../backend/models/productModel.js';
 import User from '../backend/models/userModel.js';
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, 'data');

@@ -1,12 +1,14 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { cacheDel, cacheGet, cacheSet } from '../cache.js';
 import Product from '../models/productModel.js';
 import { deleteAllFromS3 } from '../s3.js';
 import { isAdmin, isAuth, optionalAuth } from '../utils.js';
 import { productSchema, validate } from '../validation.js';
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
 
 const LIST_KEY = 'products:list';
 const itemKey = (id) => `products:${id}`;
