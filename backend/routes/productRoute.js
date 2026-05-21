@@ -116,7 +116,7 @@ productRouter.post(
         .status(400)
         .send({ message: 'Original price must be greater than the current price.' });
     }
-    const lowestProduct = await Product.findOne({}, { sortOrder: 1 }).sort({ sortOrder: 1 });
+    const lowestProduct = await Product.findOne({}).sort({ sortOrder: 1 });
     const newSortOrder = lowestProduct ? lowestProduct.sortOrder - 1 : 0;
     const product = new Product({
       name,
