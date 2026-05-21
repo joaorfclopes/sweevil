@@ -304,6 +304,7 @@ orderRouter.post(
         price: product.price,
         isClothing: product.isClothing,
         qty,
+        slug: product.slug,
         ...(product.isClothing && { size: item.size }),
       });
     }

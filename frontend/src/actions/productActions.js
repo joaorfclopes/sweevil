@@ -79,7 +79,7 @@ export const createProduct = (product) => async (dispatch) => {
 export const updateProduct = (product) => async (dispatch) => {
   dispatch({ type: PRODUCT_UPDATE_REQUEST, payload: product });
   try {
-    const { data } = await Axios.put(`/api/products/${product._id}`, product);
+    const { data } = await Axios.put(`/api/products/${product.slug}`, product);
     dispatch({ type: PRODUCT_UPDATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({

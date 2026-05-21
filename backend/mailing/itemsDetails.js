@@ -7,7 +7,7 @@ const itemsDetails = (orderItems) =>
           <tr>
             <td width="110" valign="top">
               <a
-                href="${process.env.VITE_HOME_PAGE}/shop/product/${item.product}"
+                href="${process.env.VITE_HOME_PAGE}/shop/product/${item.slug || item.product}"
                 rel="noreferrer"
                 target="_blank"
               >
