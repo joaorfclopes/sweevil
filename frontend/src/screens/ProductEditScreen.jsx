@@ -283,7 +283,7 @@ export default function ProductEditScreen(props) {
     if (isNew) {
       dispatch(createProduct(productData));
     } else {
-      dispatch(updateProduct({ _id: productId, ...productData }));
+      dispatch(updateProduct({ slug: productId, ...productData }));
     }
   };
 
