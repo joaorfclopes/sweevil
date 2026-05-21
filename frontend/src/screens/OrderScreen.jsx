@@ -88,7 +88,7 @@ function StripeCheckoutForm({ order, dispatch, token }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <PaymentElement />
+      <PaymentElement options={{ wallets: { link: 'never' } }} />
       {stripeError && <MessageBox variant="error">{stripeError}</MessageBox>}
       <button
         type="submit"

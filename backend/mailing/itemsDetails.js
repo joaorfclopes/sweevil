@@ -69,9 +69,8 @@ const itemsDetails = (orderItems) =>
                     </td>
                   </tr>
                   ${
-                    item.size &&
-                    item.size !== '' &&
-                    `<tr>
+                    item.size && item.size !== ''
+                      ? `<tr>
                   <td align="left">
                     <span
                       style="
@@ -114,6 +113,7 @@ const itemsDetails = (orderItems) =>
                     &nbsp;
                   </td>
                 </tr>`
+                      : ''
                   }
                   <tr>
                     <td align="left">
