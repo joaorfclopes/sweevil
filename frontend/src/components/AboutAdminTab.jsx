@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { notyf } from '../utils/notyf';
+import LoadingOverlay from './LoadingOverlay';
 
 export default function AboutAdminTab() {
   const { userInfo } = useSelector((state) => state.userSignin);
@@ -45,46 +46,48 @@ export default function AboutAdminTab() {
 
   return (
     <div style={{ marginBottom: '50px' }}>
-      <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
-        <Toolbar>
-          <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
-            <b>About</b>
-          </Typography>
-          <Tooltip title={open ? 'Collapse' : 'Expand'}>
-            <IconButton onClick={() => setOpen((v) => !v)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-        <Collapse in={open}>
-          <div
-            style={{ padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
-          >
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              fullWidth
-              size="small"
-            />
-            <TextField
-              label="Body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              fullWidth
-              multiline
-              minRows={8}
-              size="small"
-              helperText="Separate paragraphs with a blank line."
-            />
-            <div>
-              <button className="primary" onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving…' : 'Save'}
-              </button>
+      <LoadingOverlay loading={saving}>
+        <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
+          <Toolbar>
+            <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
+              <b>About</b>
+            </Typography>
+            <Tooltip title={open ? 'Collapse' : 'Expand'}>
+              <IconButton onClick={() => setOpen((v) => !v)}>
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+          <Collapse in={open}>
+            <div
+              style={{ padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
+            >
+              <TextField
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                fullWidth
+                size="small"
+              />
+              <TextField
+                label="Body"
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                fullWidth
+                multiline
+                minRows={8}
+                size="small"
+                helperText="Separate paragraphs with a blank line."
+              />
+              <div>
+                <button className="primary" onClick={handleSave}>
+                  Save
+                </button>
+              </div>
             </div>
-          </div>
-        </Collapse>
-      </Paper>
+          </Collapse>
+        </Paper>
+      </LoadingOverlay>
     </div>
   );
 }

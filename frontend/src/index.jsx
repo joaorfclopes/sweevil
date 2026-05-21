@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import 'notyf/notyf.min.css';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -44,6 +46,8 @@ if (import.meta.env.MODE === 'production') {
     tracePropagationTargets: ['localhost', /^https:\/\/sweevil\.pt\/api/],
   });
 }
+
+dayjs.extend(utc);
 
 smoothscroll.polyfill();
 

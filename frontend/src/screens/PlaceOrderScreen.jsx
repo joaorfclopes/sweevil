@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
+import LoadingOverlay from '../components/LoadingOverlay';
 import Placeholder from '../components/Placeholder';
 import { getShippingLabel, getShippingPrice } from '../config/shippingZones';
 import { getTax } from '../config/taxRates';
@@ -87,73 +88,75 @@ export default function PlaceOrderScreen(props) {
   return (
     <section className="place-order cards-section">
       <div className="row center place-order-container">
-        <div className="place-order-inner">
-          <h1 className="custom-font">Place Order</h1>
-          <div className="card">
-            <h3>Shipping Address</h3>
-            <p>{shippingAddress.fullName}</p>
-            <p>{shippingAddress.address}</p>
-            <p>{shippingAddress.city}</p>
-            <p>{shippingAddress.postalCode}</p>
-            <p>{shippingAddress.country}</p>
-          </div>
-          <div className="card">
-            <h3>Contact Information</h3>
-            <p>{shippingAddress.email}</p>
-            <p>
-              {shippingAddress.phoneNumber?.startsWith('+')
-                ? shippingAddress.phoneNumber
-                : `+${shippingAddress.phoneNumber}`}
-            </p>
-          </div>
-          <div className="card">
-            <h3>Items</h3>
-            <ul className="cart-items">
-              {cartItems.map((item, index) => (
-                <li key={item.product}>
-                  <PlaceOrderItemImage item={item} />
-                  <div className="item-content">
-                    <div className="item-name">
-                      <p>{item.name}</p>
-                    </div>
-                    <div className="item-price">
-                      <p>{item.price && item.price.toFixed(2)}€</p>
-                    </div>
-                  </div>
-                  <div className="item-content">
-                    {item.isClothing && (
-                      <div className="item-size">
-                        <p>Size: {item.size}</p>
-                      </div>
-                    )}
-                    <div className="item-qty">
-                      <p>Quantity: {item.qty}</p>
-                    </div>
-                  </div>
-                  {cartItems[index + 1] && <hr />}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="card total-amount">
-            <p>
-              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
-              {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
-            </p>
-            {tax && (
+        <LoadingOverlay loading={loading}>
+          <div className="place-order-inner">
+            <h1 className="custom-font">Place Order</h1>
+            <div className="card">
+              <h3>Shipping Address</h3>
+              <p>{shippingAddress.fullName}</p>
+              <p>{shippingAddress.address}</p>
+              <p>{shippingAddress.city}</p>
+              <p>{shippingAddress.postalCode}</p>
+              <p>{shippingAddress.country}</p>
+            </div>
+            <div className="card">
+              <h3>Contact Information</h3>
+              <p>{shippingAddress.email}</p>
               <p>
-                {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+                {shippingAddress.phoneNumber?.startsWith('+')
+                  ? shippingAddress.phoneNumber
+                  : `+${shippingAddress.phoneNumber}`}
               </p>
-            )}
-            <p>
-              {shippingLabel} : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
-            </p>
-            <h3 className="total">Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h3>
+            </div>
+            <div className="card">
+              <h3>Items</h3>
+              <ul className="cart-items">
+                {cartItems.map((item, index) => (
+                  <li key={item.product}>
+                    <PlaceOrderItemImage item={item} />
+                    <div className="item-content">
+                      <div className="item-name">
+                        <p>{item.name}</p>
+                      </div>
+                      <div className="item-price">
+                        <p>{item.price && item.price.toFixed(2)}€</p>
+                      </div>
+                    </div>
+                    <div className="item-content">
+                      {item.isClothing && (
+                        <div className="item-size">
+                          <p>Size: {item.size}</p>
+                        </div>
+                      )}
+                      <div className="item-qty">
+                        <p>Quantity: {item.qty}</p>
+                      </div>
+                    </div>
+                    {cartItems[index + 1] && <hr />}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="card total-amount">
+              <p>
+                Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+                {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
+              </p>
+              {tax && (
+                <p>
+                  {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
+                </p>
+              )}
+              <p>
+                {shippingLabel} : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+              </p>
+              <h3 className="total">Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h3>
+            </div>
+            <button className="primary" onClick={placeOrderHandler}>
+              Place Order
+            </button>
           </div>
-          <button className="primary" onClick={placeOrderHandler} disabled={loading}>
-            {loading ? 'Placing Order...' : 'Place Order'}
-          </button>
-        </div>
+        </LoadingOverlay>
       </div>
     </section>
   );

@@ -241,7 +241,7 @@ export default function BookingsAdminTab() {
 
   const availMap = {};
   availability.forEach((a) => {
-    availMap[dayjs(a.date).format('YYYY-MM-DD')] = a;
+    availMap[dayjs(a.date).utc().format('YYYY-MM-DD')] = a;
   });
   const availableDates = Object.keys(availMap);
 

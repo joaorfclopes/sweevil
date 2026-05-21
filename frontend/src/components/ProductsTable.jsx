@@ -345,7 +345,13 @@ export default function ProductsTable() {
   return (
     <div className="products-table" style={{ marginBottom: '50px' }}>
       <LoadingOverlay
-        loading={loadingDelete || loadingCatCreate || loadingCatUpdate || loadingCatDelete}
+        loading={
+          loadingDelete ||
+          loadingCatCreate ||
+          loadingCatUpdate ||
+          loadingCatDelete ||
+          loadingReorder
+        }
       >
         <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
           {errorDelete && <MessageBox variant="error">{errorDelete}</MessageBox>}
@@ -675,20 +681,12 @@ export default function ProductsTable() {
                                 }}
                               >
                                 {index > 0 && (
-                                  <IconButton
-                                    size="small"
-                                    disabled={loadingReorder}
-                                    onClick={() => handleMoveUp(index)}
-                                  >
+                                  <IconButton size="small" onClick={() => handleMoveUp(index)}>
                                     <KeyboardArrowUpIcon fontSize="small" />
                                   </IconButton>
                                 )}
                                 {index < filtered.length - 1 && (
-                                  <IconButton
-                                    size="small"
-                                    disabled={loadingReorder}
-                                    onClick={() => handleMoveDown(index)}
-                                  >
+                                  <IconButton size="small" onClick={() => handleMoveDown(index)}>
                                     <KeyboardArrowDownIcon fontSize="small" />
                                   </IconButton>
                                 )}

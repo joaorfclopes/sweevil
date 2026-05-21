@@ -61,16 +61,15 @@ function OrderItemImage({ item }) {
   );
 }
 
-function StripeCheckoutForm({ order, dispatch, token }) {
+function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
   const stripe = useStripe();
   const elements = useElements();
-  const [paying, setPaying] = useState(false);
   const [stripeError, setStripeError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
-    setPaying(true);
+    onPayingChange?.(true);
     setStripeError('');
     Sentry.metrics.count('order.payment_initiated', 1);
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -80,8 +79,9 @@ function StripeCheckoutForm({ order, dispatch, token }) {
     });
     if (error) {
       setStripeError(error.message);
-      setPaying(false);
+      onPayingChange?.(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onPayingChange?.(false);
       dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
     }
   };
@@ -92,11 +92,11 @@ function StripeCheckoutForm({ order, dispatch, token }) {
       {stripeError && <MessageBox variant="error">{stripeError}</MessageBox>}
       <button
         type="submit"
-        disabled={!stripe || paying}
+        disabled={!stripe}
         className="primary"
         style={{ marginTop: '1rem', width: '100%' }}
       >
-        {paying ? 'Processing...' : `Pay €${order.totalPrice.toFixed(2)}`}
+        {`Pay €${order.totalPrice.toFixed(2)}`}
       </button>
     </form>
   );
@@ -110,6 +110,7 @@ export default function OrderScreen(props) {
 
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState('');
+  const [stripeFormPaying, setStripeFormPaying] = useState(false);
   const handledRedirect = useRef(false);
   const fetchedTokenRef = useRef(null);
 
@@ -318,7 +319,21 @@ export default function OrderScreen(props) {
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <LoadingOverlay
-          loading={loading || loadingSend || loadingDeliver || loadingCancel}
+          loading={
+            loading ||
+            loadingSend ||
+            loadingDeliver ||
+            loadingCancel ||
+            loadingPay ||
+            stripeFormPaying ||
+            loadingRefund ||
+            loadingDismiss ||
+            loadingDelete ||
+            (order &&
+              !order.isPaid &&
+              !order.status?.startsWith('CANCELED') &&
+              (!clientSecret || !stripePromise))
+          }
           minHeight="75vh"
         >
           {order && (
@@ -414,22 +429,22 @@ export default function OrderScreen(props) {
                     Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
                   </h3>
                 </div>
-                {!order.status?.startsWith('CANCELED') && !order.isPaid && (
-                  <div className="stripe-payment">
-                    {!clientSecret || !stripePromise ? (
-                      <LoadingOverlay loading minHeight="120px">
-                        <div />
-                      </LoadingOverlay>
-                    ) : (
-                      <LoadingOverlay loading={loadingPay}>
-                        {errorPay && <MessageBox variant="error">{errorPay}</MessageBox>}
-                        <Elements stripe={stripePromise} options={{ clientSecret }}>
-                          <StripeCheckoutForm order={order} dispatch={dispatch} token={token} />
-                        </Elements>
-                      </LoadingOverlay>
-                    )}
-                  </div>
-                )}
+                {!order.status?.startsWith('CANCELED') &&
+                  !order.isPaid &&
+                  clientSecret &&
+                  stripePromise && (
+                    <div className="stripe-payment">
+                      {errorPay && <MessageBox variant="error">{errorPay}</MessageBox>}
+                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                        <StripeCheckoutForm
+                          order={order}
+                          dispatch={dispatch}
+                          token={token}
+                          onPayingChange={setStripeFormPaying}
+                        />
+                      </Elements>
+                    </div>
+                  )}
                 <div
                   style={{
                     clear: 'both',
@@ -461,21 +476,17 @@ export default function OrderScreen(props) {
                       </button>
                     )}
                   {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
-                    <button className="primary" onClick={refundHandler} disabled={loadingRefund}>
+                    <button className="primary" onClick={refundHandler}>
                       Issue Refund
                     </button>
                   )}
                   {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
-                    <button
-                      className="dangerous-outline"
-                      onClick={dismissRefundHandler}
-                      disabled={loadingDismiss}
-                    >
+                    <button className="dangerous-outline" onClick={dismissRefundHandler}>
                       Cancel Refund
                     </button>
                   )}
                   {userInfo?.isAdmin && (
-                    <button className="dangerous" onClick={deleteHandler} disabled={loadingDelete}>
+                    <button className="dangerous" onClick={deleteHandler}>
                       Delete Order
                     </button>
                   )}
