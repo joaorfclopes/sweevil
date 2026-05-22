@@ -1,4 +1,5 @@
 import Tooltip from '@mui/material/Tooltip';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import Email from '../assets/svg/email.svg?react';
 import Instagram from '../assets/svg/instagram.svg?react';
@@ -7,13 +8,14 @@ import ShopNow from '../assets/svg/shop-now.svg?react';
 import { notyf } from '../utils/notyf';
 
 export default function Footer({ showShopNow = false }) {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const isShop = pathname === '/shop';
 
   const copied = () => {
     notyf.success({
       icon: false,
-      message: 'Email copied to clipboard!',
+      message: t('footer.emailCopied'),
       dismissible: true,
     });
   };
@@ -31,7 +33,7 @@ export default function Footer({ showShopNow = false }) {
         </>
       )}
       <div className="footer-content">
-        <h1>Contacts</h1>
+        <h1>{t('footer.contacts')}</h1>
         <div className="contacts">
           <a href={import.meta.env.VITE_INSTAGRAM_LINK} target="_blank" rel="noreferrer">
             <Tooltip title="Instagram" placement="bottom">
@@ -62,20 +64,20 @@ export default function Footer({ showShopNow = false }) {
         </div>
       </div>
       <div className="legal-links">
-        <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
-        <Link to="/privacy-policy">Privacy Policy</Link>
-        <Link to="/cookie-policy">Cookie Policy</Link>
-        <Link to="/right-of-withdrawal">Right of Withdrawal</Link>
-        <Link to="/returns-policy">Returns &amp; Refunds</Link>
+        <Link to="/terms-and-conditions">{t('footer.termsConditions')}</Link>
+        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
+        <Link to="/cookie-policy">{t('footer.cookiePolicy')}</Link>
+        <Link to="/right-of-withdrawal">{t('footer.rightWithdrawal')}</Link>
+        <Link to="/returns-policy">{t('footer.returnsPolicy')}</Link>
         <a href="https://www.livroreclamacoes.pt" target="_blank" rel="noreferrer">
-          Complaints Book
+          {t('footer.complaintsBook')}
         </a>
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noreferrer">
-          Dispute Resolution
+          {t('footer.disputeResolution')}
         </a>
       </div>
       <div className="brand-notice" style={isShop ? { paddingBottom: '50px' } : undefined}>
-        Sweevil® is a registered brand
+        {t('footer.brandNotice')}
       </div>
     </footer>
   );
