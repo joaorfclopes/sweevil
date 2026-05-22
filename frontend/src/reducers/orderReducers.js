@@ -20,6 +20,7 @@ import {
   ORDER_DELIVER_SUCCESS,
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
+  ORDER_DETAILS_RESET,
   ORDER_DETAILS_SUCCESS,
   ORDER_DISMISS_REFUND_FAIL,
   ORDER_DISMISS_REFUND_REQUEST,
@@ -65,6 +66,8 @@ export const orderDetailsReducer = (state = { loading: true }, action) => {
       return { loading: false, order: action.payload };
     case ORDER_DETAILS_FAIL:
       return { loading: false, error: action.payload, errorStatus: action.statusCode };
+    case ORDER_DETAILS_RESET:
+      return { loading: true };
     default:
       return state;
   }

@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   createProduct,
+  deleteProduct,
   detailsProduct,
   listProducts,
   updateProduct,
@@ -29,9 +30,11 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import {
   PRODUCT_CREATE_RESET,
+  PRODUCT_DELETE_RESET,
   PRODUCT_DETAILS_RESET,
   PRODUCT_UPDATE_RESET,
 } from '../constants/productConstants';
+import Swal from '../utils/swal';
 
 function ImageCard({ item, isCover }) {
   return (
@@ -132,6 +135,8 @@ export default function ProductEditScreen(props) {
   const { categories: productCategories = [] } = useSelector((state) => state.productCategoryList);
   const productCreate = useSelector((state) => state.productCreate);
   const { loading: loadingCreate, success: successCreate, error: errorCreate } = productCreate;
+  const productDelete = useSelector((state) => state.productDelete);
+  const { loading: loadingDelete, success: successDelete } = productDelete;
 
   const isNew = productId === 'new';
 
@@ -175,6 +180,14 @@ export default function ProductEditScreen(props) {
   useEffect(() => {
     dispatch(listProductCategories());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (successDelete) {
+      dispatch({ type: PRODUCT_DELETE_RESET });
+      navigate('/admin');
+      return;
+    }
+  }, [dispatch, navigate, successDelete]);
 
   useEffect(() => {
     if (successCreate) {
@@ -226,6 +239,17 @@ export default function ProductEditScreen(props) {
       setVisible(product.visible);
     }
   }, [dispatch, navigate, product, productId, successUpdate, successCreate, isNew]);
+
+  const deleteHandler = () => {
+    Swal.fire({
+      title: `Delete ${product?.name}?`,
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      confirmButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) dispatch(deleteProduct(productId));
+    });
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -357,7 +381,9 @@ export default function ProductEditScreen(props) {
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
         <LoadingOverlay
-          loading={(!isNew && loading) || loadingUpdate || loadingCreate || loadingUpload}
+          loading={
+            (!isNew && loading) || loadingUpdate || loadingCreate || loadingUpload || loadingDelete
+          }
           minHeight="75vh"
         >
           <h1>{isNew ? 'New Product' : `Edit ${product?.name || ''}`}</h1>
@@ -589,6 +615,16 @@ export default function ProductEditScreen(props) {
                   <button className="primary" type="submit" style={{ flex: 1 }}>
                     {isNew ? 'Create' : 'Update'}
                   </button>
+                  {!isNew && (
+                    <button
+                      className="dangerous"
+                      type="button"
+                      onClick={deleteHandler}
+                      style={{ flex: 1 }}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             </>

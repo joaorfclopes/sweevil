@@ -24,6 +24,7 @@ import {
   ORDER_CANCEL_RESET,
   ORDER_DELETE_RESET,
   ORDER_DELIVER_RESET,
+  ORDER_DETAILS_RESET,
   ORDER_DISMISS_REFUND_RESET,
   ORDER_PAY_RESET,
   ORDER_REFUND_RESET,
@@ -138,19 +139,29 @@ export default function OrderScreen(props) {
   } = orderDismissRefund;
 
   useEffect(() => {
+    return () => {
+      dispatch({ type: ORDER_DETAILS_RESET });
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     if (errorStatus === 404 || errorStatus === 403) {
       navigate('/not-found');
     }
   }, [errorStatus, navigate]);
 
   useEffect(() => {
+    if (successDelete) {
+      dispatch({ type: ORDER_DELETE_RESET });
+      navigate('/admin');
+      return;
+    }
     const shouldFetch =
       fetchedTokenRef.current !== token ||
       successPay ||
       successSend ||
       successDeliver ||
       successCancel ||
-      successDelete ||
       successRefund ||
       successDismiss;
     if (shouldFetch) {
@@ -159,7 +170,6 @@ export default function OrderScreen(props) {
       dispatch({ type: ORDER_SEND_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch({ type: ORDER_CANCEL_RESET });
-      dispatch({ type: ORDER_DELETE_RESET });
       dispatch({ type: ORDER_REFUND_RESET });
       dispatch({ type: ORDER_DISMISS_REFUND_RESET });
       dispatch(detailsOrder(token));
