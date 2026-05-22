@@ -9,11 +9,13 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { notyf } from '../utils/notyf';
 import LoadingOverlay from './LoadingOverlay';
 
 export default function AboutAdminTab() {
+  const { t } = useTranslation();
   const { userInfo } = useSelector((state) => state.userSignin);
 
   const [open, setOpen] = useState(true);
@@ -36,9 +38,9 @@ export default function AboutAdminTab() {
         { title, body },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
-      notyf.success('About section updated.');
+      notyf.success(t('admin.aboutSaved'));
     } catch {
-      notyf.error('Failed to save.');
+      notyf.error(t('admin.aboutSaveError'));
     } finally {
       setSaving(false);
     }
@@ -50,9 +52,9 @@ export default function AboutAdminTab() {
         <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
           <Toolbar>
             <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
-              <b>About</b>
+              <b>{t('admin.about')}</b>
             </Typography>
-            <Tooltip title={open ? 'Collapse' : 'Expand'}>
+            <Tooltip title={open ? t('admin.collapse') : t('admin.expand')}>
               <IconButton onClick={() => setOpen((v) => !v)}>
                 {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
               </IconButton>
@@ -63,25 +65,25 @@ export default function AboutAdminTab() {
               style={{ padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
             >
               <TextField
-                label="Title"
+                label={t('admin.aboutTitle')}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 fullWidth
                 size="small"
               />
               <TextField
-                label="Body"
+                label={t('admin.aboutBody')}
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 fullWidth
                 multiline
                 minRows={8}
                 size="small"
-                helperText="Separate paragraphs with a blank line."
+                helperText={t('admin.aboutBodyHint')}
               />
               <div>
                 <button className="primary" onClick={handleSave}>
-                  Save
+                  {t('admin.save')}
                 </button>
               </div>
             </div>

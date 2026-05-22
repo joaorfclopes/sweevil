@@ -297,7 +297,10 @@
     "deleteCategoryTitle": "Eliminar \"{{name}}\"?",
     "dragToReorder": "Arrastar para reordenar",
     "dropImageHere": "Clique ou arraste uma imagem aqui",
-    "filter": "Filtrar"
+    "filter": "Filtrar",
+    "collapse": "Recolher",
+    "expand": "Expandir",
+    "aboutBodyHint": "Separe parágrafos com uma linha em branco."
   },
   "productEdit": {
     "newProduct": "Novo Produto",
