@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { addToCart, removeFromCart } from '../actions/cartActions';
@@ -41,6 +42,7 @@ function CartItemImage({ item }) {
 }
 
 export default function CartScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
@@ -68,7 +70,7 @@ export default function CartScreen(props) {
     dispatch(addToCart(id, 1, String(size)));
     notyf.success({
       icon: false,
-      message: 'Product size updated',
+      message: t('cart.sizeUpdated'),
       dismissible: true,
     });
   };
@@ -77,7 +79,7 @@ export default function CartScreen(props) {
     dispatch(addToCart(id, Number(qty), size));
     notyf.success({
       icon: false,
-      message: 'Product quantity updated',
+      message: t('cart.qtyUpdated'),
       dismissible: true,
     });
   };
@@ -114,11 +116,11 @@ export default function CartScreen(props) {
 
   return (
     <section className="cart">
-      <h1 className="custom-font">Cart</h1>
+      <h1 className="custom-font">{t('cart.title')}</h1>
       {cartItems.length === 0 ? (
         <div>
           <MessageBox>
-            Cart is empty. <Link to="/shop">Click here</Link> to go shopping.
+            {t('cart.empty')} <Link to="/shop">{t('cart.emptyLink')}</Link> {t('cart.emptyShop')}
           </MessageBox>
         </div>
       ) : (
@@ -141,7 +143,7 @@ export default function CartScreen(props) {
                 <div className="item-content">
                   {item.isClothing && (
                     <div className="item-size">
-                      <span>Size:</span>{' '}
+                      <span>{t('cart.size')}:</span>{' '}
                       <select
                         value={item.size}
                         onChange={(e) => changeSize(item.product, e.target.value)}
@@ -163,7 +165,7 @@ export default function CartScreen(props) {
                     </div>
                   )}
                   <div className="item-qty">
-                    <span>Quantity:</span>{' '}
+                    <span>{t('cart.quantity')}:</span>{' '}
                     <select
                       value={item.qty}
                       onChange={(e) => changeQty(item.product, e.target.value, item.size)}
@@ -186,7 +188,7 @@ export default function CartScreen(props) {
                   <div className="item-remove">
                     <Remove className="icon" onClick={() => removeFromCartHandler(item)} />
                     <button className="secondary" onClick={() => removeFromCartHandler(item)}>
-                      Remove
+                      {t('cart.remove')}
                     </button>
                   </div>
                 </div>
@@ -200,11 +202,13 @@ export default function CartScreen(props) {
               {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </li>
             <li>
-              <h2>Total : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€</h2>
+              <h2>
+                {t('cart.total')} : {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
+              </h2>
             </li>
             <li>
               <button className="primary" onClick={checkoutHandler}>
-                Checkout
+                {t('cart.checkout')}
               </button>
             </li>
           </ul>
