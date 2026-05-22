@@ -12,7 +12,7 @@
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
     "@mui/icons-material": "^6.3.1",
-    "@mui/material": "^6.3.1",
+    "@mui/material": "^9.0.1",
     "@mui/x-date-pickers": "^7.29.4",
     "@sentry/react": "^10.53.1",
     "@simplewebauthn/browser": "^13.3.0",
