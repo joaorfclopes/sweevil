@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
+
 export default function CookiePolicyScreen() {
+  const { t } = useTranslation();
   return (
     <section className="legal-screen custom-font">
-      <h1>Cookie Policy</h1>
+      <h1>{t('policy.cookiePolicy')}</h1>
       <span className="last-updated">Last updated: 18 May 2026</span>
 
       <h2>1. What Are Cookies?</h2>

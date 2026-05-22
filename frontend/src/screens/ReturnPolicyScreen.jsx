@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
+
 export default function PoliticaDevolucoes() {
+  const { t } = useTranslation();
   return (
     <section className="legal-screen custom-font">
-      <h1>Returns and Refunds Policy</h1>
+      <h1>{t('policy.returnPolicy')}</h1>
       <span className="last-updated">Last updated: 8 April 2026</span>
 
       <h2>1. Return Conditions</h2>

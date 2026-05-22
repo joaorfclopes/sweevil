@@ -352,5 +352,13 @@
     "yes": "Sim",
     "no": "Não",
     "logout": "Sair"
+  },
+  "policy": {
+    "cookiePolicy": "Política de Cookies",
+    "privacyPolicy": "Política de Privacidade",
+    "returnPolicy": "Política de Devoluções e Reembolsos",
+    "termsConditions": "Termos e Condições Gerais de Venda",
+    "withdrawalRight": "Direito de Arrependimento",
+    "back": "Voltar"
   }
 }

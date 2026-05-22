@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
+
 export default function TermosCondicoesScreen() {
+  const { t } = useTranslation();
   return (
     <section className="legal-screen custom-font">
-      <h1>General Terms and Conditions of Sale</h1>
+      <h1>{t('policy.termsConditions')}</h1>
       <span className="last-updated">Last updated: 8 April 2026</span>
 
       <h2>1. Seller Identification</h2>
