@@ -83,13 +83,13 @@ export default function OrdersTable() {
 
   const deleteHandler = (order) => {
     Swal.fire({
-      title: `Delete ${formatName(order.shippingAddress.fullName)}'s Order?`,
+      title: t('order.deleteTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteOrder(order._id));
-        Swal.fire('Deleted!', '', 'success');
+        Swal.fire(t('admin.deletedSuccess'), '', 'success');
       }
     });
   };
@@ -156,13 +156,21 @@ export default function OrdersTable() {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Customer', 'Date', 'Total (€)', 'Paid', 'Delivered', 'Status', 'Updated'];
+    const headers = [
+      t('admin.colName'),
+      t('admin.colDate'),
+      `${t('admin.colTotal')} (€)`,
+      t('status.PAID'),
+      t('status.DELIVERED'),
+      t('admin.colStatus'),
+      t('admin.colUpdated'),
+    ];
     const rows = filtered.map((o) => [
       formatName(o.shippingAddress?.fullName),
       formatDateDay(o.createdAt),
       o.totalPrice?.toFixed(2),
-      o.isPaid ? formatDateDay(o.paidAt) : 'No',
-      o.isDelivered ? formatDateDay(o.deliveredAt) : 'No',
+      o.isPaid ? formatDateDay(o.paidAt) : t('common.no'),
+      o.isDelivered ? formatDateDay(o.deliveredAt) : t('common.no'),
       o.status,
       formatDateDay(o.updatedAt),
     ]);
@@ -233,7 +241,7 @@ export default function OrdersTable() {
                     }}
                     sx={{ flexGrow: 1 }}
                   />
-                  <Tooltip title="Export CSV">
+                  <Tooltip title={t('admin.exportCsv')}>
                     <IconButton onClick={handleExportCSV}>
                       <DownloadIcon />
                     </IconButton>
@@ -274,13 +282,13 @@ export default function OrdersTable() {
                             />
                           </TableCell>
                           {[
-                            { id: 'shippingAddress.fullName', label: 'Customer' },
-                            { id: 'createdAt', label: 'Date' },
-                            { id: 'totalPrice', label: 'Total' },
-                            { id: 'isPaid', label: 'Paid' },
-                            { id: 'isDelivered', label: 'Delivered' },
-                            { id: 'status', label: 'Status' },
-                            { id: 'updatedAt', label: 'Updated' },
+                            { id: 'shippingAddress.fullName', label: t('admin.colName') },
+                            { id: 'createdAt', label: t('admin.colDate') },
+                            { id: 'totalPrice', label: t('admin.colTotal') },
+                            { id: 'isPaid', label: t('status.PAID') },
+                            { id: 'isDelivered', label: t('status.DELIVERED') },
+                            { id: 'status', label: t('admin.colStatus') },
+                            { id: 'updatedAt', label: t('admin.colUpdated') },
                           ].map(({ id, label }) => (
                             <TableCell key={id} align="center">
                               <TableSortLabel
@@ -293,7 +301,7 @@ export default function OrdersTable() {
                             </TableCell>
                           ))}
                           <TableCell align="right">
-                            <b>Actions</b>
+                            <b>{t('admin.actions')}</b>
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -311,7 +319,7 @@ export default function OrdersTable() {
                         ) : filtered.length === 0 ? (
                           <TableRow>
                             <TableCell colSpan={9} align="center" sx={{ py: 4, color: '#888' }}>
-                              No orders found.
+                              {t('admin.noOrdersFound')}
                             </TableCell>
                           </TableRow>
                         ) : (
@@ -334,17 +342,19 @@ export default function OrdersTable() {
                               <TableCell align="center">{formatDateDay(order.createdAt)}</TableCell>
                               <TableCell align="center">{order.totalPrice?.toFixed(2)}€</TableCell>
                               <TableCell align="center">
-                                {order.isPaid ? formatDateDay(order.paidAt) : 'No'}
+                                {order.isPaid ? formatDateDay(order.paidAt) : t('common.no')}
                               </TableCell>
                               <TableCell align="center">
-                                {order.isDelivered ? formatDateDay(order.deliveredAt) : 'No'}
+                                {order.isDelivered
+                                  ? formatDateDay(order.deliveredAt)
+                                  : t('common.no')}
                               </TableCell>
                               <TableCell align="center">
                                 <StatusChip status={order.status} />
                               </TableCell>
                               <TableCell align="center">{formatDateDay(order.updatedAt)}</TableCell>
                               <TableCell align="right">
-                                <Tooltip title="View details">
+                                <Tooltip title={t('admin.viewDetails')}>
                                   <IconButton
                                     size="small"
                                     onClick={() => navigate(`/cart/order/${order.confirmToken}`)}
@@ -353,7 +363,7 @@ export default function OrdersTable() {
                                   </IconButton>
                                 </Tooltip>
                                 {order.status === 'CANCELED_PENDING_REFUND' && (
-                                  <Tooltip title="Issue Refund">
+                                  <Tooltip title={t('order.issueRefundBtn')}>
                                     <IconButton
                                       size="small"
                                       onClick={() => refundHandler(order)}
@@ -363,7 +373,7 @@ export default function OrdersTable() {
                                     </IconButton>
                                   </Tooltip>
                                 )}
-                                <Tooltip title="Delete">
+                                <Tooltip title={t('admin.deleteProduct')}>
                                   <IconButton size="small" onClick={() => deleteHandler(order)}>
                                     <DeleteOutlineIcon fontSize="small" />
                                   </IconButton>

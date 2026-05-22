@@ -252,7 +252,14 @@ export default function ProductsTable() {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Name', 'Price (€)', 'Category', 'Stock', 'Visible', 'Updated'];
+    const headers = [
+      t('admin.colProduct'),
+      `${t('admin.colPrice')} (€)`,
+      t('admin.colCategory'),
+      t('admin.colStock'),
+      t('admin.colVisible'),
+      t('admin.colUpdated'),
+    ];
     const rows = filtered.map((p) => {
       const stock = p.isClothing
         ? ['xs', 's', 'm', 'l', 'xl', 'xxl'].reduce((sum, k) => sum + (p.countInStock?.[k] ?? 0), 0)
@@ -262,7 +269,7 @@ export default function ProductsTable() {
         p.price?.toFixed(2),
         p.category,
         stock,
-        p.visible ? 'Yes' : 'No',
+        p.visible ? t('common.yes') : t('common.no'),
         formatDateDay(p.updatedAt),
       ];
     });
@@ -345,10 +352,9 @@ export default function ProductsTable() {
 
   const handleDeleteCategory = (cat) => {
     Swal.fire({
-      title: `Delete "${cat.name}"?`,
-      text: 'Products using this category will keep their current value.',
+      title: t('admin.deleteProductTitle', { name: `"${cat.name}"` }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
+      confirmButtonText: t('admin.deleteProductBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteProductCategory(cat._id));
@@ -433,7 +439,7 @@ export default function ProductsTable() {
                   )}
                   <TextField
                     size="small"
-                    placeholder="Search name, category…"
+                    placeholder={t('admin.searchProducts')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     slotProps={{
@@ -445,7 +451,7 @@ export default function ProductsTable() {
                     }}
                     sx={{ flexGrow: 1 }}
                   />
-                  <Tooltip title="Export CSV">
+                  <Tooltip title={t('admin.exportProductsCsv')}>
                     <IconButton onClick={handleExportCSV}>
                       <DownloadIcon />
                     </IconButton>
@@ -461,7 +467,7 @@ export default function ProductsTable() {
                       </IconButton>
                     </span>
                   </Tooltip>
-                  <Tooltip title="Create Product">
+                  <Tooltip title={t('admin.addProduct')}>
                     <IconButton aria-label="create" onClick={createHandler}>
                       <AddIcon />
                     </IconButton>
@@ -473,7 +479,7 @@ export default function ProductsTable() {
             <Collapse in={open}>
               <div style={{ padding: '0 16px 16px', borderBottom: '1px solid #e0e0e0' }}>
                 <Typography variant="subtitle2" style={{ color: '#555', marginBottom: 8 }}>
-                  <b>Categories</b>
+                  <b>{t('admin.categories')}</b>
                 </Typography>
                 {localErrorCatCreate && (
                   <MessageBox key={errorCatCreateKey} variant="error" autoDismiss={3000}>
@@ -491,8 +497,14 @@ export default function ProductsTable() {
                   </MessageBox>
                 )}
                 {[
-                  { label: 'Clothing', items: categories.filter((c) => c.isClothing) },
-                  { label: 'Other', items: categories.filter((c) => !c.isClothing) },
+                  {
+                    label: t('admin.categoryClothing'),
+                    items: categories.filter((c) => c.isClothing),
+                  },
+                  {
+                    label: t('admin.categoryOther'),
+                    items: categories.filter((c) => !c.isClothing),
+                  },
                 ].map(({ label, items }) => (
                   <div key={label} style={{ marginBottom: 10 }}>
                     <Typography variant="caption" style={{ color: '#888' }}>
@@ -540,7 +552,7 @@ export default function ProductsTable() {
                                   fontFamily: 'inherit',
                                 }}
                               />
-                              <Tooltip title="Save">
+                              <Tooltip title={t('admin.save')}>
                                 <IconButton
                                   size="small"
                                   sx={{ padding: '2px' }}
@@ -550,7 +562,7 @@ export default function ProductsTable() {
                                   <EditIcon sx={{ fontSize: 13 }} />
                                 </IconButton>
                               </Tooltip>
-                              <Tooltip title="Cancel">
+                              <Tooltip title={t('admin.cancel')}>
                                 <IconButton
                                   size="small"
                                   sx={{ padding: '2px' }}
@@ -577,7 +589,7 @@ export default function ProductsTable() {
                             }}
                           >
                             <span style={{ userSelect: 'none' }}>{cat.name}</span>
-                            <Tooltip title="Rename">
+                            <Tooltip title={t('admin.editProduct')}>
                               <IconButton
                                 size="small"
                                 sx={{ padding: '2px' }}
@@ -589,7 +601,7 @@ export default function ProductsTable() {
                                 <EditIcon sx={{ fontSize: 13 }} />
                               </IconButton>
                             </Tooltip>
-                            <Tooltip title="Delete">
+                            <Tooltip title={t('admin.deleteProduct')}>
                               <IconButton
                                 size="small"
                                 sx={{ padding: '2px' }}
@@ -683,12 +695,12 @@ export default function ProductsTable() {
                           <b>Image</b>
                         </TableCell>
                         {[
-                          { id: 'name', label: 'Name' },
-                          { id: 'price', label: 'Price' },
-                          { id: 'category', label: 'Category' },
-                          { id: 'countInStock.stock', label: 'Stock' },
-                          { id: 'visible', label: 'Visible' },
-                          { id: 'updatedAt', label: 'Updated' },
+                          { id: 'name', label: t('admin.colProduct') },
+                          { id: 'price', label: t('admin.colPrice') },
+                          { id: 'category', label: t('admin.colCategory') },
+                          { id: 'countInStock.stock', label: t('admin.colStock') },
+                          { id: 'visible', label: t('admin.colVisible') },
+                          { id: 'updatedAt', label: t('admin.colUpdated') },
                         ].map(({ id, label }) => (
                           <TableCell key={id} align="center">
                             {reorderMode ? (
@@ -705,7 +717,7 @@ export default function ProductsTable() {
                           </TableCell>
                         ))}
                         <TableCell align="right">
-                          <b>Actions</b>
+                          <b>{t('admin.actions')}</b>
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -727,7 +739,7 @@ export default function ProductsTable() {
                             align="center"
                             sx={{ py: 4, color: '#888' }}
                           >
-                            No products found.
+                            {t('admin.noProductsFound')}
                           </TableCell>
                         </TableRow>
                       ) : reorderMode ? (
@@ -783,12 +795,14 @@ export default function ProductsTable() {
                               <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
                               <TableCell align="center">{product.category}</TableCell>
                               <TableCell align="center">{getStock(product)}</TableCell>
-                              <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                              <TableCell align="center">
+                                {product.visible ? t('common.yes') : t('common.no')}
+                              </TableCell>
                               <TableCell align="center">
                                 {formatDateDay(product.updatedAt)}
                               </TableCell>
                               <TableCell align="right">
-                                <Tooltip title="Edit">
+                                <Tooltip title={t('admin.editProduct')}>
                                   <IconButton
                                     size="small"
                                     onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
@@ -796,7 +810,7 @@ export default function ProductsTable() {
                                     <EditIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip title="Delete">
+                                <Tooltip title={t('admin.deleteProduct')}>
                                   <IconButton size="small" onClick={() => deleteHandler(product)}>
                                     <DeleteIcon fontSize="small" />
                                   </IconButton>
@@ -855,7 +869,9 @@ export default function ProductsTable() {
                             <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
                             <TableCell align="center">{product.category}</TableCell>
                             <TableCell align="center">{getStock(product)}</TableCell>
-                            <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                            <TableCell align="center">
+                              {product.visible ? t('common.yes') : t('common.no')}
+                            </TableCell>
                             <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
                             <TableCell align="right">
                               <Tooltip title="Edit">

@@ -208,7 +208,39 @@
     "aboutTitle": "Título",
     "aboutBody": "Corpo",
     "aboutSaved": "Secção \"Sobre\" atualizada.",
-    "aboutSaveError": "Falha ao guardar."
+    "aboutSaveError": "Falha ao guardar.",
+    "deletedSuccess": "Eliminado!",
+    "exportCsv": "Exportar CSV",
+    "noOrdersFound": "Sem encomendas.",
+    "colDate": "Data",
+    "colName": "Nome",
+    "colStatus": "Estado",
+    "colItems": "Artigos",
+    "colTotal": "Total",
+    "colAddress": "Morada",
+    "actions": "Ações",
+    "markPaid": "Marcar como Pago",
+    "markSent": "Marcar como Enviado",
+    "markDelivered": "Marcar como Entregue",
+    "cancelOrder": "Cancelar Encomenda",
+    "noProductsFound": "Sem produtos.",
+    "searchProducts": "Pesquisar nome, categoria...",
+    "categories": "Categorias",
+    "categoryClothing": "Roupa",
+    "categoryOther": "Outro",
+    "colProduct": "Produto",
+    "colPrice": "Preço",
+    "colStock": "Stock",
+    "colCategory": "Categoria",
+    "colVisible": "Visível",
+    "colUpdated": "Atualizado",
+    "addProduct": "Adicionar Produto",
+    "editProduct": "Editar",
+    "deleteProduct": "Eliminar",
+    "duplicateProduct": "Duplicar",
+    "toggleVisible": "Alternar visibilidade",
+    "exportProductsCsv": "Exportar CSV",
+    "viewDetails": "Ver detalhes"
   },
   "productEdit": {
     "newProduct": "Novo Produto",
@@ -249,6 +281,7 @@
     "loading": "A entrar..."
   },
   "common": {
-    "yes": "Sim"
+    "yes": "Sim",
+    "no": "Não"
   }
 }
