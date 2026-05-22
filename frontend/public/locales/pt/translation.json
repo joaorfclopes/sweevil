@@ -116,7 +116,20 @@
     "refundBtn": "Reembolsar",
     "dismissRefundTitle": "Cancelar reembolso pendente?",
     "dismissRefundText": "O estado passará para \"Cancelado (Sem Reembolso)\". O botão de reembolso deixará de aparecer.",
-    "dismissRefundBtn": "Sim, cancelar reembolso"
+    "dismissRefundBtn": "Sim, cancelar reembolso",
+    "sendTitle": "Marcar encomenda como enviada?",
+    "sendSuccess": "Enviado!",
+    "cancelledSwal": "Cancelado!",
+    "paidSuccess": "Encomenda paga com sucesso! Verifique o seu email.",
+    "total": "Total",
+    "subtotal_one": "Subtotal ({{count}} artigo)",
+    "subtotal_other": "Subtotal ({{count}} artigos)",
+    "sendBtn": "Marcar como Enviada",
+    "deliverBtn": "Marcar como Entregue",
+    "cancelBtn": "Cancelar Encomenda",
+    "issueRefundBtn": "Emitir Reembolso",
+    "cancelRefundBtn": "Cancelar Reembolso",
+    "deleteOrderBtn": "Eliminar Encomenda"
   },
   "booking": {
     "title": "Marcações",
@@ -213,5 +226,8 @@
   "signin": {
     "signIn": "Entrar com Passkey",
     "loading": "A entrar..."
+  },
+  "common": {
+    "yes": "Sim"
   }
 }

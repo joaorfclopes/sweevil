@@ -225,13 +225,13 @@ export default function OrderScreen(props) {
 
   const sendHandler = () => {
     Swal.fire({
-      title: 'Send Order?',
+      title: t('order.sendTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(sendOrder(order._id));
-        Swal.fire('Sent!', '', 'success');
+        Swal.fire(t('order.sendSuccess'), '', 'success');
       }
     });
   };
@@ -240,7 +240,7 @@ export default function OrderScreen(props) {
     Swal.fire({
       title: t('order.deliverTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deliverOrder(order._id));
@@ -275,11 +275,11 @@ export default function OrderScreen(props) {
         showConfirmButton: false,
         showDenyButton: true,
         showCancelButton: true,
-        denyButtonText: 'Yes',
+        denyButtonText: t('common.yes'),
       }).then((result) => {
         if (result.isDenied) {
           dispatch(cancelOrder(order._id, token));
-          Swal.fire('Canceled!', '', 'error');
+          Swal.fire(t('order.cancelledSwal'), '', 'error');
         }
       });
     }
@@ -356,10 +356,7 @@ export default function OrderScreen(props) {
                 {errorDismiss && <MessageBox variant="error">{errorDismiss}</MessageBox>}
                 {order.status === 'PAID' && (
                   <div style={{ marginBottom: '0.5rem' }}>
-                    <MessageBox variant="success">
-                      Order successfully paid! Check your email Inbox (if you can't find it check
-                      your Spam) for more information.
-                    </MessageBox>
+                    <MessageBox variant="success">{t('order.paidSuccess')}</MessageBox>
                   </div>
                 )}
                 {order.status?.startsWith('CANCELED') && (
@@ -427,7 +424,7 @@ export default function OrderScreen(props) {
                 </div>
                 <div className="card total-amount">
                   <p>
-                    Subtotal ({order.itemsQty} {order.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+                    {t('order.subtotal', { count: order.itemsQty })} :{' '}
                     {order.itemsPrice && order.itemsPrice.toFixed(2)}€
                   </p>
                   {(() => {
@@ -442,7 +439,7 @@ export default function OrderScreen(props) {
                     {t('order.shipping')} : {order.shippingPrice && order.shippingPrice.toFixed(2)}€
                   </p>
                   <h3 className="total">
-                    Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
+                    {t('order.total')} : {order.totalPrice && order.totalPrice.toFixed(2)}€
                   </h3>
                 </div>
                 {!order.status?.startsWith('CANCELED') &&
@@ -476,34 +473,34 @@ export default function OrderScreen(props) {
                     !order.isSent &&
                     !order.isDelivered && (
                       <button className="primary" onClick={sendHandler}>
-                        Send Order
+                        {t('order.sendBtn')}
                       </button>
                     )}
                   {order.isSent && !order.isDelivered && (
                     <button className="primary" onClick={deliverHandler}>
-                      Deliver Order
+                      {t('order.deliverBtn')}
                     </button>
                   )}
                   {!order.status?.startsWith('CANCELED') &&
                     !order.isDelivered &&
                     (order.isPaid || userInfo?.isAdmin) && (
                       <button className="dangerous-outline" onClick={cancelHandler}>
-                        Cancel Order
+                        {t('order.cancelBtn')}
                       </button>
                     )}
                   {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
                     <button className="primary" onClick={refundHandler}>
-                      Issue Refund
+                      {t('order.issueRefundBtn')}
                     </button>
                   )}
                   {userInfo?.isAdmin && order.status === 'CANCELED_PENDING_REFUND' && (
                     <button className="dangerous-outline" onClick={dismissRefundHandler}>
-                      Cancel Refund
+                      {t('order.cancelRefundBtn')}
                     </button>
                   )}
                   {userInfo?.isAdmin && (
                     <button className="dangerous" onClick={deleteHandler}>
-                      Delete Order
+                      {t('order.deleteOrderBtn')}
                     </button>
                   )}
                 </div>
