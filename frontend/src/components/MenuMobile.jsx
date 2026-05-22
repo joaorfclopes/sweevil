@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
@@ -16,7 +15,7 @@ export default function MenuMobile({ activeSection }) {
     document
       .querySelector('meta[name="viewport"]')
       .setAttribute('content', 'width=device-width, initial-scale=1');
-    $('.nav-mobile').removeClass('show');
+    document.querySelector('.nav-mobile')?.classList.remove('show');
     enableScroll();
   };
 

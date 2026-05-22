@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
-import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -39,7 +38,7 @@ function OrderItemImage({ item }) {
 
   useEffect(() => {
     if (inView && imgRef.current?.complete) {
-      $(`#${item.product}-order-img`).addClass('show');
+      document.getElementById(`${item.product}-order-img`)?.classList.add('show');
     }
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -53,7 +52,9 @@ function OrderItemImage({ item }) {
               className="small"
               src={inView ? item.image : undefined}
               alt={item.name}
-              onLoad={() => $(`#${item.product}-order-img`).addClass('show')}
+              onLoad={() =>
+                document.getElementById(`${item.product}-order-img`)?.classList.add('show')
+              }
             />
           </Link>
         </div>

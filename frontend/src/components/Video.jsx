@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
 import Placeholder from '../components/Placeholder';
 
@@ -7,9 +6,9 @@ export default function Video(props) {
   const imgRef = useRef(null);
 
   const videoLoaded = () => {
-    $('.video-desktop').addClass('show');
-    $('.video-mobile').addClass('show');
-    $('.video-subtitle').addClass('show');
+    document.querySelectorAll('.video-desktop, .video-mobile, .video-subtitle').forEach((el) => {
+      el.classList.add('show');
+    });
     setHidePlaceholder(true);
   };
 

@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Lightbox from 'yet-another-react-lightbox';
@@ -57,21 +56,6 @@ export default function GalleryScreen() {
 
   const handleClick = (e) => {
     setSelectedFilter(e);
-    if (e === '*') {
-      $('#filter-all').addClass('active');
-      categories.forEach((filter) => {
-        $(`#filter-${filter}`).removeClass('active');
-      });
-    } else {
-      $('#filter-all').removeClass('active');
-      categories.forEach((filter) => {
-        if (e !== filter) {
-          $(`#filter-${filter}`).removeClass('active');
-        } else {
-          $(`#filter-${e}`).addClass('active');
-        }
-      });
-    }
   };
 
   useEffect(() => {
@@ -129,7 +113,11 @@ export default function GalleryScreen() {
             <div className="gallery-container">
               <div className="filters">
                 {gallery?.length > 0 && (
-                  <div id="filter-all" className="filter active" onClick={() => handleClick('*')}>
+                  <div
+                    id="filter-all"
+                    className={`filter ${selectedFilter === '*' ? 'active' : ''}`}
+                    onClick={() => handleClick('*')}
+                  >
                     All
                   </div>
                 )}
@@ -137,7 +125,7 @@ export default function GalleryScreen() {
                   <div
                     key={cat}
                     id={`filter-${cat}`}
-                    className="filter"
+                    className={`filter ${selectedFilter === cat ? 'active' : ''}`}
                     onClick={() => handleClick(cat)}
                   >
                     {cat}

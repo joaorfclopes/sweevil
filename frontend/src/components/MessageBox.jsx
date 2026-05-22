@@ -1,5 +1,4 @@
 import CloseIcon from '@mui/icons-material/Close';
-import $ from 'jquery';
 import { useEffect, useState } from 'react';
 
 export default function MessageBox(props) {
@@ -15,7 +14,7 @@ export default function MessageBox(props) {
   if (!visible) return null;
 
   const hide = () => {
-    $('.alert').hide();
+    setVisible(false);
   };
 
   return (

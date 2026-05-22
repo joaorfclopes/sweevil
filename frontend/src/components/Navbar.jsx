@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -50,16 +49,18 @@ export default function Navbar({ scrolled, activeSection }) {
 
   useEffect(() => {
     if (!userInfo) {
-      $(document).mouseup(function (e) {
-        var container = $('.brand-logo');
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
+      const handler = (e) => {
+        const container = document.querySelector('.brand-logo');
+        if (container && !container.contains(e.target)) {
           setCounter(0);
           setIsAdmin(false);
         }
-      });
+      };
+      document.addEventListener('mouseup', handler);
       if (counter === 10) {
         setIsAdmin(true);
       }
+      return () => document.removeEventListener('mouseup', handler);
     }
   }, [userInfo, counter]);
 

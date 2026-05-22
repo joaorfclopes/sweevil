@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import $ from 'jquery';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -131,12 +130,12 @@ export default function ProductScreen(props) {
   });
 
   const imageLoaded = (id) => {
-    $(`#${id}-carousel-img`).addClass('show');
+    document.getElementById(`${id}-carousel-img`)?.classList.add('show');
     setLoadedCarousel((prev) => new Set([...prev, id]));
   };
 
   const previewImageLoaded = (id) => {
-    $(`#${id}-preview-img`).addClass('show');
+    document.getElementById(`${id}-preview-img`)?.classList.add('show');
     setLoadedPreviews((prev) => new Set([...prev, id]));
   };
 

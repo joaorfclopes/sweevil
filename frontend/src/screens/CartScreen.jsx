@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,7 +15,7 @@ function CartItemImage({ item }) {
 
   useEffect(() => {
     if (inView && imgRef.current?.complete) {
-      $(`#${item.product}-cart-img`).addClass('show');
+      document.getElementById(`${item.product}-cart-img`)?.classList.add('show');
     }
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -30,7 +29,9 @@ function CartItemImage({ item }) {
               className="small"
               src={inView ? item.image : undefined}
               alt={item.name}
-              onLoad={() => $(`#${item.product}-cart-img`).addClass('show')}
+              onLoad={() =>
+                document.getElementById(`${item.product}-cart-img`)?.classList.add('show')
+              }
             />
           </Link>
         </div>

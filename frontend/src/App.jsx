@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -100,18 +99,21 @@ function AppContent() {
   };
 
   const scroll = () => {
-    $(window).on('scroll', function () {
-      if ($(window).scrollTop() >= 30) {
+    window.addEventListener('scroll', function () {
+      if (window.scrollY >= 30) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
-      if ($(window).scrollTop() >= 500) {
-        $('.arrow-up').addClass('show');
-        $('.arrow-up').removeClass('hide');
-      } else {
-        $('.arrow-up').addClass('hide');
-        $('.arrow-up').removeClass('show');
+      const arrowUp = document.querySelector('.arrow-up');
+      if (arrowUp) {
+        if (window.scrollY >= 500) {
+          arrowUp.classList.add('show');
+          arrowUp.classList.remove('hide');
+        } else {
+          arrowUp.classList.add('hide');
+          arrowUp.classList.remove('show');
+        }
       }
       updateActiveSection();
     });

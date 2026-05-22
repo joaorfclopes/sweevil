@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import $ from 'jquery';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,7 +17,7 @@ function PlaceOrderItemImage({ item }) {
 
   useEffect(() => {
     if (inView && imgRef.current?.complete) {
-      $(`#${item.product}-place-order-img`).addClass('show');
+      document.getElementById(`${item.product}-place-order-img`)?.classList.add('show');
     }
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -32,7 +31,9 @@ function PlaceOrderItemImage({ item }) {
               className="small"
               src={inView ? item.image : undefined}
               alt={item.name}
-              onLoad={() => $(`#${item.product}-place-order-img`).addClass('show')}
+              onLoad={() =>
+                document.getElementById(`${item.product}-place-order-img`)?.classList.add('show')
+              }
             />
           </Link>
         </div>
