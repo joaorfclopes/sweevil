@@ -3,6 +3,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import Axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
@@ -64,6 +65,7 @@ function OrderItemImage({ item }) {
 }
 
 function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [stripeError, setStripeError] = useState('');
@@ -98,13 +100,14 @@ function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
         className="primary"
         style={{ marginTop: '1rem', width: '100%' }}
       >
-        {`Pay €${order.totalPrice.toFixed(2)}`}
+        {t('order.pay', { amount: order.totalPrice.toFixed(2) })}
       </button>
     </form>
   );
 }
 
 export default function OrderScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token } = useParams();
@@ -235,13 +238,13 @@ export default function OrderScreen(props) {
 
   const deliverHandler = () => {
     Swal.fire({
-      title: 'Deliver Order?',
+      title: t('order.deliverTitle'),
       showCancelButton: true,
       confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deliverOrder(order._id));
-        Swal.fire('Delivered!', '', 'success');
+        Swal.fire(t('order.deliverSuccess'), '', 'success');
       }
     });
   };
@@ -249,22 +252,16 @@ export default function OrderScreen(props) {
   const cancelHandler = () => {
     if (userInfo?.isAdmin && order.isPaid) {
       Swal.fire({
-        title: 'Cancel this order?',
-        html: `
-          <p>Do you want to issue a refund to the client?</p>
-          <p style="color:#d32f2f;font-size:0.85rem;margin-top:0.75rem;">
-            ⚠️ If you choose not to refund now, it will not be possible to refund via this website.
-            You will need to do it directly through your Stripe account.
-          </p>
-        `,
+        title: t('order.cancelTitle'),
+        html: `<p>${t('order.cancelHtmlRefundWarning')}</p>`,
         showConfirmButton: true,
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Cancel & Refund',
+        confirmButtonText: t('order.cancelAndRefund'),
         confirmButtonColor: '#1976d2',
-        denyButtonText: 'Cancel (No Refund)',
+        denyButtonText: t('order.cancelNoRefundBtn'),
         denyButtonColor: '#d32f2f',
-        cancelButtonText: 'Keep Order',
+        cancelButtonText: t('order.keepOrder'),
       }).then((result) => {
         if (result.isConfirmed) {
           dispatch(cancelOrder(order._id, token, 'yes'));
@@ -274,7 +271,7 @@ export default function OrderScreen(props) {
       });
     } else {
       Swal.fire({
-        title: 'Cancel Order?',
+        title: t('order.cancelSimpleTitle'),
         showConfirmButton: false,
         showDenyButton: true,
         showCancelButton: true,
@@ -290,10 +287,10 @@ export default function OrderScreen(props) {
 
   const deleteHandler = () => {
     Swal.fire({
-      title: 'Delete this order?',
-      text: 'This cannot be undone.',
+      title: t('order.deleteTitle'),
+      text: t('order.deleteText'),
       showCancelButton: true,
-      confirmButtonText: 'Delete',
+      confirmButtonText: t('order.deleteBtn'),
       confirmButtonColor: '#d32f2f',
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteOrder(order._id));
@@ -302,10 +299,10 @@ export default function OrderScreen(props) {
 
   const refundHandler = () => {
     Swal.fire({
-      title: `Refund €${order.totalPrice?.toFixed(2)} to ${order.shippingAddress?.fullName}?`,
-      text: 'This will issue a full refund via Stripe. This cannot be undone.',
+      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${order.shippingAddress?.fullName}?`,
+      text: t('order.refundText'),
       showCancelButton: true,
-      confirmButtonText: 'Refund',
+      confirmButtonText: t('order.refundBtn'),
       confirmButtonColor: '#1976d2',
     }).then((result) => {
       if (result.isConfirmed) dispatch(refundOrder(order._id));
@@ -314,10 +311,10 @@ export default function OrderScreen(props) {
 
   const dismissRefundHandler = () => {
     Swal.fire({
-      title: 'Cancel pending refund?',
-      text: 'Status will change to "Cancelled (No Refund)". The refund button will no longer appear.',
+      title: t('order.dismissRefundTitle'),
+      text: t('order.dismissRefundText'),
       showCancelButton: true,
-      confirmButtonText: 'Yes, cancel refund',
+      confirmButtonText: t('order.dismissRefundBtn'),
       confirmButtonColor: '#d32f2f',
     }).then((result) => {
       if (result.isConfirmed) dispatch(dismissRefund(order._id));
@@ -350,7 +347,7 @@ export default function OrderScreen(props) {
           {order && (
             <div className="row center order-container">
               <div className="order-inner">
-                <h1 className="custom-font">Your order details</h1>
+                <h1 className="custom-font">{t('order.title')}</h1>
                 {errorSend && <MessageBox variant="error">{errorSend}</MessageBox>}
                 {errorDeliver && <MessageBox variant="error">{errorDeliver}</MessageBox>}
                 {errorCancel && <MessageBox variant="error">{errorCancel}</MessageBox>}
@@ -367,21 +364,21 @@ export default function OrderScreen(props) {
                 )}
                 {order.status?.startsWith('CANCELED') && (
                   <div style={{ marginBottom: '0.5rem' }}>
-                    <MessageBox variant="error">Order canceled.</MessageBox>
+                    <MessageBox variant="error">{t('order.cancelled')}</MessageBox>
                   </div>
                 )}
                 {order.status === 'SENT' && (
                   <div style={{ marginBottom: '0.5rem' }}>
-                    <MessageBox variant="success">Order sent!</MessageBox>
+                    <MessageBox variant="success">{t('order.sent')}</MessageBox>
                   </div>
                 )}
                 {order.status === 'DELIVERED' && (
                   <div style={{ marginBottom: '0.5rem' }}>
-                    <MessageBox variant="success">Order delivered!</MessageBox>
+                    <MessageBox variant="success">{t('order.delivered')}</MessageBox>
                   </div>
                 )}
                 <div className="card">
-                  <h3>Shipping Address</h3>
+                  <h3>{t('order.shippingAddress')}</h3>
                   <p>{order.shippingAddress.fullName}</p>
                   <p>{order.shippingAddress.address}</p>
                   <p>{order.shippingAddress.city}</p>
@@ -389,7 +386,7 @@ export default function OrderScreen(props) {
                   <p>{order.shippingAddress.country}</p>
                 </div>
                 <div className="card">
-                  <h3>Contact Information</h3>
+                  <h3>{t('order.contactInfo')}</h3>
                   <p>{order.shippingAddress.email}</p>
                   <p>
                     {order.shippingAddress.phoneNumber?.startsWith('+')
@@ -398,7 +395,7 @@ export default function OrderScreen(props) {
                   </p>
                 </div>
                 <div className="card">
-                  <h3>Items</h3>
+                  <h3>{t('order.items')}</h3>
                   <ul className="cart-items">
                     {order.orderItems.map((item, index) => (
                       <li key={item.product}>
@@ -412,9 +409,15 @@ export default function OrderScreen(props) {
                           </div>
                         </div>
                         <div className="item-content">
-                          {item.size && <div className="item-size">Size: {item.size}</div>}
+                          {item.size && (
+                            <div className="item-size">
+                              {t('order.size')}: {item.size}
+                            </div>
+                          )}
                           <div className="item-qty">
-                            <p>Quantity: {item.qty}</p>
+                            <p>
+                              {t('order.quantity')}: {item.qty}
+                            </p>
                           </div>
                         </div>
                         {order.orderItems[index + 1] && <hr />}
@@ -435,7 +438,9 @@ export default function OrderScreen(props) {
                       </p>
                     ) : null;
                   })()}
-                  <p>Shipping : {order.shippingPrice && order.shippingPrice.toFixed(2)}€</p>
+                  <p>
+                    {t('order.shipping')} : {order.shippingPrice && order.shippingPrice.toFixed(2)}€
+                  </p>
                   <h3 className="total">
                     Total : {order.totalPrice && order.totalPrice.toFixed(2)}€
                   </h3>
