@@ -44,6 +44,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteProduct, listAdminProducts, reorderProducts } from '../actions/productActions';
@@ -117,6 +118,7 @@ function SortableRow({ id, children, isDragging }) {
 }
 
 export default function ProductsTable() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -205,8 +207,8 @@ export default function ProductsTable() {
   }, [localProducts, products, sortDir, orderBy, reorderMode]);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
   }, [search]);
 
   useEffect(() => {
@@ -237,9 +239,9 @@ export default function ProductsTable() {
   };
   const handleBulkDelete = () => {
     Swal.fire({
-      title: `Delete ${selected.size} products?`,
+      title: t('admin.deleteProductsBulkTitle', { count: selected.size }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete all',
+      confirmButtonText: t('admin.deleteOrdersBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -361,9 +363,9 @@ export default function ProductsTable() {
 
   const deleteHandler = (product) => {
     Swal.fire({
-      title: `Delete ${product.name}?`,
+      title: t('admin.deleteProductTitle', { name: product.name }),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('admin.deleteProductBtn'),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteProduct(product.slug));
@@ -372,7 +374,7 @@ export default function ProductsTable() {
         if (counter === 0 && page !== 0) {
           setPage(page - 1);
         }
-        Swal.fire('Deleted!', '', 'success');
+        Swal.fire(t('admin.deleteProductSuccess'), '', 'success');
       }
     });
   };
@@ -416,7 +418,7 @@ export default function ProductsTable() {
                 onClick={() => setOpen((v) => !v)}
               >
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  <b>Products ({total})</b>
+                  <b>{t('admin.productsTitle', { count: total })}</b>
                 </Typography>
                 <IconButton tabIndex={-1}>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -426,7 +428,7 @@ export default function ProductsTable() {
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   {selected.size > 0 && (
                     <button className="dangerous-outline" onClick={handleBulkDelete}>
-                      Delete {selected.size} selected
+                      {t('admin.deleteSelected', { count: selected.size })}
                     </button>
                   )}
                   <TextField
