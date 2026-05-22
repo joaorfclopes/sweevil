@@ -1,5 +1,4 @@
 import Tooltip from '@mui/material/Tooltip';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Link, useLocation } from 'react-router-dom';
 import Email from '../assets/svg/email.svg?react';
 import Instagram from '../assets/svg/instagram.svg?react';
@@ -41,13 +40,18 @@ export default function Footer({ showShopNow = false }) {
               </span>
             </Tooltip>
           </a>
-          <CopyToClipboard text={import.meta.env.VITE_SENDER_EMAIL_ADDRESS} onCopy={copied}>
+          <span
+            style={{ cursor: 'pointer' }}
+            onClick={() =>
+              navigator.clipboard.writeText(import.meta.env.VITE_SENDER_EMAIL_ADDRESS).then(copied)
+            }
+          >
             <Tooltip title="Email" placement="bottom">
               <span>
                 <Email />
               </span>
             </Tooltip>
-          </CopyToClipboard>
+          </span>
           <a href={import.meta.env.VITE_LOCATION_LINK} target="_blank" rel="noreferrer">
             <Tooltip title="Location" placement="bottom">
               <span>
