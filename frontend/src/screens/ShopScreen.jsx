@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { listProducts } from '../actions/productActions';
 import { listProductCategories } from '../actions/productCategoryActions';
@@ -21,6 +22,7 @@ function ProductSkeleton() {
 }
 
 export default function ShopScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
@@ -49,7 +51,7 @@ export default function ShopScreen(props) {
 
   return (
     <section className="shop">
-      <div className="free-shipping-banner">Free shipping on orders over €40</div>
+      <div className="free-shipping-banner">{t('shop.freeShipping')}</div>
       <div className="shop-container">
         {categoriesInUse.length > 0 && (
           <div className="filters">
@@ -57,7 +59,7 @@ export default function ShopScreen(props) {
               className={`filter${selectedCategory === '*' ? ' active' : ''}`}
               onClick={() => setSelectedCategory('*')}
             >
-              All
+              {t('shop.filterAll')}
             </div>
             {categoriesInUse.map((cat) => (
               <div

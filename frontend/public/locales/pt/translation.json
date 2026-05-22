@@ -147,7 +147,9 @@
     "soldOut": "Esgotado",
     "category": "Categoria",
     "description": "Descrição",
-    "cartLink": "Carrinho"
+    "cartLink": "Carrinho",
+    "freeShipping": "Envio grátis em encomendas acima de €40",
+    "filterAll": "Todos"
   },
   "product": {
     "addToCart": "Adicionar ao Carrinho"

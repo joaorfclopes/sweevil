@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
@@ -41,6 +42,7 @@ function PreviewThumb({ image, index, onLoaded, onClick }) {
 }
 
 export default function ProductScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id: productId } = useParams();
@@ -100,7 +102,7 @@ export default function ProductScreen(props) {
         </select>
       </>
     ) : (
-      <span style={{ color: 'red', textTransform: 'uppercase' }}>Sold Out</span>
+      <span style={{ color: 'red', textTransform: 'uppercase' }}>{t('shop.soldOut')}</span>
     );
   };
 
@@ -109,7 +111,7 @@ export default function ProductScreen(props) {
     window.__cartNav = () => navigate('/cart');
     notyf.success({
       icon: false,
-      message: `"${product.name}" added to <span class="notyf-cart" onclick="window.__cartNav()">Cart</span>`,
+      message: `"${product.name}" adicionado ao <span class="notyf-cart" onclick="window.__cartNav()">${t('shop.cartLink')}</span>`,
       dismissible: true,
     });
   };
@@ -252,10 +254,10 @@ export default function ProductScreen(props) {
                   </h2>
                 )}
                 <p>
-                  <b>Category:</b> {product.category}
+                  <b>{t('shop.category')}:</b> {product.category}
                 </p>
                 <p className="description">
-                  <b>Description:</b> {product.description}
+                  <b>{t('shop.description')}:</b> {product.description}
                 </p>
                 {product.isClothing && (
                   <div className="size">
@@ -320,7 +322,7 @@ export default function ProductScreen(props) {
                       (!product.isClothing && product.countInStock.stock <= 0)
                     }
                   >
-                    Add to Cart
+                    {t('product.addToCart')}
                   </button>
                 </div>
               </div>
