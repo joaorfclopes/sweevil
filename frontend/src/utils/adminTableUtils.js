@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 function getNestedValue(obj, path) {
   return path.split('.').reduce((o, k) => (o ?? {})[k], obj);
 }
@@ -29,23 +31,24 @@ export function downloadCSV(headers, rows, filename) {
 }
 
 export function statusChipProps(status) {
-  const map = {
-    CONFIRMED: { bg: '#2e7d32', label: 'Confirmed' },
-    PENDING_PAYMENT: { bg: '#ed6c02', label: 'Pending Payment' },
-    PENDING: { bg: '#ed6c02', label: 'Pending' },
-    CANCELED: { bg: '#d32f2f', label: 'Canceled' },
-    CANCELED_REFUNDED: { bg: '#2e7d32', label: 'Cancelled (Refunded)' },
-    CANCELED_NO_REFUND: { bg: '#d32f2f', label: 'Cancelled (No Refund)' },
-    CANCELED_PENDING_REFUND: { bg: '#ed6c02', label: 'Cancelled (Pending Refund)' },
-    SENT: { bg: '#1565c0', label: 'Sent' },
-    PAID: { bg: '#2e7d32', label: 'Paid' },
-    DELIVERED: { bg: '#2e7d32', label: 'Delivered' },
+  const colorMap = {
+    CONFIRMED: '#2e7d32',
+    PENDING_PAYMENT: '#ed6c02',
+    PENDING: '#ed6c02',
+    CANCELED: '#d32f2f',
+    CANCELED_REFUNDED: '#2e7d32',
+    CANCELED_NO_REFUND: '#d32f2f',
+    CANCELED_PENDING_REFUND: '#ed6c02',
+    SENT: '#1565c0',
+    PAID: '#2e7d32',
+    DELIVERED: '#2e7d32',
   };
   const key = status?.toUpperCase();
-  const entry = map[key] ?? { bg: '#757575', label: status ?? '—' };
+  const bg = colorMap[key] ?? '#757575';
+  const label = key ? (i18n.t(`status.${key}`) ?? status) : '—';
   return {
-    label: entry.label,
-    sx: { backgroundColor: entry.bg, color: '#fff', fontWeight: 600 },
+    label,
+    sx: { backgroundColor: bg, color: '#fff', fontWeight: 600 },
   };
 }
 
