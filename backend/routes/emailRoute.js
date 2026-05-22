@@ -1,12 +1,16 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import nodemailer from 'nodemailer';
-import { cancelOrder } from '../mailing/cancelOrder.js';
+import { cancelOrder as cancelOrderPt } from '../mailing/cancelOrder.js';
 import { cancelOrderAdmin } from '../mailing/cancelOrderAdmin.js';
-import { deliveredOrder } from '../mailing/deliveredOrder.js';
-import { placedOrder } from '../mailing/placedOrder.js';
+import { deliveredOrder as deliveredOrderPt } from '../mailing/deliveredOrder.js';
+import { cancelOrder as cancelOrderEn } from '../mailing/en/cancelOrder.js';
+import { deliveredOrder as deliveredOrderEn } from '../mailing/en/deliveredOrder.js';
+import { placedOrder as placedOrderEn } from '../mailing/en/placedOrder.js';
+import { sendOrder as sendOrderEn } from '../mailing/en/sendOrder.js';
+import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
-import { sendOrder } from '../mailing/sendOrder.js';
+import { sendOrder as sendOrderPt } from '../mailing/sendOrder.js';
 import Order from '../models/orderModel.js';
 import { formatDate, isAdmin, isAuth } from '../utils.js';
 
@@ -101,11 +105,14 @@ emailRouter.post(
     if (order.user?.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Access denied' });
     }
+    const isPt = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
-      html: placedOrder({
+      subject: isPt
+        ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
+        : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
+      html: (isPt ? placedOrderPt : placedOrderEn)({
         order: {
           orderId: order._id,
           confirmToken: order.confirmToken,
@@ -223,11 +230,12 @@ emailRouter.post(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
+    const isPtSent = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: 'A sua encomenda está a caminho!',
-      html: sendOrder({
+      subject: isPtSent ? 'A sua encomenda está a caminho!' : 'Your Order Is on Its Way!',
+      html: (isPtSent ? sendOrderPt : sendOrderEn)({
         order: {
           orderId: order._id,
           confirmToken: order.confirmToken,
@@ -281,11 +289,12 @@ emailRouter.post(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
+    const isPtDelivered = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: 'Obrigado pela sua encomenda!',
-      html: deliveredOrder({
+      subject: isPtDelivered ? 'Obrigado pela sua encomenda!' : 'Your Order Has Been Delivered!',
+      html: (isPtDelivered ? deliveredOrderPt : deliveredOrderEn)({
         order: {
           orderId: order._id,
           confirmToken: order.confirmToken,
@@ -343,11 +352,12 @@ emailRouter.post(
     if (order.user?.toString() !== req.user._id.toString() && !req.user.isAdmin) {
       return res.status(403).json({ message: 'Access denied' });
     }
+    const isPtCancel = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: 'Encomenda Cancelada!',
-      html: cancelOrder({
+      subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
+      html: (isPtCancel ? cancelOrderPt : cancelOrderEn)({
         order: {
           orderId: order._id,
           confirmToken: order.confirmToken,

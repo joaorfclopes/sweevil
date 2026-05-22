@@ -196,6 +196,9 @@ productRouter.post(
       isClothing,
       countInStock,
       description,
+      descriptionEn,
+      descriptionPt,
+      useDescriptionTranslation,
       visible,
       originalPrice,
     } = req.body;
@@ -214,6 +217,9 @@ productRouter.post(
       isClothing,
       countInStock,
       description,
+      descriptionEn,
+      descriptionPt,
+      useDescriptionTranslation,
       visible,
       originalPrice: originalPrice != null ? originalPrice : undefined,
       sortOrder: newSortOrder,
@@ -278,6 +284,9 @@ productRouter.put(
       product.isClothing = req.body.isClothing;
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
+      product.descriptionEn = req.body.descriptionEn;
+      product.descriptionPt = req.body.descriptionPt;
+      product.useDescriptionTranslation = req.body.useDescriptionTranslation;
       product.visible = req.body.visible;
       const reqOriginalPrice = req.body.originalPrice;
       if (reqOriginalPrice != null && reqOriginalPrice <= req.body.price) {

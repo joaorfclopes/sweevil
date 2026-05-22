@@ -5,7 +5,9 @@
     "gallery": "galeria",
     "shop": "loja",
     "booking": "marcações",
-    "admin": "admin"
+    "admin": "admin",
+    "switchToEn": "Switch to English",
+    "switchToPt": "Mudar para Português"
   },
   "status": {
     "CONFIRMED": "Confirmado",
@@ -22,6 +24,8 @@
   },
   "footer": {
     "contacts": "Contactos",
+    "instagram": "Instagram",
+    "location": "Localização",
     "termsConditions": "Termos & Condições",
     "privacyPolicy": "Política de Privacidade",
     "cookiePolicy": "Política de Cookies",
@@ -46,6 +50,8 @@
     "total": "Total",
     "checkout": "Finalizar Compra",
     "remove": "Remover",
+    "removedFromCart": "removido do",
+    "undo": "Desfazer",
     "quantity": "Quantidade",
     "size": "Tamanho",
     "sizeUpdated": "Tamanho do produto atualizado",
@@ -189,6 +195,10 @@
     "deleteOrdersBtn": "Sim, eliminar tudo",
     "refundText": "Será emitido um reembolso total via Stripe. Esta ação não pode ser desfeita.",
     "refundBtn": "Reembolsar",
+    "refundTitle": "Reembolso €{{price}} para {{name}}?",
+    "passkeyActive": "Passkey Ativo",
+    "registering": "A registar…",
+    "registerPasskey": "Registar passkey",
     "deleteProductTitle": "Eliminar {{name}}?",
     "deleteProductBtn": "Sim, eliminar",
     "deleteProductSuccess": "Eliminado!",
@@ -252,7 +262,6 @@
     "colEmail": "Email",
     "colNotes": "Notas",
     "colPhotos": "Fotos",
-    "colUpdated": "Atualizado",
     "noBookingsFound": "Sem marcações.",
     "searchBookings": "Pesquisar hóspede, email, estado…",
     "availability": "Disponibilidade",
@@ -300,7 +309,16 @@
     "filter": "Filtrar",
     "collapse": "Recolher",
     "expand": "Expandir",
-    "aboutBodyHint": "Separe parágrafos com uma linha em branco."
+    "nameEn": "Nome EN",
+    "namePt": "Nome PT",
+    "useDescriptionTranslation": "Usar traduções para a descrição",
+    "descriptionEn": "Descrição EN",
+    "descriptionPt": "Descrição PT",
+    "aboutBodyHint": "Separe parágrafos com uma linha em branco.",
+    "aboutTitleEn": "Título (EN)",
+    "aboutBodyEn": "Corpo (EN)",
+    "aboutTitlePt": "Título (PT)",
+    "aboutBodyPt": "Corpo (PT)"
   },
   "productEdit": {
     "newProduct": "Novo Produto",
@@ -338,6 +356,9 @@
     "dragToReorder": "Arrastar para reordenar",
     "originalPriceMustBeGreater": "O preço original deve ser superior ao preço atual."
   },
+  "about": {
+    "videoSubtitle": "produzido por João Santana"
+  },
   "maintenance": {
     "title": "Voltamos já",
     "text": "A página está temporariamente em manutenção. Volte em breve!"
@@ -358,6 +379,15 @@
     "yes": "Sim",
     "no": "Não",
     "logout": "Sair"
+  },
+  "error": {
+    "productNotFound": "Produto não encontrado",
+    "slotAlreadyBooked": "Este horário já está reservado",
+    "slotNotAvailable": "Horário não disponível",
+    "noAvailability": "Sem disponibilidade para esta data",
+    "tooManyRequests": "Demasiados pedidos, por favor tente mais tarde.",
+    "orderAlreadyPaid": "Encomenda já paga",
+    "originalPriceValidation": "O preço original deve ser superior ao preço atual."
   },
   "policy": {
     "cookiePolicy": "Política de Cookies",

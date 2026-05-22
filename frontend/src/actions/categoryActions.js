@@ -13,6 +13,7 @@ import {
   CATEGORY_UPDATE_REQUEST,
   CATEGORY_UPDATE_SUCCESS,
 } from '../constants/categoryConstants';
+import { translateBackendMessage } from '../utils/translateError';
 
 export const listCategories = () => async (dispatch) => {
   dispatch({ type: CATEGORY_LIST_REQUEST });
@@ -24,15 +25,15 @@ export const listCategories = () => async (dispatch) => {
   }
 };
 
-export const createCategory = (name) => async (dispatch) => {
+export const createCategory = (name, nameEn, namePt) => async (dispatch) => {
   dispatch({ type: CATEGORY_CREATE_REQUEST });
   try {
-    const { data } = await Axios.post('/api/categories', { name });
+    const { data } = await Axios.post('/api/categories', { name, nameEn, namePt });
     dispatch({ type: CATEGORY_CREATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: CATEGORY_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -45,15 +46,15 @@ export const reorderCategories = (items) => async () => {
   }
 };
 
-export const updateCategory = (id, name) => async (dispatch) => {
+export const updateCategory = (id, name, nameEn, namePt) => async (dispatch) => {
   dispatch({ type: CATEGORY_UPDATE_REQUEST });
   try {
-    const { data } = await Axios.put(`/api/categories/${id}`, { name });
+    const { data } = await Axios.put(`/api/categories/${id}`, { name, nameEn, namePt });
     dispatch({ type: CATEGORY_UPDATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: CATEGORY_UPDATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -66,7 +67,7 @@ export const deleteCategory = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: CATEGORY_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };

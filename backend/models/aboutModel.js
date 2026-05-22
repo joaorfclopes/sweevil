@@ -2,8 +2,14 @@ import mongoose from 'mongoose';
 
 const aboutSchema = new mongoose.Schema(
   {
-    title: { type: String, default: "Who's Sweevil?" },
-    body: { type: String, default: '' },
+    en: {
+      title: { type: String, default: '' },
+      body: { type: String, default: '' },
+    },
+    pt: {
+      title: { type: String, default: '' },
+      body: { type: String, default: '' },
+    },
   },
   { timestamps: true }
 );

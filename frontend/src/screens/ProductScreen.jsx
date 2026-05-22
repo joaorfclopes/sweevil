@@ -14,6 +14,7 @@ import Placeholder from '../components/Placeholder';
 import { useLazyLoad } from '../hooks/useLazyLoad';
 import useScrollLock from '../hooks/useScrollLock';
 import { scrollTop, sizes } from '../utils';
+import { displayDescription } from '../utils/i18nDisplay';
 import { notyf } from '../utils/notyf';
 
 function PreviewThumb({ image, index, onLoaded, onClick }) {
@@ -34,7 +35,7 @@ function PreviewThumb({ image, index, onLoaded, onClick }) {
     <div ref={containerRef} className="image-preview" onClick={onClick}>
       <Placeholder height="100%" hide={loaded}>
         <div id={`${index}-preview-img`} className="image-preview-inner">
-          <img ref={imgRef} src={inView ? image : undefined} alt="product" onLoad={handleLoaded} />
+          <img ref={imgRef} src={inView ? image : undefined} alt="" onLoad={handleLoaded} />
         </div>
       </Placeholder>
     </div>
@@ -42,12 +43,13 @@ function PreviewThumb({ image, index, onLoaded, onClick }) {
 }
 
 export default function ProductScreen(props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id: productId } = useParams();
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, product, error, errorStatus } = productDetails;
+  const { categories: productCategories = [] } = useSelector((state) => state.productCategoryList);
   const [qty, setQty] = useState(1);
   const [chosenSize, setChosenSize] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -174,7 +176,7 @@ export default function ProductScreen(props) {
                                   imageLoaded(index);
                               }}
                               src={image}
-                              alt="product"
+                              alt=""
                               onLoad={() => imageLoaded(index)}
                             />
                           </div>
@@ -254,10 +256,12 @@ export default function ProductScreen(props) {
                   </h2>
                 )}
                 <p>
-                  <b>{t('shop.category')}:</b> {product.category}
+                  <b>{t('shop.category')}:</b>{' '}
+                  {productCategories.find((c) => c.name === product.category)?.namePt ||
+                    product.category}
                 </p>
                 <p className="description">
-                  <b>{t('shop.description')}:</b> {product.description}
+                  <b>{t('shop.description')}:</b> {displayDescription(product, i18n.language)}
                 </p>
                 {product.isClothing && (
                   <div className="size">

@@ -88,7 +88,7 @@ productCategoryRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { name, isClothing } = req.body;
+    const { name, isClothing, nameEn, namePt } = req.body;
     if (!name || typeof name !== 'string') {
       return res.status(400).json({ message: 'Name is required' });
     }
@@ -96,7 +96,12 @@ productCategoryRouter.post(
     if (existing) {
       return res.status(400).json({ message: 'Category already exists' });
     }
-    const category = await ProductCategory.create({ name: name.trim(), isClothing: !!isClothing });
+    const category = await ProductCategory.create({
+      name: name.trim(),
+      isClothing: !!isClothing,
+      nameEn: nameEn?.trim(),
+      namePt: namePt?.trim(),
+    });
     await cacheDel(CACHE_KEY);
     res.status(201).json(category);
   })
@@ -136,7 +141,7 @@ productCategoryRouter.put(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { name, isClothing } = req.body;
+    const { name, isClothing, nameEn, namePt } = req.body;
     if (!name || typeof name !== 'string') {
       return res.status(400).json({ message: 'Name is required' });
     }
@@ -154,6 +159,8 @@ productCategoryRouter.put(
     const oldName = category.name;
     category.name = name.trim();
     if (isClothing !== undefined) category.isClothing = !!isClothing;
+    if (nameEn !== undefined) category.nameEn = nameEn?.trim() || undefined;
+    if (namePt !== undefined) category.namePt = namePt?.trim() || undefined;
     await category.save();
     if (oldName !== category.name) {
       await Product.updateMany({ category: oldName }, { $set: { category: category.name } });

@@ -28,7 +28,6 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Table from '@mui/material/Table';
@@ -62,6 +61,7 @@ import {
 import { PRODUCT_DELETE_RESET, PRODUCT_REORDER_RESET } from '../constants/productConstants';
 import { formatDateDay } from '../utils';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
+import { displayName } from '../utils/i18nDisplay';
 import Swal from '../utils/swal';
 import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
@@ -118,7 +118,7 @@ function SortableRow({ id, children, isDragging }) {
 }
 
 export default function ProductsTable() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -150,9 +150,13 @@ export default function ProductsTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [newCatName, setNewCatName] = useState('');
+  const [newCatNameEn, setNewCatNameEn] = useState('');
+  const [newCatNamePt, setNewCatNamePt] = useState('');
   const [newCatIsClothing, setNewCatIsClothing] = useState(false);
   const [editingCatId, setEditingCatId] = useState(null);
   const [editingCatName, setEditingCatName] = useState('');
+  const [editingCatNameEn, setEditingCatNameEn] = useState('');
+  const [editingCatNamePt, setEditingCatNamePt] = useState('');
 
   const [localErrorCatCreate, setLocalErrorCatCreate] = useState(null);
   const [errorCatCreateKey, setErrorCatCreateKey] = useState(0);
@@ -330,6 +334,8 @@ export default function ProductsTable() {
     if (successCatCreate) {
       dispatch({ type: PRODUCT_CATEGORY_CREATE_RESET });
       setNewCatName('');
+      setNewCatNameEn('');
+      setNewCatNamePt('');
       setNewCatIsClothing(false);
       dispatch(listProductCategories());
     }
@@ -347,12 +353,12 @@ export default function ProductsTable() {
   const handleAddCategory = () => {
     const name = newCatName.trim();
     if (!name) return;
-    dispatch(createProductCategory(name, newCatIsClothing));
+    dispatch(createProductCategory(name, newCatIsClothing, newCatNameEn, newCatNamePt));
   };
 
   const handleDeleteCategory = (cat) => {
     Swal.fire({
-      title: t('admin.deleteProductTitle', { name: `"${cat.name}"` }),
+      title: t('admin.deleteProductTitle', { name: `"${displayName(cat, i18n.language)}"` }),
       showCancelButton: true,
       confirmButtonText: t('admin.deleteProductBtn'),
       confirmButtonColor: '#d33',
@@ -364,7 +370,9 @@ export default function ProductsTable() {
   const handleEditCatSave = (cat) => {
     const name = editingCatName.trim();
     if (!name) return;
-    dispatch(updateProductCategory(cat._id, name, cat.isClothing));
+    dispatch(
+      updateProductCategory(cat._id, name, cat.isClothing, editingCatNameEn, editingCatNamePt)
+    );
   };
 
   const deleteHandler = (product) => {
@@ -554,6 +562,24 @@ export default function ProductsTable() {
                                   fontFamily: 'inherit',
                                 }}
                               />
+                              <input
+                                value={editingCatNamePt}
+                                size={Math.max(8, editingCatNamePt.length + 2)}
+                                onChange={(e) => setEditingCatNamePt(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleEditCatSave(cat);
+                                  if (e.key === 'Escape') setEditingCatId(null);
+                                }}
+                                placeholder="PT"
+                                style={{
+                                  border: 'none',
+                                  outline: 'none',
+                                  background: 'transparent',
+                                  fontSize: '0.8rem',
+                                  fontFamily: 'inherit',
+                                  opacity: 0.7,
+                                }}
+                              />
                               <Tooltip title={t('admin.save')}>
                                 <IconButton
                                   size="small"
@@ -590,7 +616,9 @@ export default function ProductsTable() {
                               fontFamily: 'inherit',
                             }}
                           >
-                            <span style={{ userSelect: 'none' }}>{cat.name}</span>
+                            <span style={{ userSelect: 'none' }}>
+                              {displayName(cat, i18n.language)}
+                            </span>
                             <Tooltip title={t('admin.editProduct')}>
                               <IconButton
                                 size="small"
@@ -598,6 +626,8 @@ export default function ProductsTable() {
                                 onClick={() => {
                                   setEditingCatId(cat._id);
                                   setEditingCatName(cat.name);
+                                  setEditingCatNameEn(cat.nameEn || '');
+                                  setEditingCatNamePt(cat.namePt || '');
                                 }}
                               >
                                 <EditIcon sx={{ fontSize: 13 }} />
@@ -634,27 +664,27 @@ export default function ProductsTable() {
                 >
                   <TextField
                     size="small"
-                    placeholder={t('admin.newCategoryPlaceholder')}
+                    placeholder={t('admin.nameEn')}
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              size="small"
-                              onClick={handleAddCategory}
-                              disabled={!newCatName.trim() || loadingCatCreate}
-                            >
-                              <AddIcon fontSize="small" />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                    style={{ width: 220 }}
+                    style={{ width: 160 }}
                   />
+                  <TextField
+                    size="small"
+                    placeholder={t('admin.namePt')}
+                    value={newCatNamePt}
+                    onChange={(e) => setNewCatNamePt(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                    style={{ width: 160 }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={handleAddCategory}
+                    disabled={!newCatName.trim() || loadingCatCreate}
+                  >
+                    <AddIcon fontSize="small" />
+                  </IconButton>
                   <label
                     style={{
                       display: 'flex',

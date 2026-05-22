@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import Lightbox from 'yet-another-react-lightbox';
 import Captions from 'yet-another-react-lightbox/plugins/captions';
@@ -10,6 +11,7 @@ import GalleryImage from '../components/GalleryImage';
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
+import { displayDescription, displayName } from '../utils/i18nDisplay';
 
 const INITIAL_ROWS = 3;
 const ROWS_INCREMENT = 3;
@@ -34,6 +36,7 @@ function useColCount() {
 
 export default function GalleryScreen() {
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const galleryImageList = useSelector((state) => state.galleryImageList);
   const { loading, gallery, error } = galleryImageList;
   const { categories: dbCategories = [] } = useSelector((state) => state.categoryList);
@@ -47,12 +50,12 @@ export default function GalleryScreen() {
   useScrollLock(lightboxOpen);
 
   // Use ordered DB categories; fall back to image-derived names for any not yet synced
-  const dbCatNames = dbCategories.map((c) => c.name);
+  const categoryMap = Object.fromEntries(dbCategories.map((c) => [c.name, c]));
   const imageCatNames = gallery
     ? [...new Set(gallery.map((img) => img.category).filter(Boolean))]
     : [];
-  const extras = imageCatNames.filter((n) => !dbCatNames.includes(n));
-  const categories = [...dbCatNames, ...extras];
+  const extras = imageCatNames.filter((n) => !categoryMap[n]);
+  const categories = [...dbCategories, ...extras.map((name) => ({ name }))];
 
   const handleClick = (e) => {
     setSelectedFilter(e);
@@ -118,17 +121,17 @@ export default function GalleryScreen() {
                     className={`filter ${selectedFilter === '*' ? 'active' : ''}`}
                     onClick={() => handleClick('*')}
                   >
-                    All
+                    {t('shop.filterAll')}
                   </div>
                 )}
                 {categories.map((cat) => (
                   <div
-                    key={cat}
-                    id={`filter-${cat}`}
-                    className={`filter ${selectedFilter === cat ? 'active' : ''}`}
-                    onClick={() => handleClick(cat)}
+                    key={cat.name}
+                    id={`filter-${cat.name}`}
+                    className={`filter ${selectedFilter === cat.name ? 'active' : ''}`}
+                    onClick={() => handleClick(cat.name)}
                   >
-                    {cat}
+                    {displayName(cat, i18n.language)}
                   </div>
                 ))}
               </div>
@@ -156,7 +159,7 @@ export default function GalleryScreen() {
                   close={() => setLightboxOpen(false)}
                   slides={visibleGallery.map((img) => ({
                     src: img.image,
-                    description: img.description || undefined,
+                    description: displayDescription(img, i18n.language) || undefined,
                   }))}
                   index={lightboxIndex}
                   on={{

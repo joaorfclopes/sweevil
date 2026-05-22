@@ -7,11 +7,18 @@ import Cart from '../assets/svg/cart.svg?react';
 import Logo from '../assets/svg/logo.svg?react';
 import Menu from '../assets/svg/menu.svg?react';
 import { useFeatures } from '../FeaturesContext';
+import i18n from '../i18n';
 import { disableScroll, enableScroll } from '../scroll';
 import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
 export default function Navbar({ scrolled, activeSection }) {
   const { t } = useTranslation();
+  const currentLang = i18n.language;
+  const toggleLang = () => {
+    const next = currentLang === 'pt' ? 'en' : 'pt';
+    i18n.changeLanguage(next);
+    localStorage.setItem('lang', next);
+  };
   const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -118,6 +125,27 @@ export default function Navbar({ scrolled, activeSection }) {
               </li>
             )}
             <li>
+              <button
+                className="lang-toggle"
+                onClick={toggleLang}
+                title={currentLang === 'pt' ? t('nav.switchToEn') : t('nav.switchToPt')}
+                style={{
+                  background: 'none',
+                  border: '1px solid currentColor',
+                  borderRadius: '4px',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.1em',
+                  padding: '2px 6px',
+                }}
+              >
+                {currentLang === 'pt' ? 'EN' : 'PT'}
+              </button>
+            </li>
+            <li>
               <NavLink to="/cart" className={({ isActive }) => (isActive ? 'active' : '')}>
                 <Cart className="icon" />
                 <span className="badge">{cartItems.length}</span>
@@ -182,6 +210,30 @@ export default function Navbar({ scrolled, activeSection }) {
               </NavLink>
             </li>
           )}
+          <li>
+            <button
+              className="lang-toggle"
+              onClick={() => {
+                toggleLang();
+                closeMenu();
+              }}
+              title={currentLang === 'pt' ? t('nav.switchToEn') : t('nav.switchToPt')}
+              style={{
+                background: 'none',
+                border: '1px solid currentColor',
+                borderRadius: '4px',
+                color: 'inherit',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: '0.1em',
+                padding: '2px 6px',
+              }}
+            >
+              {currentLang === 'pt' ? 'EN' : 'PT'}
+            </button>
+          </li>
         </ul>
       </div>
     </>

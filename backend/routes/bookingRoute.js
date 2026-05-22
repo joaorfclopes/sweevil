@@ -5,9 +5,11 @@ import expressAsyncHandler from 'express-async-handler';
 import rateLimit from 'express-rate-limit';
 import Stripe from 'stripe';
 import { bookingAdmin } from '../mailing/bookingAdmin.js';
-import { bookingConfirmation } from '../mailing/bookingConfirmation.js';
+import { bookingConfirmation as ptBookingConfirmation } from '../mailing/bookingConfirmation.js';
 import { generateICS } from '../mailing/calendarInvite.js';
-import { cancelBooking } from '../mailing/cancelBooking.js';
+import { cancelBooking as ptCancelBooking } from '../mailing/cancelBooking.js';
+import { bookingConfirmation as enBookingConfirmation } from '../mailing/en/bookingConfirmation.js';
+import { cancelBooking as enCancelBooking } from '../mailing/en/cancelBooking.js';
 import { sendMail } from '../mailing/sendMail.js';
 import Availability from '../models/availabilityModel.js';
 import Booking from '../models/bookingModel.js';
@@ -67,11 +69,23 @@ export const sendBookingEmails = async (
       contentType: 'application/pdf',
     });
   }
+  const isPt = booking.lang === 'pt';
+  const dateStr = booking.date.toLocaleDateString(isPt ? 'pt-PT' : 'en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+  const subject = isPt
+    ? `Marcação confirmada — ${booking.slot} em ${dateStr}`
+    : `Booking Confirmed — ${booking.slot} on ${dateStr}`;
   await sendMail({
     from,
     to: booking.guestInfo.email,
-    subject: `Marcação confirmada — ${booking.slot} em ${booking.date.toLocaleDateString('pt-PT')}`,
-    html: bookingConfirmation({ booking, hasInvoice: !!invoicePdfBuffer }),
+    subject,
+    html: (isPt ? ptBookingConfirmation : enBookingConfirmation)({
+      booking,
+      hasInvoice: !!invoicePdfBuffer,
+    }),
     attachments,
   });
   const adminAttachments = [icsAttachment];
@@ -220,6 +234,7 @@ bookingRouter.post(
       guestInfo,
       images: safeImages,
       confirmToken,
+      lang: req.body.lang || 'en',
     });
     let created;
     try {
@@ -543,11 +558,15 @@ bookingRouter.put(
       `[booking] Booking ${updated._id} cancelled — ${updated.slot} on ${updated.date.toISOString().split('T')[0]} for ${updated.guestInfo.email}`
     );
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    const isPtCancel = updated.lang === 'pt';
+    const cancelSubject = isPtCancel
+      ? `A sua marcação foi cancelada — ${process.env.BRAND_NAME}`
+      : `Your Booking Has Been Cancelled — ${process.env.BRAND_NAME}`;
     await sendMail({
       from,
       to: updated.guestInfo.email,
-      subject: `A sua marcação foi cancelada — ${process.env.BRAND_NAME}`,
-      html: cancelBooking({ booking: updated }),
+      subject: cancelSubject,
+      html: (isPtCancel ? ptCancelBooking : enCancelBooking)({ booking: updated }),
     });
     res.json({ message: 'Booking canceled', booking: updated });
   })

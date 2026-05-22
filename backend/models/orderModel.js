@@ -27,6 +27,7 @@ const orderSchema = new mongoose.Schema(
       country: { type: String, required: true },
     },
     stripeInvoiceId: { type: String },
+    lang: { type: String },
     paymentResult: {
       id: String,
       status: String,

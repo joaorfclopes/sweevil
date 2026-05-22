@@ -1,88 +1,63 @@
 import { useTranslation } from 'react-i18next';
 
 export default function PoliticaPrivacidadeScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('privacy-policy');
   return (
     <section className="legal-screen custom-font">
-      <h1>{t('policy.privacyPolicy')}</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>{t('title')}</h1>
+      <span className="last-updated">{t('lastUpdated')}</span>
 
-      <h2>1. Data Controller</h2>
+      <h2>{t('s1_title')}</h2>
+      <p>{t('s1_p1')}</p>
       <p>
-        Sílvia Seixas Pinho Peralta (Sweevil), NIF 247 911 780, Rua das Eirinhas, 157, Casa 6,
-        4300-166 Porto, Portugal.
-      </p>
-      <p>
-        Privacy enquiries:{' '}
-        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>
+        {t('s1_p2')} <a href="mailto:silvia.seixas.peralta@gmail.com">{t('s1_email')}</a>
       </p>
 
-      <h2>2. Personal Data Collected</h2>
-      <p>
-        We collect only the data strictly necessary for order processing and customer communication:
-      </p>
+      <h2>{t('s2_title')}</h2>
+      <p>{t('s2_p1')}</p>
       <ul>
-        <li>Full name</li>
-        <li>Delivery address</li>
-        <li>Email address</li>
-        <li>Phone number (optional)</li>
-        <li>Payment data (processed by the payment provider; not stored by Sweevil)</li>
+        <li>{t('s2_li1')}</li>
+        <li>{t('s2_li2')}</li>
+        <li>{t('s2_li3')}</li>
+        <li>{t('s2_li4')}</li>
+        <li>{t('s2_li5')}</li>
       </ul>
 
-      <h2>3. Purpose and Legal Basis for Processing</h2>
-      <p>Data is processed for the following purposes:</p>
+      <h2>{t('s3_title')}</h2>
+      <p>{t('s3_p1')}</p>
       <ul>
-        <li>Order processing and management (performance of a contract — Art. 6(1)(b) GDPR)</li>
-        <li>
-          Order-related communication, such as confirmations and shipping updates (legitimate
-          interest — Art. 6(1)(f) GDPR)
-        </li>
-        <li>
-          Compliance with legal obligations, such as invoicing (legal obligation — Art. 6(1)(c)
-          GDPR)
-        </li>
+        <li>{t('s3_li1')}</li>
+        <li>{t('s3_li2')}</li>
+        <li>{t('s3_li3')}</li>
       </ul>
 
-      <h2>4. Sharing Data with Third Parties</h2>
-      <p>
-        Personal data may be shared with carriers (CTT, DPD, DHL, GLS) solely for delivery purposes,
-        and with the payment processor (Stripe) for transaction processing. We do not share data
-        with third parties for marketing or advertising purposes.
-      </p>
+      <h2>{t('s4_title')}</h2>
+      <p>{t('s4_p1')}</p>
 
-      <h2>5. Retention Period</h2>
-      <p>
-        Data is retained for the minimum period required to fulfil legal obligations (in particular
-        tax and accounting obligations), generally no longer than 10 years, in accordance with
-        Portuguese tax legislation.
-      </p>
+      <h2>{t('s5_title')}</h2>
+      <p>{t('s5_p1')}</p>
 
-      <h2>6. Data Subject Rights</h2>
-      <p>Under the GDPR, data subjects have the right to:</p>
+      <h2>{t('s6_title')}</h2>
+      <p>{t('s6_p1')}</p>
       <ul>
-        <li>Access their personal data</li>
-        <li>Rectify inaccurate or incomplete data</li>
-        <li>Request erasure of their data ("right to be forgotten")</li>
-        <li>Restrict or object to processing</li>
-        <li>Data portability</li>
+        <li>{t('s6_li1')}</li>
+        <li>{t('s6_li2')}</li>
+        <li>{t('s6_li3')}</li>
+        <li>{t('s6_li4')}</li>
+        <li>{t('s6_li5')}</li>
         <li>
-          Lodge a complaint with the CNPD (National Data Protection Commission) at{' '}
+          {t('s6_li6')}{' '}
           <a href="https://www.cnpd.pt" target="_blank" rel="noreferrer">
-            www.cnpd.pt
+            {t('s6_li6_link')}
           </a>
         </li>
       </ul>
       <p>
-        To exercise any of these rights, contact us at{' '}
-        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>.
+        {t('s6_p2')} <a href="mailto:silvia.seixas.peralta@gmail.com">{t('s6_p2_email')}</a>.
       </p>
 
-      <h2>7. Security</h2>
-      <p>
-        We implement appropriate technical and organisational measures to protect your personal data
-        against unauthorised access, loss, or destruction. Payment data is processed directly by
-        payment providers in a secure environment and is not stored in our systems.
-      </p>
+      <h2>{t('s7_title')}</h2>
+      <p>{t('s7_p1')}</p>
     </section>
   );
 }

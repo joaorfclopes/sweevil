@@ -66,11 +66,23 @@ galleryImageRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { image, description, category, width, height } = req.body;
+    const {
+      image,
+      description,
+      descriptionEn,
+      descriptionPt,
+      useDescriptionTranslation,
+      category,
+      width,
+      height,
+    } = req.body;
     await GalleryImage.updateMany({}, { $inc: { order: 1 } });
     const galleryImage = new GalleryImage({
       image,
       description: description || '',
+      descriptionEn,
+      descriptionPt,
+      useDescriptionTranslation,
       category,
       order: 0,
       ...(width && height ? { width, height } : {}),
@@ -163,8 +175,13 @@ galleryImageRouter.put(
       res.status(404).json({ message: 'Image not found' });
       return;
     }
-    const { description, category } = req.body;
+    const { description, descriptionEn, descriptionPt, useDescriptionTranslation, category } =
+      req.body;
     galleryImage.description = description ?? galleryImage.description;
+    galleryImage.descriptionEn = descriptionEn ?? galleryImage.descriptionEn;
+    galleryImage.descriptionPt = descriptionPt ?? galleryImage.descriptionPt;
+    galleryImage.useDescriptionTranslation =
+      useDescriptionTranslation ?? galleryImage.useDescriptionTranslation;
     galleryImage.category = category ?? galleryImage.category;
     const updated = await galleryImage.save();
     await cacheDel(CACHE_KEY);

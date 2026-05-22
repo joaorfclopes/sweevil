@@ -16,6 +16,7 @@ import {
   GALLERY_IMAGE_UPDATE_REQUEST,
   GALLERY_IMAGE_UPDATE_SUCCESS,
 } from '../constants/galleryConstants';
+import { translateBackendMessage } from '../utils/translateError';
 
 export const listGalleryImages = () => async (dispatch) => {
   dispatch({ type: GALLERY_IMAGE_LIST_REQUEST });
@@ -35,7 +36,7 @@ export const createGalleryImage = (imageData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GALLERY_IMAGE_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -48,7 +49,7 @@ export const updateGalleryImage = (id, imageData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GALLERY_IMAGE_UPDATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -61,7 +62,7 @@ export const deleteGalleryImage = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GALLERY_IMAGE_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -76,7 +77,7 @@ export const reorderGalleryImages = (items) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GALLERY_IMAGE_REORDER_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };

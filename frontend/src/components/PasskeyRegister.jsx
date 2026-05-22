@@ -1,9 +1,11 @@
 import Axios from 'axios';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authClient } from '../lib/authClient';
 import MessageBox from './MessageBox';
 
 export default function PasskeyRegister() {
+  const { t } = useTranslation();
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
   const { data: session } = authClient.useSession();
@@ -18,12 +20,12 @@ export default function PasskeyRegister() {
       if (result?.error) {
         await Axios.delete('/api/users/passkey-challenge').catch(() => {});
         setStatus('error');
-        setError(result.error.message || 'Registration failed');
+        setError(result.error.message || t('signin.failedPasskey'));
       }
     } catch (err) {
       await Axios.delete('/api/users/passkey-challenge').catch(() => {});
       setStatus('error');
-      setError(err.message || 'Registration failed');
+      setError(err.message || t('signin.failedPasskey'));
     } finally {
       if (status !== 'error') setStatus('idle');
     }
@@ -46,11 +48,11 @@ export default function PasskeyRegister() {
             cursor: 'default',
           }}
         >
-          Passkey Active
+          {t('admin.passkeyActive')}
         </div>
       ) : (
         <button className="secondary" onClick={handleRegister} disabled={status === 'loading'}>
-          {status === 'loading' ? 'Registering…' : 'Register passkey'}
+          {status === 'loading' ? t('admin.registering') : t('admin.registerPasskey')}
         </button>
       )}
     </div>

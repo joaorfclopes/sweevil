@@ -15,12 +15,7 @@ export default function LoadingOverlay({ loading, children, minHeight }) {
       </div>
       {loading && (
         <div className="loading-overlay">
-          <img
-            className="spinner"
-            src={window.location.origin + '/icon.svg'}
-            alt="loading"
-            width="70px"
-          />
+          <img className="spinner" src={window.location.origin + '/icon.svg'} alt="" width="70px" />
         </div>
       )}
     </div>

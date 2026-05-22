@@ -22,6 +22,7 @@ import {
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants';
+import { translateBackendMessage } from '../utils/translateError';
 
 export const listAdminProducts =
   ({ page = 1, limit = 20, search = '', all = false } = {}) =>
@@ -57,7 +58,7 @@ export const detailsProduct = (productId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
       statusCode: error.response?.status,
     });
   }
@@ -71,7 +72,7 @@ export const createProduct = (product) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -84,7 +85,7 @@ export const updateProduct = (product) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_UPDATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -98,7 +99,7 @@ export const deleteProduct = (productId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -111,7 +112,7 @@ export const reorderProducts = (items) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_REORDER_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };

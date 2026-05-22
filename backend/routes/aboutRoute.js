@@ -29,14 +29,31 @@ const TTL = 60 * 30;
  *             schema:
  *               type: object
  *               properties:
- *                 title: { type: string }
- *                 body: { type: string }
+ *                 en: { type: object, properties: { title: { type: string }, body: { type: string } } }
+ *                 pt: { type: object, properties: { title: { type: string }, body: { type: string } } }
  */
 aboutRouter.get('/', async (req, res) => {
   const cached = await cacheGet(CACHE_KEY);
   if (cached) return res.json(cached);
-  const about = await About.findOne();
-  const result = about || { title: "Who's Sweevil?", body: '' };
+  let about = await About.findOne();
+  // Migrate old flat schema to bilingual
+  if (about && about.title !== undefined && !about.en) {
+    about = await About.findOneAndUpdate(
+      {},
+      {
+        $set: {
+          en: { title: about.title, body: about.body || '' },
+          pt: { title: about.title, body: about.body || '' },
+        },
+        $unset: { title: '', body: '' },
+      },
+      { returnDocument: 'after' }
+    );
+  }
+  const result = about || {
+    en: { title: "Who's Sweevil?", body: '' },
+    pt: { title: 'Quem é Sweevil?', body: '' },
+  };
   await cacheSet(CACHE_KEY, result, TTL);
   res.json(result);
 });
@@ -53,19 +70,19 @@ aboutRouter.get('/', async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, body]
+ *             required: [en, pt]
  *             properties:
- *               title: { type: string }
- *               body: { type: string }
+ *               en: { type: object, properties: { title: { type: string }, body: { type: string } } }
+ *               pt: { type: object, properties: { title: { type: string }, body: { type: string } } }
  *     responses:
  *       200:
  *         description: About page content updated
  */
 aboutRouter.put('/', isAuth, isAdmin, async (req, res) => {
-  const { title, body } = req.body;
+  const { en, pt } = req.body;
   const about = await About.findOneAndUpdate(
     {},
-    { title, body },
+    { en, pt },
     { upsert: true, returnDocument: 'after' }
   );
   await cacheDel(CACHE_KEY);

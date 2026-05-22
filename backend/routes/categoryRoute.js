@@ -64,7 +64,7 @@ categoryRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { name } = req.body;
+    const { name, nameEn, namePt } = req.body;
     if (typeof name !== 'string') {
       res.status(400).json({ message: 'Name must be a string' });
       return;
@@ -74,7 +74,11 @@ categoryRouter.post(
       res.status(400).json({ message: 'Category already exists' });
       return;
     }
-    const category = new Category({ name: name.trim() });
+    const category = new Category({
+      name: name.trim(),
+      nameEn: nameEn?.trim(),
+      namePt: namePt?.trim(),
+    });
     const created = await category.save();
     await cacheDel(CACHE_KEY);
     res.status(201).json(created);
@@ -158,7 +162,7 @@ categoryRouter.put(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const { name } = req.body;
+    const { name, nameEn, namePt } = req.body;
     if (typeof name !== 'string' || !name.trim()) {
       res.status(400).json({ message: 'Name must be a non-empty string' });
       return;
@@ -171,6 +175,8 @@ categoryRouter.put(
     const oldName = category.name;
     const newName = name.trim();
     category.name = newName;
+    if (nameEn !== undefined) category.nameEn = nameEn?.trim() || undefined;
+    if (namePt !== undefined) category.namePt = namePt?.trim() || undefined;
     const updated = await category.save();
     await GalleryImage.updateMany({ category: oldName }, { category: newName });
     await cacheDel(CACHE_KEY);

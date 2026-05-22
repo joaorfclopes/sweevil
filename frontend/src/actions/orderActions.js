@@ -35,6 +35,7 @@ import {
   ORDER_SEND_REQUEST,
   ORDER_SEND_SUCCESS,
 } from '../constants/orderConstants';
+import { translateBackendMessage } from '../utils/translateError';
 
 export const createOrder = (order) => async (dispatch) => {
   dispatch({ type: ORDER_CREATE_REQUEST, payload: order });
@@ -45,7 +46,7 @@ export const createOrder = (order) => async (dispatch) => {
     localStorage.removeItem('cartItems');
     console.log(`[order] Created — ${data.order._id}`);
   } catch (error) {
-    const msg = error.response?.data?.message || error.message;
+    const msg = translateBackendMessage(error.response?.data?.message) || error.message;
     console.warn(`[order] Create failed — ${msg}`);
     dispatch({ type: ORDER_CREATE_FAIL, payload: msg });
   }
@@ -59,7 +60,7 @@ export const detailsOrder = (token) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_DETAILS_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
       statusCode: error.response?.status,
     });
   }
@@ -77,7 +78,7 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
       console.log(`[order] Paid (already confirmed) — ${order._id}`);
     } else {
-      const msg = error.response?.data?.message || error.message;
+      const msg = translateBackendMessage(error.response?.data?.message) || error.message;
       console.warn(`[order] Pay failed — ${order._id} — ${msg}`);
       dispatch({ type: ORDER_PAY_FAIL, payload: msg });
     }
@@ -94,7 +95,7 @@ export const sendOrder = (orderId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_SEND_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -109,7 +110,7 @@ export const deliverOrder = (orderId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_DELIVER_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -127,7 +128,7 @@ export const cancelOrder =
     } catch (error) {
       dispatch({
         type: ORDER_CANCEL_FAIL,
-        payload: error.response?.data?.message || error.message,
+        payload: translateBackendMessage(error.response?.data?.message) || error.message,
       });
     }
   };
@@ -140,7 +141,7 @@ export const refundOrder = (orderId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_REFUND_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -153,7 +154,7 @@ export const listOrder = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_LIST_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -171,7 +172,7 @@ export const listOrders =
     } catch (error) {
       dispatch({
         type: ORDER_ADMIN_LIST_FAIL,
-        payload: error.response?.data?.message || error.message,
+        payload: translateBackendMessage(error.response?.data?.message) || error.message,
       });
     }
   };
@@ -184,7 +185,7 @@ export const dismissRefund = (orderId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_DISMISS_REFUND_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -197,7 +198,7 @@ export const deleteOrder = (orderId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORDER_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };

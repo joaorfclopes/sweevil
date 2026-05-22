@@ -25,6 +25,7 @@ import {
   BOOKING_LIST_REQUEST,
   BOOKING_LIST_SUCCESS,
 } from '../constants/bookingConstants';
+import { translateBackendMessage } from '../utils/translateError';
 
 export const listBookings =
   ({ page = 1, limit = 20, search = '', status = '' } = {}) =>
@@ -39,7 +40,7 @@ export const listBookings =
     } catch (error) {
       dispatch({
         type: BOOKING_LIST_FAIL,
-        payload: error.response?.data?.message || error.message,
+        payload: translateBackendMessage(error.response?.data?.message) || error.message,
       });
     }
   };
@@ -53,7 +54,7 @@ export const cancelBooking = (bookingId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: BOOKING_CANCEL_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -67,7 +68,7 @@ export const deleteBooking = (bookingId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: BOOKING_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -80,7 +81,7 @@ export const listAvailability = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_LIST_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -93,7 +94,7 @@ export const createAvailability = (availData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -106,7 +107,7 @@ export const updateAvailability = (id, availData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_UPDATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -119,7 +120,7 @@ export const deleteAvailability = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_DELETE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };
@@ -132,7 +133,7 @@ export const createAvailabilityBulk = (bulkData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: AVAILABILITY_BULK_CREATE_FAIL,
-      payload: error.response?.data?.message || error.message,
+      payload: translateBackendMessage(error.response?.data?.message) || error.message,
     });
   }
 };

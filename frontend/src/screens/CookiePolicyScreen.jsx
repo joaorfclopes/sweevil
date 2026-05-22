@@ -1,162 +1,145 @@
 import { useTranslation } from 'react-i18next';
 
 export default function CookiePolicyScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('cookies');
   return (
     <section className="legal-screen custom-font">
-      <h1>{t('policy.cookiePolicy')}</h1>
-      <span className="last-updated">Última atualização: 18 de maio de 2026</span>
+      <h1>{t('title')}</h1>
+      <span className="last-updated">{t('lastUpdated')}</span>
 
-      <h2>1. What Are Cookies?</h2>
-      <p>
-        Cookies are small text files that a website stores on your device when you visit it. They
-        are widely used to make websites work more efficiently and to provide information to site
-        owners.
-      </p>
+      <h2>{t('s1_title')}</h2>
+      <p>{t('s1_p1')}</p>
 
-      <h2>2. Cookies We Use</h2>
-      <p>
-        Sweevil (sweevil.pt) uses strictly necessary cookies required for the platform to function,
-        and optional analytics and marketing cookies that are only activated with your consent.
-      </p>
+      <h2>{t('s2_title')}</h2>
+      <p>{t('s2_p1')}</p>
 
-      <h3>2.1 Strictly Necessary Cookies</h3>
-      <p>
-        These cookies cannot be disabled. They do not require your consent under Law No. 41/2004.
-      </p>
+      <h3>{t('s2_1_title')}</h3>
+      <p>{t('s2_1_p1')}</p>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid #ccc' }}>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Cookie</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Provider</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Purpose</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Duration</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_1_table_header_cookie')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_1_table_header_provider')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_1_table_header_purpose')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_1_table_header_duration')}</th>
           </tr>
         </thead>
         <tbody>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>better-auth.session_token</code>
+              <code>{t('s2_1_row1_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>sweevil.pt</td>
-            <td style={{ padding: '8px' }}>Maintains your authenticated session</td>
-            <td style={{ padding: '8px' }}>8 hours</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row1_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row1_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row1_duration')}</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_stripe_mid</code>
+              <code>{t('s2_1_row2_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Stripe</td>
-            <td style={{ padding: '8px' }}>Fraud prevention on payment pages</td>
-            <td style={{ padding: '8px' }}>1 year</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row2_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row2_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row2_duration')}</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_stripe_sid</code>
+              <code>{t('s2_1_row3_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Stripe</td>
-            <td style={{ padding: '8px' }}>Fraud prevention on payment pages</td>
-            <td style={{ padding: '8px' }}>30 minutes</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row3_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row3_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_1_row3_duration')}</td>
           </tr>
         </tbody>
       </table>
 
-      <h3>2.2 Analytics Cookies (requires consent)</h3>
-      <p>Set only when you accept analytics cookies in the cookie banner.</p>
+      <h3>{t('s2_2_title')}</h3>
+      <p>{t('s2_2_p1')}</p>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid #ccc' }}>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Cookie</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Provider</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Purpose</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Duration</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_2_table_header_cookie')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_2_table_header_provider')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_2_table_header_purpose')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_2_table_header_duration')}</th>
           </tr>
         </thead>
         <tbody>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_ga</code>
+              <code>{t('s2_2_row1_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Google Analytics</td>
-            <td style={{ padding: '8px' }}>Distinguishes users for analytics reporting</td>
-            <td style={{ padding: '8px' }}>2 years</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row1_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row1_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row1_duration')}</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_ga_HBQH4F9S1J</code>
+              <code>{t('s2_2_row2_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Google Analytics</td>
-            <td style={{ padding: '8px' }}>Persists session state for GA4 property</td>
-            <td style={{ padding: '8px' }}>2 years</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row2_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row2_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_2_row2_duration')}</td>
           </tr>
         </tbody>
       </table>
 
-      <h3>2.3 Marketing Cookies (requires consent)</h3>
-      <p>Set only when you accept marketing cookies in the cookie banner.</p>
+      <h3>{t('s2_3_title')}</h3>
+      <p>{t('s2_3_p1')}</p>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid #ccc' }}>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Cookie</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Provider</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Purpose</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Duration</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_3_table_header_cookie')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_3_table_header_provider')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_3_table_header_purpose')}</th>
+            <th style={{ padding: '8px', textAlign: 'left' }}>{t('s2_3_table_header_duration')}</th>
           </tr>
         </thead>
         <tbody>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_fbp</code>
+              <code>{t('s2_3_row1_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Meta (Facebook)</td>
-            <td style={{ padding: '8px' }}>Identifies browsers for ad delivery and attribution</td>
-            <td style={{ padding: '8px' }}>3 months</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row1_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row1_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row1_duration')}</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #eee' }}>
             <td style={{ padding: '8px' }}>
-              <code>_fbc</code>
+              <code>{t('s2_3_row2_cookie')}</code>
             </td>
-            <td style={{ padding: '8px' }}>Meta (Facebook)</td>
-            <td style={{ padding: '8px' }}>Stores last click attribution from Facebook ads</td>
-            <td style={{ padding: '8px' }}>3 months</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row2_provider')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row2_purpose')}</td>
+            <td style={{ padding: '8px' }}>{t('s2_3_row2_duration')}</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>3. Local Storage</h2>
-      <p>
-        This site uses browser local storage for strictly necessary functionality. These are not
-        cookies and do not require consent:
-      </p>
+      <h2>{t('s3_title')}</h2>
+      <p>{t('s3_p1')}</p>
       <ul>
         <li>
-          <strong>userInfo</strong> — Stores your login state client-side.
+          <strong>{t('s3_li1')}</strong> — {t('s3_li1_desc')}
         </li>
         <li>
-          <strong>cartItems</strong> — Saves items in your shopping cart between visits.
+          <strong>{t('s3_li2')}</strong> — {t('s3_li2_desc')}
         </li>
         <li>
-          <strong>shippingAddress</strong> — Remembers your shipping address during checkout.
+          <strong>{t('s3_li3')}</strong> — {t('s3_li3_desc')}
         </li>
         <li>
-          <strong>trackingConsent</strong> — Records your cookie consent choice.
+          <strong>{t('s3_li4')}</strong> — {t('s3_li4_desc')}
         </li>
       </ul>
 
-      <h2>4. Legal Basis</h2>
-      <p>
-        Strictly necessary cookies do not require consent pursuant to Law No. 41/2004 and the
-        ePrivacy Directive 2002/58/EC. Analytics and marketing cookies are processed based on your
-        freely given consent (GDPR Art. 6(1)(a)), which you may withdraw at any time by clicking{' '}
-        <strong>Reject All</strong> in the cookie banner.
-      </p>
+      <h2>{t('s4_title')}</h2>
+      <p>{t('s4_p1')}</p>
 
-      <h2>5. Managing Cookies</h2>
-      <p>You may also configure your browser to block or delete cookies:</p>
+      <h2>{t('s5_title')}</h2>
+      <p>{t('s5_p1')}</p>
       <ul>
         <li>
           <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noreferrer">
-            Google Chrome
+            {t('s5_link_chrome')}
           </a>
         </li>
         <li>
@@ -165,7 +148,7 @@ export default function CookiePolicyScreen() {
             target="_blank"
             rel="noreferrer"
           >
-            Mozilla Firefox
+            {t('s5_link_firefox')}
           </a>
         </li>
         <li>
@@ -174,7 +157,7 @@ export default function CookiePolicyScreen() {
             target="_blank"
             rel="noreferrer"
           >
-            Safari
+            {t('s5_link_safari')}
           </a>
         </li>
         <li>
@@ -183,15 +166,14 @@ export default function CookiePolicyScreen() {
             target="_blank"
             rel="noreferrer"
           >
-            Microsoft Edge
+            {t('s5_link_edge')}
           </a>
         </li>
       </ul>
 
-      <h2>6. Contact</h2>
+      <h2>{t('s6_title')}</h2>
       <p>
-        For questions related to this policy, contact us at{' '}
-        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>.
+        {t('s6_p1')} <a href="mailto:silvia.seixas.peralta@gmail.com">{t('s6_email')}</a>.
       </p>
     </section>
   );

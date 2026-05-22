@@ -50,12 +50,12 @@ header {
   .nav-desktop {
     display: none;
     @include lg {
-      display: block;
+      display: flex;
+      align-items: center;
     }
     li {
       font-size: $largeDesktop;
       margin-left: 1.5rem;
-      display: inline;
       transition: 0.1s;
       &:hover {
         color: $primaryColor;

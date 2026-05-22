@@ -20,31 +20,33 @@ const DIAL_CODES = Object.fromEntries(
 
 const safeText = /^[\p{L}\p{N}\s\-'.,#/()+&]+$/u;
 
-const schema = z.object({
-  email: z.string().email('Insira um endereço de email válido'),
-  phoneNumber: z.string().min(7, 'Insira um número de telefone válido'),
-  fullName: z
-    .string()
-    .min(2, 'O nome completo é obrigatório')
-    .max(100)
-    .regex(/^[\p{L}\s\-'.]+$/u, 'Apenas letras, espaços, hífens e apóstrofos'),
-  country: z.string().min(1, 'País é obrigatório'),
-  address: z
-    .string()
-    .min(3, 'A morada é obrigatória')
-    .max(200)
-    .regex(safeText, 'Caracteres inválidos na morada'),
-  city: z
-    .string()
-    .min(2, 'A cidade é obrigatória')
-    .max(100)
-    .regex(/^[\p{L}\s\-'.]+$/u, 'Apenas letras são permitidas'),
-  postalCode: z
-    .string()
-    .min(3, 'O código postal é obrigatório')
-    .max(20)
-    .regex(/^[\w\s\-]+$/, 'Código postal inválido'),
-});
+function getSchema(t) {
+  return z.object({
+    email: z.string().email(t('shipping.validEmail')),
+    phoneNumber: z.string().min(7, t('shipping.validPhone')),
+    fullName: z
+      .string()
+      .min(2, t('shipping.nameRequired'))
+      .max(100)
+      .regex(/^[\p{L}\s\-'.]+$/u, t('shipping.nameChars')),
+    country: z.string().min(1, t('shipping.countryRequired')),
+    address: z
+      .string()
+      .min(3, t('shipping.addressRequired'))
+      .max(200)
+      .regex(safeText, t('shipping.addressChars')),
+    city: z
+      .string()
+      .min(2, t('shipping.cityRequired'))
+      .max(100)
+      .regex(/^[\p{L}\s\-'.]+$/u, t('shipping.cityChars')),
+    postalCode: z
+      .string()
+      .min(3, t('shipping.postalRequired'))
+      .max(20)
+      .regex(/^[\w\s\-]+$/, t('shipping.postalInvalid')),
+  });
+}
 
 export default function ShippingScreen(props) {
   const { t } = useTranslation();
@@ -65,7 +67,7 @@ export default function ShippingScreen(props) {
     getValues,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(getSchema(t)),
     mode: 'onBlur',
     defaultValues: {
       email: shippingAddress.email || '',

@@ -107,7 +107,7 @@ const EXCLUSIVITY_TEXT =
   'Cada design é uma peça original, desenhada à mão com autenticidade. Para garantir exclusividade, não repito designs. Se tiver interesse numa peça anterior, pode enviá-la como referência e crierei um novo design único inspirado nela.';
 
 export default function BookingScreen(props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   useScrollLock(infoModalOpen);
@@ -217,6 +217,7 @@ export default function BookingScreen(props) {
         slot: selectedSlot,
         guestInfo: formData,
         images: uploadedUrls,
+        lang: i18n.language,
       });
       setBooking(createdBooking);
       Sentry.metrics.count('booking.submit_attempted', 1);
@@ -308,7 +309,7 @@ export default function BookingScreen(props) {
           <div className="booking-confirmed">
             <img
               src="/booking-confirmation.avif"
-              alt="Marcação confirmada"
+              alt={t('booking.confirmedTitle')}
               className="booking-confirmed-img"
             />
             <h1 className="custom-font">{t('booking.confirmedTitle')}</h1>

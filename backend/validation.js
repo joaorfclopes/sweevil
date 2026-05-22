@@ -69,5 +69,8 @@ export const productSchema = z.object({
   isClothing: z.boolean(),
   countInStock: countInStockSchema,
   description: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  descriptionPt: z.string().optional(),
+  useDescriptionTranslation: z.boolean().optional(),
   visible: z.boolean(),
 });

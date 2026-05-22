@@ -4,7 +4,7 @@ export default function LoadingBox(props) {
       <img
         className="spinner"
         src={window.location.origin + '/icon.svg'}
-        alt="spinner"
+        alt=""
         width={props.width ? props.width : '70px'}
       />
     </div>

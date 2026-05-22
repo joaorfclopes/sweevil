@@ -35,6 +35,7 @@ import {
   PRODUCT_DETAILS_RESET,
   PRODUCT_UPDATE_RESET,
 } from '../constants/productConstants';
+import { displayName } from '../utils/i18nDisplay';
 import Swal from '../utils/swal';
 
 function ImageCard({ item, isCover }) {
@@ -124,7 +125,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
 }
 
 export default function ProductEditScreen(props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id: productId } = useParams();
@@ -171,6 +172,9 @@ export default function ProductEditScreen(props) {
   const [countInStockXL, setCountInStockXL] = useState('');
   const [countInStockXXL, setCountInStockXXL] = useState('');
   const [description, setDescription] = useState('');
+  const [descriptionEn, setDescriptionEn] = useState('');
+  const [descriptionPt, setDescriptionPt] = useState('');
+  const [useDescriptionTranslation, setUseDescriptionTranslation] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
   const [errorUpload, setErrorUpload] = useState('');
   const [taxPrice, setTaxPrice] = useState('');
@@ -237,6 +241,9 @@ export default function ProductEditScreen(props) {
         setCountInStockXXL(product.countInStock.xxl);
       }
       setDescription(product.description);
+      setDescriptionEn(product.descriptionEn || '');
+      setDescriptionPt(product.descriptionPt || '');
+      setUseDescriptionTranslation(product.useDescriptionTranslation || false);
       setTaxPrice(product.taxPrice);
       setFinalPrice(product.finalPrice);
       setVisible(product.visible);
@@ -302,6 +309,9 @@ export default function ProductEditScreen(props) {
         xxl: countInStockXXL,
       },
       description,
+      descriptionEn,
+      descriptionPt,
+      useDescriptionTranslation,
       taxPrice,
       finalPrice,
       visible,
@@ -507,7 +517,7 @@ export default function ProductEditScreen(props) {
                       .filter((c) => c.isClothing)
                       .map((c) => (
                         <option key={c._id} value={c.name}>
-                          {c.name}
+                          {displayName(c, i18n.language)}
                         </option>
                       ))}
                   </optgroup>
@@ -516,7 +526,7 @@ export default function ProductEditScreen(props) {
                       .filter((c) => !c.isClothing)
                       .map((c) => (
                         <option key={c._id} value={c.name}>
-                          {c.name}
+                          {displayName(c, i18n.language)}
                         </option>
                       ))}
                   </optgroup>
@@ -586,15 +596,58 @@ export default function ProductEditScreen(props) {
                 </div>
               )}
               <div>
-                <label htmlFor="description">{t('productEdit.description')}</label>
-                <textarea
-                  type="text"
-                  rows="3"
-                  id="description"
-                  placeholder={t('productEdit.descriptionPlaceholder')}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
+                <div
+                  className="no-flex"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}
+                >
+                  <input
+                    type="checkbox"
+                    id="useDescriptionTranslation"
+                    checked={useDescriptionTranslation}
+                    onChange={(e) => setUseDescriptionTranslation(e.target.checked)}
+                  />
+                  <label htmlFor="useDescriptionTranslation">
+                    {t('admin.useDescriptionTranslation')}
+                  </label>
+                </div>
+                {!useDescriptionTranslation ? (
+                  <>
+                    <label htmlFor="description">{t('productEdit.description')}</label>
+                    <textarea
+                      type="text"
+                      rows="3"
+                      id="description"
+                      placeholder={t('productEdit.descriptionPlaceholder')}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <label htmlFor="descriptionEn">{t('admin.descriptionEn')}</label>
+                      <textarea
+                        type="text"
+                        rows="3"
+                        id="descriptionEn"
+                        placeholder="Description in English"
+                        value={descriptionEn}
+                        onChange={(e) => setDescriptionEn(e.target.value)}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label htmlFor="descriptionPt">{t('admin.descriptionPt')}</label>
+                      <textarea
+                        type="text"
+                        rows="3"
+                        id="descriptionPt"
+                        placeholder="Descrição em Português"
+                        value={descriptionPt}
+                        onChange={(e) => setDescriptionPt(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="no-flex">
                 <input

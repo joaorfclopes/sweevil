@@ -7,6 +7,7 @@ import MessageBox from '../components/MessageBox';
 import Placeholder from '../components/Placeholder';
 import Product from '../components/Product';
 import { scrollTop } from '../utils.js';
+import { displayName } from '../utils/i18nDisplay';
 
 function ProductSkeleton() {
   return (
@@ -22,7 +23,7 @@ function ProductSkeleton() {
 }
 
 export default function ShopScreen(props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
@@ -67,7 +68,7 @@ export default function ShopScreen(props) {
                 className={`filter${selectedCategory === cat.name ? ' active' : ''}`}
                 onClick={() => setSelectedCategory(cat.name)}
               >
-                {cat.name}
+                {displayName(cat, i18n.language)}
               </div>
             ))}
           </div>

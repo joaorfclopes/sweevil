@@ -24,7 +24,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -39,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
+import { displayName } from '../utils/i18nDisplay';
 import Swal from '../utils/swal';
 
 import {
@@ -295,7 +295,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function GalleryAdminTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
 
   const galleryImageList = useSelector((state) => state.galleryImageList);
@@ -337,6 +337,9 @@ export default function GalleryAdminTab() {
   const [uploadPreview, setUploadPreview] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadDescription, setUploadDescription] = useState('');
+  const [uploadDescriptionEn, setUploadDescriptionEn] = useState('');
+  const [uploadDescriptionPt, setUploadDescriptionPt] = useState('');
+  const [uploadUseTranslation, setUploadUseTranslation] = useState(false);
   const [uploadCategory, setUploadCategory] = useState('');
   const [uploadingToS3, setUploadingToS3] = useState(false);
   const [uploadS3Error, setUploadS3Error] = useState('');
@@ -346,6 +349,9 @@ export default function GalleryAdminTab() {
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [editDescription, setEditDescription] = useState('');
+  const [editDescriptionEn, setEditDescriptionEn] = useState('');
+  const [editDescriptionPt, setEditDescriptionPt] = useState('');
+  const [editUseTranslation, setEditUseTranslation] = useState(false);
   const [editCategory, setEditCategory] = useState('');
 
   // Gallery filter
@@ -358,8 +364,12 @@ export default function GalleryAdminTab() {
   const [catItems, setCatItems] = useState([]);
   const [activeCatId, setActiveCatId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryNameEn, setNewCategoryNameEn] = useState('');
+  const [newCategoryNamePt, setNewCategoryNamePt] = useState('');
   const [editingCatId, setEditingCatId] = useState(null);
   const [editingCatName, setEditingCatName] = useState('');
+  const [editingCatNameEn, setEditingCatNameEn] = useState('');
+  const [editingCatNamePt, setEditingCatNamePt] = useState('');
   const [localErrorCatDelete, setLocalErrorCatDelete] = useState(null);
   const [errorCatDeleteKey, setErrorCatDeleteKey] = useState(0);
   const [localErrorCatUpdate, setLocalErrorCatUpdate] = useState(null);
@@ -465,6 +475,9 @@ export default function GalleryAdminTab() {
     setUploadPreview('');
     setUploadFile(null);
     setUploadDescription('');
+    setUploadDescriptionEn('');
+    setUploadDescriptionPt('');
+    setUploadUseTranslation(false);
     setUploadCategory(categories[0]?.name || '');
     setUploadS3Error('');
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -501,6 +514,9 @@ export default function GalleryAdminTab() {
         createGalleryImage({
           image: data.location,
           description: uploadDescription,
+          descriptionEn: uploadDescriptionEn,
+          descriptionPt: uploadDescriptionPt,
+          useDescriptionTranslation: uploadUseTranslation,
           category: uploadCategory,
           ...(data.width && data.height ? { width: data.width, height: data.height } : {}),
         })
@@ -517,6 +533,9 @@ export default function GalleryAdminTab() {
   const openEdit = useCallback((item) => {
     setEditItem(item);
     setEditDescription(item.description || '');
+    setEditDescriptionEn(item.descriptionEn || '');
+    setEditDescriptionPt(item.descriptionPt || '');
+    setEditUseTranslation(item.useDescriptionTranslation || false);
     setEditCategory(item.category);
     setEditOpen(true);
   }, []);
@@ -524,7 +543,13 @@ export default function GalleryAdminTab() {
   const handleEditSubmit = () => {
     if (!editItem) return;
     dispatch(
-      updateGalleryImage(editItem._id, { description: editDescription, category: editCategory })
+      updateGalleryImage(editItem._id, {
+        description: editDescription,
+        descriptionEn: editDescriptionEn,
+        descriptionPt: editDescriptionPt,
+        useDescriptionTranslation: editUseTranslation,
+        category: editCategory,
+      })
     );
   };
 
@@ -549,7 +574,7 @@ export default function GalleryAdminTab() {
 
   const handleDeleteCategory = (cat) => {
     Swal.fire({
-      title: t('admin.deleteCategoryTitle', { name: cat.name }),
+      title: t('admin.deleteCategoryTitle', { name: displayName(cat, i18n.language) }),
       showCancelButton: true,
       confirmButtonText: t('admin.deleteImageBtn'),
       confirmButtonColor: '#d33',
@@ -631,7 +656,9 @@ export default function GalleryAdminTab() {
   const handleAddCategory = () => {
     const name = newCategoryName.trim();
     if (!name) return;
-    dispatch(createCategory(name));
+    dispatch(createCategory(name, newCategoryNameEn, newCategoryNamePt));
+    setNewCategoryNameEn('');
+    setNewCategoryNamePt('');
   };
 
   const categorySelect = (value, setter) => (
@@ -640,7 +667,7 @@ export default function GalleryAdminTab() {
       <Select value={value} label={t('admin.category')} onChange={(e) => setter(e.target.value)}>
         {allCategoryNames.map((name) => (
           <MenuItem key={name} value={name}>
-            {name}
+            {displayName(dbCategoryByName[name], i18n.language)}
           </MenuItem>
         ))}
       </Select>
@@ -741,7 +768,7 @@ export default function GalleryAdminTab() {
                             style={{
                               display: 'flex',
                               alignItems: 'center',
-                              gap: 0,
+                              gap: 4,
                               border: '1px solid #bbb',
                               borderRadius: 16,
                               padding: '2px 6px',
@@ -755,7 +782,14 @@ export default function GalleryAdminTab() {
                               onChange={(e) => setEditingCatName(e.target.value)}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && editingCatName.trim())
-                                  dispatch(updateCategory(dbCat._id, editingCatName));
+                                  dispatch(
+                                    updateCategory(
+                                      dbCat._id,
+                                      editingCatName,
+                                      editingCatName,
+                                      editingCatNamePt
+                                    )
+                                  );
                                 if (e.key === 'Escape') setEditingCatId(null);
                               }}
                               style={{
@@ -766,12 +800,45 @@ export default function GalleryAdminTab() {
                                 fontFamily: 'inherit',
                               }}
                             />
+                            <input
+                              value={editingCatNamePt}
+                              size={Math.max(8, editingCatNamePt.length + 2)}
+                              onChange={(e) => setEditingCatNamePt(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && editingCatName.trim())
+                                  dispatch(
+                                    updateCategory(
+                                      dbCat._id,
+                                      editingCatName,
+                                      editingCatName,
+                                      editingCatNamePt
+                                    )
+                                  );
+                                if (e.key === 'Escape') setEditingCatId(null);
+                              }}
+                              placeholder="PT"
+                              style={{
+                                border: 'none',
+                                outline: 'none',
+                                background: 'transparent',
+                                fontSize: '0.8rem',
+                                fontFamily: 'inherit',
+                                opacity: 0.7,
+                              }}
+                            />
                             <IconButton
                               size="small"
                               sx={{ padding: '2px' }}
                               onClick={() => {
                                 if (editingCatName.trim())
-                                  dispatch(updateCategory(dbCat._id, editingCatName));
+                                  dispatch(
+                                    updateCategory(
+                                      dbCat._id,
+                                      editingCatName,
+                                      editingCatName,
+                                      editingCatNamePt
+                                    )
+                                  );
                               }}
                             >
                               <EditIcon sx={{ fontSize: 13 }} />
@@ -793,12 +860,13 @@ export default function GalleryAdminTab() {
                         <SortableCategoryChip
                           key={name}
                           id={dbCat?._id || name}
-                          name={name}
+                          name={displayName(dbCat, i18n.language)}
                           dbCat={dbCat}
                           isActive={activeCatId === dbCat?._id}
                           onEdit={() => {
                             setEditingCatId(dbCat._id);
                             setEditingCatName(name);
+                            setEditingCatNamePt(dbCat.namePt || '');
                           }}
                           onDelete={() => handleDeleteCategory(dbCat)}
                         />
@@ -827,34 +895,39 @@ export default function GalleryAdminTab() {
                         cursor: 'grabbing',
                       }}
                     >
-                      {catItems.find((c) => c._id === activeCatId)?.name}
+                      {displayName(
+                        catItems.find((c) => c._id === activeCatId),
+                        i18n.language
+                      )}
                     </div>
                   ) : null}
                 </DragOverlay>
               </DndContext>
-              <TextField
-                size="small"
-                placeholder={t('admin.newCategoryPlaceholder')}
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          size="small"
-                          onClick={handleAddCategory}
-                          disabled={!newCategoryName.trim() || loadingCatCreate}
-                        >
-                          <AddIcon fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                style={{ width: 240 }}
-              />
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <TextField
+                  size="small"
+                  placeholder={t('admin.nameEn')}
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                  style={{ width: 160 }}
+                />
+                <TextField
+                  size="small"
+                  placeholder={t('admin.namePt')}
+                  value={newCategoryNamePt}
+                  onChange={(e) => setNewCategoryNamePt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                  style={{ width: 160 }}
+                />
+                <IconButton
+                  size="small"
+                  onClick={handleAddCategory}
+                  disabled={!newCategoryName.trim() || loadingCatCreate}
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </div>
             </div>
 
             {/* ── Category filter ── */}
@@ -989,14 +1062,53 @@ export default function GalleryAdminTab() {
               />
             </div>
             {uploadS3Error && <MessageBox variant="error">{uploadS3Error}</MessageBox>}
-            <TextField
-              label={t('admin.description')}
-              value={uploadDescription}
-              onChange={(e) => setUploadDescription(e.target.value)}
-              fullWidth
-              margin="normal"
-              size="small"
-            />
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 8,
+                marginBottom: 4,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={uploadUseTranslation}
+                onChange={(e) => setUploadUseTranslation(e.target.checked)}
+              />
+              {t('admin.useDescriptionTranslation')}
+            </label>
+            {!uploadUseTranslation ? (
+              <TextField
+                label={t('admin.description')}
+                value={uploadDescription}
+                onChange={(e) => setUploadDescription(e.target.value)}
+                fullWidth
+                margin="normal"
+                size="small"
+              />
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <TextField
+                  label={t('admin.descriptionEn')}
+                  value={uploadDescriptionEn}
+                  onChange={(e) => setUploadDescriptionEn(e.target.value)}
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                />
+                <TextField
+                  label={t('admin.descriptionPt')}
+                  value={uploadDescriptionPt}
+                  onChange={(e) => setUploadDescriptionPt(e.target.value)}
+                  fullWidth
+                  margin="normal"
+                  size="small"
+                />
+              </div>
+            )}
             {categorySelect(uploadCategory, setUploadCategory)}
           </LoadingOverlay>
         </DialogContent>
@@ -1038,14 +1150,53 @@ export default function GalleryAdminTab() {
               style={{ marginBottom: 16 }}
             />
           )}
-          <TextField
-            label={t('admin.description')}
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-            fullWidth
-            margin="normal"
-            size="small"
-          />
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginTop: 8,
+              marginBottom: 4,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={editUseTranslation}
+              onChange={(e) => setEditUseTranslation(e.target.checked)}
+            />
+            {t('admin.useDescriptionTranslation')}
+          </label>
+          {!editUseTranslation ? (
+            <TextField
+              label={t('admin.description')}
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              fullWidth
+              margin="normal"
+              size="small"
+            />
+          ) : (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <TextField
+                label={t('admin.descriptionEn')}
+                value={editDescriptionEn}
+                onChange={(e) => setEditDescriptionEn(e.target.value)}
+                fullWidth
+                margin="normal"
+                size="small"
+              />
+              <TextField
+                label={t('admin.descriptionPt')}
+                value={editDescriptionPt}
+                onChange={(e) => setEditDescriptionPt(e.target.value)}
+                fullWidth
+                margin="normal"
+                size="small"
+              />
+            </div>
+          )}
           {categorySelect(editCategory, setEditCategory)}
         </DialogContent>
         <DialogActions>

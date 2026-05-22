@@ -7,10 +7,13 @@ import rateLimit from 'express-rate-limit';
 import Stripe from 'stripe';
 import { getAuth } from '../auth.js';
 import { getShippingPrice } from '../config/shippingZones.js';
-import { cancelOrder as cancelOrderEmail } from '../mailing/cancelOrder.js';
+import { cancelOrder as cancelOrderEmailPt } from '../mailing/cancelOrder.js';
 import { cancelOrderAdmin as cancelOrderAdminEmail } from '../mailing/cancelOrderAdmin.js';
-import { orderPendingPayment } from '../mailing/orderPendingPayment.js';
-import { placedOrder } from '../mailing/placedOrder.js';
+import { cancelOrder as cancelOrderEmailEn } from '../mailing/en/cancelOrder.js';
+import { orderPendingPayment as orderPendingPaymentEn } from '../mailing/en/orderPendingPayment.js';
+import { placedOrder as placedOrderEn } from '../mailing/en/placedOrder.js';
+import { orderPendingPayment as orderPendingPaymentPt } from '../mailing/orderPendingPayment.js';
+import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
 import { sendMail } from '../mailing/sendMail.js';
 import { getTax } from '../mailing/taxRates.js';
@@ -324,6 +327,7 @@ orderRouter.post(
       totalPrice,
       status: 'IN PROGRESS',
       confirmToken,
+      lang: req.body.lang || 'en',
     });
     const createdOrder = await order.save();
     Sentry.metrics.count('order.created', 1);
@@ -331,11 +335,17 @@ orderRouter.post(
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const paymentUrl = `${frontendUrl}/cart/order/${confirmToken}`;
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+    const isPtOrder = createdOrder.lang === 'pt';
     await sendMail({
       from,
       to: shippingAddress.email,
-      subject: `Encomenda em ${process.env.BRAND_NAME}`,
-      html: orderPendingPayment({ order: createdOrder, paymentUrl }),
+      subject: isPtOrder
+        ? `Encomenda em ${process.env.BRAND_NAME}`
+        : `Order at ${process.env.BRAND_NAME}`,
+      html: (isPtOrder ? orderPendingPaymentPt : orderPendingPaymentEn)({
+        order: createdOrder,
+        paymentUrl,
+      }),
     });
     await sendMail({
       from,
@@ -670,6 +680,7 @@ orderRouter.put(
         }
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+      const isPtPay = updatedOrder.lang === 'pt';
       const invoiceAttachment = invoicePdfBuffer
         ? [
             {
@@ -692,8 +703,13 @@ orderRouter.put(
       await sendMail({
         from,
         to: order.shippingAddress.email,
-        subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
-        html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
+        subject: isPtPay
+          ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
+          : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
+        html: (isPtPay ? placedOrderPt : placedOrderEn)({
+          order: orderEmailData,
+          hasInvoice: !!invoicePdfBuffer,
+        }),
         attachments: invoiceAttachment,
       });
       await sendMail({
@@ -793,11 +809,12 @@ orderRouter.put(
       `[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: ${isAdminUser ? 'admin' : 'customer'}`
     );
 
+    const isPtCancel = updatedOrder.lang === 'pt';
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: updatedOrder.shippingAddress.email,
-      subject: 'Encomenda Cancelada!',
-      html: cancelOrderEmail({
+      subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
+      html: (isPtCancel ? cancelOrderEmailPt : cancelOrderEmailEn)({
         order: {
           orderId: updatedOrder._id,
           confirmToken: updatedOrder.confirmToken,

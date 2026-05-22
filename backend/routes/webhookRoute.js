@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/node';
 import express from 'express';
 import Stripe from 'stripe';
-import { placedOrder } from '../mailing/placedOrder.js';
+import { placedOrder as placedOrderEn } from '../mailing/en/placedOrder.js';
+import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
 import { sendMail } from '../mailing/sendMail.js';
 import Booking from '../models/bookingModel.js';
@@ -70,6 +71,7 @@ const handleOrderPaid = async (paymentIntent) => {
         }
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+      const isPtWebhook = order.lang === 'pt';
       const invoiceAttachment = invoicePdfBuffer
         ? [
             {
@@ -92,8 +94,13 @@ const handleOrderPaid = async (paymentIntent) => {
       await sendMail({
         from,
         to: order.shippingAddress.email,
-        subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
-        html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
+        subject: isPtWebhook
+          ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
+          : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
+        html: (isPtWebhook ? placedOrderPt : placedOrderEn)({
+          order: orderEmailData,
+          hasInvoice: !!invoicePdfBuffer,
+        }),
         attachments: invoiceAttachment,
       });
       await sendMail({

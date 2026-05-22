@@ -1,69 +1,50 @@
 import { useTranslation } from 'react-i18next';
 
 export default function PoliticaDevolucoes() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('return-policy');
   return (
     <section className="legal-screen custom-font">
-      <h1>{t('policy.returnPolicy')}</h1>
-      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
+      <h1>{t('title')}</h1>
+      <span className="last-updated">{t('lastUpdated')}</span>
 
-      <h2>1. Return Conditions</h2>
-      <p>
-        You may return any item purchased from the Sweevil store within
-        <strong> 14 calendar days</strong> of receiving the order, provided that:
-      </p>
+      <h2>{t('s1_title')}</h2>
+      <p>{t('s1_p1')}</p>
       <ul>
-        <li>The item is in perfect condition, with no signs of use</li>
-        <li>The item is returned in its original packaging</li>
-        <li>Proof of purchase is provided (order confirmation email)</li>
+        <li>{t('s1_li1')}</li>
+        <li>{t('s1_li2')}</li>
+        <li>{t('s1_li3')}</li>
       </ul>
 
-      <h2>2. How to Start a Return</h2>
-      <p>To start the return process, contact us at:</p>
+      <h2>{t('s2_title')}</h2>
+      <p>{t('s2_p1')}</p>
       <ul>
         <li>
-          Email:{' '}
-          <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a>
+          {t('s2_li1_email_label')}{' '}
+          <a href="mailto:silvia.seixas.peralta@gmail.com">{t('s2_li1_email')}</a>
         </li>
-        <li>Phone: +351 916 828 734</li>
+        <li>{t('s2_li2')}</li>
       </ul>
-      <p>
-        Please provide your order number, the items you wish to return, and the reason for the
-        return. Once the return is confirmed, we will send you shipping instructions.
-      </p>
+      <p>{t('s2_p2')}</p>
 
-      <h2>3. Return Shipping Costs</h2>
-      <p>
-        Return shipping costs are the customer's responsibility. We recommend using a tracked
-        shipping service, as we are not liable for items lost during return transit.
-      </p>
+      <h2>{t('s3_title')}</h2>
+      <p>{t('s3_p1')}</p>
 
-      <h2>4. Refunds</h2>
-      <p>
-        After receiving and inspecting the returned item, we will process the refund within a
-        maximum of <strong>14 days</strong>. The refund will be issued via the same payment method
-        used in the original purchase:
-      </p>
+      <h2>{t('s4_title')}</h2>
+      <p>{t('s4_p1')}</p>
       <ul>
-        <li>Credit/debit card (Stripe) — refunded to the card used</li>
-        <li>Debit card — refunded to the card used</li>
-        <li>MB Way — refunded to the associated phone number</li>
-        <li>Revolut — refunded to the Revolut account used</li>
+        <li>{t('s4_li1')}</li>
+        <li>{t('s4_li2')}</li>
+        <li>{t('s4_li3')}</li>
+        <li>{t('s4_li4')}</li>
       </ul>
 
-      <h2>5. Defective or Damaged Items</h2>
-      <p>
-        If you receive a defective or damaged item, contact us immediately (within 48 hours of
-        receipt) with photos of the item and the packaging. In this case, return shipping costs will
-        be covered by Sweevil and we will arrange a replacement or full refund, according to your
-        preference.
-      </p>
+      <h2>{t('s5_title')}</h2>
+      <p>{t('s5_p1')}</p>
 
-      <h2>6. Undelivered Orders</h2>
+      <h2>{t('s6_title')}</h2>
       <p>
-        If your order has not been delivered within the estimated timeframe, contact us at{' '}
-        <a href="mailto:silvia.seixas.peralta@gmail.com">silvia.seixas.peralta@gmail.com</a> so we
-        can follow up with the carrier.
+        {t('s6_p1')} <a href="mailto:silvia.seixas.peralta@gmail.com">{t('s6_email')}</a>{' '}
+        {t('s6_p2')}
       </p>
     </section>
   );

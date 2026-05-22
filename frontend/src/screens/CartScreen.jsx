@@ -95,7 +95,7 @@ export default function CartScreen(props) {
     window.__cartUndo = () => undoFnRef.current?.();
     notyf.error({
       icon: false,
-      message: `"${item.name}" removed from cart &nbsp;<span class="notyf-undo" onclick="window.__cartUndo()">Undo</span>`,
+      message: `"${item.name}" ${t('cart.removedFromCart')} &nbsp;<span class="notyf-undo" onclick="window.__cartUndo()">${t('cart.undo')}</span>`,
       dismissible: true,
       duration: 5000,
     });

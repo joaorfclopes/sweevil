@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLazyLoad } from '../hooks/useLazyLoad';
+import { displayDescription } from '../utils/i18nDisplay';
 import Placeholder from './Placeholder';
 
 const loadedUrls = new Set();
 
 export default function GalleryImage({ galleryImage }) {
+  const { i18n } = useTranslation();
   const alreadyLoaded = loadedUrls.has(galleryImage.image);
   const [containerRef, inView] = useLazyLoad('300px', alreadyLoaded);
   const imgRef = useRef(null);
@@ -40,7 +43,7 @@ export default function GalleryImage({ galleryImage }) {
           <img
             ref={imgRef}
             src={inView ? galleryImage.image : undefined}
-            alt={galleryImage.description || ''}
+            alt={displayDescription(galleryImage, i18n.language) || ''}
           />
         </div>
       </Placeholder>

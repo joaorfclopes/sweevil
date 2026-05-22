@@ -19,14 +19,18 @@ export default function AboutAdminTab() {
   const { userInfo } = useSelector((state) => state.userSignin);
 
   const [open, setOpen] = useState(true);
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [enTitle, setEnTitle] = useState('');
+  const [enBody, setEnBody] = useState('');
+  const [ptTitle, setPtTitle] = useState('');
+  const [ptBody, setPtBody] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     axios.get('/api/about').then((res) => {
-      setTitle(res.data.title || '');
-      setBody(res.data.body || '');
+      setEnTitle(res.data.en?.title || '');
+      setEnBody(res.data.en?.body || '');
+      setPtTitle(res.data.pt?.title || '');
+      setPtBody(res.data.pt?.body || '');
     });
   }, []);
 
@@ -35,7 +39,7 @@ export default function AboutAdminTab() {
     try {
       await axios.put(
         '/api/about',
-        { title, body },
+        { en: { title: enTitle, body: enBody }, pt: { title: ptTitle, body: ptBody } },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       notyf.success(t('admin.aboutSaved'));
@@ -64,17 +68,38 @@ export default function AboutAdminTab() {
             <div
               style={{ padding: '0 16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
             >
+              <Typography variant="subtitle2">English</Typography>
               <TextField
-                label={t('admin.aboutTitle')}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                label={t('admin.aboutTitleEn')}
+                value={enTitle}
+                onChange={(e) => setEnTitle(e.target.value)}
                 fullWidth
                 size="small"
               />
               <TextField
-                label={t('admin.aboutBody')}
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
+                label={t('admin.aboutBodyEn')}
+                value={enBody}
+                onChange={(e) => setEnBody(e.target.value)}
+                fullWidth
+                multiline
+                minRows={8}
+                size="small"
+                helperText={t('admin.aboutBodyHint')}
+              />
+              <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                Português
+              </Typography>
+              <TextField
+                label={t('admin.aboutTitlePt')}
+                value={ptTitle}
+                onChange={(e) => setPtTitle(e.target.value)}
+                fullWidth
+                size="small"
+              />
+              <TextField
+                label={t('admin.aboutBodyPt')}
+                value={ptBody}
+                onChange={(e) => setPtBody(e.target.value)}
                 fullWidth
                 multiline
                 minRows={8}

@@ -36,7 +36,7 @@ export default function Footer({ showShopNow = false }) {
         <h1>{t('footer.contacts')}</h1>
         <div className="contacts">
           <a href={import.meta.env.VITE_INSTAGRAM_LINK} target="_blank" rel="noreferrer">
-            <Tooltip title="Instagram" placement="bottom">
+            <Tooltip title={t('footer.instagram')} placement="bottom">
               <span>
                 <Instagram />
               </span>
@@ -48,14 +48,14 @@ export default function Footer({ showShopNow = false }) {
               navigator.clipboard.writeText(import.meta.env.VITE_SENDER_EMAIL_ADDRESS).then(copied)
             }
           >
-            <Tooltip title="Email" placement="bottom">
+            <Tooltip title={t('footer.email')} placement="bottom">
               <span>
                 <Email />
               </span>
             </Tooltip>
           </span>
           <a href={import.meta.env.VITE_LOCATION_LINK} target="_blank" rel="noreferrer">
-            <Tooltip title="Location" placement="bottom">
+            <Tooltip title={t('footer.location')} placement="bottom">
               <span>
                 <Location />
               </span>

@@ -44,7 +44,7 @@ function PlaceOrderItemImage({ item }) {
 }
 
 export default function PlaceOrderScreen(props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
@@ -77,6 +77,7 @@ export default function PlaceOrderScreen(props) {
       createOrder({
         orderItems: cartItems.map(({ product, qty, size }) => ({ product, qty, size })),
         shippingAddress,
+        lang: i18n.language,
       })
     );
   };

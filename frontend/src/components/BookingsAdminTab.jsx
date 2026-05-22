@@ -312,7 +312,15 @@ export default function BookingsAdminTab() {
   };
 
   const handleExportBookingsCSV = () => {
-    const headers = ['Date', 'Time', 'Guest', 'Email', 'Status', 'Notes', 'Updated'];
+    const headers = [
+      t('admin.colDate'),
+      t('admin.colTime'),
+      t('admin.colGuest'),
+      t('admin.colEmail'),
+      t('admin.colStatus'),
+      t('admin.colNotes'),
+      t('admin.colUpdated'),
+    ];
     const rows = filteredBookings.map((b) => [
       formatDateDay(b.date),
       b.slot,
