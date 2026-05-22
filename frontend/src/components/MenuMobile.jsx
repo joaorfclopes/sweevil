@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
@@ -6,6 +7,7 @@ import { enableScroll } from '../scroll';
 import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
 export default function MenuMobile({ activeSection }) {
+  const { t } = useTranslation();
   const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -37,7 +39,7 @@ export default function MenuMobile({ activeSection }) {
               className={({ isActive }) => (isActive ? 'active' : '')}
               onClick={closeMenu}
             >
-              admin
+              {t('nav.admin')}
             </NavLink>
           </li>
         )}
@@ -52,7 +54,7 @@ export default function MenuMobile({ activeSection }) {
                 className={isActive ? 'active' : ''}
                 onClick={isHome ? homeClick : closeMenu}
               >
-                {option}
+                {t(`nav.${option}`)}
               </HashLink>
             </li>
           );
@@ -63,7 +65,7 @@ export default function MenuMobile({ activeSection }) {
             className={({ isActive }) => (isActive ? 'active' : '')}
             onClick={closeMenu}
           >
-            shop
+            {t('nav.shop')}
           </NavLink>
         </li>
         {bookingEnabled && (
@@ -73,7 +75,7 @@ export default function MenuMobile({ activeSection }) {
               className={({ isActive }) => (isActive ? 'active' : '')}
               onClick={closeMenu}
             >
-              booking
+              {t('nav.booking')}
             </NavLink>
           </li>
         )}

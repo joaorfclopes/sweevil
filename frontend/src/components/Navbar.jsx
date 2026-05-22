@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
@@ -10,6 +11,7 @@ import { disableScroll, enableScroll } from '../scroll';
 import { mainOptions, scrollTop, scrollWithOffset } from '../utils';
 
 export default function Navbar({ scrolled, activeSection }) {
+  const { t } = useTranslation();
   const { bookingEnabled } = useFeatures();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
@@ -83,7 +85,7 @@ export default function Navbar({ scrolled, activeSection }) {
             {userInfo && (
               <li>
                 <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : '')}>
-                  admin
+                  {t('nav.admin')}
                 </NavLink>
               </li>
             )}
@@ -98,20 +100,20 @@ export default function Navbar({ scrolled, activeSection }) {
                     className={isActive ? 'active' : ''}
                     onClick={() => isHome && scrollTop()}
                   >
-                    {option}
+                    {t(`nav.${option}`)}
                   </HashLink>
                 </li>
               );
             })}
             <li>
               <NavLink to="/shop" className={({ isActive }) => (isActive ? 'active' : '')}>
-                shop
+                {t('nav.shop')}
               </NavLink>
             </li>
             {bookingEnabled && (
               <li>
                 <NavLink to="/booking" className={({ isActive }) => (isActive ? 'active' : '')}>
-                  booking
+                  {t('nav.booking')}
                 </NavLink>
               </li>
             )}
@@ -140,7 +142,7 @@ export default function Navbar({ scrolled, activeSection }) {
                 className={({ isActive }) => (isActive ? 'active' : '')}
                 onClick={closeMenu}
               >
-                admin
+                {t('nav.admin')}
               </NavLink>
             </li>
           )}
@@ -155,7 +157,7 @@ export default function Navbar({ scrolled, activeSection }) {
                   className={isActive ? 'active' : ''}
                   onClick={isHome ? homeClick : closeMenu}
                 >
-                  {option}
+                  {t(`nav.${option}`)}
                 </HashLink>
               </li>
             );
@@ -166,7 +168,7 @@ export default function Navbar({ scrolled, activeSection }) {
               className={({ isActive }) => (isActive ? 'active' : '')}
               onClick={closeMenu}
             >
-              shop
+              {t('nav.shop')}
             </NavLink>
           </li>
           {bookingEnabled && (
@@ -176,7 +178,7 @@ export default function Navbar({ scrolled, activeSection }) {
                 className={({ isActive }) => (isActive ? 'active' : '')}
                 onClick={closeMenu}
               >
-                booking
+                {t('nav.booking')}
               </NavLink>
             </li>
           )}
