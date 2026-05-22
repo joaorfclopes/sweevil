@@ -456,7 +456,9 @@ export default function ProductsTable() {
                       <DownloadIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title={reorderMode ? 'Exit reorder mode' : 'Reorder products'}>
+                  <Tooltip
+                    title={reorderMode ? t('admin.exitReorderMode') : t('admin.reorderProducts')}
+                  >
                     <span>
                       <IconButton
                         onClick={handleToggleReorderMode}
@@ -614,7 +616,9 @@ export default function ProductsTable() {
                         );
                       })}
                       {items.length === 0 && (
-                        <span style={{ color: '#aaa', fontSize: '0.85rem' }}>None</span>
+                        <span style={{ color: '#aaa', fontSize: '0.85rem' }}>
+                          {t('admin.noCategories')}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -630,7 +634,7 @@ export default function ProductsTable() {
                 >
                   <TextField
                     size="small"
-                    placeholder="New category name"
+                    placeholder={t('admin.newCategoryPlaceholder')}
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
@@ -665,7 +669,7 @@ export default function ProductsTable() {
                       checked={newCatIsClothing}
                       onChange={(e) => setNewCatIsClothing(e.target.checked)}
                     />
-                    Size-based stock (clothing)
+                    {t('admin.clothingStockLabel')}
                   </label>
                 </div>
               </div>
@@ -692,7 +696,7 @@ export default function ProductsTable() {
                           />
                         </TableCell>
                         <TableCell align="center">
-                          <b>Image</b>
+                          <b>{t('admin.colImage')}</b>
                         </TableCell>
                         {[
                           { id: 'name', label: t('admin.colProduct') },
@@ -874,7 +878,7 @@ export default function ProductsTable() {
                             </TableCell>
                             <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
                             <TableCell align="right">
-                              <Tooltip title="Edit">
+                              <Tooltip title={t('admin.editProduct')}>
                                 <IconButton
                                   size="small"
                                   onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
@@ -882,7 +886,7 @@ export default function ProductsTable() {
                                   <EditIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
-                              <Tooltip title="Delete">
+                              <Tooltip title={t('admin.deleteProduct')}>
                                 <IconButton size="small" onClick={() => deleteHandler(product)}>
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>

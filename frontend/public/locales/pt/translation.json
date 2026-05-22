@@ -240,7 +240,13 @@
     "duplicateProduct": "Duplicar",
     "toggleVisible": "Alternar visibilidade",
     "exportProductsCsv": "Exportar CSV",
-    "viewDetails": "Ver detalhes"
+    "viewDetails": "Ver detalhes",
+    "exitReorderMode": "Sair do modo de reordenar",
+    "reorderProducts": "Reordenar produtos",
+    "noCategories": "Nenhuma",
+    "newCategoryPlaceholder": "Nova categoria",
+    "clothingStockLabel": "Stock por tamanho (roupa)",
+    "colImage": "Imagem"
   },
   "productEdit": {
     "newProduct": "Novo Produto",

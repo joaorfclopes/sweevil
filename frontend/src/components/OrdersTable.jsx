@@ -96,7 +96,7 @@ export default function OrdersTable() {
 
   const refundHandler = (order) => {
     Swal.fire({
-      title: `Refund €${order.totalPrice?.toFixed(2)} to ${formatName(order.shippingAddress.fullName)}?`,
+      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${formatName(order.shippingAddress.fullName)}?`,
       text: t('admin.refundText'),
       showCancelButton: true,
       confirmButtonText: t('admin.refundBtn'),
