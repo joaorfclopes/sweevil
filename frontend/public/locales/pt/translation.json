@@ -49,7 +49,9 @@
     "quantity": "Quantidade",
     "size": "Tamanho",
     "sizeUpdated": "Tamanho do produto atualizado",
-    "qtyUpdated": "Quantidade do produto atualizada"
+    "qtyUpdated": "Quantidade do produto atualizada",
+    "subtotal_one": "Subtotal ({{count}} artigo)",
+    "subtotal_other": "Subtotal ({{count}} artigos)"
   },
   "shipping": {
     "title": "Detalhes de Envio",
@@ -60,6 +62,7 @@
     "address": "Morada",
     "city": "Cidade",
     "postalCode": "Código Postal",
+    "selectCountry": "Selecione um país",
     "continue": "Continuar",
     "validEmail": "Insira um endereço de email válido",
     "validPhone": "Insira um número de telefone válido",

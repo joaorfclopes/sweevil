@@ -158,7 +158,7 @@ export default function ShippingScreen(props) {
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                   >
-                    <option value="">Select a country</option>
+                    <option value="">{t('shipping.selectCountry')}</option>
                     {COUNTRY_LIST.map(({ code, name }) => (
                       <option key={code} value={code}>
                         {name}

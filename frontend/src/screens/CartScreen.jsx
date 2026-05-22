@@ -198,7 +198,7 @@ export default function CartScreen(props) {
           </ul>
           <ul className="cart-total">
             <li>
-              Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+              {t('cart.subtotal', { count: cart.itemsQty })} :{' '}
               {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
             </li>
             <li>
