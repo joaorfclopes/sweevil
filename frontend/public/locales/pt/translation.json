@@ -284,7 +284,20 @@
     "errorMinPrice": "O preço deve ser pelo menos €0,50.",
     "done": "Concluído",
     "bulkCreateResult": "{{created}} data(s) adicionada(s). {{skipped}} já existia(m) e foi(foram) ignorada(s).",
-    "bulkCreateResultSimple": "{{created}} data(s) adicionada(s)."
+    "bulkCreateResultSimple": "{{created}} data(s) adicionada(s).",
+    "rename": "Renomear",
+    "addImage": "Adicionar imagem",
+    "searchDescription": "Pesquisar descrição…",
+    "noCategoriesYet": "Sem categorias ainda.",
+    "noImagesYet": "Sem imagens. Clique em + para adicionar.",
+    "noImagesFilter": "Sem imagens com o filtro atual.",
+    "deleteImageTitle": "Eliminar esta imagem?",
+    "deleteImageText": "Esta ação não pode ser desfeita.",
+    "deleteImageBtn": "Sim, eliminar",
+    "deleteCategoryTitle": "Eliminar \"{{name}}\"?",
+    "dragToReorder": "Arrastar para reordenar",
+    "dropImageHere": "Clique ou arraste uma imagem aqui",
+    "filter": "Filtrar"
   },
   "productEdit": {
     "newProduct": "Novo Produto",

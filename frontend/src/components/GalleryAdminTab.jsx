@@ -35,6 +35,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Axios from 'axios';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
@@ -91,6 +92,7 @@ function useColCount() {
 // ─── Sortable category chip ───────────────────────────────────────────────────
 
 function SortableCategoryChip({ id, name, dbCat, isActive, onEdit, onDelete }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -119,7 +121,7 @@ function SortableCategoryChip({ id, name, dbCat, isActive, onEdit, onDelete }) {
       <span style={{ marginRight: 2, userSelect: 'none' }}>{name}</span>
       {dbCat && (
         <>
-          <Tooltip title="Rename">
+          <Tooltip title={t('admin.rename')}>
             <IconButton
               size="small"
               sx={{ padding: '2px' }}
@@ -132,7 +134,7 @@ function SortableCategoryChip({ id, name, dbCat, isActive, onEdit, onDelete }) {
               <EditIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('admin.deleteProduct')}>
             <IconButton
               size="small"
               sx={{ padding: '2px' }}
@@ -224,6 +226,7 @@ function PlainCard({ item }) {
 // ─── Sortable card ────────────────────────────────────────────────────────────
 
 const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActive }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item._id,
   });
@@ -255,7 +258,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
       {item.category && <span className="gallery-admin-category-badge">{item.category}</span>}
       <div className="gallery-admin-overlay">
         <div className="gallery-admin-overlay-actions">
-          <Tooltip title="Edit">
+          <Tooltip title={t('admin.editProduct')}>
             <IconButton
               size="small"
               className="gallery-admin-icon-btn"
@@ -264,7 +267,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('admin.deleteProduct')}>
             <IconButton
               size="small"
               className="gallery-admin-icon-btn gallery-admin-icon-btn--danger"
@@ -273,7 +276,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Drag to reorder">
+          <Tooltip title={t('admin.dragToReorder')}>
             <IconButton
               size="small"
               className="gallery-admin-icon-btn gallery-admin-drag-handle"
@@ -292,6 +295,7 @@ const SortableCard = memo(function SortableCard({ item, onEdit, onDelete, isActi
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function GalleryAdminTab() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const galleryImageList = useSelector((state) => state.galleryImageList);
@@ -529,10 +533,10 @@ export default function GalleryAdminTab() {
   const handleDelete = useCallback(
     (item) => {
       Swal.fire({
-        title: 'Delete this image?',
-        text: 'This cannot be undone.',
+        title: t('admin.deleteImageTitle'),
+        text: t('admin.deleteImageText'),
         showCancelButton: true,
-        confirmButtonText: 'Yes, delete',
+        confirmButtonText: t('admin.deleteImageBtn'),
         confirmButtonColor: '#d33',
       }).then((result) => {
         if (result.isConfirmed) dispatch(deleteGalleryImage(item._id));
@@ -545,9 +549,9 @@ export default function GalleryAdminTab() {
 
   const handleDeleteCategory = (cat) => {
     Swal.fire({
-      title: `Delete "${cat.name}"?`,
+      title: t('admin.deleteCategoryTitle', { name: cat.name }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
+      confirmButtonText: t('admin.deleteImageBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteCategory(cat._id));
@@ -632,8 +636,8 @@ export default function GalleryAdminTab() {
 
   const categorySelect = (value, setter) => (
     <FormControl fullWidth margin="normal" size="small">
-      <InputLabel>Category</InputLabel>
-      <Select value={value} label="Category" onChange={(e) => setter(e.target.value)}>
+      <InputLabel>{t('admin.category')}</InputLabel>
+      <Select value={value} label={t('admin.category')} onChange={(e) => setter(e.target.value)}>
         {allCategoryNames.map((name) => (
           <MenuItem key={name} value={name}>
             {name}
@@ -659,7 +663,7 @@ export default function GalleryAdminTab() {
               onClick={() => setSectionOpen((v) => !v)}
             >
               <Typography className="title" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                <b>Gallery</b>
+                <b>{t('admin.gallery')}</b>
               </Typography>
               <IconButton tabIndex={-1}>
                 {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -669,7 +673,7 @@ export default function GalleryAdminTab() {
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                 <TextField
                   size="small"
-                  placeholder="Search description…"
+                  placeholder={t('admin.searchDescription')}
                   value={filterDesc}
                   onChange={(e) => setFilterDesc(e.target.value)}
                   slotProps={{
@@ -681,8 +685,8 @@ export default function GalleryAdminTab() {
                   }}
                   sx={{ flexGrow: 1 }}
                 />
-                <Tooltip title="Add image">
-                  <IconButton aria-label="add image" onClick={() => setUploadOpen(true)}>
+                <Tooltip title={t('admin.addImage')}>
+                  <IconButton aria-label={t('admin.addImage')} onClick={() => setUploadOpen(true)}>
                     <AddIcon />
                   </IconButton>
                 </Tooltip>
@@ -693,7 +697,7 @@ export default function GalleryAdminTab() {
           <Collapse in={sectionOpen}>
             <div style={{ padding: '0 16px 12px', borderBottom: '1px solid #e0e0e0' }}>
               <Typography variant="subtitle2" style={{ marginBottom: 8, color: '#555' }}>
-                <b>Categories</b>
+                <b>{t('admin.categories')}</b>
               </Typography>
               {localErrorCatDelete && (
                 <div style={{ marginBottom: 8 }}>
@@ -772,7 +776,7 @@ export default function GalleryAdminTab() {
                             >
                               <EditIcon sx={{ fontSize: 13 }} />
                             </IconButton>
-                            <Tooltip title="Cancel">
+                            <Tooltip title={t('admin.cancel')}>
                               <IconButton
                                 size="small"
                                 sx={{ padding: '2px' }}
@@ -801,7 +805,9 @@ export default function GalleryAdminTab() {
                       );
                     })}
                     {allCategoryNames.length === 0 && (
-                      <span style={{ color: '#aaa', fontSize: '0.85rem' }}>No categories yet.</span>
+                      <span style={{ color: '#aaa', fontSize: '0.85rem' }}>
+                        {t('admin.noCategoriesYet')}
+                      </span>
                     )}
                   </div>
                 </SortableContext>
@@ -828,7 +834,7 @@ export default function GalleryAdminTab() {
               </DndContext>
               <TextField
                 size="small"
-                placeholder="New category name"
+                placeholder={t('admin.newCategoryPlaceholder')}
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
@@ -870,10 +876,10 @@ export default function GalleryAdminTab() {
                     fontFamily: 'inherit',
                   }}
                 >
-                  Filter:
+                  {t('admin.filter')}:
                 </span>
                 {[
-                  { label: 'All', value: '*' },
+                  { label: t('admin.all'), value: '*' },
                   ...allCategoryNames.map((n) => ({ label: n, value: n })),
                 ].map(({ label, value }) => (
                   <div
@@ -939,8 +945,8 @@ export default function GalleryAdminTab() {
                 {!loading && !error && displayItems.length === 0 && (
                   <p style={{ textAlign: 'center', color: '#888', padding: '40px 0' }}>
                     {filterCategory === '*' && !filterDesc
-                      ? 'No images yet. Click + to add one.'
-                      : `No images match the current filter.`}
+                      ? t('admin.noImagesYet')
+                      : t('admin.noImagesFilter')}
                   </p>
                 )}
               </div>
@@ -960,7 +966,7 @@ export default function GalleryAdminTab() {
         fullWidth
         disableScrollLock
       >
-        <DialogTitle>Add Gallery Image</DialogTitle>
+        <DialogTitle>{t('admin.addGalleryImage')}</DialogTitle>
         <DialogContent>
           <LoadingOverlay loading={uploadingToS3}>
             <div
@@ -972,7 +978,7 @@ export default function GalleryAdminTab() {
               {uploadPreview ? (
                 <img src={uploadPreview} alt="preview" className="gallery-admin-preview" />
               ) : (
-                <span>Click or drop an image here</span>
+                <span>{t('admin.dropImageHere')}</span>
               )}
               <input
                 ref={fileInputRef}
@@ -984,7 +990,7 @@ export default function GalleryAdminTab() {
             </div>
             {uploadS3Error && <MessageBox variant="error">{uploadS3Error}</MessageBox>}
             <TextField
-              label="Description"
+              label={t('admin.description')}
               value={uploadDescription}
               onChange={(e) => setUploadDescription(e.target.value)}
               fullWidth
@@ -1002,14 +1008,14 @@ export default function GalleryAdminTab() {
               resetUploadForm();
             }}
           >
-            Cancel
+            {t('admin.cancel')}
           </button>
           <button
             className="primary"
             onClick={handleUploadSubmit}
             disabled={!uploadFile || uploadingToS3 || loadingCreate || !uploadCategory}
           >
-            Add to Gallery
+            {t('admin.addToGallery')}
           </button>
         </DialogActions>
       </Dialog>
@@ -1022,7 +1028,7 @@ export default function GalleryAdminTab() {
         fullWidth
         disableScrollLock
       >
-        <DialogTitle>Edit Image</DialogTitle>
+        <DialogTitle>{t('admin.editImage')}</DialogTitle>
         <DialogContent>
           {editItem && (
             <img
@@ -1033,7 +1039,7 @@ export default function GalleryAdminTab() {
             />
           )}
           <TextField
-            label="Description"
+            label={t('admin.description')}
             value={editDescription}
             onChange={(e) => setEditDescription(e.target.value)}
             fullWidth
@@ -1044,10 +1050,10 @@ export default function GalleryAdminTab() {
         </DialogContent>
         <DialogActions>
           <button className="secondary" onClick={() => setEditOpen(false)}>
-            Cancel
+            {t('admin.cancel')}
           </button>
           <button className="primary" onClick={handleEditSubmit} disabled={loadingUpdate}>
-            Save
+            {t('admin.save')}
           </button>
         </DialogActions>
       </Dialog>
