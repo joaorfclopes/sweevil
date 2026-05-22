@@ -288,6 +288,7 @@
   },
   "common": {
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "logout": "Sair"
   }
 }

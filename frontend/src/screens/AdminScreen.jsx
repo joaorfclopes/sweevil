@@ -55,7 +55,11 @@ export default function AdminScreen() {
         <div className="admin-section-nav__actions">
           <PasskeyRegister />
           <Link to="/">
-            <button className="secondary admin-logout-btn" onClick={signoutHandler} title="Sair">
+            <button
+              className="secondary admin-logout-btn"
+              onClick={signoutHandler}
+              title={t('common.logout')}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="15"
