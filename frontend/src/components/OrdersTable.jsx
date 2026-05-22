@@ -25,6 +25,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteOrder, listOrders, refundOrder } from '../actions/orderActions';
@@ -37,6 +38,7 @@ import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
 
 export default function OrdersTable() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const orderAdminList = useSelector((state) => state.orderAdminList);
@@ -57,8 +59,8 @@ export default function OrdersTable() {
   const [selected, setSelected] = useState(new Set());
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
   }, [search]);
 
   useEffect(() => {
@@ -95,9 +97,9 @@ export default function OrdersTable() {
   const refundHandler = (order) => {
     Swal.fire({
       title: `Refund €${order.totalPrice?.toFixed(2)} to ${formatName(order.shippingAddress.fullName)}?`,
-      text: 'This will issue a full refund via Stripe. This cannot be undone.',
+      text: t('admin.refundText'),
       showCancelButton: true,
-      confirmButtonText: 'Refund',
+      confirmButtonText: t('admin.refundBtn'),
       confirmButtonColor: '#1976d2',
     }).then((result) => {
       if (result.isConfirmed) dispatch(refundOrder(order._id));
@@ -141,9 +143,9 @@ export default function OrdersTable() {
   };
   const handleBulkDelete = () => {
     Swal.fire({
-      title: `Delete ${selected.size} orders?`,
+      title: t('admin.deleteOrdersTitle', { count: selected.size }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete all',
+      confirmButtonText: t('admin.deleteOrdersBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -179,15 +181,15 @@ export default function OrdersTable() {
     'CANCELED_PENDING_REFUND',
   ];
   const STATUS_LABELS = {
-    '': 'All',
-    PENDING: 'Pending',
-    PAID: 'Paid',
-    SENT: 'Sent',
-    DELIVERED: 'Delivered',
-    CANCELED: 'Canceled',
-    CANCELED_REFUNDED: 'Cancelled (Refunded)',
-    CANCELED_NO_REFUND: 'Cancelled (No Refund)',
-    CANCELED_PENDING_REFUND: 'Cancelled (Pending Refund)',
+    '': t('admin.all'),
+    PENDING: t('status.PENDING'),
+    PAID: t('status.PAID'),
+    SENT: t('status.SENT'),
+    DELIVERED: t('status.DELIVERED'),
+    CANCELED: t('status.CANCELED'),
+    CANCELED_REFUNDED: t('status.CANCELED_REFUNDED'),
+    CANCELED_NO_REFUND: t('status.CANCELED_NO_REFUND'),
+    CANCELED_PENDING_REFUND: t('status.CANCELED_PENDING_REFUND'),
   };
 
   return (
@@ -204,7 +206,7 @@ export default function OrdersTable() {
                 onClick={() => setOpen((v) => !v)}
               >
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  <b>Orders ({total})</b>
+                  <b>{t('admin.ordersTitle', { count: total })}</b>
                 </Typography>
                 <IconButton tabIndex={-1}>
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -214,12 +216,12 @@ export default function OrdersTable() {
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   {selected.size > 0 && (
                     <button className="dangerous-outline" onClick={handleBulkDelete}>
-                      Delete {selected.size} selected
+                      {t('admin.deleteSelected', { count: selected.size })}
                     </button>
                   )}
                   <TextField
                     size="small"
-                    placeholder="Search customer, status…"
+                    placeholder={t('admin.searchOrders')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     slotProps={{
