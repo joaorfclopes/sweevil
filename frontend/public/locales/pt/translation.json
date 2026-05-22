@@ -141,7 +141,19 @@
     "deposit": "Depósito",
     "somethingWentWrong": "Algo correu mal.",
     "paymentTimeout": "Tempo de confirmação de pagamento expirado. Contacte o suporte.",
-    "loadAvailError": "Falha ao carregar disponibilidade."
+    "loadAvailError": "Falha ao carregar disponibilidade.",
+    "confirmedTitle": "Marcação Confirmada!",
+    "confirmedText": "A sua marcação foi confirmada. Verifique o seu email.",
+    "back": "← Voltar",
+    "selectDate": "Selecione uma data",
+    "selectSlot": "Selecione um horário",
+    "noSlotsAvailable": "Sem horários disponíveis para esta data.",
+    "notes": "Notas",
+    "photos": "Fotos (opcional, máx. 10)",
+    "addPhotos": "+ Adicionar fotos",
+    "exclusivityNotice": "Por favor, note que o valor da marcação não é reembolsável.",
+    "priceInquiry": "Para pedidos de preço antes de marcar, contacte:",
+    "moreInfo": "Clique aqui para mais informações"
   },
   "shop": {
     "soldOut": "Esgotado",

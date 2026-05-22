@@ -21,15 +21,15 @@ import { convertIfHeic } from '../utils/convertHeic';
 const bookingFormSchema = z.object({
   name: z
     .string()
-    .min(2, 'Name is required')
+    .min(2, 'O nome é obrigatório')
     .max(100)
-    .regex(/^[\p{L}\s\-'.]+$/u, 'Only letters, spaces, hyphens and apostrophes'),
-  email: z.string().email('Enter a valid email address'),
-  phone: z.string().min(7, 'Enter a valid phone number'),
+    .regex(/^[\p{L}\s\-'.]+$/u, 'Apenas letras, espaços, hífens e apóstrofos'),
+  email: z.string().email('Insira um endereço de email válido'),
+  phone: z.string().min(7, 'Insira um número de telefone válido'),
   notes: z
     .string()
-    .max(1000, 'Notes must be under 1000 characters')
-    .regex(/^[\p{L}\p{N}\s\-'.,!?()\n]*$/u, 'Invalid characters in notes')
+    .max(1000, 'As notas devem ter menos de 1000 caracteres')
+    .regex(/^[\p{L}\p{N}\s\-'.,!?()\n]*$/u, 'Caracteres inválidos nas notas')
     .optional()
     .or(z.literal('')),
 });
@@ -103,7 +103,7 @@ function AvailableDay(props) {
 const STEPS = { CALENDAR: 0, SLOTS: 1, FORM: 2, PAYMENT: 3, CONFIRMED: 4 };
 
 const EXCLUSIVITY_TEXT =
-  'Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.';
+  'Cada design é uma peça original, desenhada à mão com autenticidade. Para garantir exclusividade, não repito designs. Se tiver interesse numa peça anterior, pode enviá-la como referência e crierei um novo design único inspirado nela.';
 
 export default function BookingScreen(props) {
   const { t } = useTranslation();
@@ -307,15 +307,11 @@ export default function BookingScreen(props) {
           <div className="booking-confirmed">
             <img
               src="/booking-confirmation.avif"
-              alt="Booking confirmed"
+              alt="Marcação confirmada"
               className="booking-confirmed-img"
             />
-            <h1 className="custom-font">Booking Confirmed!</h1>
-            <p>
-              Your booking for <strong>{selectedSlot}</strong> on{' '}
-              <strong>{dayjs(selectedDate).format('DD/MM/YYYY')}</strong> is confirmed. Check your
-              email for details.
-            </p>
+            <h1 className="custom-font">{t('booking.confirmedTitle')}</h1>
+            <p>{t('booking.confirmedText')}</p>
           </div>
         ) : (
           <>
@@ -326,7 +322,7 @@ export default function BookingScreen(props) {
                 {step > STEPS.CALENDAR && (
                   <div className="booking-breadcrumb">
                     <button className="booking-back" onClick={() => setStep(step - 1)}>
-                      ← Back
+                      {t('booking.back')}
                     </button>
                     <span>
                       {dayjs(selectedDate).format('DD/MM/YYYY')}
@@ -337,7 +333,7 @@ export default function BookingScreen(props) {
 
                 {step === STEPS.CALENDAR && (
                   <div className="booking-step booking-step--calendar">
-                    <h2>Select a date</h2>
+                    <h2>{t('booking.selectDate')}</h2>
                     {availError ? (
                       <MessageBox variant="error">{availError}</MessageBox>
                     ) : (
@@ -358,9 +354,9 @@ export default function BookingScreen(props) {
 
                 {step === STEPS.SLOTS && (
                   <div className="booking-step">
-                    <h2>Select a time slot</h2>
+                    <h2>{t('booking.selectSlot')}</h2>
                     {availableSlots.length === 0 ? (
-                      <MessageBox variant="error">No slots available for this date.</MessageBox>
+                      <MessageBox variant="error">{t('booking.noSlotsAvailable')}</MessageBox>
                     ) : (
                       <>
                         <div className="booking-slots">
@@ -427,19 +423,14 @@ export default function BookingScreen(props) {
                           )}
                         </div>
                         <div>
-                          <label>Notes</label>
+                          <label>{t('booking.notes')}</label>
                           <textarea rows={3} maxLength={1000} {...registerBooking('notes')} />
                           {bookingErrors.notes && (
                             <span className="field-error">{bookingErrors.notes.message}</span>
                           )}
                         </div>
                         <div>
-                          <label>
-                            Photos{' '}
-                            <span style={{ fontWeight: 400, color: '#888' }}>
-                              (optional, max 10)
-                            </span>
-                          </label>
+                          <label>{t('booking.photos')}</label>
                           {imagePreviews.length > 0 && (
                             <div className="booking-image-previews">
                               {imagePreviews.map((src, i) => (
@@ -459,7 +450,7 @@ export default function BookingScreen(props) {
                           )}
                           {imageFiles.length < 10 && (
                             <label className="booking-image-add">
-                              + Add photos
+                              {t('booking.addPhotos')}
                               <input
                                 type="file"
                                 accept="image/*"
@@ -513,9 +504,9 @@ export default function BookingScreen(props) {
               </div>
             </div>
             <p className="booking-contact-info">
-              <em>Please note that the booking value is non-refundable.</em>
+              <em>{t('booking.exclusivityNotice')}</em>
               <br />
-              For price inquiries before booking, please contact:{' '}
+              {t('booking.priceInquiry')}{' '}
               <a href={`mailto:${import.meta.env.VITE_SENDER_EMAIL_ADDRESS}`}>
                 {import.meta.env.VITE_SENDER_EMAIL_ADDRESS}
               </a>
@@ -525,7 +516,7 @@ export default function BookingScreen(props) {
                 className="booking-info-link"
                 onClick={() => setInfoModalOpen(true)}
               >
-                Click here for more info
+                {t('booking.moreInfo')}
               </button>
             </p>
           </>

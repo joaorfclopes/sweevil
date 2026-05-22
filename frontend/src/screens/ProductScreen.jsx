@@ -288,7 +288,7 @@ export default function ProductScreen(props) {
                   </div>
                 )}
                 <div className="qty">
-                  <b>Quantity:</b>{' '}
+                  <b>{t('cart.quantity')}:</b>{' '}
                   {product.isClothing
                     ? !chosenSize
                       ? product.countInStock.xs +
