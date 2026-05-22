@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MessageBox from '../components/MessageBox';
@@ -7,6 +8,7 @@ import { USER_SIGNIN_SUCCESS } from '../constants/userConstants';
 import { authClient } from '../lib/authClient';
 
 export default function SigninScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,14 +63,14 @@ export default function SigninScreen(props) {
     <section className="signin">
       <div className="row center signin-container">
         <div className="signin-inner">
-          <h1>Sign In</h1>
+          <h1>{t('signin.title')}</h1>
           {error && <MessageBox variant="error">{error}</MessageBox>}
           <button
             className="primary"
             style={{ width: '100%', marginBottom: '1rem' }}
             onClick={handleGoogleSignin}
           >
-            Sign in with Google
+            {t('signin.signInGoogle')}
           </button>
           <button
             className="secondary"
@@ -76,7 +78,7 @@ export default function SigninScreen(props) {
             onClick={handlePasskeySignin}
             disabled={loading}
           >
-            {loading ? 'Waiting for passkey…' : 'Sign in with passkey'}
+            {loading ? t('signin.loading') : t('signin.signIn')}
           </button>
         </div>
       </div>

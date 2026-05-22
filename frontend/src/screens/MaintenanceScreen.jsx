@@ -1,9 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 export default function MaintenanceScreen() {
+  const { t } = useTranslation();
   return (
     <div className="maintenance-screen">
       <img src="/maintenance.avif" alt="Under maintenance" className="maintenance-image" />
-      <h1 className="title">We'll be right back</h1>
-      <p>The page is currently under maintenance. Check back soon!</p>
+      <h1 className="title">{t('maintenance.title')}</h1>
+      <p>{t('maintenance.text')}</p>
     </div>
   );
 }

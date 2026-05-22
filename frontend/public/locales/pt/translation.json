@@ -339,11 +339,14 @@
     "text": "A página está temporariamente em manutenção. Volte em breve!"
   },
   "notFound": {
-    "title": "Página não encontrada"
+    "title": "Ups, página não encontrada...",
+    "home": "Ir para o início"
   },
   "signin": {
+    "title": "Entrar",
+    "signInGoogle": "Entrar com Google",
     "signIn": "Entrar com Passkey",
-    "loading": "A entrar..."
+    "loading": "A aguardar passkey…"
   },
   "common": {
     "yes": "Sim",
