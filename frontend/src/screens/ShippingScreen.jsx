@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getCountryDataList } from 'countries-list';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,32 +21,33 @@ const DIAL_CODES = Object.fromEntries(
 const safeText = /^[\p{L}\p{N}\s\-'.,#/()+&]+$/u;
 
 const schema = z.object({
-  email: z.string().email('Enter a valid email address'),
-  phoneNumber: z.string().min(7, 'Enter a valid phone number'),
+  email: z.string().email('Insira um endereço de email válido'),
+  phoneNumber: z.string().min(7, 'Insira um número de telefone válido'),
   fullName: z
     .string()
-    .min(2, 'Full name is required')
+    .min(2, 'O nome completo é obrigatório')
     .max(100)
-    .regex(/^[\p{L}\s\-'.]+$/u, 'Only letters, spaces, hyphens and apostrophes'),
-  country: z.string().min(1, 'Country is required'),
+    .regex(/^[\p{L}\s\-'.]+$/u, 'Apenas letras, espaços, hífens e apóstrofos'),
+  country: z.string().min(1, 'País é obrigatório'),
   address: z
     .string()
-    .min(3, 'Address is required')
+    .min(3, 'A morada é obrigatória')
     .max(200)
-    .regex(safeText, 'Invalid characters in address'),
+    .regex(safeText, 'Caracteres inválidos na morada'),
   city: z
     .string()
-    .min(2, 'City is required')
+    .min(2, 'A cidade é obrigatória')
     .max(100)
-    .regex(/^[\p{L}\s\-'.]+$/u, 'Only letters allowed'),
+    .regex(/^[\p{L}\s\-'.]+$/u, 'Apenas letras são permitidas'),
   postalCode: z
     .string()
-    .min(3, 'Postal code is required')
+    .min(3, 'O código postal é obrigatório')
     .max(20)
-    .regex(/^[\w\s\-]+$/, 'Invalid postal code'),
+    .regex(/^[\w\s\-]+$/, 'Código postal inválido'),
 });
 
 export default function ShippingScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
@@ -112,15 +114,15 @@ export default function ShippingScreen(props) {
     <section className="shipping">
       <div className="shipping-container">
         <div className="shipping-inner">
-          <h1 className="custom-font">Shipping Details</h1>
+          <h1 className="custom-font">{t('shipping.title')}</h1>
           <form className="shipping-form" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('shipping.email')}</label>
               <input type="email" id="email" maxLength={254} {...register('email')} />
               {errors.email && <span className="field-error">{errors.email.message}</span>}
             </div>
             <div>
-              <label>Phone Number</label>
+              <label>{t('shipping.phone')}</label>
               <Controller
                 name="phoneNumber"
                 control={control}
@@ -140,12 +142,12 @@ export default function ShippingScreen(props) {
               )}
             </div>
             <div>
-              <label htmlFor="fullName">Full Name</label>
+              <label htmlFor="fullName">{t('shipping.fullName')}</label>
               <input type="text" id="fullName" maxLength={100} {...register('fullName')} />
               {errors.fullName && <span className="field-error">{errors.fullName.message}</span>}
             </div>
             <div>
-              <label htmlFor="country">Country</label>
+              <label htmlFor="country">{t('shipping.country')}</label>
               <Controller
                 name="country"
                 control={control}
@@ -168,17 +170,17 @@ export default function ShippingScreen(props) {
               {errors.country && <span className="field-error">{errors.country.message}</span>}
             </div>
             <div>
-              <label htmlFor="address">Address</label>
+              <label htmlFor="address">{t('shipping.address')}</label>
               <input type="text" id="address" maxLength={200} {...register('address')} />
               {errors.address && <span className="field-error">{errors.address.message}</span>}
             </div>
             <div>
-              <label htmlFor="city">City</label>
+              <label htmlFor="city">{t('shipping.city')}</label>
               <input type="text" id="city" maxLength={85} {...register('city')} />
               {errors.city && <span className="field-error">{errors.city.message}</span>}
             </div>
             <div>
-              <label htmlFor="postalCode">Postal Code</label>
+              <label htmlFor="postalCode">{t('shipping.postalCode')}</label>
               <input type="text" id="postalCode" maxLength={20} {...register('postalCode')} />
               {errors.postalCode && (
                 <span className="field-error">{errors.postalCode.message}</span>
@@ -186,7 +188,7 @@ export default function ShippingScreen(props) {
             </div>
             <div>
               <button className="primary" type="submit">
-                Continue
+                {t('shipping.continue')}
               </button>
             </div>
           </form>
