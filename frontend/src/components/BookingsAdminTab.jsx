@@ -1,5 +1,5 @@
 import BlockIcon from '@mui/icons-material/Block';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -33,7 +33,7 @@ import {
   Typography,
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
-import { DateCalendar, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
+import { DateCalendar, LocalizationProvider, PickerDay } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -70,7 +70,7 @@ function AvailableDay(props) {
   const dateStr = dayjs(day).format('YYYY-MM-DD');
   const isAvailable = availableDates.includes(dateStr);
   return (
-    <PickersDay
+    <PickerDay
       {...other}
       outsideCurrentMonth={outsideCurrentMonth}
       day={day}
@@ -99,7 +99,7 @@ function ExtraPickerDay({
   const isDisabled =
     disabledDates.has(dateStr) || outsideCurrentMonth || dayjs(day).isBefore(dayjs(), 'day');
   return (
-    <PickersDay
+    <PickerDay
       {...pickerDayProps}
       day={day}
       outsideCurrentMonth={outsideCurrentMonth}
@@ -432,8 +432,10 @@ export default function BookingsAdminTab() {
                 placeholder="Search guest, email, status…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
+                slotProps={{
+                  input: {
+                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
+                  },
                 }}
                 sx={{ flexGrow: 1 }}
               />
@@ -837,15 +839,17 @@ export default function BookingsAdminTab() {
             value={priceInput}
             onChange={(e) => setPriceInput(e.target.value)}
             inputProps={{ min: 0.5, step: 0.01 }}
-            InputProps={{
-              readOnly: !priceEditing,
-              endAdornment: !priceEditing && (
-                <Tooltip title="Edit price">
-                  <IconButton size="small" onClick={() => setPriceEditing(true)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              ),
+            slotProps={{
+              input: {
+                readOnly: !priceEditing,
+                endAdornment: !priceEditing && (
+                  <Tooltip title="Edit price">
+                    <IconButton size="small" onClick={() => setPriceEditing(true)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                ),
+              },
             }}
             sx={!priceEditing ? { '& .MuiInputBase-input': { color: '#555' } } : {}}
           />

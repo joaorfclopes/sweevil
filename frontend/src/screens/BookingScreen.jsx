@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DateCalendar, LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
+import { DateCalendar, LocalizationProvider, PickerDay } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as Sentry from '@sentry/react';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -82,7 +82,7 @@ function AvailableDay(props) {
   const isAvailable = availableDates.includes(dateStr);
 
   return (
-    <PickersDay
+    <PickerDay
       {...other}
       outsideCurrentMonth={outsideCurrentMonth}
       day={day}

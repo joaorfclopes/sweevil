@@ -139,18 +139,21 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
         galleryDimensions = { width: info.width, height: info.height };
       }
 
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET,
-          Key: key,
-          Body: processed,
-          ContentType: 'image/avif',
-        })
-      );
-
       const region = process.env.AWS_REGION || 'us-east-1';
       const location = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
-      console.log(`[upload] Image uploaded to ${folder}/ — ${key}`);
+      if (process.env.MOCK_S3 === 'true') {
+        console.log(`[s3:mock] Skipped upload to ${folder}/ — ${key}`);
+      } else {
+        await s3.send(
+          new PutObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: key,
+            Body: processed,
+            ContentType: 'image/avif',
+          })
+        );
+        console.log(`[upload] Image uploaded to ${folder}/ — ${key}`);
+      }
       res.json({ location, ...galleryDimensions });
     } catch (processingErr) {
       next(processingErr);
@@ -214,15 +217,20 @@ uploadRouter.post('/booking-images', bookingUploadLimiter, (req, res, next) => {
             })
             .avif({ quality: AVIF_QUALITY, effort: AVIF_EFFORT })
             .toBuffer();
-          await s3.send(
-            new PutObjectCommand({
-              Bucket: process.env.AWS_S3_BUCKET,
-              Key: key,
-              Body: processed,
-              ContentType: 'image/avif',
-            })
-          );
-          return `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
+          const url = `https://${process.env.AWS_S3_BUCKET}.s3.${region}.amazonaws.com/${key}`;
+          if (process.env.MOCK_S3 !== 'true') {
+            await s3.send(
+              new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET,
+                Key: key,
+                Body: processed,
+                ContentType: 'image/avif',
+              })
+            );
+          } else {
+            console.log(`[s3:mock] Skipped booking upload — ${key}`);
+          }
+          return url;
         })
       );
       console.log(`[upload] ${urls.length} booking image(s) uploaded`);
@@ -264,8 +272,12 @@ uploadRouter.delete('/s3', isAuth, isAdmin, async (req, res) => {
     if (!key || (!key.startsWith('store/') && !key.startsWith('gallery/'))) {
       return res.status(400).json({ message: 'Invalid key' });
     }
-    await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
-    console.log(`[upload] Image deleted — ${key}`);
+    if (process.env.MOCK_S3 === 'true') {
+      console.log(`[s3:mock] Skipped delete — ${key}`);
+    } else {
+      await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));
+      console.log(`[upload] Image deleted — ${key}`);
+    }
     res.json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });

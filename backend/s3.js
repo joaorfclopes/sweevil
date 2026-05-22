@@ -22,6 +22,10 @@ export function s3KeyFromUrl(url) {
 }
 
 export async function deleteFromS3(url) {
+  if (process.env.MOCK_S3 === 'true') {
+    console.log(`[s3:mock] Skipped delete — ${url}`);
+    return;
+  }
   const key = s3KeyFromUrl(url);
   if (!key) return;
   await s3.send(new DeleteObjectCommand({ Bucket: process.env.AWS_S3_BUCKET, Key: key }));

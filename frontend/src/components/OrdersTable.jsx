@@ -1,5 +1,5 @@
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -222,10 +222,12 @@ export default function OrdersTable() {
                     placeholder="Search customer, status…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
-                      ),
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
+                        ),
+                      },
                     }}
                     sx={{ flexGrow: 1 }}
                   />

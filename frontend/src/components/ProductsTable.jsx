@@ -1,7 +1,24 @@
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -47,6 +64,57 @@ import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
 import Swal from '../utils/swal';
 import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
+
+function ConditionalDndContext({
+  active,
+  sensors,
+  onDragStart,
+  onDragEnd,
+  onDragCancel,
+  children,
+}) {
+  if (!active) return <>{children}</>;
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragCancel={onDragCancel}
+    >
+      {children}
+    </DndContext>
+  );
+}
+
+function SortableRow({ id, children, isDragging }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0 : 1,
+  };
+  return (
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell padding="none" sx={{ width: 36, cursor: 'grab' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            color: '#aaa',
+          }}
+          {...attributes}
+          {...listeners}
+        >
+          <DragIndicatorIcon fontSize="small" />
+        </Box>
+      </TableCell>
+      {children}
+    </TableRow>
+  );
+}
 
 export default function ProductsTable() {
   const dispatch = useDispatch();
@@ -94,7 +162,27 @@ export default function ProductsTable() {
   const [reorderMode, setReorderMode] = useState(false);
   const [localProducts, setLocalProducts] = useState(null);
   const [reorderInitLoading, setReorderInitLoading] = useState(false);
+  const [activeDragId, setActiveDragId] = useState(null);
   const prevLoadingRef = useRef(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = ({ active, over }) => {
+    setActiveDragId(null);
+    if (!over || active.id === over.id || !localProducts) return;
+    const oldIndex = localProducts.findIndex((p) => p._id === active.id);
+    const newIndex = localProducts.findIndex((p) => p._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const list = [...localProducts];
+    const [moved] = list.splice(oldIndex, 1);
+    list.splice(newIndex, 0, moved);
+    const updatedOrders = list.map((p, i) => ({ ...p, sortOrder: i }));
+    setLocalProducts(updatedOrders);
+    dispatch(reorderProducts(updatedOrders.map((p) => ({ _id: p._id, sortOrder: p.sortOrder }))));
+  };
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortDir, setSortDir] = useState('asc');
@@ -306,42 +394,6 @@ export default function ProductsTable() {
     setSelected(new Set());
   };
 
-  const handleMoveUp = (index) => {
-    if (index === 0 || !localProducts) return;
-    const list = [...localProducts];
-    const a = list[index];
-    const b = list[index - 1];
-    const aOrder = a.sortOrder;
-    const bOrder = b.sortOrder;
-    list[index - 1] = { ...a, sortOrder: bOrder };
-    list[index] = { ...b, sortOrder: aOrder };
-    setLocalProducts(list);
-    dispatch(
-      reorderProducts([
-        { _id: a._id, sortOrder: bOrder },
-        { _id: b._id, sortOrder: aOrder },
-      ])
-    );
-  };
-
-  const handleMoveDown = (index) => {
-    if (!localProducts || index === localProducts.length - 1) return;
-    const list = [...localProducts];
-    const a = list[index];
-    const b = list[index + 1];
-    const aOrder = a.sortOrder;
-    const bOrder = b.sortOrder;
-    list[index] = { ...b, sortOrder: aOrder };
-    list[index + 1] = { ...a, sortOrder: bOrder };
-    setLocalProducts(list);
-    dispatch(
-      reorderProducts([
-        { _id: a._id, sortOrder: bOrder },
-        { _id: b._id, sortOrder: aOrder },
-      ])
-    );
-  };
-
   return (
     <div className="products-table" style={{ marginBottom: '50px' }}>
       <LoadingOverlay
@@ -382,10 +434,12 @@ export default function ProductsTable() {
                     placeholder="Search name, category…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
-                      ),
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
+                        ),
+                      },
                     }}
                     sx={{ flexGrow: 1 }}
                   />
@@ -566,18 +620,20 @@ export default function ProductsTable() {
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            size="small"
-                            onClick={handleAddCategory}
-                            disabled={!newCatName.trim() || loadingCatCreate}
-                          >
-                            <AddIcon fontSize="small" />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              size="small"
+                              onClick={handleAddCategory}
+                              disabled={!newCatName.trim() || loadingCatCreate}
+                            >
+                              <AddIcon fontSize="small" />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                     style={{ width: 220 }}
                   />
@@ -601,181 +657,270 @@ export default function ProductsTable() {
               </div>
 
               {error && <MessageBox variant="error">{error}</MessageBox>}
-              {/* Table */}
-              <TableContainer sx={{ maxHeight: 520 }}>
-                <Table className="table" stickyHeader aria-label="products table">
-                  <TableHead>
-                    <TableRow>
-                      {reorderMode && <TableCell />}
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={allSelected}
-                          indeterminate={selected.size > 0 && !allSelected}
-                          onChange={toggleSelectAll}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <b>Image</b>
-                      </TableCell>
-                      {[
-                        { id: 'name', label: 'Name' },
-                        { id: 'price', label: 'Price' },
-                        { id: 'category', label: 'Category' },
-                        { id: 'countInStock.stock', label: 'Stock' },
-                        { id: 'visible', label: 'Visible' },
-                        { id: 'updatedAt', label: 'Updated' },
-                      ].map(({ id, label }) => (
-                        <TableCell key={id} align="center">
-                          {reorderMode ? (
-                            <b>{label}</b>
-                          ) : (
-                            <TableSortLabel
-                              active={orderBy === id}
-                              direction={orderBy === id ? sortDir : 'asc'}
-                              onClick={() => handleSort(id)}
-                            >
-                              <b>{label}</b>
-                            </TableSortLabel>
-                          )}
-                        </TableCell>
-                      ))}
-                      <TableCell align="right">
-                        <b>Actions</b>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {loading || reorderInitLoading ? (
-                      Array.from({ length: 5 }).map((_, i) => (
-                        <TableRow key={i} sx={{ height: 56 }}>
-                          {Array.from({ length: reorderMode ? 10 : 9 }).map((_, j) => (
-                            <TableCell key={j}>
-                              <Skeleton animation="wave" />
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : filtered.length === 0 ? (
+              {/* Table — DndContext wraps outside TableContainer to avoid div-in-tbody */}
+              <ConditionalDndContext
+                active={reorderMode}
+                sensors={sensors}
+                onDragStart={({ active }) => setActiveDragId(active.id)}
+                onDragEnd={handleDragEnd}
+                onDragCancel={() => setActiveDragId(null)}
+              >
+                <TableContainer sx={{ maxHeight: 520 }}>
+                  <Table className="table" stickyHeader aria-label="products table">
+                    <TableHead>
                       <TableRow>
-                        <TableCell
-                          colSpan={reorderMode ? 10 : 9}
-                          align="center"
-                          sx={{ py: 4, color: '#888' }}
-                        >
-                          No products found.
+                        {reorderMode && <TableCell />}
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={allSelected}
+                            indeterminate={selected.size > 0 && !allSelected}
+                            onChange={toggleSelectAll}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <b>Image</b>
+                        </TableCell>
+                        {[
+                          { id: 'name', label: 'Name' },
+                          { id: 'price', label: 'Price' },
+                          { id: 'category', label: 'Category' },
+                          { id: 'countInStock.stock', label: 'Stock' },
+                          { id: 'visible', label: 'Visible' },
+                          { id: 'updatedAt', label: 'Updated' },
+                        ].map(({ id, label }) => (
+                          <TableCell key={id} align="center">
+                            {reorderMode ? (
+                              <b>{label}</b>
+                            ) : (
+                              <TableSortLabel
+                                active={orderBy === id}
+                                direction={orderBy === id ? sortDir : 'asc'}
+                                onClick={() => handleSort(id)}
+                              >
+                                <b>{label}</b>
+                              </TableSortLabel>
+                            )}
+                          </TableCell>
+                        ))}
+                        <TableCell align="right">
+                          <b>Actions</b>
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filtered.map((product, index) => (
-                        <TableRow
-                          key={product._id}
-                          sx={isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}}
-                        >
-                          {reorderMode && (
-                            <TableCell padding="none" sx={{ width: 48 }}>
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                {index > 0 && (
-                                  <IconButton size="small" onClick={() => handleMoveUp(index)}>
-                                    <KeyboardArrowUpIcon fontSize="small" />
-                                  </IconButton>
-                                )}
-                                {index < filtered.length - 1 && (
-                                  <IconButton size="small" onClick={() => handleMoveDown(index)}>
-                                    <KeyboardArrowDownIcon fontSize="small" />
-                                  </IconButton>
-                                )}
-                              </Box>
-                            </TableCell>
-                          )}
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selected.has(product._id)}
-                              onChange={() => toggleSelect(product._id)}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            {(() => {
-                              let safeSrc = null;
-                              try {
-                                const u = new URL(product.images?.[0]);
-                                if (u.protocol === 'https:') safeSrc = u.href;
-                              } catch {}
-                              return safeSrc ? (
-                                <img
-                                  src={safeSrc}
-                                  alt={product.name}
-                                  loading="lazy"
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    objectFit: 'cover',
-                                    borderRadius: 4,
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  style={{
-                                    width: 40,
-                                    height: 40,
-                                    background: '#e0e0e0',
-                                    borderRadius: 4,
-                                    display: 'inline-block',
-                                  }}
-                                />
-                              );
-                            })()}
-                          </TableCell>
-                          <TableCell align="center">{product.name}</TableCell>
-                          <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
-                          <TableCell align="center">{product.category}</TableCell>
-                          <TableCell align="center">{getStock(product)}</TableCell>
-                          <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
-                          <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
-                          <TableCell align="right">
-                            <Tooltip title="Edit">
-                              <IconButton
-                                size="small"
-                                onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                              <IconButton size="small" onClick={() => deleteHandler(product)}>
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
+                    </TableHead>
+                    <TableBody>
+                      {loading || reorderInitLoading ? (
+                        Array.from({ length: 5 }).map((_, i) => (
+                          <TableRow key={i} sx={{ height: 56 }}>
+                            {Array.from({ length: reorderMode ? 10 : 9 }).map((_, j) => (
+                              <TableCell key={j}>
+                                <Skeleton animation="wave" />
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))
+                      ) : filtered.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={reorderMode ? 10 : 9}
+                            align="center"
+                            sx={{ py: 4, color: '#888' }}
+                          >
+                            No products found.
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {!reorderMode && (
-                <TablePagination
-                  rowsPerPageOptions={[10, 20, 50, 100]}
-                  component="div"
-                  count={total}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={(_, p) => {
-                    setPage(p);
-                    setSelected(new Set());
-                  }}
-                  onRowsPerPageChange={(e) => {
-                    setRowsPerPage(parseInt(e.target.value, 10));
-                    setPage(0);
-                    setSelected(new Set());
-                  }}
-                />
-              )}
+                      ) : reorderMode ? (
+                        <SortableContext
+                          items={filtered.map((p) => p._id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {filtered.map((product) => (
+                            <SortableRow
+                              key={product._id}
+                              id={product._id}
+                              isDragging={activeDragId === product._id}
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  checked={selected.has(product._id)}
+                                  onChange={() => toggleSelect(product._id)}
+                                />
+                              </TableCell>
+                              <TableCell align="center">
+                                {(() => {
+                                  let safeSrc = null;
+                                  try {
+                                    const u = new URL(product.images?.[0]);
+                                    if (u.protocol === 'https:') safeSrc = u.href;
+                                  } catch {}
+                                  return safeSrc ? (
+                                    <img
+                                      src={safeSrc}
+                                      alt={product.name}
+                                      loading="lazy"
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        objectFit: 'cover',
+                                        borderRadius: 4,
+                                      }}
+                                    />
+                                  ) : (
+                                    <div
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        background: '#e0e0e0',
+                                        borderRadius: 4,
+                                        display: 'inline-block',
+                                      }}
+                                    />
+                                  );
+                                })()}
+                              </TableCell>
+                              <TableCell align="center">{product.name}</TableCell>
+                              <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
+                              <TableCell align="center">{product.category}</TableCell>
+                              <TableCell align="center">{getStock(product)}</TableCell>
+                              <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                              <TableCell align="center">
+                                {formatDateDay(product.updatedAt)}
+                              </TableCell>
+                              <TableCell align="right">
+                                <Tooltip title="Edit">
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
+                                  >
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete">
+                                  <IconButton size="small" onClick={() => deleteHandler(product)}>
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                              </TableCell>
+                            </SortableRow>
+                          ))}
+                        </SortableContext>
+                      ) : (
+                        filtered.map((product) => (
+                          <TableRow
+                            key={product._id}
+                            sx={
+                              isNewRow(product) ? { backgroundColor: 'rgba(34,139,34,0.08)' } : {}
+                            }
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={selected.has(product._id)}
+                                onChange={() => toggleSelect(product._id)}
+                              />
+                            </TableCell>
+                            <TableCell align="center">
+                              {(() => {
+                                let safeSrc = null;
+                                try {
+                                  const u = new URL(product.images?.[0]);
+                                  if (u.protocol === 'https:') safeSrc = u.href;
+                                } catch {}
+                                return safeSrc ? (
+                                  <img
+                                    src={safeSrc}
+                                    alt={product.name}
+                                    loading="lazy"
+                                    style={{
+                                      width: 40,
+                                      height: 40,
+                                      objectFit: 'cover',
+                                      borderRadius: 4,
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    style={{
+                                      width: 40,
+                                      height: 40,
+                                      background: '#e0e0e0',
+                                      borderRadius: 4,
+                                      display: 'inline-block',
+                                    }}
+                                  />
+                                );
+                              })()}
+                            </TableCell>
+                            <TableCell align="center">{product.name}</TableCell>
+                            <TableCell align="center">{product.price?.toFixed(2)}€</TableCell>
+                            <TableCell align="center">{product.category}</TableCell>
+                            <TableCell align="center">{getStock(product)}</TableCell>
+                            <TableCell align="center">{product.visible ? 'Yes' : 'No'}</TableCell>
+                            <TableCell align="center">{formatDateDay(product.updatedAt)}</TableCell>
+                            <TableCell align="right">
+                              <Tooltip title="Edit">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => navigate(`/admin/product/${product.slug}/edit`)}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <IconButton size="small" onClick={() => deleteHandler(product)}>
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {reorderMode && (
+                  <DragOverlay>
+                    {activeDragId
+                      ? (() => {
+                          const p = filtered.find((x) => x._id === activeDragId);
+                          return p ? (
+                            <Box
+                              sx={{
+                                background: '#f0f0f0',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                                borderRadius: 1,
+                                px: 2,
+                                py: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                              }}
+                            >
+                              <DragIndicatorIcon fontSize="small" sx={{ color: '#aaa' }} />
+                              <Typography variant="body2">{p.name}</Typography>
+                            </Box>
+                          ) : null;
+                        })()
+                      : null}
+                  </DragOverlay>
+                )}
+                {!reorderMode && (
+                  <TablePagination
+                    rowsPerPageOptions={[10, 20, 50, 100]}
+                    component="div"
+                    count={total}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={(_, p) => {
+                      setPage(p);
+                      setSelected(new Set());
+                    }}
+                    onRowsPerPageChange={(e) => {
+                      setRowsPerPage(parseInt(e.target.value, 10));
+                      setPage(0);
+                      setSelected(new Set());
+                    }}
+                  />
+                )}
+              </ConditionalDndContext>
             </Collapse>
           </>
         </Paper>

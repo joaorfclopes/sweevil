@@ -672,8 +672,12 @@ export default function GalleryAdminTab() {
                   placeholder="Search description…"
                   value={filterDesc}
                   onChange={(e) => setFilterDesc(e.target.value)}
-                  InputProps={{
-                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />,
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <SearchIcon fontSize="small" sx={{ mr: 0.5, color: '#888' }} />
+                      ),
+                    },
                   }}
                   sx={{ flexGrow: 1 }}
                 />
@@ -828,18 +832,20 @@ export default function GalleryAdminTab() {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={handleAddCategory}
-                        disabled={!newCategoryName.trim() || loadingCatCreate}
-                      >
-                        <AddIcon fontSize="small" />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          onClick={handleAddCategory}
+                          disabled={!newCategoryName.trim() || loadingCatCreate}
+                        >
+                          <AddIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
                 }}
                 style={{ width: 240 }}
               />
