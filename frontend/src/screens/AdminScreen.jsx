@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signout } from '../actions/userActions';
@@ -13,6 +14,7 @@ import OrdersTable from '../components/OrdersTable';
 import ProductsTable from '../components/ProductsTable';
 
 export default function AdminScreen() {
+  const { t } = useTranslation();
   const { bookingEnabled } = useFeatures();
   const dispatch = useDispatch();
 
@@ -25,11 +27,11 @@ export default function AdminScreen() {
   }, []);
 
   const sections = [
-    ...(bookingEnabled ? [{ id: 'section-bookings', label: 'Bookings' }] : []),
-    { id: 'section-orders', label: 'Orders' },
-    { id: 'section-products', label: 'Products' },
-    { id: 'section-gallery', label: 'Gallery' },
-    { id: 'section-about', label: 'About' },
+    ...(bookingEnabled ? [{ id: 'section-bookings', label: t('admin.bookings') }] : []),
+    { id: 'section-orders', label: t('admin.orders') },
+    { id: 'section-products', label: t('admin.products') },
+    { id: 'section-gallery', label: t('admin.gallery') },
+    { id: 'section-about', label: t('admin.about') },
   ];
 
   const scrollTo = (id) => {
@@ -53,7 +55,7 @@ export default function AdminScreen() {
         <div className="admin-section-nav__actions">
           <PasskeyRegister />
           <Link to="/">
-            <button className="secondary admin-logout-btn" onClick={signoutHandler} title="Log Out">
+            <button className="secondary admin-logout-btn" onClick={signoutHandler} title="Sair">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="15"
