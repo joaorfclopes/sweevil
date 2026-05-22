@@ -12,7 +12,7 @@
     "start:debug": "concurrently \"npm run backend:debug\" \"npm run frontend\"",
     "build": "cd frontend && npm install && npm run build",
     "dos2unix": "find . -type f -name \"*.scss\" -exec dos2unix '{}' +",
-    "sentry:release": "VERSION=$(git rev-parse HEAD) && npx @sentry/cli releases new $VERSION --org $SENTRY_ORG && npx @sentry/cli releases set-commits $VERSION --auto --org $SENTRY_ORG && npx @sentry/cli releases finalize $VERSION --org $SENTRY_ORG",
+    "sentry:release": "VERSION=$(git rev-parse HEAD) && export $(grep -v '^#' .env | xargs) && npx @sentry/cli releases new $VERSION --org $SENTRY_ORG && npx @sentry/cli releases set-commits $VERSION --auto --org $SENTRY_ORG && npx @sentry/cli releases finalize $VERSION --org $SENTRY_ORG",
     "deploy": "npm run build && git push heroku master --force && npm run sentry:release",
     "prepare": "husky",
     "docker": "docker compose up --build",
