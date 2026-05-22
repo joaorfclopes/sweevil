@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import 'yet-another-react-lightbox/styles.css';
 import App from './App';
+import './i18n';
 import store from './store';
 import './style/index.scss';
 
@@ -49,7 +50,7 @@ dayjs.extend(utc);
 const root = createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <Sentry.ErrorBoundary fallback={<p>Something went wrong. Please refresh.</p>}>
+    <Sentry.ErrorBoundary fallback={<p>Algo correu mal. Por favor, atualize a página.</p>}>
       <App />
     </Sentry.ErrorBoundary>
   </Provider>

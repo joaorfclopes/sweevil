@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { listOrders } from './actions/orderActions';
@@ -247,7 +247,9 @@ export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <FeaturesProvider>
-        <AppContent />
+        <Suspense fallback={null}>
+          <AppContent />
+        </Suspense>
       </FeaturesProvider>
     </BrowserRouter>
   );
