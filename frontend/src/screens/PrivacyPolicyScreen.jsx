@@ -5,7 +5,7 @@ export default function PoliticaPrivacidadeScreen() {
   return (
     <section className="legal-screen custom-font">
       <h1>{t('policy.privacyPolicy')}</h1>
-      <span className="last-updated">Last updated: 8 April 2026</span>
+      <span className="last-updated">Última atualização: 8 de abril de 2026</span>
 
       <h2>1. Data Controller</h2>
       <p>

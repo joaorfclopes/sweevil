@@ -56,6 +56,7 @@ function ImageCard({ item, isCover }) {
 }
 
 function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -81,7 +82,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
         />
       )}
       <div className="product-image-card-overlay">
-        <Tooltip title={isCover ? 'Cover image' : 'Set as cover'}>
+        <Tooltip title={isCover ? t('productEdit.coverImage') : t('productEdit.setAsCover')}>
           <IconButton
             size="small"
             className={`product-image-icon-btn${isCover ? ' product-image-icon-btn--star' : ''}`}
@@ -94,7 +95,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
             {isCover ? <StarIcon fontSize="small" /> : <StarBorderIcon fontSize="small" />}
           </IconButton>
         </Tooltip>
-        <Tooltip title="Delete">
+        <Tooltip title={t('productEdit.delete')}>
           <IconButton
             size="small"
             className="product-image-icon-btn product-image-icon-btn--danger"
@@ -107,7 +108,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
             <DeleteIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Drag to reorder">
+        <Tooltip title={t('productEdit.dragToReorder')}>
           <IconButton
             size="small"
             className="product-image-icon-btn product-image-drag-handle"
@@ -256,7 +257,7 @@ export default function ProductEditScreen(props) {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (originalPrice !== '' && parseFloat(originalPrice) <= parseFloat(price)) {
-      setErrorUpload('Original price must be greater than the current price.');
+      setErrorUpload(t('productEdit.originalPriceMustBeGreater'));
       return;
     }
     if (loadingUpload) return;

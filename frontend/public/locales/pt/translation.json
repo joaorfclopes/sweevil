@@ -332,7 +332,11 @@
     "tax": "IVA",
     "finalPrice": "Preço Final",
     "deleteTitle": "Eliminar {{name}}?",
-    "deleteBtn": "Sim, eliminar"
+    "deleteBtn": "Sim, eliminar",
+    "coverImage": "Imagem de capa",
+    "setAsCover": "Definir como capa",
+    "dragToReorder": "Arrastar para reordenar",
+    "originalPriceMustBeGreater": "O preço original deve ser superior ao preço atual."
   },
   "maintenance": {
     "title": "Voltamos já",

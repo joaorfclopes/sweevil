@@ -5,7 +5,7 @@ export default function CookiePolicyScreen() {
   return (
     <section className="legal-screen custom-font">
       <h1>{t('policy.cookiePolicy')}</h1>
-      <span className="last-updated">Last updated: 18 May 2026</span>
+      <span className="last-updated">Última atualização: 18 de maio de 2026</span>
 
       <h2>1. What Are Cookies?</h2>
       <p>
