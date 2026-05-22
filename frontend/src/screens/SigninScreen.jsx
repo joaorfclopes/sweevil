@@ -26,11 +26,11 @@ export default function SigninScreen(props) {
       const result = await authClient.signIn.passkey();
       if (result?.error) {
         await Axios.delete('/api/users/passkey-signin-challenge').catch(() => {});
-        setError(result.error.message || 'Passkey sign-in failed.');
+        setError(result.error.message || t('signin.failedPasskey'));
         return;
       }
       const session = await authClient.getSession();
-      if (!session?.data?.user) throw new Error('Sign-in failed');
+      if (!session?.data?.user) throw new Error(t('signin.failed'));
       const { user } = session.data;
       const userInfo = {
         _id: user.id,
@@ -42,7 +42,7 @@ export default function SigninScreen(props) {
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
     } catch (err) {
       await Axios.delete('/api/users/passkey-signin-challenge').catch(() => {});
-      setError(err.message || 'Passkey sign-in failed.');
+      setError(err.message || t('signin.failedPasskey'));
     } finally {
       setLoading(false);
     }

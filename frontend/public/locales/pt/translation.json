@@ -350,7 +350,9 @@
     "title": "Entrar",
     "signInGoogle": "Entrar com Google",
     "signIn": "Entrar com Passkey",
-    "loading": "A aguardar passkey…"
+    "loading": "A aguardar passkey…",
+    "failed": "Erro ao entrar.",
+    "failedPasskey": "Erro ao entrar com Passkey."
   },
   "common": {
     "yes": "Sim",
