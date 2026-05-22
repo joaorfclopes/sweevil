@@ -104,7 +104,7 @@ emailRouter.post(
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+      subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
       html: placedOrder({
         order: {
           orderId: order._id,
@@ -226,7 +226,7 @@ emailRouter.post(
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: "Your order's on its way!",
+      subject: 'A sua encomenda está a caminho!',
       html: sendOrder({
         order: {
           orderId: order._id,
@@ -284,7 +284,7 @@ emailRouter.post(
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: 'Thanks for your order!',
+      subject: 'Obrigado pela sua encomenda!',
       html: deliveredOrder({
         order: {
           orderId: order._id,
@@ -346,7 +346,7 @@ emailRouter.post(
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingAddress.email,
-      subject: 'Order Canceled!',
+      subject: 'Encomenda Cancelada!',
       html: cancelOrder({
         order: {
           orderId: order._id,

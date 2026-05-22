@@ -334,7 +334,7 @@ orderRouter.post(
     await sendMail({
       from,
       to: shippingAddress.email,
-      subject: `Order placed at ${process.env.BRAND_NAME}`,
+      subject: `Encomenda em ${process.env.BRAND_NAME}`,
       html: orderPendingPayment({ order: createdOrder, paymentUrl }),
     });
     await sendMail({
@@ -692,7 +692,7 @@ orderRouter.put(
       await sendMail({
         from,
         to: order.shippingAddress.email,
-        subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+        subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
         html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
         attachments: invoiceAttachment,
       });
@@ -796,7 +796,7 @@ orderRouter.put(
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: updatedOrder.shippingAddress.email,
-      subject: 'Order Canceled!',
+      subject: 'Encomenda Cancelada!',
       html: cancelOrderEmail({
         order: {
           orderId: updatedOrder._id,

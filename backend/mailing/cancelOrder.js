@@ -22,7 +22,7 @@ export const cancelOrder = ({
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Cancel Order Email</title>
+      <title>Encomenda Cancelada</title>
     </head>
     <body style="margin: 0; padding: 0">
       <div
@@ -145,7 +145,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order Canceled!
+                                  Encomenda Cancelada!
                                 </font>
                               </td>
                             </tr>
@@ -172,7 +172,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${formatName(fullName)}, your order was canceled!
+                                  Olá ${formatName(fullName)}, a sua encomenda foi cancelada!
                                 </font>
                               </td>
                             </tr>
@@ -199,7 +199,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  N.º de Encomenda: ${orderId}
                                 </font>
                               </td>
                             </tr>
@@ -226,7 +226,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order date: ${orderDate}
+                                  Data da encomenda: ${orderDate}
                                 </font>
                               </td>
                             </tr>
@@ -283,7 +283,7 @@ export const cancelOrder = ({
                                           <font
                                             face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                           >
-                                            Order Details
+                                            Detalhes da Encomenda
                                           </font>
                                         </a>
                                       </td>
@@ -352,7 +352,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  The Refund
+                                                  O Reembolso
                                                 </font>
                                               </td>
                                             </tr>
@@ -405,7 +405,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                ${cancelledByAdmin && refundIssued ? 'Your order has been cancelled and a refund has been initiated. It should reflect in your original payment method in 5-10 business days.' : cancelledByAdmin && !refundIssued ? 'Your order has been cancelled. No refund has been issued for this order. If you have any questions, please contact us.' : 'Your order has been cancelled. This will be reviewed and any applicable refund processed.'}
+                                                ${cancelledByAdmin && refundIssued ? 'A sua encomenda foi cancelada e um reembolso foi iniciado. Deverá ser refletido no seu método de pagamento original em 5 a 10 dias úteis.' : cancelledByAdmin && !refundIssued ? 'A sua encomenda foi cancelada. Nenhum reembolso foi emitido para esta encomenda. Se tiver alguma dúvida, por favor contacte-nos.' : 'A sua encomenda foi cancelada. Esta situação será analisada e qualquer reembolso aplicável será processado.'}
                                                 </font>
                                               </td>
                                             </tr>
@@ -424,7 +424,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                We'll be in contact with you as soon as possible.
+                                                Entraremos em contacto consigo o mais brevemente possível.
                                                 </font>
                                               </td>
                                             </tr>
@@ -443,7 +443,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                If you are still on the lookout for other options, please do let us know!
+                                                Se ainda estiver à procura de outras opções, por favor diga-nos!
                                                 </font>
                                               </td>
                                             </tr>
@@ -473,7 +473,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                For any questions or information please contact us at: ${process.env.VITE_SENDER_EMAIL_ADDRESS}
+                                                Para qualquer dúvida ou informação, por favor contacte-nos em: ${process.env.VITE_SENDER_EMAIL_ADDRESS}
                                                 </font>
                                               </td>
                                             </tr>
@@ -557,7 +557,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  ${orderItems.length} item(s)
+                                                  ${orderItems.length} artigo(s)
                                                 </font>
                                               </td>
                                             </tr>
@@ -635,7 +635,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Sub-Total: ${itemsPrice.toFixed(2)}€
+                                                  Subtotal: ${itemsPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -661,7 +661,7 @@ export const cancelOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Shipping:
+                                                  Envio:
                                                   ${shippingPrice && shippingPrice.toFixed(2)}€
                                                 </font>
                                               </td>
@@ -729,7 +729,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Thanks,
+                                  Com os melhores cumprimentos,
                                 </font>
                               </td>
                             </tr>
@@ -808,7 +808,7 @@ export const cancelOrder = ({
                                 "
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
-                                  For any questions or information please contact us at: ${
+                                  Para qualquer dúvida ou informação, por favor contacte-nos em: ${
                                     process.env.VITE_SENDER_EMAIL_ADDRESS
                                   }
                                 </font>

@@ -92,7 +92,7 @@ const handleOrderPaid = async (paymentIntent) => {
       await sendMail({
         from,
         to: order.shippingAddress.email,
-        subject: `You placed a new order at ${process.env.BRAND_NAME}!`,
+        subject: `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`,
         html: placedOrder({ order: orderEmailData, hasInvoice: !!invoicePdfBuffer }),
         attachments: invoiceAttachment,
       });

@@ -36,7 +36,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order placed at ${brand}</title>
+  <title>Encomenda em ${brand}</title>
 </head>
 <body style="margin:0;padding:0;background:#1a1a1a;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
@@ -55,10 +55,10 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
       </tr>
       <tr>
         <td style="padding:40px 40px 24px;">
-          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Order placed at ${brand}</h1>
+          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Encomenda em ${brand}</h1>
           <p style="margin:0 0 24px;color:#555;font-size:15px;">
-            Hi ${name}, your order has been created and is waiting for payment.
-            Click the button below to complete your purchase.
+            Olá ${name}, a sua encomenda foi criada e está a aguardar pagamento.
+            Clique no botão abaixo para concluir a sua compra.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" border="0"
             style="background:#f9f9f9;border-radius:4px;">
@@ -80,7 +80,7 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
                   : '';
               })()}
               <tr>
-                <td style="padding:8px 20px;color:#555;font-size:14px;">Shipping</td>
+                <td style="padding:8px 20px;color:#555;font-size:14px;">Envio</td>
                 <td style="padding:8px 20px;color:#555;font-size:14px;text-align:right;">${order.shippingPrice.toFixed(2)}€</td>
               </tr>
               <tr>
@@ -92,21 +92,21 @@ export const orderPendingPayment = ({ order, paymentUrl }) => {
           <div style="text-align:center;margin:32px 0;">
             <a href="${paymentUrl}"
               style="background:#1a1a1a;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:4px;font-size:15px;font-weight:600;display:inline-block;">
-              Pay now
+              Pagar agora
             </a>
           </div>
           <p style="margin:0;color:#999;font-size:13px;">
-            This link is unique to your order. Do not share it with others.
+            Este link é exclusivo da sua encomenda. Não o partilhe com ninguém.
           </p>
         </td>
       </tr>
       <tr>
         <td style="background:#f9f9f9;padding:24px;text-align:center;border-top:1px solid #e0e0e0;">
           <p style="margin:0 0 8px;color:#999;font-size:13px;">
-            Questions? Contact us at
+            Dúvidas? Contacte-nos em
             <a href="mailto:${contactEmail}" style="color:#555;text-decoration:none;">${contactEmail}</a>
           </p>
-          <p style="margin:0;color:#bbb;font-size:12px;">${brand}® is a registered brand</p>
+          <p style="margin:0;color:#bbb;font-size:12px;">${brand}® é uma marca registada</p>
         </td>
       </tr>
     </tbody>

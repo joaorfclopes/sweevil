@@ -19,7 +19,7 @@ export const sendOrder = ({
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Place Order Email</title>
+      <title>Encomenda a Caminho</title>
     </head>
     <body style="margin: 0; padding: 0">
       <div
@@ -142,7 +142,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  We’ve sent it!
+                                  Enviámos!
                                 </font>
                               </td>
                             </tr>
@@ -169,8 +169,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Hi ${formatName(fullName)}, your parcel is on its way and it
-                                  should be with you soon!
+                                  Olá ${formatName(fullName)}, a sua encomenda está a caminho e deverá chegar em breve!
                                 </font>
                               </td>
                             </tr>
@@ -197,7 +196,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  N.º de Encomenda: ${orderId}
                                 </font>
                               </td>
                             </tr>
@@ -224,7 +223,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order date: ${orderDate}
+                                  Data da encomenda: ${orderDate}
                                 </font>
                               </td>
                             </tr>
@@ -281,7 +280,7 @@ export const sendOrder = ({
                                           <font
                                             face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                           >
-                                            Order Details
+                                            Detalhes da Encomenda
                                           </font>
                                         </a>
                                       </td>
@@ -349,7 +348,7 @@ export const sendOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Delivery details
+                                                  Detalhes de entrega
                                                 </font>
                                               </td>
                                             </tr>
@@ -403,7 +402,7 @@ export const sendOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Shipping address
+                                                  Morada de envio
                                                 </font>
                                               </td>
                                             </tr>
@@ -573,8 +572,8 @@ export const sendOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  ${orderItems.length} item(s)
-                                                  sent
+                                                  ${orderItems.length} artigo(s)
+                                                  enviado(s)
                                                 </font>
                                               </td>
                                             </tr>
@@ -652,7 +651,7 @@ export const sendOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Sub-Total: ${itemsPrice.toFixed(2)}€
+                                                  Subtotal: ${itemsPrice.toFixed(2)}€
                                                 </font>
                                               </td>
                                             </tr>
@@ -678,7 +677,7 @@ export const sendOrder = ({
                                                 <font
                                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  Shipping:
+                                                  Envio:
                                                   ${shippingPrice && shippingPrice.toFixed(2)}€
                                                 </font>
                                               </td>
@@ -746,7 +745,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Thanks,
+                                  Com os melhores cumprimentos,
                                 </font>
                               </td>
                             </tr>
@@ -825,7 +824,7 @@ export const sendOrder = ({
                                 "
                               >
                                 <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
-                                  For any questions or information please contact us at: ${
+                                  Para qualquer dúvida ou informação, por favor contacte-nos em: ${
                                     process.env.VITE_SENDER_EMAIL_ADDRESS
                                   }
                                 </font>

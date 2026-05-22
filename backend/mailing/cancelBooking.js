@@ -14,7 +14,7 @@ export const cancelBooking = ({ booking }) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking Cancelled</title>
+  <title>Marcação Cancelada</title>
 </head>
 <body style="margin:0;padding:0;background:#1a1a1a;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
@@ -33,22 +33,22 @@ export const cancelBooking = ({ booking }) => {
       </tr>
       <tr>
         <td style="padding:40px 40px 24px;">
-          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Booking Cancelled</h1>
+          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Marcação Cancelada</h1>
           <p style="margin:0 0 24px;color:#555;font-size:15px;">
-            Hi ${booking.guestInfo.name}, your booking has been cancelled.
+            Olá ${booking.guestInfo.name}, a sua marcação foi cancelada.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" border="0"
             style="background:#f9f9f9;border-radius:4px;padding:20px;">
             <tbody>
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Date</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Data</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${dateStr}</span>
                 </td>
               </tr>
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Time</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Hora</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.slot}</span>
                 </td>
               </tr>
@@ -57,7 +57,7 @@ export const cancelBooking = ({ booking }) => {
                   ? `
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Deposit</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Depósito</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.price.toFixed(2)}€</span>
                 </td>
               </tr>`
@@ -69,12 +69,12 @@ export const cancelBooking = ({ booking }) => {
             booking.isPaid
               ? `
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
-            Please note that deposits are non-refundable in the event of a cancellation.
+            Tenha em atenção que os depósitos não são reembolsáveis em caso de cancelamento.
           </p>`
               : ''
           }
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
-            If you believe this is a mistake or have any questions, please contact us at
+            Se acredita que isto é um erro ou tem alguma dúvida, por favor contacte-nos através de
             <a href="mailto:${contactEmail}" style="color:#1a1a1a;">${contactEmail}</a>.
           </p>
         </td>
@@ -87,7 +87,7 @@ export const cancelBooking = ({ booking }) => {
               <tr>
                 <td>
                   <p style="margin:0;color:#555;font-size:14px;line-height:1.6;">
-                    We hope to see you again at ${brand}.
+                    Esperamos vê-lo(a) novamente em ${brand}.
                   </p>
                 </td>
               </tr>

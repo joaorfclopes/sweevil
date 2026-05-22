@@ -14,7 +14,7 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking Confirmed</title>
+  <title>Marcação Confirmada</title>
 </head>
 <body style="margin:0;padding:0;background:#1a1a1a;font-family:Arial,sans-serif;">
   <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
@@ -33,28 +33,28 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
       </tr>
       <tr>
         <td style="padding:40px 40px 24px;">
-          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Booking Confirmed!</h1>
+          <h1 style="margin:0 0 8px;font-size:22px;color:#1a1a1a;">Marcação Confirmada!</h1>
           <p style="margin:0 0 24px;color:#555;font-size:15px;">
-            Hi ${booking.guestInfo.name}, your booking has been confirmed and payment received.
+            Olá ${booking.guestInfo.name}, a sua marcação foi confirmada e o pagamento recebido.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" border="0"
             style="background:#f9f9f9;border-radius:4px;padding:20px;">
             <tbody>
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Date</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Data</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${dateStr}</span>
                 </td>
               </tr>
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Time</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Hora</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.slot}</span>
                 </td>
               </tr>
               <tr>
                 <td style="padding:8px 20px;">
-                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Amount Paid</strong><br/>
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Valor Pago</strong><br/>
                   <span style="color:#1a1a1a;font-size:15px;">${booking.price.toFixed(2)}€</span>
                 </td>
               </tr>
@@ -64,7 +64,7 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
             booking.images && booking.images.length > 0
               ? `
           <div style="margin-top:24px;">
-            <p style="margin:0 0 10px;color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;font-weight:bold;">Your Photos</p>
+            <p style="margin:0 0 10px;color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;font-weight:bold;">As Suas Fotos</p>
             <table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody>
               ${(() => {
                 const rows = [];
@@ -88,18 +88,18 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
               : ''
           }
           <p style="margin:20px 0 0;color:#767676;font-size:13px;font-style:italic;">
-            Please note that the booking value is non-refundable.
+            Tenha em atenção que o valor da marcação não é reembolsável.
           </p>
           ${
             hasInvoice
               ? `
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
-            Your invoice is attached to this email as a PDF.
+            A sua fatura está anexada a este e-mail em PDF.
           </p>`
               : ''
           }
           <p style="margin:24px 0 0;color:#555;font-size:14px;line-height:1.6;">
-            If you have any questions, please contact us at
+            Se tiver alguma dúvida, por favor contacte-nos através de
             <a href="mailto:${contactEmail}" style="color:#1a1a1a;">${contactEmail}</a>.
           </p>
         </td>
@@ -111,45 +111,45 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
             <tbody>
               <tr>
                 <td>
-                  <h2 style="margin:0 0 4px;font-size:18px;color:#1a1a1a;">Tattoo Booking &amp; Policies</h2>
+                  <h2 style="margin:0 0 4px;font-size:18px;color:#1a1a1a;">Marcação de Tatuagem &amp; Políticas</h2>
                   <p style="margin:0 0 20px;color:#555;font-size:14px;line-height:1.7;">
-                    Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.
+                    Cada design é uma peça original, desenhada à medida com autenticidade. Para garantir exclusividade, não repito designs. Se tiver interesse numa peça anterior, pode enviá-la como referência e eu criarei um novo design único inspirado nela.
                   </p>
-                  <p style="margin:0 0 12px;font-size:14px;color:#1a1a1a;font-weight:bold;">Important Booking Details:</p>
+                  <p style="margin:0 0 12px;font-size:14px;color:#1a1a1a;font-weight:bold;">Informações Importantes sobre a Marcação:</p>
                   <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                       ${[
                         [
-                          'Deposit',
-                          'Your appointment is only confirmed once the deposit is paid. This amount will be deducted from the final cost of your tattoo.',
+                          'Depósito',
+                          'A sua marcação só é confirmada após o pagamento do depósito. Este valor será deduzido do custo final da tatuagem.',
                         ],
                         [
-                          'Cancellations',
-                          'Deposits are non-refundable in the event of a cancellation.',
+                          'Cancelamentos',
+                          'Os depósitos não são reembolsáveis em caso de cancelamento.',
                         ],
                         [
-                          'Rescheduling',
-                          "To keep your deposit, please provide at least 3 days' notice for any rescheduling needs.",
+                          'Reagendamento',
+                          'Para manter o seu depósito, por favor avise com pelo menos 3 dias de antecedência para qualquer necessidade de reagendamento.',
                         ],
                         [
-                          'Punctuality',
-                          'Please be on time. There is a 20-minute grace period. After this time, the session will be automatically canceled and the deposit will be forfeited.',
+                          'Pontualidade',
+                          'Por favor seja pontual. Existe uma tolerância de 20 minutos. Após este tempo, a sessão será automaticamente cancelada e o depósito será perdido.',
                         ],
                         [
-                          'Guests',
-                          'A maximum of one guest is allowed. No one under the age of 18 is permitted in the studio.',
+                          'Acompanhantes',
+                          'É permitido um máximo de um acompanhante. Não é permitida a entrada de menores de 18 anos no estúdio.',
                         ],
                         [
-                          'Preparation',
-                          "Arrive well-fed and hydrated. The consumption of alcohol or other substances 24 hours prior to your appointment is strictly prohibited. A good night's sleep is essential.",
+                          'Preparação',
+                          'Chegue bem alimentado e hidratado. O consumo de álcool ou outras substâncias nas 24 horas anteriores à sua sessão é estritamente proibido. Uma boa noite de sono é essencial.',
                         ],
                         [
-                          'Clothing',
-                          "Please wear comfortable clothing that allows easy access to the area being tattooed and that you don't mind potentially getting ink on.",
+                          'Roupa',
+                          'Use roupa confortável que permita fácil acesso à área a tatuar e que não se importe de eventualmente manchar com tinta.',
                         ],
                         [
-                          'Health',
-                          'Please reach out to reschedule if you have a fever, flu symptoms, or if the skin in the area to be tattooed is sunburned or irritated.',
+                          'Saúde',
+                          'Por favor contacte-nos para reagendar se tiver febre, sintomas de gripe, ou se a pele na área a tatuar estiver queimada pelo sol ou irritada.',
                         ],
                       ]
                         .map(
@@ -164,7 +164,7 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
                         .join('')}
                     </tbody>
                   </table>
-                  <p style="margin:20px 0 0;color:#555;font-size:14px;line-height:1.6;">Hope to meet you soon!</p>
+                  <p style="margin:20px 0 0;color:#555;font-size:14px;line-height:1.6;">Esperamos vê-lo(a) em breve!</p>
                 </td>
               </tr>
             </tbody>

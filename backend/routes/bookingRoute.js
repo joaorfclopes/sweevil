@@ -70,7 +70,7 @@ export const sendBookingEmails = async (
   await sendMail({
     from,
     to: booking.guestInfo.email,
-    subject: `Booking confirmed — ${booking.slot} on ${booking.date.toLocaleDateString('pt-PT')}`,
+    subject: `Marcação confirmada — ${booking.slot} em ${booking.date.toLocaleDateString('pt-PT')}`,
     html: bookingConfirmation({ booking, hasInvoice: !!invoicePdfBuffer }),
     attachments,
   });
@@ -546,7 +546,7 @@ bookingRouter.put(
     await sendMail({
       from,
       to: updated.guestInfo.email,
-      subject: `Your booking has been cancelled — ${process.env.BRAND_NAME}`,
+      subject: `A sua marcação foi cancelada — ${process.env.BRAND_NAME}`,
       html: cancelBooking({ booking: updated }),
     });
     res.json({ message: 'Booking canceled', booking: updated });
