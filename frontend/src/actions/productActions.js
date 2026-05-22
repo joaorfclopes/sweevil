@@ -15,18 +15,22 @@ import {
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
+  PRODUCT_REORDER_FAIL,
+  PRODUCT_REORDER_REQUEST,
+  PRODUCT_REORDER_SUCCESS,
   PRODUCT_UPDATE_FAIL,
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants';
 
 export const listAdminProducts =
-  ({ page = 1, limit = 20, search = '' } = {}) =>
+  ({ page = 1, limit = 20, search = '', all = false } = {}) =>
   async (dispatch) => {
     dispatch({ type: PRODUCT_ADMIN_LIST_REQUEST });
     try {
       const params = new URLSearchParams({ page, limit });
       if (search) params.set('search', search);
+      if (all) params.set('all', 'true');
       const { data } = await Axios.get(`/api/products?${params}`);
       dispatch({ type: PRODUCT_ADMIN_LIST_SUCCESS, payload: data });
     } catch (error) {
@@ -39,7 +43,7 @@ export const listProducts = () => async (dispatch) => {
   try {
     const { data } = await Axios.get('/api/products');
     const products = Array.isArray(data) ? data : (data.items ?? []);
-    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: products.reverse() });
+    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: products });
   } catch (error) {
     dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }
@@ -75,7 +79,7 @@ export const createProduct = (product) => async (dispatch) => {
 export const updateProduct = (product) => async (dispatch) => {
   dispatch({ type: PRODUCT_UPDATE_REQUEST, payload: product });
   try {
-    const { data } = await Axios.put(`/api/products/${product._id}`, product);
+    const { data } = await Axios.put(`/api/products/${product.slug}`, product);
     dispatch({ type: PRODUCT_UPDATE_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -94,6 +98,19 @@ export const deleteProduct = (productId) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: PRODUCT_DELETE_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const reorderProducts = (items) => async (dispatch) => {
+  dispatch({ type: PRODUCT_REORDER_REQUEST });
+  try {
+    await Axios.patch('/api/products/reorder', items);
+    dispatch({ type: PRODUCT_REORDER_SUCCESS });
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_REORDER_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }

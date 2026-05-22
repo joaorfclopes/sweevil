@@ -5,10 +5,28 @@ import Category from '../models/categoryModel.js';
 import GalleryImage from '../models/galleryImageModel.js';
 import { isAdmin, isAuth } from '../utils.js';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Categories
+ *   description: Gallery category management
+ */
+
 const categoryRouter = express.Router();
 const CACHE_KEY = 'categories:list';
 const TTL = 60 * 30;
 
+/**
+ * @swagger
+ * /categories:
+ *   get:
+ *     summary: List all gallery categories sorted by order
+ *     tags: [Categories]
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Array of categories
+ */
 categoryRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -20,6 +38,27 @@ categoryRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /categories:
+ *   post:
+ *     summary: Create a new gallery category
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string }
+ *     responses:
+ *       201:
+ *         description: Category created
+ *       400:
+ *         description: Invalid name or category already exists
+ */
 categoryRouter.post(
   '/',
   isAuth,
@@ -42,6 +81,34 @@ categoryRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /categories/reorder:
+ *   patch:
+ *     summary: Bulk-update gallery category display order
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [items]
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id, order]
+ *                   properties:
+ *                     _id: { type: string }
+ *                     order: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Order updated
+ *       400:
+ *         description: Items must be an array
+ */
 categoryRouter.patch(
   '/reorder',
   isAuth,
@@ -58,6 +125,34 @@ categoryRouter.patch(
   })
 );
 
+/**
+ * @swagger
+ * /categories/{id}:
+ *   put:
+ *     summary: Rename a gallery category (also updates all images using the old name)
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string }
+ *     responses:
+ *       200:
+ *         description: Category updated
+ *       400:
+ *         description: Invalid name
+ *       404:
+ *         description: Category not found
+ */
 categoryRouter.put(
   '/:id',
   isAuth,
@@ -83,6 +178,25 @@ categoryRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /categories/{id}:
+ *   delete:
+ *     summary: Delete a gallery category (blocked if any images use it)
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Category deleted
+ *       400:
+ *         description: Category is in use by one or more images
+ *       404:
+ *         description: Category not found
+ */
 categoryRouter.delete(
   '/:id',
   isAuth,

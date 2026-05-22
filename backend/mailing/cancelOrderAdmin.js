@@ -4,8 +4,11 @@ import itemsDetails from './itemsDetails.js';
 export const cancelOrderAdmin = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     isPaid,
+    cancelledByAdmin,
+    refundIssued,
     shippingAddress: { fullName, email, phoneNumber },
     orderItems,
     itemsPrice,
@@ -141,7 +144,7 @@ export const cancelOrderAdmin = ({
                                 <font
                                   face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif"
                                 >
-                                  ${isPaid ? 'Refund Request' : 'Order Canceled'}
+                                  ${cancelledByAdmin && isPaid && refundIssued ? 'Order Cancelled — Refund Issued' : cancelledByAdmin && isPaid && !refundIssued ? 'Order Cancelled — No Refund' : !cancelledByAdmin && isPaid ? 'Refund Request' : 'Order Canceled'}
                                 </font>
                               </td>
                             </tr>
@@ -170,7 +173,7 @@ export const cancelOrderAdmin = ({
                                 >
                                   Hi ${
                                     process.env.BRAND_NAME
-                                  }, ${isPaid ? `you recieved a refund request from ${formatName(fullName)}` : `an order was canceled by ${formatName(fullName)}`}!
+                                  }, ${cancelledByAdmin && isPaid && refundIssued ? `you cancelled an order and a refund was issued automatically to ${formatName(fullName)}` : cancelledByAdmin && isPaid && !refundIssued ? `you cancelled an order without issuing a refund to ${formatName(fullName)}` : !cancelledByAdmin && isPaid ? `you received a refund request from ${formatName(fullName)}` : `an order was canceled by ${formatName(fullName)}`}!
                                 </font>
                               </td>
                             </tr>
@@ -262,7 +265,7 @@ export const cancelOrderAdmin = ({
                                         "
                                       >
                                         <a
-                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${confirmToken}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -469,7 +472,7 @@ export const cancelOrderAdmin = ({
                                                 <font
                                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                                 >
-                                                  ${isPaid ? `Access your Stripe Dashboard and refund ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} here: https://dashboard.stripe.com/payments` : 'No payment was made — no refund required.'}
+                                                  ${cancelledByAdmin && isPaid && refundIssued ? 'Refund was issued automatically via Stripe.' : cancelledByAdmin && isPaid && !refundIssued ? 'No refund was issued. If needed, process it directly through your Stripe account.' : !cancelledByAdmin && isPaid ? `Use the admin panel to issue a refund of ${totalPrice.toFixed(2)}€ to ${formatName(fullName)} if applicable.` : 'No payment was made — no refund required.'}
                                                 </font>
                                               </td>
                                           </tr>

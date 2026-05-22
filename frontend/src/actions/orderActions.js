@@ -19,12 +19,18 @@ import {
   ORDER_DETAILS_FAIL,
   ORDER_DETAILS_REQUEST,
   ORDER_DETAILS_SUCCESS,
+  ORDER_DISMISS_REFUND_FAIL,
+  ORDER_DISMISS_REFUND_REQUEST,
+  ORDER_DISMISS_REFUND_SUCCESS,
   ORDER_LIST_FAIL,
   ORDER_LIST_REQUEST,
   ORDER_LIST_SUCCESS,
   ORDER_PAY_FAIL,
   ORDER_PAY_REQUEST,
   ORDER_PAY_SUCCESS,
+  ORDER_REFUND_FAIL,
+  ORDER_REFUND_REQUEST,
+  ORDER_REFUND_SUCCESS,
   ORDER_SEND_FAIL,
   ORDER_SEND_REQUEST,
   ORDER_SEND_SUCCESS,
@@ -45,10 +51,10 @@ export const createOrder = (order) => async (dispatch) => {
   }
 };
 
-export const detailsOrder = (orderId, token) => async (dispatch) => {
-  dispatch({ type: ORDER_DETAILS_REQUEST, payload: orderId });
+export const detailsOrder = (token) => async (dispatch) => {
+  dispatch({ type: ORDER_DETAILS_REQUEST });
   try {
-    const { data } = await Axios.get(`/api/orders/${orderId}${token ? `?token=${token}` : ''}`);
+    const { data } = await Axios.get(`/api/orders/token/${token}`);
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -67,9 +73,7 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
     console.log(`[order] Paid — ${order._id}`);
   } catch (error) {
     if (error.response?.data?.message === 'Order already paid') {
-      const { data } = await Axios.get(
-        `/api/orders/${order._id}?token=${paymentResult.confirmToken}`
-      );
+      const { data } = await Axios.get(`/api/orders/token/${paymentResult.confirmToken}`);
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
       console.log(`[order] Paid (already confirmed) — ${order._id}`);
     } else {
@@ -110,18 +114,32 @@ export const deliverOrder = (orderId) => async (dispatch) => {
   }
 };
 
-export const cancelOrder = (orderId, token) => async (dispatch) => {
-  dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
+export const cancelOrder =
+  (orderId, token, refundChoice = null) =>
+  async (dispatch) => {
+    dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
+    try {
+      const body = token ? { confirmToken: token } : {};
+      if (refundChoice) body.refundChoice = refundChoice;
+      const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, body);
+      dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
+      console.log(`[order] Cancelled — ${orderId}`);
+    } catch (error) {
+      dispatch({
+        type: ORDER_CANCEL_FAIL,
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
+
+export const refundOrder = (orderId) => async (dispatch) => {
+  dispatch({ type: ORDER_REFUND_REQUEST });
   try {
-    const { data } = await Axios.put(
-      `/api/orders/${orderId}/cancel`,
-      token ? { confirmToken: token } : {}
-    );
-    dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
-    console.log(`[order] Cancelled — ${orderId}`);
+    const { data } = await Axios.post(`/api/orders/${orderId}/refund`);
+    dispatch({ type: ORDER_REFUND_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
-      type: ORDER_CANCEL_FAIL,
+      type: ORDER_REFUND_FAIL,
       payload: error.response?.data?.message || error.message,
     });
   }
@@ -157,6 +175,19 @@ export const listOrders =
       });
     }
   };
+
+export const dismissRefund = (orderId) => async (dispatch) => {
+  dispatch({ type: ORDER_DISMISS_REFUND_REQUEST });
+  try {
+    const { data } = await Axios.put(`/api/orders/${orderId}/dismiss-refund`);
+    dispatch({ type: ORDER_DISMISS_REFUND_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: ORDER_DISMISS_REFUND_FAIL,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
 
 export const deleteOrder = (orderId) => async (dispatch) => {
   dispatch({ type: ORDER_DELETE_REQUEST, payload: orderId });

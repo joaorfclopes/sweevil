@@ -8,7 +8,7 @@ import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { addToCart } from '../actions/cartActions';
 import { detailsProduct } from '../actions/productActions';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import Placeholder from '../components/Placeholder';
 import { useLazyLoad } from '../hooks/useLazyLoad';
@@ -61,6 +61,12 @@ export default function ProductScreen(props) {
       navigate('/not-found');
     }
   }, [errorStatus, navigate]);
+
+  useEffect(() => {
+    if (product?.slug && /^[a-f0-9]{24}$/.test(productId)) {
+      navigate(`/shop/product/${product.slug}`, { replace: true });
+    }
+  }, [product?.slug, productId, navigate]);
 
   useEffect(() => {
     scrollTop();
@@ -141,180 +147,187 @@ export default function ProductScreen(props) {
 
   return (
     <section className="product-screen">
-      {loading ? (
-        <LoadingBox lineHeight="75vh" width="100px" />
-      ) : error ? (
+      {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <div className="product-screen-container row center">
-          <div className="product-images">
-            <div id="productImageCarousel" className="carousel slide" data-interval="false">
-              <div {...swipeHandlers} className="carousel-inner">
-                {product.images.map((image, index) => (
-                  <div
-                    key={image}
-                    className={`carousel-item product-image ${index === currentIndex ? 'active' : ''}`}
-                  >
-                    <Placeholder height="100%" hide={loadedCarousel.has(index)}>
+        <LoadingOverlay loading={loading} minHeight="75vh">
+          {product && (
+            <div className="product-screen-container row center">
+              <div className="product-images">
+                <div id="productImageCarousel" className="carousel slide" data-interval="false">
+                  <div {...swipeHandlers} className="carousel-inner">
+                    {product.images.map((image, index) => (
                       <div
-                        id={`${index}-carousel-img`}
-                        className="carousel-image product-image-inner"
-                        onClick={() => openLightbox(index)}
+                        key={image}
+                        className={`carousel-item product-image ${index === currentIndex ? 'active' : ''}`}
                       >
-                        <img
-                          ref={(node) => {
-                            if (node?.complete && !loadedCarousel.has(index)) imageLoaded(index);
-                          }}
-                          src={image}
-                          alt="product"
-                          onLoad={() => imageLoaded(index)}
-                        />
+                        <Placeholder height="100%" hide={loadedCarousel.has(index)}>
+                          <div
+                            id={`${index}-carousel-img`}
+                            className="carousel-image product-image-inner"
+                            onClick={() => openLightbox(index)}
+                          >
+                            <img
+                              ref={(node) => {
+                                if (node?.complete && !loadedCarousel.has(index))
+                                  imageLoaded(index);
+                              }}
+                              src={image}
+                              alt="product"
+                              onLoad={() => imageLoaded(index)}
+                            />
+                          </div>
+                        </Placeholder>
                       </div>
-                    </Placeholder>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div className="arrows">
-                <button
-                  className="carousel-control-prev"
-                  onClick={previous}
-                  aria-label="Previous image"
-                >
-                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                </button>
-                <button className="carousel-control-next" onClick={next} aria-label="Next image">
-                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                </button>
-              </div>
-              <ol className="carousel-indicators">
-                {product.images.map((image, index) => (
-                  <li
-                    key={index}
-                    className={index === currentIndex ? 'active' : ''}
-                    onClick={() => setCurrentIndex(index)}
-                  ></li>
-                ))}
-              </ol>
-            </div>
-            <div className="image-preview-container">
-              {product.images.map((image, index) => (
-                <PreviewThumb
-                  key={image}
-                  image={image}
-                  index={index}
-                  onLoaded={previewImageLoaded}
-                  onClick={() => setCurrentIndex(index)}
-                />
-              ))}
-            </div>
-          </div>
-          <Lightbox
-            open={isOpen}
-            close={() => setIsOpen(false)}
-            slides={product.images.map((image) => ({ src: image }))}
-            index={imageIndex}
-            on={{
-              view: ({ index }) => setImageIndex(index),
-            }}
-            plugins={[Zoom]}
-            noScroll={{ disabled: true }}
-            zoom={{
-              maxZoomPixelRatio: 5,
-              zoomInMultiplier: 2,
-              pinchZoomDistanceFactor: 100,
-              wheelZoomDistanceFactor: 100,
-            }}
-          />
-          <div className="product-details">
-            <h2 className="name custom-font">
-              <b>{product.name}</b>
-            </h2>
-            {product.originalPrice && product.originalPrice > product.price ? (
-              <>
-                <h2 className="price price--original">{product.originalPrice.toFixed(2)}€</h2>
-                <h2 className="price">
-                  <b>{product.price.toFixed(2)}€</b>
-                </h2>
-              </>
-            ) : (
-              <h2 className="price">
-                <b>{product.price && product.price.toFixed(2)}€</b>
-              </h2>
-            )}
-            <p>
-              <b>Category:</b> {product.category}
-            </p>
-            <p className="description">
-              <b>Description:</b> {product.description}
-            </p>
-            {product.isClothing && (
-              <div className="size">
-                {sizes.map((size) => (
-                  <div key={size} className="size-option">
+                  <div className="arrows">
                     <button
-                      onClick={() => selectSize(size)}
-                      className={`secondary ${size === chosenSize ? 'active' : ''}`}
-                      type="button"
-                      disabled={
-                        size === 'xs'
-                          ? availability(product.countInStock.xs)
-                          : size === 's'
-                            ? availability(product.countInStock.s)
-                            : size === 'm'
-                              ? availability(product.countInStock.m)
-                              : size === 'l'
-                                ? availability(product.countInStock.l)
-                                : size === 'xl'
-                                  ? availability(product.countInStock.xl)
-                                  : size === 'xxl' && availability(product.countInStock.xxl)
-                      }
+                      className="carousel-control-prev"
+                      onClick={previous}
+                      aria-label="Previous image"
                     >
-                      {size}
+                      <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button
+                      className="carousel-control-next"
+                      onClick={next}
+                      aria-label="Next image"
+                    >
+                      <span className="carousel-control-next-icon" aria-hidden="true"></span>
                     </button>
                   </div>
-                ))}
+                  <ol className="carousel-indicators">
+                    {product.images.map((image, index) => (
+                      <li
+                        key={index}
+                        className={index === currentIndex ? 'active' : ''}
+                        onClick={() => setCurrentIndex(index)}
+                      ></li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="image-preview-container">
+                  {product.images.map((image, index) => (
+                    <PreviewThumb
+                      key={image}
+                      image={image}
+                      index={index}
+                      onLoaded={previewImageLoaded}
+                      onClick={() => setCurrentIndex(index)}
+                    />
+                  ))}
+                </div>
               </div>
-            )}
-            <div className="qty">
-              <b>Quantity:</b>{' '}
-              {product.isClothing
-                ? !chosenSize
-                  ? product.countInStock.xs +
-                      product.countInStock.s +
-                      product.countInStock.m +
-                      product.countInStock.l +
-                      product.countInStock.xl +
-                      product.countInStock.xxl >
-                    0
-                    ? selectQty(qty)
-                    : selectQty(0)
-                  : chosenSize === 'xs'
-                    ? selectQty(product.countInStock.xs)
-                    : chosenSize === 's'
-                      ? selectQty(product.countInStock.s)
-                      : chosenSize === 'm'
-                        ? selectQty(product.countInStock.m)
-                        : chosenSize === 'l'
-                          ? selectQty(product.countInStock.l)
-                          : chosenSize === 'xl'
-                            ? selectQty(product.countInStock.xl)
-                            : chosenSize === 'xxl' && selectQty(product.countInStock.xxl)
-                : selectQty(product.countInStock.stock)}
+              <Lightbox
+                open={isOpen}
+                close={() => setIsOpen(false)}
+                slides={product.images.map((image) => ({ src: image }))}
+                index={imageIndex}
+                on={{
+                  view: ({ index }) => setImageIndex(index),
+                }}
+                plugins={[Zoom]}
+                noScroll={{ disabled: true }}
+                zoom={{
+                  maxZoomPixelRatio: 5,
+                  zoomInMultiplier: 2,
+                  pinchZoomDistanceFactor: 100,
+                  wheelZoomDistanceFactor: 100,
+                }}
+              />
+              <div className="product-details">
+                <h2 className="name custom-font">
+                  <b>{product.name}</b>
+                </h2>
+                {product.originalPrice && product.originalPrice > product.price ? (
+                  <>
+                    <h2 className="price price--original">{product.originalPrice.toFixed(2)}€</h2>
+                    <h2 className="price">
+                      <b>{product.price.toFixed(2)}€</b>
+                    </h2>
+                  </>
+                ) : (
+                  <h2 className="price">
+                    <b>{product.price && product.price.toFixed(2)}€</b>
+                  </h2>
+                )}
+                <p>
+                  <b>Category:</b> {product.category}
+                </p>
+                <p className="description">
+                  <b>Description:</b> {product.description}
+                </p>
+                {product.isClothing && (
+                  <div className="size">
+                    {sizes.map((size) => (
+                      <div key={size} className="size-option">
+                        <button
+                          onClick={() => selectSize(size)}
+                          className={`secondary ${size === chosenSize ? 'active' : ''}`}
+                          type="button"
+                          disabled={
+                            size === 'xs'
+                              ? availability(product.countInStock.xs)
+                              : size === 's'
+                                ? availability(product.countInStock.s)
+                                : size === 'm'
+                                  ? availability(product.countInStock.m)
+                                  : size === 'l'
+                                    ? availability(product.countInStock.l)
+                                    : size === 'xl'
+                                      ? availability(product.countInStock.xl)
+                                      : size === 'xxl' && availability(product.countInStock.xxl)
+                          }
+                        >
+                          {size}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="qty">
+                  <b>Quantity:</b>{' '}
+                  {product.isClothing
+                    ? !chosenSize
+                      ? product.countInStock.xs +
+                          product.countInStock.s +
+                          product.countInStock.m +
+                          product.countInStock.l +
+                          product.countInStock.xl +
+                          product.countInStock.xxl >
+                        0
+                        ? selectQty(qty)
+                        : selectQty(0)
+                      : chosenSize === 'xs'
+                        ? selectQty(product.countInStock.xs)
+                        : chosenSize === 's'
+                          ? selectQty(product.countInStock.s)
+                          : chosenSize === 'm'
+                            ? selectQty(product.countInStock.m)
+                            : chosenSize === 'l'
+                              ? selectQty(product.countInStock.l)
+                              : chosenSize === 'xl'
+                                ? selectQty(product.countInStock.xl)
+                                : chosenSize === 'xxl' && selectQty(product.countInStock.xxl)
+                    : selectQty(product.countInStock.stock)}
+                </div>
+                <div className="add-to-cart">
+                  <button
+                    onClick={addToCartHandler}
+                    className="primary"
+                    disabled={
+                      (product.isClothing && !chosenSize) ||
+                      (!product.isClothing && product.countInStock.stock <= 0)
+                    }
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="add-to-cart">
-              <button
-                onClick={addToCartHandler}
-                className="primary"
-                disabled={
-                  (product.isClothing && !chosenSize) ||
-                  (!product.isClothing && product.countInStock.stock <= 0)
-                }
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-        </div>
+          )}
+        </LoadingOverlay>
       )}
     </section>
   );

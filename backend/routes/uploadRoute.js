@@ -20,6 +20,13 @@ const AVIF_QUALITY = parseInt(process.env.AVIF_QUALITY, 10) || 65;
 const AVIF_EFFORT = parseInt(process.env.AVIF_EFFORT, 10) || 4;
 const IMAGE_MAX_SIZE = parseInt(process.env.IMAGE_MAX_SIZE, 10) || 1000;
 
+/**
+ * @swagger
+ * tags:
+ *   name: Upload
+ *   description: Image upload and deletion via S3
+ */
+
 const uploadRouter = express.Router();
 
 const ALLOWED_MIME_TYPES = [
@@ -57,6 +64,41 @@ const bookingMemoryUpload = multer({
   limits: { files: 10, fileSize: 5 * 1024 * 1024 },
 });
 
+/**
+ * @swagger
+ * /upload/s3:
+ *   post:
+ *     summary: Upload a single image to S3 (store or gallery folder)
+ *     tags: [Upload]
+ *     parameters:
+ *       - in: query
+ *         name: folder
+ *         schema: { type: string, enum: [store, gallery], default: store }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [image]
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Uploaded image URL (and dimensions for gallery images)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 location: { type: string }
+ *                 width: { type: integer }
+ *                 height: { type: integer }
+ *       400:
+ *         description: No file uploaded
+ */
 uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
   memoryUpload.single('image')(req, res, async (err) => {
     if (err) return next(err);
@@ -116,6 +158,42 @@ uploadRouter.post('/s3', isAuth, isAdmin, (req, res, next) => {
   });
 });
 
+/**
+ * @swagger
+ * /upload/booking-images:
+ *   post:
+ *     summary: Upload up to 10 booking reference images to S3 (public — no auth required)
+ *     tags: [Upload]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [images]
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       200:
+ *         description: Array of uploaded image URLs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urls:
+ *                   type: array
+ *                   items: { type: string }
+ *       400:
+ *         description: No files uploaded
+ *       429:
+ *         description: Rate limit exceeded
+ */
 uploadRouter.post('/booking-images', bookingUploadLimiter, (req, res, next) => {
   bookingMemoryUpload.array('images', 10)(req, res, async (err) => {
     if (err) return next(err);
@@ -155,6 +233,29 @@ uploadRouter.post('/booking-images', bookingUploadLimiter, (req, res, next) => {
   });
 });
 
+/**
+ * @swagger
+ * /upload/s3:
+ *   delete:
+ *     summary: Delete an image from S3 by URL (store and gallery folders only)
+ *     tags: [Upload]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [url]
+ *             properties:
+ *               url: { type: string, description: Full S3 URL of the image to delete }
+ *     responses:
+ *       200:
+ *         description: Image deleted
+ *       400:
+ *         description: Missing or invalid URL
+ *       500:
+ *         description: S3 deletion error
+ */
 uploadRouter.delete('/s3', isAuth, isAdmin, async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ message: 'url is required' });

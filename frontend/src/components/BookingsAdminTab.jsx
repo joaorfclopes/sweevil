@@ -38,11 +38,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import isURL from 'validator/lib/isURL';
 import {
   cancelBooking,
   createAvailability,
+  createAvailabilityBulk,
   deleteAvailability,
   deleteBooking,
   listAvailability,
@@ -50,15 +50,18 @@ import {
   updateAvailability,
 } from '../actions/bookingActions';
 import {
+  AVAILABILITY_BULK_CREATE_RESET,
   AVAILABILITY_CREATE_RESET,
   AVAILABILITY_DELETE_RESET,
   AVAILABILITY_UPDATE_RESET,
   BOOKING_CANCEL_RESET,
   BOOKING_DELETE_RESET,
 } from '../constants/bookingConstants';
+import useScrollLock from '../hooks/useScrollLock';
 import { formatDateDay } from '../utils.js';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
-import LoadingBox from './LoadingBox';
+import Swal from '../utils/swal';
+import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
 import StatusChip from './StatusChip';
 
@@ -77,6 +80,37 @@ function AvailableDay(props) {
               backgroundColor: 'rgba(34,139,34,0.15)',
               '&:hover': { backgroundColor: 'rgba(34,139,34,0.25)' },
               '&.Mui-selected': { backgroundColor: '#228B22' },
+            }
+          : {}
+      }
+    />
+  );
+}
+
+function ExtraPickerDay({
+  day,
+  outsideCurrentMonth,
+  extraDates,
+  disabledDates,
+  ...pickerDayProps
+}) {
+  const dateStr = dayjs(day).format('YYYY-MM-DD');
+  const isSelected = extraDates.has(dateStr);
+  const isDisabled =
+    disabledDates.has(dateStr) || outsideCurrentMonth || dayjs(day).isBefore(dayjs(), 'day');
+  return (
+    <PickersDay
+      {...pickerDayProps}
+      day={day}
+      outsideCurrentMonth={outsideCurrentMonth}
+      disabled={isDisabled}
+      selected={isSelected}
+      sx={
+        isSelected
+          ? {
+              backgroundColor: 'primary.main',
+              color: '#fff',
+              '&:hover': { backgroundColor: 'primary.dark' },
             }
           : {}
       }
@@ -107,6 +141,13 @@ export default function BookingsAdminTab() {
   const availabilityCreate = useSelector((s) => s.availabilityCreate);
   const { success: successCreate, error: errorCreate } = availabilityCreate;
 
+  const availabilityBulkCreate = useSelector((s) => s.availabilityBulkCreate);
+  const {
+    success: successBulkCreate,
+    result: bulkResult,
+    error: errorBulkCreate,
+  } = availabilityBulkCreate;
+
   const availabilityUpdate = useSelector((s) => s.availabilityUpdate);
   const { success: successUpdate, error: errorUpdate } = availabilityUpdate;
 
@@ -124,10 +165,13 @@ export default function BookingsAdminTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAvail, setEditingAvail] = useState(null);
   const [dialogDate, setDialogDate] = useState(null);
+  const [calendarViewDate, setCalendarViewDate] = useState(null);
   const [slotsInput, setSlotsInput] = useState('');
   const [priceInput, setPriceInput] = useState('');
   const [priceEditing, setPriceEditing] = useState(false);
   const [dialogError, setDialogError] = useState('');
+  const [extraDates, setExtraDates] = useState(new Set());
+  const [showExtraPicker, setShowExtraPicker] = useState(false);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -135,6 +179,7 @@ export default function BookingsAdminTab() {
   const [orderBy, setOrderBy] = useState('date');
   const [selected, setSelected] = useState(new Set());
   const [expanded, setExpanded] = useState(new Set());
+  useScrollLock(photosDialog.open || notesDialog.open || dialogOpen);
 
   useEffect(() => {
     dispatch(listAvailability());
@@ -167,20 +212,44 @@ export default function BookingsAdminTab() {
   }, [dispatch, successCancel, successDelete, page, rowsPerPage, debouncedSearch, statusFilter]);
 
   useEffect(() => {
-    if (successCreate || successUpdate || successAvailDelete) {
+    if (successCreate || successUpdate || successAvailDelete || successBulkCreate) {
       dispatch({ type: AVAILABILITY_CREATE_RESET });
       dispatch({ type: AVAILABILITY_UPDATE_RESET });
       dispatch({ type: AVAILABILITY_DELETE_RESET });
+      dispatch({ type: AVAILABILITY_BULK_CREATE_RESET });
       dispatch(listAvailability());
       setDialogOpen(false);
+      setExtraDates(new Set());
+      setShowExtraPicker(false);
+      if (successBulkCreate && bulkResult) {
+        const created = bulkResult.created ?? [];
+        const skipped = bulkResult.skipped ?? [];
+        const msg =
+          skipped.length > 0
+            ? `Added ${created.length} date(s). ${skipped.length} already existed and were skipped.`
+            : `Added ${created.length} date(s).`;
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: msg,
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      }
     }
-  }, [dispatch, successCreate, successUpdate, successAvailDelete]);
+  }, [dispatch, successCreate, successUpdate, successAvailDelete, successBulkCreate]);
 
   const availMap = {};
   availability.forEach((a) => {
-    availMap[dayjs(a.date).format('YYYY-MM-DD')] = a;
+    availMap[dayjs(a.date).utc().format('YYYY-MM-DD')] = a;
   });
   const availableDates = Object.keys(availMap);
+
+  const extraPickerDisabledDates = useMemo(
+    () =>
+      new Set([...availableDates, ...(dialogDate ? [dayjs(dialogDate).format('YYYY-MM-DD')] : [])]),
+    [availableDates, dialogDate]
+  );
 
   const handleSort = (col) => {
     if (orderBy === col) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -267,10 +336,13 @@ export default function BookingsAdminTab() {
     const existing = availMap[dateStr];
     setEditingAvail(existing || null);
     setDialogDate(date);
+    setCalendarViewDate(date);
     setSlotsInput(existing ? existing.slots.map((s) => s.time).join(', ') : '');
     setPriceInput(existing ? String(existing.price) : '50');
     setPriceEditing(false);
     setDialogError('');
+    setExtraDates(new Set());
+    setShowExtraPicker(false);
     setDialogOpen(true);
   };
 
@@ -292,6 +364,9 @@ export default function BookingsAdminTab() {
     const dateStr = dayjs(dialogDate).format('YYYY-MM-DD');
     if (editingAvail) {
       dispatch(updateAvailability(editingAvail._id, { slots, price }));
+    } else if (extraDates.size > 0) {
+      const allDates = [dateStr, ...extraDates];
+      dispatch(createAvailabilityBulk({ dates: allDates, slots, price }));
     } else {
       dispatch(createAvailability({ date: dateStr, slots, price }));
     }
@@ -379,28 +454,29 @@ export default function BookingsAdminTab() {
             <Typography variant="body2" style={{ color: '#666', marginBottom: 12 }}>
               Click any date to set availability and price for that day.
             </Typography>
-            {loadingAvail ? (
-              <LoadingBox />
-            ) : errorAvail ? (
+            {errorAvail ? (
               <MessageBox variant="error">{errorAvail}</MessageBox>
             ) : (
-              <Paper
-                sx={{
-                  background: '#fff',
-                  display: 'block',
-                  margin: '0 auto',
-                  width: 'fit-content',
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateCalendar
-                    onChange={handleDayClick}
-                    disablePast
-                    slots={{ day: AvailableDay }}
-                    slotProps={{ day: { availableDates } }}
-                  />
-                </LocalizationProvider>
-              </Paper>
+              <LoadingOverlay loading={loadingAvail} minHeight="300px">
+                <Paper
+                  sx={{
+                    background: '#fff',
+                    display: 'block',
+                    margin: '0 auto',
+                    width: 'fit-content',
+                  }}
+                >
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                      onChange={handleDayClick}
+                      disablePast
+                      referenceDate={calendarViewDate ? dayjs(calendarViewDate) : undefined}
+                      slots={{ day: AvailableDay }}
+                      slotProps={{ day: { availableDates } }}
+                    />
+                  </LocalizationProvider>
+                </Paper>
+              </LoadingOverlay>
             )}
           </div>
 
@@ -728,6 +804,8 @@ export default function BookingsAdminTab() {
         onClose={() => {
           setDialogOpen(false);
           setPriceEditing(false);
+          setExtraDates(new Set());
+          setShowExtraPicker(false);
         }}
         maxWidth="xs"
         fullWidth
@@ -738,8 +816,10 @@ export default function BookingsAdminTab() {
           {dialogDate ? dayjs(dialogDate).format('DD/MM/YYYY') : ''}
         </DialogTitle>
         <DialogContent>
-          {(errorCreate || errorUpdate || dialogError) && (
-            <MessageBox variant="error">{dialogError || errorCreate || errorUpdate}</MessageBox>
+          {(errorCreate || errorUpdate || errorBulkCreate || dialogError) && (
+            <MessageBox variant="error">
+              {dialogError || errorCreate || errorUpdate || errorBulkCreate}
+            </MessageBox>
           )}
           <TextField
             label="Time slots (comma-separated)"
@@ -769,6 +849,79 @@ export default function BookingsAdminTab() {
             }}
             sx={!priceEditing ? { '& .MuiInputBase-input': { color: '#555' } } : {}}
           />
+          {!editingAvail && (
+            <Box sx={{ mt: 1 }}>
+              {!showExtraPicker ? (
+                <button
+                  type="button"
+                  className="secondary"
+                  style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                  onClick={() => setShowExtraPicker(true)}
+                >
+                  Apply to more dates
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="secondary"
+                  style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                  onClick={() => {
+                    setShowExtraPicker(false);
+                    setExtraDates(new Set());
+                  }}
+                >
+                  Cancel extra dates
+                </button>
+              )}
+            </Box>
+          )}
+          {!editingAvail && showExtraPicker && (
+            <Box sx={{ mt: 1 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar
+                  disablePast
+                  referenceDate={dialogDate ? dayjs(dialogDate) : undefined}
+                  onChange={(date) => {
+                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+                    setExtraDates((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(dateStr)) {
+                        next.delete(dateStr);
+                      } else {
+                        next.add(dateStr);
+                      }
+                      return next;
+                    });
+                  }}
+                  slots={{ day: ExtraPickerDay }}
+                  slotProps={{
+                    day: {
+                      extraDates,
+                      disabledDates: extraPickerDisabledDates,
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+              {extraDates.size > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                  {[...extraDates].sort().map((d) => (
+                    <Chip
+                      key={d}
+                      label={dayjs(d).format('DD/MM/YYYY')}
+                      size="small"
+                      onDelete={() =>
+                        setExtraDates((prev) => {
+                          const next = new Set(prev);
+                          next.delete(d);
+                          return next;
+                        })
+                      }
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           {editingAvail && (

@@ -4,33 +4,18 @@
   @include lg {
     @include margin-center;
   }
-  padding-top: 130px;
-  min-height: 90vh;
-  @include md {
-    padding-top: 150px;
-  }
   .order-container {
+    padding-top: 130px;
+    min-height: 90vh;
+    @include md {
+      padding-top: 150px;
+    }
     .order-inner {
       width: 100%;
     }
   }
-  .stripe-payment,
-  .cancel-button {
-    width: 100%;
-    @include md {
-      width: 49%;
-    }
-  }
   .stripe-payment {
-    float: left;
-  }
-  .deliver-button {
+    width: 100%;
     margin-bottom: 0.5rem;
-  }
-  .cancel-button {
-    float: right;
-    &.full-width {
-      width: 100%;
-    }
   }
 }

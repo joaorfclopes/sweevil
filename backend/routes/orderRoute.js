@@ -54,6 +54,50 @@ const paymentLimiter = rateLimit({
 
 const validateToken = (order, token) => token && order.confirmToken && token === order.confirmToken;
 
+/**
+ * @swagger
+ * tags:
+ *   name: Orders
+ *   description: Order management (admin only)
+ */
+
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: List all orders (paginated)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Filter by recipient full name
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [PENDING, PAID, SENT, DELIVERED, CANCELLED] }
+ *     responses:
+ *       200:
+ *         description: Paginated order list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items: { type: array }
+ *                 total: { type: integer }
+ *                 page: { type: integer }
+ *                 pages: { type: integer }
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not admin
+ */
 orderRouter.get(
   '/',
   isAuth,
@@ -75,6 +119,23 @@ orderRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}:
+ *   delete:
+ *     summary: Delete an order by ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order deleted
+ *       404:
+ *         description: Order not found
+ */
 orderRouter.delete(
   '/:id',
   isAuth,
@@ -90,6 +151,23 @@ orderRouter.delete(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}/send:
+ *   put:
+ *     summary: Mark an order as sent
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order marked as sent
+ *       404:
+ *         description: Order not found
+ */
 orderRouter.put(
   '/:id/send',
   isAuth,
@@ -109,6 +187,23 @@ orderRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}/deliver:
+ *   put:
+ *     summary: Mark an order as delivered
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order marked as delivered
+ *       404:
+ *         description: Order not found
+ */
 orderRouter.put(
   '/:id/deliver',
   isAuth,
@@ -119,6 +214,7 @@ orderRouter.put(
       order.isDelivered = true;
       order.deliveredAt = Date.now();
       order.status = 'DELIVERED';
+      order.confirmTokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const updatedOrder = await order.save();
       console.log(`[order] Order ${updatedOrder._id} marked as delivered`);
       res.send({ message: 'Order delivered', order: updatedOrder });
@@ -128,6 +224,16 @@ orderRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /orders/list:
+ *   get:
+ *     summary: List orders for the current authenticated user
+ *     tags: [Orders]
+ *     responses:
+ *       200:
+ *         description: Array of orders belonging to the current user
+ */
 orderRouter.get(
   '/list',
   isAuth,
@@ -137,6 +243,47 @@ orderRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /orders:
+ *   post:
+ *     summary: Create a new order
+ *     tags: [Orders]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [orderItems, shippingAddress]
+ *             properties:
+ *               orderItems:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     product: { type: string }
+ *                     qty: { type: integer }
+ *                     size: { type: string }
+ *               shippingAddress:
+ *                 type: object
+ *                 properties:
+ *                   fullName: { type: string }
+ *                   email: { type: string }
+ *                   address: { type: string }
+ *                   city: { type: string }
+ *                   postalCode: { type: string }
+ *                   country: { type: string }
+ *                   phoneNumber: { type: string }
+ *     responses:
+ *       201:
+ *         description: Order created, pending payment link emailed to customer
+ *       400:
+ *         description: Validation error or product not found
+ *       429:
+ *         description: Rate limit exceeded
+ */
 orderRouter.post(
   '/',
   createOrderLimiter,
@@ -157,6 +304,7 @@ orderRouter.post(
         price: product.price,
         isClothing: product.isClothing,
         qty,
+        slug: product.slug,
         ...(product.isClothing && { size: item.size }),
       });
     }
@@ -181,7 +329,7 @@ orderRouter.post(
     Sentry.metrics.count('order.created', 1);
 
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const paymentUrl = `${frontendUrl}/cart/order/${createdOrder._id}?token=${confirmToken}`;
+    const paymentUrl = `${frontendUrl}/cart/order/${confirmToken}`;
     const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
     await sendMail({
       from,
@@ -196,6 +344,7 @@ orderRouter.post(
       html: placedOrderAdmin({
         order: {
           orderId: createdOrder._id,
+          confirmToken: createdOrder.confirmToken,
           orderDate: formatDate(createdOrder.createdAt.toISOString()),
           shippingAddress: createdOrder.shippingAddress,
           orderItems: createdOrder.orderItems,
@@ -215,16 +364,68 @@ orderRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /orders/token/{token}:
+ *   get:
+ *     summary: Get an order by confirm token (public — used in customer payment flow)
+ *     tags: [Orders]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema: { type: string }
+ *         description: The order confirm token sent to the customer via email
+ *     responses:
+ *       200:
+ *         description: Order data (without confirmToken)
+ *       403:
+ *         description: Order access expired
+ *       404:
+ *         description: Order not found
+ */
+orderRouter.get(
+  '/token/:token',
+  expressAsyncHandler(async (req, res) => {
+    const orderWithToken = await Order.findOne({ confirmToken: req.params.token });
+    if (!orderWithToken) return res.status(404).json({ message: 'Order not found' });
+    if (orderWithToken.confirmTokenExpiresAt && orderWithToken.confirmTokenExpiresAt < new Date()) {
+      return res.status(403).json({ message: 'Order access expired' });
+    }
+    const { confirmToken: _, confirmTokenExpiresAt: __, ...orderData } = orderWithToken.toObject();
+    res.json(orderData);
+  })
+);
+
+/**
+ * @swagger
+ * /orders/{id}:
+ *   get:
+ *     summary: Get a single order by ID (admin only)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order data
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 orderRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
     const isAdminUser = !!(await getAdminSession(req));
-    const token = req.query.token;
 
     const orderWithToken = await Order.findById(req.params.id);
     if (!orderWithToken) return res.status(404).json({ message: 'Order not found' });
 
-    if (!isAdminUser && !validateToken(orderWithToken, token)) {
+    if (!isAdminUser) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -233,6 +434,45 @@ orderRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}/create-payment-intent:
+ *   post:
+ *     summary: Create a Stripe PaymentIntent for the order
+ *     tags: [Orders]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [confirmToken]
+ *             properties:
+ *               confirmToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Stripe client secret
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 clientSecret: { type: string }
+ *       400:
+ *         description: Order already paid
+ *       403:
+ *         description: Invalid token
+ *       404:
+ *         description: Order not found
+ *       429:
+ *         description: Rate limit exceeded
+ */
 orderRouter.post(
   '/:id/create-payment-intent',
   paymentLimiter,
@@ -328,6 +568,42 @@ orderRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}/pay:
+ *   put:
+ *     summary: Confirm payment and mark order as paid
+ *     tags: [Orders]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [paymentIntentId, confirmToken]
+ *             properties:
+ *               paymentIntentId: { type: string }
+ *               confirmToken: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order paid and confirmation emails sent
+ *       400:
+ *         description: Invalid or missing paymentIntentId
+ *       402:
+ *         description: Payment not succeeded or amount mismatch
+ *       403:
+ *         description: Invalid token
+ *       404:
+ *         description: Order not found
+ *       429:
+ *         description: Rate limit exceeded
+ */
 orderRouter.put(
   '/:id/pay',
   paymentLimiter,
@@ -405,6 +681,7 @@ orderRouter.put(
         : [];
       const orderEmailData = {
         orderId: updatedOrder._id,
+        confirmToken: updatedOrder.confirmToken,
         orderDate: formatDate(updatedOrder.createdAt.toISOString()),
         shippingAddress: updatedOrder.shippingAddress,
         orderItems: updatedOrder.orderItems,
@@ -438,11 +715,43 @@ orderRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /orders/{id}/cancel:
+ *   put:
+ *     summary: Cancel an order (customer via token or admin)
+ *     tags: [Orders]
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               confirmToken: { type: string, description: Required if not admin }
+ *               refundChoice:
+ *                 type: string
+ *                 enum: [yes, no]
+ *                 description: Admin only — whether to issue a Stripe refund
+ *     responses:
+ *       200:
+ *         description: Order canceled
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
 orderRouter.put(
   '/:id/cancel',
   expressAsyncHandler(async (req, res) => {
     const isAdminUser = !!(await getAdminSession(req));
-    const { confirmToken } = req.body;
+    const { confirmToken, refundChoice } = req.body;
 
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).send({ message: 'Order not found' });
@@ -451,7 +760,6 @@ orderRouter.put(
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    order.status = 'CANCELED';
     if (order.isPaid) {
       for (const item of order.orderItems) {
         const field = item.isClothing
@@ -459,6 +767,26 @@ orderRouter.put(
           : 'countInStock.stock';
         await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
       }
+      if (isAdminUser) {
+        if (refundChoice === 'yes' && !order.isRefunded) {
+          try {
+            await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+            order.isRefunded = true;
+            order.status = 'CANCELED_REFUNDED';
+          } catch (refundErr) {
+            console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+            order.status = 'CANCELED_PENDING_REFUND';
+          }
+        } else if (refundChoice === 'no') {
+          order.status = 'CANCELED_NO_REFUND';
+        } else {
+          order.status = 'CANCELED';
+        }
+      } else {
+        order.status = 'CANCELED_PENDING_REFUND';
+      }
+    } else {
+      order.status = 'CANCELED';
     }
     const updatedOrder = await order.save();
     console.log(
@@ -472,8 +800,11 @@ orderRouter.put(
       html: cancelOrderEmail({
         order: {
           orderId: updatedOrder._id,
+          confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: isAdminUser,
+          refundIssued: updatedOrder.isRefunded,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             country: updatedOrder.shippingAddress.country,
@@ -489,12 +820,22 @@ orderRouter.put(
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: updatedOrder.isPaid ? 'Refund Request' : 'Order Canceled',
+      subject:
+        isAdminUser && updatedOrder.isPaid && updatedOrder.isRefunded
+          ? 'Order Cancelled — Refund Issued'
+          : isAdminUser && updatedOrder.isPaid && refundChoice === 'no'
+            ? 'Order Cancelled — No Refund'
+            : updatedOrder.isPaid
+              ? 'Refund Request'
+              : 'Order Canceled',
       html: cancelOrderAdminEmail({
         order: {
           orderId: updatedOrder._id,
+          confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: isAdminUser,
+          refundIssued: updatedOrder.isRefunded,
           shippingAddress: {
             fullName: updatedOrder.shippingAddress.fullName,
             email: updatedOrder.shippingAddress.email,
@@ -509,6 +850,82 @@ orderRouter.put(
     });
 
     res.send({ message: 'Order canceled', order: updatedOrder });
+  })
+);
+
+/**
+ * @swagger
+ * /orders/{id}/dismiss-refund:
+ *   put:
+ *     summary: Dismiss a pending refund request (set status to CANCELED_NO_REFUND)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Refund dismissed
+ *       400:
+ *         description: Order is not in pending refund state
+ *       404:
+ *         description: Order not found
+ */
+orderRouter.put(
+  '/:id/dismiss-refund',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).send({ message: 'Order not found' });
+    if (order.status !== 'CANCELED_PENDING_REFUND') {
+      return res.status(400).send({ message: 'Order is not in pending refund state' });
+    }
+    order.status = 'CANCELED_NO_REFUND';
+    const updatedOrder = await order.save();
+    console.log(`[order] Refund dismissed for ${order._id} — status set to CANCELED_NO_REFUND`);
+    res.send({ message: 'Refund dismissed', order: updatedOrder });
+  })
+);
+
+/**
+ * @swagger
+ * /orders/{id}/refund:
+ *   post:
+ *     summary: Issue a manual Stripe refund for a paid order
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Refund issued and order marked as CANCELED_REFUNDED
+ *       400:
+ *         description: Order is not paid or already refunded
+ *       404:
+ *         description: Order not found
+ */
+orderRouter.post(
+  '/:id/refund',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).send({ message: 'Order not found' });
+    if (order.status !== 'CANCELED_PENDING_REFUND')
+      return res.status(400).send({ message: 'Order is not pending refund' });
+    if (!order.isPaid) return res.status(400).send({ message: 'Order is not paid' });
+    if (order.isRefunded) return res.status(400).send({ message: 'Order already refunded' });
+
+    await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+    order.isRefunded = true;
+    order.status = 'CANCELED_REFUNDED';
+    const updatedOrder = await order.save();
+    console.log(`[order] Manual refund issued for ${order._id} — €${order.totalPrice}`);
+    res.send({ message: 'Refund issued', order: updatedOrder });
   })
 );
 

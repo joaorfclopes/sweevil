@@ -1,4 +1,8 @@
 import {
+  AVAILABILITY_BULK_CREATE_FAIL,
+  AVAILABILITY_BULK_CREATE_REQUEST,
+  AVAILABILITY_BULK_CREATE_RESET,
+  AVAILABILITY_BULK_CREATE_SUCCESS,
   AVAILABILITY_CREATE_FAIL,
   AVAILABILITY_CREATE_REQUEST,
   AVAILABILITY_CREATE_RESET,
@@ -128,6 +132,21 @@ export const availabilityDeleteReducer = (state = {}, action) => {
     case AVAILABILITY_DELETE_FAIL:
       return { loading: false, error: action.payload };
     case AVAILABILITY_DELETE_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const availabilityBulkCreateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case AVAILABILITY_BULK_CREATE_REQUEST:
+      return { loading: true };
+    case AVAILABILITY_BULK_CREATE_SUCCESS:
+      return { loading: false, success: true, result: action.payload };
+    case AVAILABILITY_BULK_CREATE_FAIL:
+      return { loading: false, error: action.payload };
+    case AVAILABILITY_BULK_CREATE_RESET:
       return {};
     default:
       return state;

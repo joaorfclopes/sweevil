@@ -7,7 +7,7 @@ const itemsDetails = (orderItems) =>
           <tr>
             <td width="110" valign="top">
               <a
-                href="${process.env.VITE_HOME_PAGE}/shop/product/${item.product}"
+                href="${process.env.VITE_HOME_PAGE}/shop/product/${item.slug || item.product}"
                 rel="noreferrer"
                 target="_blank"
               >
@@ -69,9 +69,8 @@ const itemsDetails = (orderItems) =>
                     </td>
                   </tr>
                   ${
-                    item.size &&
-                    item.size !== '' &&
-                    `<tr>
+                    item.size && item.size !== ''
+                      ? `<tr>
                   <td align="left">
                     <span
                       style="
@@ -114,6 +113,7 @@ const itemsDetails = (orderItems) =>
                     &nbsp;
                   </td>
                 </tr>`
+                      : ''
                   }
                   <tr>
                     <td align="left">

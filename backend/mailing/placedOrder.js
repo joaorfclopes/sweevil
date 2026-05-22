@@ -5,6 +5,7 @@ import { getTax } from './taxRates.js';
 export const placedOrder = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     shippingAddress: { fullName, address, country, postalCode, city },
     orderItems,
@@ -263,7 +264,7 @@ export const placedOrder = ({
                                         "
                                       >
                                         <a
-                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${confirmToken}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',

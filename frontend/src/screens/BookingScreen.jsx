@@ -12,8 +12,9 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
-import LoadingBox from '../components/LoadingBox';
+import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
+import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
 
 const bookingFormSchema = z.object({
@@ -32,16 +33,15 @@ const bookingFormSchema = z.object({
     .or(z.literal('')),
 });
 
-function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
+function StripeCheckoutForm({ price, onSuccess, onProcessing, onPayingChange }) {
   const stripe = useStripe();
   const elements = useElements();
-  const [paying, setPaying] = useState(false);
   const [stripeError, setStripeError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
-    setPaying(true);
+    onPayingChange?.(true);
     setStripeError('');
     Sentry.metrics.count('booking.payment_initiated', 1);
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -52,7 +52,7 @@ function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
     if (error) {
       console.warn(`[booking] Stripe error — ${error.message}`);
       setStripeError(error.message);
-      setPaying(false);
+      onPayingChange?.(false);
     } else if (paymentIntent?.status === 'succeeded') {
       onSuccess(paymentIntent.id);
     } else if (paymentIntent?.status === 'processing') {
@@ -66,11 +66,11 @@ function StripeCheckoutForm({ price, onSuccess, onProcessing }) {
       {stripeError && <MessageBox variant="error">{stripeError}</MessageBox>}
       <button
         type="submit"
-        disabled={!stripe || paying}
+        disabled={!stripe}
         className="primary"
         style={{ marginTop: '1rem', width: '100%' }}
       >
-        {paying ? 'Processing...' : `Pay €${price?.toFixed(2)}`}
+        {`Pay €${price?.toFixed(2)}`}
       </button>
     </form>
   );
@@ -107,6 +107,7 @@ const EXCLUSIVITY_TEXT =
 export default function BookingScreen(props) {
   const [searchParams] = useSearchParams();
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  useScrollLock(infoModalOpen);
 
   const [availability, setAvailability] = useState([]);
   const [loadingAvail, setLoadingAvail] = useState(true);
@@ -136,6 +137,7 @@ export default function BookingScreen(props) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [awaitingMbway, setAwaitingMbway] = useState(false);
+  const [stripeFormPaying, setStripeFormPaying] = useState(false);
 
   const handledRedirect = useRef(false);
 
@@ -153,7 +155,7 @@ export default function BookingScreen(props) {
 
   const availMap = {};
   availability.forEach((a) => {
-    const key = dayjs(a.date).format('YYYY-MM-DD');
+    const key = dayjs(a.date).utc().format('YYYY-MM-DD');
     availMap[key] = a;
   });
 
@@ -163,7 +165,8 @@ export default function BookingScreen(props) {
 
   const shouldDisableDate = (date) => {
     const key = dayjs(date).format('YYYY-MM-DD');
-    return !availableDates.includes(key) || dayjs(date).isBefore(dayjs(), 'day');
+    const minDate = dayjs().add(3, 'day');
+    return !availableDates.includes(key) || dayjs(date).isBefore(minDate, 'day');
   };
 
   const handleDateSelect = (date) => {
@@ -333,20 +336,20 @@ export default function BookingScreen(props) {
                 {step === STEPS.CALENDAR && (
                   <div className="booking-step booking-step--calendar">
                     <h2>Select a date</h2>
-                    {loadingAvail ? (
-                      <LoadingBox />
-                    ) : availError ? (
+                    {availError ? (
                       <MessageBox variant="error">{availError}</MessageBox>
                     ) : (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar
-                          disablePast
-                          shouldDisableDate={shouldDisableDate}
-                          onChange={handleDateSelect}
-                          slots={{ day: AvailableDay }}
-                          slotProps={{ day: { availableDates } }}
-                        />
-                      </LocalizationProvider>
+                      <LoadingOverlay loading={loadingAvail} minHeight="300px">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DateCalendar
+                            minDate={dayjs().add(3, 'day')}
+                            shouldDisableDate={shouldDisableDate}
+                            onChange={handleDateSelect}
+                            slots={{ day: AvailableDay }}
+                            slotProps={{ day: { availableDates } }}
+                          />
+                        </LocalizationProvider>
+                      </LoadingOverlay>
                     )}
                   </div>
                 )}
@@ -380,125 +383,128 @@ export default function BookingScreen(props) {
                 )}
 
                 {step === STEPS.FORM && (
-                  <div className="booking-step">
-                    <h2>Your details</h2>
-                    {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                    <form onSubmit={handleBookingSubmit(handleFormSubmit)} className="booking-form">
-                      <div>
-                        <label>Name *</label>
-                        <input maxLength={100} {...registerBooking('name')} />
-                        {bookingErrors.name && (
-                          <span className="field-error">{bookingErrors.name.message}</span>
-                        )}
-                      </div>
-                      <div>
-                        <label>Email *</label>
-                        <input type="email" maxLength={254} {...registerBooking('email')} />
-                        {bookingErrors.email && (
-                          <span className="field-error">{bookingErrors.email.message}</span>
-                        )}
-                      </div>
-                      <div>
-                        <label>Phone *</label>
-                        <Controller
-                          name="phone"
-                          control={bookingControl}
-                          render={({ field }) => (
-                            <PhoneInput
-                              country="pt"
-                              value={field.value}
-                              onChange={field.onChange}
-                              containerClass="phone-input-container"
-                              inputClass="phone-input-field"
-                            />
+                  <LoadingOverlay loading={submitting} minHeight="300px">
+                    <div className="booking-step">
+                      <h2>Your details</h2>
+                      {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
+                      <form
+                        onSubmit={handleBookingSubmit(handleFormSubmit)}
+                        className="booking-form"
+                      >
+                        <div>
+                          <label>Name *</label>
+                          <input maxLength={100} {...registerBooking('name')} />
+                          {bookingErrors.name && (
+                            <span className="field-error">{bookingErrors.name.message}</span>
                           )}
-                        />
-                        {bookingErrors.phone && (
-                          <span className="field-error">{bookingErrors.phone.message}</span>
-                        )}
-                      </div>
-                      <div>
-                        <label>Notes</label>
-                        <textarea rows={3} maxLength={1000} {...registerBooking('notes')} />
-                        {bookingErrors.notes && (
-                          <span className="field-error">{bookingErrors.notes.message}</span>
-                        )}
-                      </div>
-                      <div>
-                        <label>
-                          Photos{' '}
-                          <span style={{ fontWeight: 400, color: '#888' }}>(optional, max 10)</span>
-                        </label>
-                        {imagePreviews.length > 0 && (
-                          <div className="booking-image-previews">
-                            {imagePreviews.map((src, i) => (
-                              <div key={i} className="booking-image-preview">
-                                <img src={src} alt="" />
-                                <button
-                                  type="button"
-                                  className="booking-image-remove"
-                                  onClick={() => removeImage(i)}
-                                  aria-label="Remove photo"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {imageFiles.length < 10 && (
-                          <label className="booking-image-add">
-                            + Add photos
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              style={{ display: 'none' }}
-                              onChange={handleImageChange}
-                            />
+                        </div>
+                        <div>
+                          <label>Email *</label>
+                          <input type="email" maxLength={254} {...registerBooking('email')} />
+                          {bookingErrors.email && (
+                            <span className="field-error">{bookingErrors.email.message}</span>
+                          )}
+                        </div>
+                        <div>
+                          <label>Phone *</label>
+                          <Controller
+                            name="phone"
+                            control={bookingControl}
+                            render={({ field }) => (
+                              <PhoneInput
+                                country="pt"
+                                value={field.value}
+                                onChange={field.onChange}
+                                containerClass="phone-input-container"
+                                inputClass="phone-input-field"
+                              />
+                            )}
+                          />
+                          {bookingErrors.phone && (
+                            <span className="field-error">{bookingErrors.phone.message}</span>
+                          )}
+                        </div>
+                        <div>
+                          <label>Notes</label>
+                          <textarea rows={3} maxLength={1000} {...registerBooking('notes')} />
+                          {bookingErrors.notes && (
+                            <span className="field-error">{bookingErrors.notes.message}</span>
+                          )}
+                        </div>
+                        <div>
+                          <label>
+                            Photos{' '}
+                            <span style={{ fontWeight: 400, color: '#888' }}>
+                              (optional, max 10)
+                            </span>
                           </label>
-                        )}
-                      </div>
-                      <button type="submit" className="primary" disabled={submitting}>
-                        {submitting
-                          ? 'Please wait...'
-                          : `Continue to Payment — ${dayAvailability?.price.toFixed(2)}€`}
-                      </button>
-                    </form>
-                  </div>
+                          {imagePreviews.length > 0 && (
+                            <div className="booking-image-previews">
+                              {imagePreviews.map((src, i) => (
+                                <div key={i} className="booking-image-preview">
+                                  <img src={src} alt="" />
+                                  <button
+                                    type="button"
+                                    className="booking-image-remove"
+                                    onClick={() => removeImage(i)}
+                                    aria-label="Remove photo"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {imageFiles.length < 10 && (
+                            <label className="booking-image-add">
+                              + Add photos
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                style={{ display: 'none' }}
+                                onChange={handleImageChange}
+                              />
+                            </label>
+                          )}
+                        </div>
+                        <button type="submit" className="primary">
+                          {`Continue to Payment — ${dayAvailability?.price.toFixed(2)}€`}
+                        </button>
+                      </form>
+                    </div>
+                  </LoadingOverlay>
                 )}
 
                 {step === STEPS.PAYMENT && (
-                  <div className="booking-step">
-                    <h2>Payment</h2>
-                    {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
-                    {dayAvailability && (
-                      <div className="booking-price-summary">
-                        <p>Deposit: {dayAvailability.price.toFixed(2)}€</p>
-                        <p>
-                          IVA (23%): {((dayAvailability.price * 0.23) / 1.23).toFixed(2)}€ included
-                        </p>
-                      </div>
-                    )}
-                    {awaitingMbway ? (
-                      <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                        <LoadingBox />
-                        <p style={{ marginTop: '1rem' }}>
-                          Waiting for MBWay confirmation in your app…
-                        </p>
-                      </div>
-                    ) : !clientSecret || !stripePromise ? (
-                      <LoadingBox />
-                    ) : (
-                      <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <StripeCheckoutForm
-                          price={dayAvailability?.price}
-                          onSuccess={handlePaymentSuccess}
-                          onProcessing={handleProcessing}
-                        />
-                      </Elements>
-                    )}
-                  </div>
+                  <LoadingOverlay
+                    loading={awaitingMbway || stripeFormPaying || !clientSecret || !stripePromise}
+                    minHeight="300px"
+                  >
+                    <div className="booking-step">
+                      <h2>Payment</h2>
+                      {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
+                      {dayAvailability && (
+                        <div className="booking-price-summary">
+                          <p>Deposit: {dayAvailability.price.toFixed(2)}€</p>
+                          <p>
+                            IVA (23%): {((dayAvailability.price * 0.23) / 1.23).toFixed(2)}€
+                            included
+                          </p>
+                        </div>
+                      )}
+                      {clientSecret && stripePromise && (
+                        <Elements stripe={stripePromise} options={{ clientSecret }}>
+                          <StripeCheckoutForm
+                            price={dayAvailability?.price}
+                            onSuccess={handlePaymentSuccess}
+                            onProcessing={handleProcessing}
+                            onPayingChange={setStripeFormPaying}
+                          />
+                        </Elements>
+                      )}
+                    </div>
+                  </LoadingOverlay>
                 )}
               </div>
             </div>

@@ -5,6 +5,7 @@ import { getTax } from './taxRates.js';
 export const deliveredOrder = ({
   order: {
     orderId,
+    confirmToken,
     orderDate,
     shippingAddress: { fullName, address, country, postalCode, city },
     orderItems,
@@ -260,7 +261,7 @@ export const deliveredOrder = ({
                                         "
                                       >
                                         <a
-                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${orderId}"
+                                          href="${process.env.VITE_HOME_PAGE}/cart/order/${confirmToken}"
                                           style="
                                             color: #ffffff;
                                             font-family: 'FuturaPTHeavy-Reg',
@@ -286,6 +287,27 @@ export const deliveredOrder = ({
                                     </tr>
                                   </tbody>
                                 </table>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                height="16"
+                                style="font-size: 16px; line-height: 16px"
+                              >
+                                &nbsp;
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style="
+                                  font-family: Arial, sans-serif;
+                                  font-size: 11px;
+                                  line-height: 16px;
+                                  color: #888888;
+                                  text-align: center;
+                                "
+                              >
+                                For security reasons, access to your order details will be available for 30 days from delivery.
                               </td>
                             </tr>
                             <tr>

@@ -32,6 +32,11 @@
 **Symptom**: `require()` syntax, missing file extensions in imports
 **Rule**: Root package has `"type": "module"`. Use `import`/`export` everywhere in backend. Include `.js` extensions in relative imports.
 
+### 6. Update Swagger docs when adding/changing endpoints
+
+**Symptom**: New or modified endpoints not visible in `/api-docs`
+**Rule**: When creating or updating any route handler in `backend/routes/*.js`, add or update the `@swagger` JSDoc block above it. Use the existing annotations in `orderRoute.js` as style reference. Swagger UI available at `http://localhost:8123/api-docs` (dev only).
+
 ---
 
 ## Required Environment Variables
@@ -48,4 +53,4 @@
 - Error could cause production issue
 - Mistake repeated across sessions
 
-**Last Updated**: 2026-05-11
+**Last Updated**: 2026-05-21

@@ -4,6 +4,7 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { thunk } from 'redux-thunk';
 import { authClient } from './lib/authClient';
 import {
+  availabilityBulkCreateReducer,
   availabilityCreateReducer,
   availabilityDeleteReducer,
   availabilityListReducer,
@@ -32,8 +33,10 @@ import {
   orderDeleteReducer,
   orderDeliverReducer,
   orderDetailsReducer,
+  orderDismissRefundReducer,
   orderListReducer,
   orderPayReducer,
+  orderRefundReducer,
   orderSendReducer,
 } from './reducers/orderReducers';
 import {
@@ -48,6 +51,7 @@ import {
   productDeleteReducer,
   productDetailsReducer,
   productListReducer,
+  productReorderReducer,
   productUpdateReducer,
 } from './reducers/productReducers';
 import { userDetailsReducer, userSigninReducer, userUpdateReducer } from './reducers/userReducers';
@@ -96,6 +100,7 @@ const reducer = combineReducers({
   productCreate: productCreateReducer,
   productUpdate: productUpdateReducer,
   productDelete: productDeleteReducer,
+  productReorder: productReorderReducer,
   cart: cartReducer,
   userSignin: userSigninReducer,
   userDetails: userDetailsReducer,
@@ -109,6 +114,8 @@ const reducer = combineReducers({
   orderSend: orderSendReducer,
   orderDeliver: orderDeliverReducer,
   orderCancel: orderCancelReducer,
+  orderRefund: orderRefundReducer,
+  orderDismissRefund: orderDismissRefundReducer,
   galleryImageList: galleryImageListReducer,
   galleryImageCreate: galleryImageCreateReducer,
   galleryImageUpdate: galleryImageUpdateReducer,
@@ -128,6 +135,7 @@ const reducer = combineReducers({
   availabilityCreate: availabilityCreateReducer,
   availabilityUpdate: availabilityUpdateReducer,
   availabilityDelete: availabilityDeleteReducer,
+  availabilityBulkCreate: availabilityBulkCreateReducer,
 });
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

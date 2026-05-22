@@ -14,6 +14,7 @@ const orderSchema = new mongoose.Schema(
           ref: 'Product',
           required: true,
         },
+        slug: { type: String },
       },
     ],
     shippingAddress: {
@@ -44,8 +45,10 @@ const orderSchema = new mongoose.Schema(
     sentAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },
+    isRefunded: { type: Boolean, default: false },
     status: { type: String, required: true },
     confirmToken: { type: String },
+    confirmTokenExpiresAt: { type: Date },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   {

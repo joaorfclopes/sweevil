@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import 'dotenv/config';
 import { readFile } from 'fs/promises';
 import mongoose from 'mongoose';
+import { customAlphabet } from 'nanoid';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import About from '../backend/models/aboutModel.js';
@@ -12,6 +14,8 @@ import Order from '../backend/models/orderModel.js';
 import ProductCategory from '../backend/models/productCategoryModel.js';
 import Product from '../backend/models/productModel.js';
 import User from '../backend/models/userModel.js';
+
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, 'data');
@@ -166,7 +170,9 @@ if (productCategoriesData) {
 const productsData = await loadJSON('products.json');
 let insertedProducts = [];
 if (productsData) {
-  insertedProducts = await Product.insertMany(productsData.map(({ _id, __v, ...rest }) => rest));
+  insertedProducts = await Product.insertMany(
+    productsData.map(({ _id, __v, ...rest }, i) => ({ ...rest, sortOrder: i, slug: nanoid(12) }))
+  );
   console.log(`  Inserted ${insertedProducts.length} products`);
 }
 
@@ -209,7 +215,15 @@ console.log(`  Inserted ${availabilities.length} availabilities`);
 if (insertedProducts.length === 0) {
   console.log('  No products — skipping mock orders');
 } else {
-  const STATUSES = ['PENDING', 'PAID', 'SENT', 'DELIVERED', 'CANCELED'];
+  const STATUSES = [
+    'PENDING',
+    'PAID',
+    'SENT',
+    'DELIVERED',
+    'CANCELED_REFUNDED',
+    'CANCELED_NO_REFUND',
+    'CANCELED_PENDING_REFUND',
+  ];
   const orders = [];
 
   for (let i = 0; i < 30; i++) {
@@ -220,10 +234,22 @@ if (insertedProducts.length === 0) {
     const itemsPrice = +(product.price * qty).toFixed(2);
     const shippingPrice = itemsPrice >= 50 ? 0 : 3.99;
     const totalPrice = +(itemsPrice + shippingPrice).toFixed(2);
-    const isPaid = ['PAID', 'SENT', 'DELIVERED'].includes(status);
+    const isPaid = [
+      'PAID',
+      'SENT',
+      'DELIVERED',
+      'CANCELED_REFUNDED',
+      'CANCELED_PENDING_REFUND',
+    ].includes(status);
+    const isRefunded = status === 'CANCELED_REFUNDED';
     const paidAt = isPaid ? daysAgo(20 - i) : undefined;
     const isDelivered = status === 'DELIVERED';
     const deliveredAt = isDelivered ? daysAgo(10 - (i % 5)) : undefined;
+
+    const confirmToken = crypto.randomBytes(32).toString('hex');
+    const confirmTokenExpiresAt = isDelivered
+      ? new Date(deliveredAt.getTime() + 30 * 24 * 60 * 60 * 1000)
+      : undefined;
 
     orders.push({
       orderItems: [
@@ -234,6 +260,7 @@ if (insertedProducts.length === 0) {
           image: product.images?.[0] ?? '',
           price: product.price,
           product: product._id,
+          slug: product.slug,
         },
       ],
       shippingAddress: { ...customer },
@@ -243,9 +270,12 @@ if (insertedProducts.length === 0) {
       totalPrice,
       isPaid,
       paidAt,
+      isRefunded,
       isDelivered,
       deliveredAt,
       status,
+      confirmToken,
+      confirmTokenExpiresAt,
       confirmationEmailSent: isPaid,
       createdAt: daysAgo(30 - i),
       updatedAt: daysAgo(28 - i),
