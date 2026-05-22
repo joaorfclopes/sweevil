@@ -8,6 +8,7 @@ import Axios from 'axios';
 import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useSearchParams } from 'react-router-dom';
@@ -105,6 +106,7 @@ const EXCLUSIVITY_TEXT =
   'Every design is an original, custom-drawn piece created with authenticity. To ensure exclusivity, I do not repeat designs. If you are interested in a previous piece, feel free to send it as a reference, and I will create a new, unique design inspired by it.';
 
 export default function BookingScreen(props) {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   useScrollLock(infoModalOpen);
@@ -148,7 +150,7 @@ export default function BookingScreen(props) {
         setLoadingAvail(false);
       })
       .catch(() => {
-        setAvailError('Failed to load availability.');
+        setAvailError(t('booking.loadAvailError'));
         setLoadingAvail(false);
       });
   }, []);
@@ -232,7 +234,7 @@ export default function BookingScreen(props) {
 
       setStep(STEPS.PAYMENT);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Something went wrong.';
+      const msg = err.response?.data?.message || t('booking.somethingWentWrong');
       console.warn(`[booking] Form submit error — ${msg}`);
       setSubmitError(msg);
     } finally {
@@ -251,7 +253,7 @@ export default function BookingScreen(props) {
       console.log(`[booking] Payment confirmed — ${booking._id}`);
       setStep(STEPS.CONFIRMED);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Payment verification failed.';
+      const msg = err.response?.data?.message || t('booking.somethingWentWrong');
       console.warn(`[booking] Payment verification failed — ${booking._id} — ${msg}`);
       setSubmitError(msg);
     }
@@ -267,7 +269,7 @@ export default function BookingScreen(props) {
       if (Date.now() - start > TIMEOUT) {
         clearInterval(interval);
         setAwaitingMbway(false);
-        setSubmitError('Payment confirmation timed out. Please contact support.');
+        setSubmitError(t('booking.paymentTimeout'));
         return;
       }
       try {
@@ -320,7 +322,7 @@ export default function BookingScreen(props) {
             <div className="booking-calendar-outer">
               <img src="/bookings.avif" alt="" className="booking-hero-img" />
               <div className="booking-calendar-content">
-                <h1 className="custom-font">Book a Session</h1>
+                <h1 className="custom-font">{t('booking.title')}</h1>
                 {step > STEPS.CALENDAR && (
                   <div className="booking-breadcrumb">
                     <button className="booking-back" onClick={() => setStep(step - 1)}>
@@ -374,7 +376,7 @@ export default function BookingScreen(props) {
                         </div>
                         {dayAvailability && (
                           <p className="booking-slot-price">
-                            Deposit: {dayAvailability.price.toFixed(2)}€
+                            {t('booking.deposit')}: {dayAvailability.price.toFixed(2)}€
                           </p>
                         )}
                       </>
@@ -385,28 +387,28 @@ export default function BookingScreen(props) {
                 {step === STEPS.FORM && (
                   <LoadingOverlay loading={submitting} minHeight="300px">
                     <div className="booking-step">
-                      <h2>Your details</h2>
+                      <h2>{t('booking.yourDetails')}</h2>
                       {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
                       <form
                         onSubmit={handleBookingSubmit(handleFormSubmit)}
                         className="booking-form"
                       >
                         <div>
-                          <label>Name *</label>
+                          <label>{t('booking.name')}</label>
                           <input maxLength={100} {...registerBooking('name')} />
                           {bookingErrors.name && (
                             <span className="field-error">{bookingErrors.name.message}</span>
                           )}
                         </div>
                         <div>
-                          <label>Email *</label>
+                          <label>{t('booking.email')}</label>
                           <input type="email" maxLength={254} {...registerBooking('email')} />
                           {bookingErrors.email && (
                             <span className="field-error">{bookingErrors.email.message}</span>
                           )}
                         </div>
                         <div>
-                          <label>Phone *</label>
+                          <label>{t('booking.phone')}</label>
                           <Controller
                             name="phone"
                             control={bookingControl}
@@ -482,11 +484,13 @@ export default function BookingScreen(props) {
                     minHeight="300px"
                   >
                     <div className="booking-step">
-                      <h2>Payment</h2>
+                      <h2>{t('booking.payment')}</h2>
                       {submitError && <MessageBox variant="error">{submitError}</MessageBox>}
                       {dayAvailability && (
                         <div className="booking-price-summary">
-                          <p>Deposit: {dayAvailability.price.toFixed(2)}€</p>
+                          <p>
+                            {t('booking.deposit')}: {dayAvailability.price.toFixed(2)}€
+                          </p>
                           <p>
                             IVA (23%): {((dayAvailability.price * 0.23) / 1.23).toFixed(2)}€
                             included
