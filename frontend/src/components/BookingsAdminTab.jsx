@@ -37,6 +37,7 @@ import { DateCalendar, LocalizationProvider, PickerDay } from '@mui/x-date-picke
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import isURL from 'validator/lib/isURL';
 import {
@@ -119,6 +120,7 @@ function ExtraPickerDay({
 }
 
 export default function BookingsAdminTab() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const bookingList = useSelector((s) => s.bookingList);
@@ -226,11 +228,11 @@ export default function BookingsAdminTab() {
         const skipped = bulkResult.skipped ?? [];
         const msg =
           skipped.length > 0
-            ? `Added ${created.length} date(s). ${skipped.length} already existed and were skipped.`
-            : `Added ${created.length} date(s).`;
+            ? t('admin.bulkCreateResult', { created: created.length, skipped: skipped.length })
+            : t('admin.bulkCreateResultSimple', { created: created.length });
         Swal.fire({
           icon: 'success',
-          title: 'Done',
+          title: t('admin.done'),
           text: msg,
           timer: 3000,
           showConfirmButton: false,
@@ -297,9 +299,9 @@ export default function BookingsAdminTab() {
 
   const handleBulkDeleteBookings = () => {
     Swal.fire({
-      title: `Delete ${selected.size} bookings?`,
+      title: t('admin.deleteBookingsTitle', { count: selected.size }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete all',
+      confirmButtonText: t('admin.deleteBookingsBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -325,10 +327,10 @@ export default function BookingsAdminTab() {
 
   const BOOKING_STATUS_FILTERS = ['', 'CONFIRMED', 'PENDING_PAYMENT', 'CANCELED'];
   const BOOKING_STATUS_LABELS = {
-    '': 'All',
-    CONFIRMED: 'Confirmed',
-    PENDING_PAYMENT: 'Pending Payment',
-    CANCELED: 'Canceled',
+    '': t('admin.all'),
+    CONFIRMED: t('status.CONFIRMED'),
+    PENDING_PAYMENT: t('status.PENDING_PAYMENT'),
+    CANCELED: t('status.CANCELED'),
   };
 
   const handleDayClick = (date) => {
@@ -352,12 +354,12 @@ export default function BookingsAdminTab() {
       .map((t) => t.trim())
       .filter(Boolean);
     if (times.length === 0) {
-      setDialogError('Enter at least one time slot.');
+      setDialogError(t('admin.errorNoSlots'));
       return;
     }
     const price = parseFloat(priceInput);
     if (isNaN(price) || price < 0.5) {
-      setDialogError('Price must be at least €0.50.');
+      setDialogError(t('admin.errorMinPrice'));
       return;
     }
     const slots = times.map((time) => ({ time, isAvailable: true }));
@@ -376,9 +378,9 @@ export default function BookingsAdminTab() {
     if (!editingAvail) return;
     setDialogOpen(false);
     Swal.fire({
-      title: 'Remove availability?',
+      title: t('admin.removeAvailabilityTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteAvailability(editingAvail._id));
     });
@@ -386,9 +388,9 @@ export default function BookingsAdminTab() {
 
   const handleCancelBooking = (id) => {
     Swal.fire({
-      title: 'Cancel this booking?',
+      title: t('admin.cancelBookingTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) dispatch(cancelBooking(id));
     });
@@ -396,9 +398,9 @@ export default function BookingsAdminTab() {
 
   const handleDeleteBooking = (id) => {
     Swal.fire({
-      title: 'Delete this booking?',
+      title: t('admin.deleteBookingTitle'),
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteBooking(id));
     });
@@ -419,7 +421,7 @@ export default function BookingsAdminTab() {
             onClick={() => setSectionOpen((v) => !v)}
           >
             <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
-              <b>Bookings</b>
+              <b>{t('admin.bookings')}</b>
             </Typography>
             <IconButton tabIndex={-1}>
               {sectionOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -429,7 +431,7 @@ export default function BookingsAdminTab() {
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <TextField
                 size="small"
-                placeholder="Search guest, email, status…"
+                placeholder={t('admin.searchBookings')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 slotProps={{
@@ -439,7 +441,7 @@ export default function BookingsAdminTab() {
                 }}
                 sx={{ flexGrow: 1 }}
               />
-              <Tooltip title="Export CSV">
+              <Tooltip title={t('admin.exportCsv')}>
                 <IconButton onClick={handleExportBookingsCSV}>
                   <DownloadIcon />
                 </IconButton>
@@ -451,10 +453,10 @@ export default function BookingsAdminTab() {
         <Collapse in={sectionOpen}>
           <div style={{ padding: '0 16px 16px' }}>
             <Typography variant="subtitle2" style={{ color: '#555', marginBottom: 8 }}>
-              <b>Availability</b>
+              <b>{t('admin.availability')}</b>
             </Typography>
             <Typography variant="body2" style={{ color: '#666', marginBottom: 12 }}>
-              Click any date to set availability and price for that day.
+              {t('admin.availabilityHint')}
             </Typography>
             {errorAvail ? (
               <MessageBox variant="error">{errorAvail}</MessageBox>
@@ -486,11 +488,11 @@ export default function BookingsAdminTab() {
 
           <Toolbar sx={{ gap: 1, py: 1 }}>
             <Typography variant="subtitle2" style={{ color: '#555' }} sx={{ flexGrow: 1 }}>
-              <b>Bookings ({bookingsTotal})</b>
+              <b>{t('admin.bookingsTitle', { count: bookingsTotal })}</b>
             </Typography>
             {selected.size > 0 && (
               <button className="dangerous-outline" onClick={handleBulkDeleteBookings}>
-                Delete {selected.size} selected
+                {t('admin.deleteSelected', { count: selected.size })}
               </button>
             )}
           </Toolbar>
@@ -524,12 +526,12 @@ export default function BookingsAdminTab() {
                     </TableCell>
                     <TableCell padding="checkbox" />
                     {[
-                      { id: 'date', label: 'Date' },
-                      { id: 'slot', label: 'Time' },
-                      { id: 'guestInfo.name', label: 'Guest' },
-                      { id: 'guestInfo.email', label: 'Email' },
-                      { id: 'status', label: 'Status' },
-                      { id: 'updatedAt', label: 'Updated' },
+                      { id: 'date', label: t('admin.colDate') },
+                      { id: 'slot', label: t('admin.colTime') },
+                      { id: 'guestInfo.name', label: t('admin.colGuest') },
+                      { id: 'guestInfo.email', label: t('admin.colEmail') },
+                      { id: 'status', label: t('admin.colStatus') },
+                      { id: 'updatedAt', label: t('admin.colUpdated') },
                     ].map(({ id, label }) => (
                       <TableCell key={id}>
                         <TableSortLabel
@@ -542,13 +544,13 @@ export default function BookingsAdminTab() {
                       </TableCell>
                     ))}
                     <TableCell>
-                      <b>Notes</b>
+                      <b>{t('admin.colNotes')}</b>
                     </TableCell>
                     <TableCell>
-                      <b>Photos</b>
+                      <b>{t('admin.colPhotos')}</b>
                     </TableCell>
                     <TableCell align="right">
-                      <b>Actions</b>
+                      <b>{t('admin.actions')}</b>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -566,7 +568,7 @@ export default function BookingsAdminTab() {
                   ) : filteredBookings.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={11} align="center" sx={{ py: 4, color: '#888' }}>
-                        No bookings found.
+                        {t('admin.noBookingsFound')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -600,7 +602,7 @@ export default function BookingsAdminTab() {
                           <TableCell>{formatDateDay(b.updatedAt)}</TableCell>
                           <TableCell>
                             {b.guestInfo?.notes && (
-                              <Tooltip title="View notes">
+                              <Tooltip title={t('admin.viewNotes')}>
                                 <IconButton
                                   size="small"
                                   onClick={() =>
@@ -618,7 +620,7 @@ export default function BookingsAdminTab() {
                           </TableCell>
                           <TableCell>
                             {b.images?.length > 0 && (
-                              <Tooltip title={`${b.images.length} photo(s)`}>
+                              <Tooltip title={t('admin.photosCount', { count: b.images.length })}>
                                 <IconButton
                                   size="small"
                                   onClick={() =>
@@ -636,13 +638,13 @@ export default function BookingsAdminTab() {
                           </TableCell>
                           <TableCell align="right">
                             {b.status === 'CONFIRMED' && (
-                              <Tooltip title="Cancel">
+                              <Tooltip title={t('admin.cancelBooking')}>
                                 <IconButton size="small" onClick={() => handleCancelBooking(b._id)}>
                                   <BlockIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                             )}
-                            <Tooltip title="Delete">
+                            <Tooltip title={t('admin.deleteBooking')}>
                               <IconButton size="small" onClick={() => handleDeleteBooking(b._id)}>
                                 <DeleteOutlineIcon fontSize="small" />
                               </IconButton>
@@ -663,13 +665,13 @@ export default function BookingsAdminTab() {
                                     variant="caption"
                                     sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
                                   >
-                                    Contact
+                                    {t('admin.contact')}
                                   </Typography>
                                   <Typography variant="body2">
-                                    Phone: {b.guestInfo?.phone || '—'}
+                                    {t('admin.phone')}: {b.guestInfo?.phone || '—'}
                                   </Typography>
                                   <Typography variant="body2">
-                                    Email: {b.guestInfo?.email}
+                                    {t('admin.email')}: {b.guestInfo?.email}
                                   </Typography>
                                 </div>
                                 <div>
@@ -677,17 +679,18 @@ export default function BookingsAdminTab() {
                                     variant="caption"
                                     sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
                                   >
-                                    Payment
+                                    {t('admin.payment')}
                                   </Typography>
                                   <Typography variant="body2">
-                                    Paid: {b.isPaid ? formatDateDay(b.paidAt) : 'No'}
+                                    {t('admin.paid')}:{' '}
+                                    {b.isPaid ? formatDateDay(b.paidAt) : t('common.no')}
                                   </Typography>
                                   <Typography variant="body2">
-                                    Price: {b.price?.toFixed(2)}€
+                                    {t('admin.price')}: {b.price?.toFixed(2)}€
                                   </Typography>
                                   {b.stripeInvoiceId && (
                                     <Typography variant="body2">
-                                      Invoice: {b.stripeInvoiceId}
+                                      {t('admin.invoice')}: {b.stripeInvoiceId}
                                     </Typography>
                                   )}
                                 </div>
@@ -697,7 +700,7 @@ export default function BookingsAdminTab() {
                                       variant="caption"
                                       sx={{ fontWeight: 700, display: 'block', mb: 0.5 }}
                                     >
-                                      Notes
+                                      {t('admin.colNotes')}
                                     </Typography>
                                     <Typography variant="body2">{b.guestInfo.notes}</Typography>
                                   </div>
@@ -741,7 +744,7 @@ export default function BookingsAdminTab() {
         fullWidth
         disableScrollLock
       >
-        <DialogTitle>Photos — {photosDialog.name}</DialogTitle>
+        <DialogTitle>{t('admin.photos', { name: photosDialog.name })}</DialogTitle>
         <DialogContent>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {photosDialog.images.map((url, i) => {
@@ -773,7 +776,7 @@ export default function BookingsAdminTab() {
             className="secondary"
             onClick={() => setPhotosDialog({ open: false, images: [], name: '' })}
           >
-            Close
+            {t('admin.close')}
           </button>
         </DialogActions>
       </Dialog>
@@ -785,7 +788,7 @@ export default function BookingsAdminTab() {
         fullWidth
         disableScrollLock
       >
-        <DialogTitle>Notes — {notesDialog.name}</DialogTitle>
+        <DialogTitle>{t('admin.notes', { name: notesDialog.name })}</DialogTitle>
         <DialogContent>
           <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
             {notesDialog.notes}
@@ -796,7 +799,7 @@ export default function BookingsAdminTab() {
             className="secondary"
             onClick={() => setNotesDialog({ open: false, notes: '', name: '' })}
           >
-            Close
+            {t('admin.close')}
           </button>
         </DialogActions>
       </Dialog>
@@ -814,7 +817,7 @@ export default function BookingsAdminTab() {
         disableScrollLock
       >
         <DialogTitle>
-          {editingAvail ? 'Edit' : 'Set'} Availability —{' '}
+          {editingAvail ? t('admin.editAvailability') : t('admin.setAvailability')} —{' '}
           {dialogDate ? dayjs(dialogDate).format('DD/MM/YYYY') : ''}
         </DialogTitle>
         <DialogContent>
@@ -824,15 +827,15 @@ export default function BookingsAdminTab() {
             </MessageBox>
           )}
           <TextField
-            label="Time slots (comma-separated)"
-            placeholder="e.g. 10:00, 14:00, 16:30"
+            label={t('admin.timeSlotsLabel')}
+            placeholder={t('admin.timeSlotsPlaceholder')}
             fullWidth
             margin="normal"
             value={slotsInput}
             onChange={(e) => setSlotsInput(e.target.value)}
           />
           <TextField
-            label="Price per slot (€)"
+            label={t('admin.pricePerSlot')}
             type="number"
             fullWidth
             margin="normal"
@@ -843,7 +846,7 @@ export default function BookingsAdminTab() {
               input: {
                 readOnly: !priceEditing,
                 endAdornment: !priceEditing && (
-                  <Tooltip title="Edit price">
+                  <Tooltip title={t('admin.editPrice')}>
                     <IconButton size="small" onClick={() => setPriceEditing(true)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
@@ -862,7 +865,7 @@ export default function BookingsAdminTab() {
                   style={{ fontSize: '0.8rem', padding: '4px 10px' }}
                   onClick={() => setShowExtraPicker(true)}
                 >
-                  Apply to more dates
+                  {t('admin.applyMoreDates')}
                 </button>
               ) : (
                 <button
@@ -874,7 +877,7 @@ export default function BookingsAdminTab() {
                     setExtraDates(new Set());
                   }}
                 >
-                  Cancel extra dates
+                  {t('admin.cancelExtraDates')}
                 </button>
               )}
             </Box>
@@ -930,7 +933,7 @@ export default function BookingsAdminTab() {
         <DialogActions>
           {editingAvail && (
             <button className="dangerous" onClick={handleAvailDelete}>
-              Remove date
+              {t('admin.removeDate')}
             </button>
           )}
           <button
@@ -940,10 +943,10 @@ export default function BookingsAdminTab() {
               setPriceEditing(false);
             }}
           >
-            Cancel
+            {t('admin.cancel')}
           </button>
           <button className="primary" onClick={handleDialogSave}>
-            Save
+            {t('admin.save')}
           </button>
         </DialogActions>
       </Dialog>
