@@ -153,7 +153,11 @@
     "addPhotos": "+ Adicionar fotos",
     "exclusivityNotice": "Por favor, note que o valor da marcação não é reembolsável.",
     "priceInquiry": "Para pedidos de preço antes de marcar, contacte:",
-    "moreInfo": "Clique aqui para mais informações"
+    "moreInfo": "Clique aqui para mais informações",
+    "pay": "Pagar €{{amount}}",
+    "continueToPayment": "Continuar para Pagamento — {{amount}}€",
+    "included": "incluído",
+    "removePhoto": "Remover foto"
   },
   "shop": {
     "soldOut": "Esgotado",
@@ -161,7 +165,10 @@
     "description": "Descrição",
     "cartLink": "Carrinho",
     "freeShipping": "Envio grátis em encomendas acima de €40",
-    "filterAll": "Todos"
+    "filterAll": "Todos",
+    "addedToCart": "adicionado ao",
+    "previousImage": "Imagem anterior",
+    "nextImage": "Próxima imagem"
   },
   "product": {
     "addToCart": "Adicionar ao Carrinho"

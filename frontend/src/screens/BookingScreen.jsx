@@ -35,6 +35,7 @@ const bookingFormSchema = z.object({
 });
 
 function StripeCheckoutForm({ price, onSuccess, onProcessing, onPayingChange }) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [stripeError, setStripeError] = useState('');
@@ -71,7 +72,7 @@ function StripeCheckoutForm({ price, onSuccess, onProcessing, onPayingChange }) 
         className="primary"
         style={{ marginTop: '1rem', width: '100%' }}
       >
-        {`Pay €${price?.toFixed(2)}`}
+        {t('booking.pay', { amount: price?.toFixed(2) })}
       </button>
     </form>
   );
@@ -440,7 +441,7 @@ export default function BookingScreen(props) {
                                     type="button"
                                     className="booking-image-remove"
                                     onClick={() => removeImage(i)}
-                                    aria-label="Remove photo"
+                                    aria-label={t('booking.removePhoto')}
                                   >
                                     ×
                                   </button>
@@ -462,7 +463,9 @@ export default function BookingScreen(props) {
                           )}
                         </div>
                         <button type="submit" className="primary">
-                          {`Continue to Payment — ${dayAvailability?.price.toFixed(2)}€`}
+                          {t('booking.continueToPayment', {
+                            amount: dayAvailability?.price.toFixed(2),
+                          })}
                         </button>
                       </form>
                     </div>
@@ -484,7 +487,7 @@ export default function BookingScreen(props) {
                           </p>
                           <p>
                             IVA (23%): {((dayAvailability.price * 0.23) / 1.23).toFixed(2)}€
-                            included
+                            {t('booking.included')}
                           </p>
                         </div>
                       )}

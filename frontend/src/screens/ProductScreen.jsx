@@ -111,7 +111,7 @@ export default function ProductScreen(props) {
     window.__cartNav = () => navigate('/cart');
     notyf.success({
       icon: false,
-      message: `"${product.name}" adicionado ao <span class="notyf-cart" onclick="window.__cartNav()">${t('shop.cartLink')}</span>`,
+      message: `"${product.name}" ${t('shop.addedToCart')} <span class="notyf-cart" onclick="window.__cartNav()">${t('shop.cartLink')}</span>`,
       dismissible: true,
     });
   };
@@ -186,14 +186,14 @@ export default function ProductScreen(props) {
                     <button
                       className="carousel-control-prev"
                       onClick={previous}
-                      aria-label="Previous image"
+                      aria-label={t('shop.previousImage')}
                     >
                       <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                     </button>
                     <button
                       className="carousel-control-next"
                       onClick={next}
-                      aria-label="Next image"
+                      aria-label={t('shop.nextImage')}
                     >
                       <span className="carousel-control-next-icon" aria-hidden="true"></span>
                     </button>
