@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
@@ -43,6 +44,7 @@ function PlaceOrderItemImage({ item }) {
 }
 
 export default function PlaceOrderScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
@@ -91,9 +93,9 @@ export default function PlaceOrderScreen(props) {
       <div className="row center place-order-container">
         <LoadingOverlay loading={loading}>
           <div className="place-order-inner">
-            <h1 className="custom-font">Place Order</h1>
+            <h1 className="custom-font">{t('placeOrder.title')}</h1>
             <div className="card">
-              <h3>Shipping Address</h3>
+              <h3>{t('placeOrder.shippingAddress')}</h3>
               <p>{shippingAddress.fullName}</p>
               <p>{shippingAddress.address}</p>
               <p>{shippingAddress.city}</p>
@@ -101,7 +103,7 @@ export default function PlaceOrderScreen(props) {
               <p>{shippingAddress.country}</p>
             </div>
             <div className="card">
-              <h3>Contact Information</h3>
+              <h3>{t('placeOrder.contactInfo')}</h3>
               <p>{shippingAddress.email}</p>
               <p>
                 {shippingAddress.phoneNumber?.startsWith('+')
@@ -110,7 +112,7 @@ export default function PlaceOrderScreen(props) {
               </p>
             </div>
             <div className="card">
-              <h3>Items</h3>
+              <h3>{t('placeOrder.items')}</h3>
               <ul className="cart-items">
                 {cartItems.map((item, index) => (
                   <li key={item.product}>
@@ -126,11 +128,15 @@ export default function PlaceOrderScreen(props) {
                     <div className="item-content">
                       {item.isClothing && (
                         <div className="item-size">
-                          <p>Size: {item.size}</p>
+                          <p>
+                            {t('placeOrder.size')}: {item.size}
+                          </p>
                         </div>
                       )}
                       <div className="item-qty">
-                        <p>Quantity: {item.qty}</p>
+                        <p>
+                          {t('placeOrder.quantity')}: {item.qty}
+                        </p>
                       </div>
                     </div>
                     {cartItems[index + 1] && <hr />}
@@ -140,7 +146,7 @@ export default function PlaceOrderScreen(props) {
             </div>
             <div className="card total-amount">
               <p>
-                Subtotal ({cart.itemsQty} {cart.itemsQty > 1 ? 'items' : 'item'}) :{' '}
+                {t('placeOrder.subtotal', { count: cart.itemsQty })} :{' '}
                 {cart.itemsPrice && cart.itemsPrice.toFixed(2)}€
               </p>
               {tax && (
@@ -151,10 +157,12 @@ export default function PlaceOrderScreen(props) {
               <p>
                 {shippingLabel} : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
               </p>
-              <h3 className="total">Total : {cart.totalPrice && cart.totalPrice.toFixed(2)}€</h3>
+              <h3 className="total">
+                {t('placeOrder.total')} : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
+              </h3>
             </div>
             <button className="primary" onClick={placeOrderHandler}>
-              Place Order
+              {t('placeOrder.confirmBtn')}
             </button>
           </div>
         </LoadingOverlay>
