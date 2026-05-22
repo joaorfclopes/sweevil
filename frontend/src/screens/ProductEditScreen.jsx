@@ -16,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -122,6 +123,7 @@ function SortableImageCard({ item, isCover, onDelete, onSetCover, isActive }) {
 }
 
 export default function ProductEditScreen(props) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id: productId } = useParams();
@@ -242,9 +244,9 @@ export default function ProductEditScreen(props) {
 
   const deleteHandler = () => {
     Swal.fire({
-      title: `Delete ${product?.name}?`,
+      title: t('productEdit.deleteTitle', { name: product?.name }),
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
+      confirmButtonText: t('productEdit.deleteBtn'),
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteProduct(productId));
@@ -386,50 +388,52 @@ export default function ProductEditScreen(props) {
           }
           minHeight="75vh"
         >
-          <h1>{isNew ? 'New Product' : `Edit ${product?.name || ''}`}</h1>
+          <h1>
+            {isNew
+              ? t('productEdit.newProduct')
+              : t('productEdit.editProduct', { name: product?.name || '' })}
+          </h1>
           <form className="form" onSubmit={submitHandler}>
             {errorUpdate && <MessageBox variant="error">{errorUpdate}</MessageBox>}
             {errorCreate && <MessageBox variant="error">{errorCreate}</MessageBox>}
             <>
               <div>
-                <label htmlFor="name">Name</label>
+                <label htmlFor="name">{t('productEdit.name')}</label>
                 <input
                   type="text"
                   id="name"
-                  placeholder="Enter name"
+                  placeholder={t('productEdit.namePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div>
-                <label htmlFor="price">Price (EUR)</label>
+                <label htmlFor="price">{t('productEdit.price')}</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0.5"
                   id="price"
-                  placeholder="Enter price"
+                  placeholder={t('productEdit.pricePlaceholder')}
                   value={price}
                   onChange={(e) => setPriceAndTax(e.target.value)}
                 />
               </div>
               <div>
                 {errorUpload && <MessageBox variant="error">{errorUpload}</MessageBox>}
-                <label htmlFor="originalPrice">
-                  Original Price (EUR) — leave blank when not on sale
-                </label>
+                <label htmlFor="originalPrice">{t('productEdit.originalPrice')}</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   id="originalPrice"
-                  placeholder="Enter original price"
+                  placeholder={t('productEdit.originalPricePlaceholder')}
                   value={originalPrice}
                   onChange={(e) => setOriginalPrice(e.target.value)}
                 />
               </div>
               <div>
-                <label>Images</label>
+                <label>{t('productEdit.images')}</label>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -455,7 +459,7 @@ export default function ProductEditScreen(props) {
                         className="product-dropzone-placeholder"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        Click or drop images here
+                        {t('productEdit.dropzonePlaceholder')}
                       </span>
                     ) : (
                       <SortableContext
@@ -494,10 +498,10 @@ export default function ProductEditScreen(props) {
                 </DndContext>
               </div>
               <div>
-                <label htmlFor="category">Category</label>
+                <label htmlFor="category">{t('productEdit.category')}</label>
                 <select value={category} onChange={(e) => setCategoryAndClothing(e)}>
-                  {category === '' && <option value="">Select a category</option>}
-                  <optgroup label="Clothing">
+                  {category === '' && <option value="">{t('productEdit.selectCategory')}</option>}
+                  <optgroup label={t('productEdit.categoryClothing')}>
                     {productCategories
                       .filter((c) => c.isClothing)
                       .map((c) => (
@@ -506,7 +510,7 @@ export default function ProductEditScreen(props) {
                         </option>
                       ))}
                   </optgroup>
-                  <optgroup label="Other">
+                  <optgroup label={t('productEdit.categoryOther')}>
                     {productCategories
                       .filter((c) => !c.isClothing)
                       .map((c) => (
@@ -519,7 +523,7 @@ export default function ProductEditScreen(props) {
               </div>
               {isClothing ? (
                 <div>
-                  <label>Count In Stock</label>
+                  <label>{t('productEdit.stock')}</label>
                   <input
                     type="number"
                     id="countInStockXS"
@@ -570,23 +574,23 @@ export default function ProductEditScreen(props) {
                 </div>
               ) : (
                 <div>
-                  <label htmlFor="countInStock">Count In Stock</label>
+                  <label htmlFor="countInStock">{t('productEdit.stock')}</label>
                   <input
                     type="number"
                     id="countInStock"
-                    placeholder="Enter count in stock"
+                    placeholder={t('productEdit.stock')}
                     value={countInStock}
                     onChange={(e) => setCountInStock(e.target.value)}
                   />
                 </div>
               )}
               <div>
-                <label htmlFor="description">Description</label>
+                <label htmlFor="description">{t('productEdit.description')}</label>
                 <textarea
                   type="text"
                   rows="3"
                   id="description"
-                  placeholder="Enter description"
+                  placeholder={t('productEdit.descriptionPlaceholder')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -599,7 +603,7 @@ export default function ProductEditScreen(props) {
                   checked={visible}
                   onChange={() => setVisible(!visible)}
                 />
-                <label htmlFor="visible">Visible</label>
+                <label htmlFor="visible">{t('productEdit.visible')}</label>
               </div>
               <div>
                 <label />
@@ -610,10 +614,10 @@ export default function ProductEditScreen(props) {
                     onClick={() => navigate('/admin')}
                     style={{ flex: 1 }}
                   >
-                    Cancel
+                    {t('admin.cancel')}
                   </button>
                   <button className="primary" type="submit" style={{ flex: 1 }}>
-                    {isNew ? 'Create' : 'Update'}
+                    {t('productEdit.save')}
                   </button>
                   {!isNew && (
                     <button
@@ -622,7 +626,7 @@ export default function ProductEditScreen(props) {
                       onClick={deleteHandler}
                       style={{ flex: 1 }}
                     >
-                      Delete
+                      {t('productEdit.delete')}
                     </button>
                   )}
                 </div>
