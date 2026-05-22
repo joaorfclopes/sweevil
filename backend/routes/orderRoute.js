@@ -915,6 +915,8 @@ orderRouter.post(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).send({ message: 'Order not found' });
+    if (order.status !== 'CANCELED_PENDING_REFUND')
+      return res.status(400).send({ message: 'Order is not pending refund' });
     if (!order.isPaid) return res.status(400).send({ message: 'Order is not paid' });
     if (order.isRefunded) return res.status(400).send({ message: 'Order already refunded' });
 
