@@ -34,7 +34,7 @@
     "@aws-sdk/client-s3": "^3.1050.0",
     "@aws-sdk/lib-storage": "^3.1050.0",
     "@better-auth/passkey": "^1.6.11",
-    "@sentry/node": "^10.53.1",
+    "@sentry/node": "^10.54.0",
     "@sentry/profiling-node": "^10.53.1",
     "@simplewebauthn/server": "^13.3.0",
     "better-auth": "^1.6.11",
