@@ -30,6 +30,7 @@ const getTransporter = async () => {
 };
 
 export const sendMail = async (mailOptions) => {
+  if (process.env.DISABLE_EMAILS === 'true') return;
   try {
     const transporter = await getTransporter();
     const info = await transporter.sendMail(mailOptions);
