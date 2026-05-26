@@ -1,6 +1,24 @@
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
+/**
+ * Sign a raw token the same way better-call's setSignedCookie does:
+ *   cookieValue = encodeURIComponent(rawToken + "." + base64(HMAC-SHA256(rawToken, secret)))
+ */
+async function signSessionToken(rawToken) {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawToken));
+  const b64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+  return encodeURIComponent(`${rawToken}.${b64}`);
+}
+
 export async function createAdminSession() {
   const db = mongoose.connection.getClient().db();
   const userId = new ObjectId();
@@ -27,7 +45,8 @@ export async function createAdminSession() {
     updatedAt: new Date(),
   });
 
-  return `better-auth.session_token=${sessionToken}`;
+  const signedToken = await signSessionToken(sessionToken);
+  return `better-auth.session_token=${signedToken}`;
 }
 
 export async function clearAuthCollections() {
