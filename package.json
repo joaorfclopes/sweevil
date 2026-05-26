@@ -18,7 +18,8 @@
     "docker": "docker compose up --build",
     "docker:debug": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build",
     "export-prod": "node scripts/export-prod.js",
-    "seed": "node scripts/seed.js --force"
+    "seed": "node scripts/seed.js --force",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -64,7 +65,11 @@
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "jest": "^30.0.0",
+    "supertest": "^7.0.0",
+    "@jest/globals": "^30.0.0",
+    "mongodb-memory-server": "^10.1.2"
   },
   "engines": {
     "node": ">=18.0.0",
