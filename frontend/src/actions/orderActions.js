@@ -90,8 +90,7 @@ export const sendOrder = (orderId) => async (dispatch) => {
   try {
     const { data } = await Axios.put(`/api/orders/${orderId}/send`, {});
     dispatch({ type: ORDER_SEND_SUCCESS, payload: data });
-    // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post('/api/email/sentOrder', { order: data.order });
+    await Axios.post('/api/email/sentOrder', { order: data.order });
   } catch (error) {
     dispatch({
       type: ORDER_SEND_FAIL,
@@ -105,8 +104,7 @@ export const deliverOrder = (orderId) => async (dispatch) => {
   try {
     const { data } = await Axios.put(`/api/orders/${orderId}/deliver`, {});
     dispatch({ type: ORDER_DELIVER_SUCCESS, payload: data });
-    // eslint-disable-next-line no-unused-vars
-    const { sendEmail } = await Axios.post('/api/email/deliveredOrder', { order: data.order });
+    await Axios.post('/api/email/deliveredOrder', { order: data.order });
   } catch (error) {
     dispatch({
       type: ORDER_DELIVER_FAIL,

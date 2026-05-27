@@ -93,8 +93,7 @@ export const updateProduct = (product) => async (dispatch) => {
 export const deleteProduct = (productId) => async (dispatch) => {
   dispatch({ type: PRODUCT_DELETE_REQUEST, payload: productId });
   try {
-    // eslint-disable-next-line no-unused-vars
-    const { data } = await Axios.delete(`/api/products/${productId}`);
+    await Axios.delete(`/api/products/${productId}`);
     dispatch({ type: PRODUCT_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
