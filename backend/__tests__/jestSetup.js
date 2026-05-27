@@ -1,4 +1,7 @@
+import { config } from 'dotenv';
 import { readFileSync } from 'fs';
+
+config({ path: new URL('../../.env', import.meta.url).pathname, override: false });
 
 const { uri } = JSON.parse(readFileSync('/tmp/jest-mongo-config.json', 'utf-8'));
 
