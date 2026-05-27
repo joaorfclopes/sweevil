@@ -1,4 +1,1 @@
 # TODO
-
-## Cleanup & documentation
-Audit the full codebase and remove dead weight: unused files, directories, npm packages, Mongoose schema fields, Redux actions/reducers, React components, SCSS variables, and static assets (images, fonts) that are no longer referenced. Check both `frontend/` and `backend/` — pay particular attention to orphaned admin tab components, leftover route handlers, and any feature-flag-style code from past experiments. Also delete root-level planning and migration docs generated during past sessions (e.g. `REACT_18_MIGRATION_COMPLETE.md`, `REFACTOR_PLAN.md`, `DEPENDENCY_UPDATE_SUMMARY.md`) — these are historical artifacts; git history is the record. Then update `README.md` to reflect the current stack (Vite not CRA, passkey auth, Stripe integration, S3 uploads, booking system) and remove any outdated setup steps.
