@@ -1,10 +1,8 @@
 @use './general/globals' as *;
 @use './general/layout';
-@use './components/loadingBox';
 @use './components/loadingOverlay';
 @use './components/messageBox';
 @use './components/navbar';
-@use './components/menuMobile';
 @use './components/button';
 @use './components/form';
 @use './screens/singinScreen';
@@ -29,7 +27,6 @@
 @use './screens/homeScreen';
 @use './screens/legalScreen';
 @use './screens/bookingScreen';
-@use './components/illustration';
 @use './components/video';
 @use './components/footer';
 @use './components/arrowUp';
