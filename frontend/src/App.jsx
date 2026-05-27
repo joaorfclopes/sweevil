@@ -64,6 +64,9 @@ function AppContent() {
 
   useEffect(() => {
     if (sessionPending) return;
+    if (window.location.hash === '') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
     if (session?.user && !userInfo) {
       const { user } = session;
       const info = {
@@ -219,7 +222,7 @@ function AppContent() {
                 <Route path="/cart/placeorder" element={<PlaceOrderScreen />} />
                 <Route path="/cart/order/:token" element={<OrderScreen />} />
                 <Route path="/signin" element={<SigninScreen />} />
-                <Route path="/admin" element={userInfo ? <AdminScreen /> : <NotFoundScreen />} />
+                <Route path="/admin" element={userInfo ? <AdminScreen /> : null} />
                 <Route
                   path="/admin/product/:id/edit"
                   element={userInfo ? <ProductEditScreen /> : <NotFoundScreen />}
