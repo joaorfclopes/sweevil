@@ -119,6 +119,7 @@ export default function BookingScreen(props) {
   const [step, setStep] = useState(STEPS.CALENDAR);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [calendarViewDate, setCalendarViewDate] = useState(null);
 
   const {
     register: registerBooking,
@@ -345,6 +346,9 @@ export default function BookingScreen(props) {
                             minDate={dayjs().add(3, 'day')}
                             shouldDisableDate={shouldDisableDate}
                             onChange={handleDateSelect}
+                            onMonthChange={(date) => setCalendarViewDate(date)}
+                            value={selectedDate ? dayjs(selectedDate) : null}
+                            referenceDate={calendarViewDate ?? undefined}
                             slots={{ day: AvailableDay }}
                             slotProps={{ day: { availableDates } }}
                           />
