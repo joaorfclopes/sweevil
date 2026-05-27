@@ -54,7 +54,7 @@ import {
   productReorderReducer,
   productUpdateReducer,
 } from './reducers/productReducers';
-import { userDetailsReducer, userSigninReducer, userUpdateReducer } from './reducers/userReducers';
+import { userSigninReducer } from './reducers/userReducers';
 
 const sentryMiddleware = () => (next) => (action) => {
   if (typeof action.type === 'string' && action.type.endsWith('_FAIL') && action.payload) {
@@ -103,8 +103,6 @@ const reducer = combineReducers({
   productReorder: productReorderReducer,
   cart: cartReducer,
   userSignin: userSigninReducer,
-  userDetails: userDetailsReducer,
-  userUpdate: userUpdateReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
