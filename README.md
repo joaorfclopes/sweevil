@@ -1,6 +1,6 @@
 # Sweevil
 
-Admin-only studio management app. Two admin users — no public registration.
+Public e-shop and booking site for a tattoo studio. Clients browse, buy, and book anonymously. Two admin users manage the backend.
 
 ## Stack
 

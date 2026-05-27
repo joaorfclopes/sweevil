@@ -11,7 +11,7 @@ When committing, always use `git add .` unless I explicitly specify files to sta
 
 ## Project Overview
 
-**Tech Stack**: Express.js + MongoDB/Mongoose 8 + React 18 + Redux v5 — admin-only studio management app (no public users)
+**Tech Stack**: Express.js + MongoDB/Mongoose 8 + React 18 + Redux v5 — public e-shop and booking site for a tattoo studio (clients are anonymous; two admin users manage the backend)
 
 ---
 

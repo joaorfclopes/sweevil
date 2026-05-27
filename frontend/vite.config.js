@@ -47,6 +47,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    optimizeDeps: {
+      include: ['react-phone-input-2'],
+    },
     build: {
       outDir: 'build',
       sourcemap: true,

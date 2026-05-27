@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import PhoneInput from 'react-phone-input-2';
+import _PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
@@ -17,6 +17,8 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
+
+const PhoneInput = _PhoneInput.default || _PhoneInput;
 
 const bookingFormSchema = z.object({
   name: z

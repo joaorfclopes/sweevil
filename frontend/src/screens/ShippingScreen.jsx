@@ -3,12 +3,14 @@ import { getCountryDataList } from 'countries-list';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import PhoneInput from 'react-phone-input-2';
+import _PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { saveShippingAddress } from '../actions/cartActions';
+
+const PhoneInput = _PhoneInput.default || _PhoneInput;
 
 const COUNTRY_LIST = getCountryDataList()
   .map(({ iso2, name }) => ({ code: iso2, name }))
