@@ -1,0 +1,43 @@
+@use '../general/globals' as *;
+
+.illustration {
+  text-align: center;
+  .illustration-lg {
+    display: none;
+    @include md {
+      display: block;
+    }
+    svg {
+      @include md {
+        width: $screen-md-min;
+      }
+      @include lg {
+        width: $screen-lg-min;
+      }
+      @include xl {
+        width: 1100px;
+      }
+    }
+  }
+  .illustration-sm {
+    display: block;
+    @include md {
+      display: none;
+    }
+    svg {
+      &:nth-child(2) {
+        margin-top: 10px;
+        width: 70%;
+      }
+      @include xxs {
+        width: 250px;
+      }
+      @include xs {
+        width: 350px;
+      }
+      @include sm {
+        width: 450px;
+      }
+    }
+  }
+}
