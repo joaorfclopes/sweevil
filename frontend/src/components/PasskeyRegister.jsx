@@ -39,15 +39,7 @@ export default function PasskeyRegister() {
     <div>
       {status === 'error' && <MessageBox variant="error">{error}</MessageBox>}
       {hasPasskey ? (
-        <div
-          style={{
-            display: 'inline-block',
-            border: '2px solid #4caf50',
-            color: '#4caf50',
-            padding: '0.5rem 1rem',
-            cursor: 'default',
-          }}
-        >
+        <div className="passkey-active-indicator">
           {t('admin.passkeyActive')}
         </div>
       ) : (
