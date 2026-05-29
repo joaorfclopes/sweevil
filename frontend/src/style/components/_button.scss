@@ -22,6 +22,7 @@ button {
   }
   &.secondary {
     background-color: transparent;
+    color: $darkColor;
     &:hover:not(:disabled),
     &.active {
       color: white;
