@@ -39,9 +39,7 @@ export default function PasskeyRegister() {
     <div>
       {status === 'error' && <MessageBox variant="error">{error}</MessageBox>}
       {hasPasskey ? (
-        <div className="passkey-active-indicator">
-          {t('admin.passkeyActive')}
-        </div>
+        <div className="passkey-active-indicator">{t('admin.passkeyActive')}</div>
       ) : (
         <button className="secondary" onClick={handleRegister} disabled={status === 'loading'}>
           {status === 'loading' ? t('admin.registering') : t('admin.registerPasskey')}

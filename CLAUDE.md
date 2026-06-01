@@ -15,6 +15,27 @@ When committing, always use `git add .` unless I explicitly specify files to sta
 
 ---
 
+## Backend Routes
+
+Always follow the existing Express route pattern:
+
+- Use `expressAsyncHandler` for async handlers
+- Use Node's built-in `fetch` for any external HTTP calls — **never add `axios` or other HTTP clients**
+- Reference: `backend/routes/aboutRoute.js` for structure
+
+---
+
+## Testing — TDD Required
+
+For **every** new feature or bugfix:
+
+1. Write tests first
+2. Run tests — confirm they fail (red)
+3. Implement the feature
+4. Only mark done when **all tests pass** — never report complete before green
+
+---
+
 ## Session Start Protocol ⚡
 
 **MANDATORY** at start of each session:

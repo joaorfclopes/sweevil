@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { getAuth } from './auth.js';
 import aboutRoute from './routes/aboutRoute.js';
+import analyticsRoute from './routes/analyticsRoute.js';
 import availabilityRoute from './routes/availabilityRoute.js';
 import bookingRoute from './routes/bookingRoute.js';
 import categoryRoute from './routes/categoryRoute.js';
@@ -167,6 +168,7 @@ export async function createApp() {
   app.use('/api/categories', categoryRoute);
   app.use('/api/about', aboutRoute);
   app.use('/api/product-categories', productCategoryRoute);
+  app.use('/api/analytics', analyticsRoute);
   app.use('/api/availability', availabilityRoute);
   app.use('/api/bookings', bookingRoute);
 

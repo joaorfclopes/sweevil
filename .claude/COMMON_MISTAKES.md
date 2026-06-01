@@ -37,6 +37,24 @@
 **Symptom**: New or modified endpoints not visible in `/api-docs`
 **Rule**: When creating or updating any route handler in `backend/routes/*.js`, add or update the `@swagger` JSDoc block above it. Use the existing annotations in `orderRoute.js` as style reference. Swagger UI available at `http://localhost:8123/api-docs` (dev only).
 
+### 7. No axios — use native fetch for external HTTP calls
+
+**Symptom**: Reaching for `axios` (or `node-fetch`, `got`, etc.) to call an external API from backend
+**Rule**: Node 18+ has built-in `fetch`. Use it. `axios` is not installed and should not be added. Build query strings with `URL` + `searchParams.set`.
+
+### 8. MUI components that open overlays cause scrollbar shift
+
+**Symptom**: Adding a MUI Select, Dialog, Modal, Drawer, or Popover causes the scrollbar to disappear and content to shift right when opened
+**Rule**: MUI overlay components lock `document.body` scroll by default, which removes the scrollbar and shifts layout. Every new component that opens an overlay must be checked.
+**Fix for Select/Autocomplete**: Pass `MenuProps={{ disableScrollLock: true }}`
+**Fix for Dialog/Modal/Drawer**: Pass `disableScrollLock` prop directly, OR use the existing `useScrollLock` hook at `frontend/src/hooks/useScrollLock.js` which handles padding compensation
+**Check**: Open the component in browser → observe if scrollbar disappears → if yes, apply the fix above
+
+### 9. TDD required — tests before implementation
+
+**Symptom**: Writing implementation code before tests exist
+**Rule**: For every feature or bugfix: write tests first → confirm red → implement → only done when green. Never report a task complete before tests pass.
+
 ---
 
 ## Required Environment Variables
