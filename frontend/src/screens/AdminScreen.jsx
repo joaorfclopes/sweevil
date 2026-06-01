@@ -8,6 +8,7 @@ import { useFeatures } from '../FeaturesContext';
 import { scrollTop } from '../utils.js';
 
 import AboutAdminTab from '../components/AboutAdminTab';
+import AnalyticsAdminTab from '../components/AnalyticsAdminTab';
 import BookingsAdminTab from '../components/BookingsAdminTab';
 import GalleryAdminTab from '../components/GalleryAdminTab';
 import OrdersTable from '../components/OrdersTable';
@@ -29,6 +30,7 @@ export default function AdminScreen() {
   }, []);
 
   const sections = [
+    { id: 'section-analytics', label: t('admin.analytics') },
     ...(bookingEnabled ? [{ id: 'section-bookings', label: t('admin.bookings') }] : []),
     { id: 'section-orders', label: t('admin.orders') },
     { id: 'section-products', label: t('admin.products') },
@@ -80,6 +82,9 @@ export default function AdminScreen() {
         </div>
       </nav>
 
+      <div id="section-analytics">
+        <AnalyticsAdminTab />
+      </div>
       <div id="section-bookings">{bookingEnabled && <BookingsAdminTab />}</div>
       <div id="section-orders">
         <OrdersTable />
