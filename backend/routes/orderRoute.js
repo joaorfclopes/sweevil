@@ -325,7 +325,7 @@ orderRouter.post(
       itemsPrice,
       shippingPrice,
       totalPrice,
-      status: 'IN PROGRESS',
+      status: 'IN_PROGRESS',
       confirmToken,
       lang: req.body.lang || 'en',
     });

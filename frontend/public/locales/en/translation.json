@@ -10,6 +10,7 @@
     "switchToPt": "Mudar para Português"
   },
   "status": {
+    "IN_PROGRESS": "In Progress",
     "CONFIRMED": "Confirmed",
     "PENDING_PAYMENT": "Pending Payment",
     "PENDING": "Pending",

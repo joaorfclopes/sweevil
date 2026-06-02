@@ -32,6 +32,7 @@ export function downloadCSV(headers, rows, filename) {
 
 export function statusChipProps(status) {
   const colorMap = {
+    IN_PROGRESS: '#ed6c02',
     CONFIRMED: '#2e7d32',
     PENDING_PAYMENT: '#ed6c02',
     PENDING: '#ed6c02',
