@@ -48,7 +48,7 @@ export default function AnalyticsAdminTab() {
   ];
 
   return (
-    <div style={{ marginBottom: '50px' }}>
+    <div style={{ marginTop: '25px', marginBottom: '50px' }}>
       <Paper className="paper" style={{ backgroundColor: '#F4F4F4' }}>
         <Toolbar>
           <Typography style={{ flexGrow: 1 }} className="title" variant="h6" component="div">
