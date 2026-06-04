@@ -32,7 +32,7 @@
     "notyf": "^3.10.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.7",
-    "react-hook-form": "^7.76.1",
+    "react-hook-form": "^7.77.0",
     "react-i18next": "^17.0.8",
     "react-phone-input-2": "^2.15.1",
     "react-redux": "^9.3.0",
