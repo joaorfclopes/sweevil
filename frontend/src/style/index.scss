@@ -33,6 +33,7 @@
 @use './components/footer';
 @use './components/arrowUp';
 @use './components/consentNotice';
+@use './components/shippingInfoTooltip';
 
 #root {
   &.show {

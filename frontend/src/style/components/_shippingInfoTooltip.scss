@@ -1,0 +1,29 @@
+.shipping-info-btn {
+  display: inline-flex !important;
+  align-items: center;
+  background: none !important;
+  border: 0 solid transparent !important;
+  outline: none !important;
+  padding: 0;
+  width: auto !important;
+  line-height: 1;
+  color: black !important;
+  transition: none !important;
+  transform: none !important;
+
+  svg {
+    font-size: 1rem !important;
+  }
+}
+
+.shipping-info-popover {
+  padding: 8px 12px;
+  max-width: 220px;
+  font-size: 0.85rem;
+  margin: 0;
+
+  a {
+    text-decoration: underline;
+    font-weight: 600;
+  }
+}

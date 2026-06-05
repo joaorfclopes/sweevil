@@ -19,6 +19,7 @@ import {
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import PlaceHolder from '../components/Placeholder';
+import ShippingInfoTooltip from '../components/ShippingInfoTooltip';
 import { getTax } from '../config/taxRates';
 import {
   ORDER_CANCEL_RESET,
@@ -400,21 +401,17 @@ export default function OrderScreen(props) {
                         <div className="item-content">
                           <div className="item-name">
                             <p>{item.name}</p>
+                            {item.size && (
+                              <p className="item-size">
+                                {t('order.size')}: {item.size}
+                              </p>
+                            )}
+                            <p className="item-qty">
+                              {t('order.quantity')}: {item.qty}
+                            </p>
                           </div>
                           <div className="item-price">
                             <p>{item.price && item.price.toFixed(2)}€</p>
-                          </div>
-                        </div>
-                        <div className="item-content">
-                          {item.size && (
-                            <div className="item-size">
-                              {t('order.size')}: {item.size}
-                            </div>
-                          )}
-                          <div className="item-qty">
-                            <p>
-                              {t('order.quantity')}: {item.qty}
-                            </p>
                           </div>
                         </div>
                         {order.orderItems[index + 1] && <hr />}
@@ -436,7 +433,9 @@ export default function OrderScreen(props) {
                     ) : null;
                   })()}
                   <p>
-                    {t('order.shipping')} : {order.shippingPrice && order.shippingPrice.toFixed(2)}€
+                    {t('order.shipping')} {t('order.shippingTime')}
+                    <ShippingInfoTooltip namespace="order" /> :{' '}
+                    {order.shippingPrice && order.shippingPrice.toFixed(2)}€
                   </p>
                   <h3 className="total">
                     {t('order.total')} : {order.totalPrice && order.totalPrice.toFixed(2)}€

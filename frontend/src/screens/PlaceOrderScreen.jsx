@@ -6,7 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
 import LoadingOverlay from '../components/LoadingOverlay';
 import Placeholder from '../components/Placeholder';
-import { getShippingLabel, getShippingPrice } from '../config/shippingZones';
+import ShippingInfoTooltip from '../components/ShippingInfoTooltip';
+import { getShippingPrice } from '../config/shippingZones';
 import { getTax } from '../config/taxRates';
 import { ORDER_CREATE_RESET } from '../constants/orderConstants';
 import { useLazyLoad } from '../hooks/useLazyLoad';
@@ -64,11 +65,6 @@ export default function PlaceOrderScreen(props) {
     getShippingPrice(shippingAddress.country, shippingAddress.postalCode, cart.itemsPrice)
   );
   cart.totalPrice = toPrice(cart.itemsPrice + cart.shippingPrice);
-  const shippingLabel = getShippingLabel(
-    shippingAddress.country,
-    shippingAddress.postalCode,
-    cart.itemsPrice
-  );
   const tax = getTax(shippingAddress.country, cart.itemsPrice);
 
   const placeOrderHandler = () => {
@@ -156,7 +152,9 @@ export default function PlaceOrderScreen(props) {
                 </p>
               )}
               <p>
-                {shippingLabel} : {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
+                {t('placeOrder.shipping')} {t('placeOrder.shippingTime')}
+                <ShippingInfoTooltip namespace="placeOrder" /> :{' '}
+                {cart.shippingPrice && cart.shippingPrice.toFixed(2)}€
               </p>
               <h3 className="total">
                 {t('placeOrder.total')} : {cart.totalPrice && cart.totalPrice.toFixed(2)}€

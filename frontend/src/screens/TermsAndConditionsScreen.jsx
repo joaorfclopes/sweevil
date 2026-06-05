@@ -33,6 +33,7 @@ export default function TermosCondicoesScreen() {
       <h2>{t('s5_title')}</h2>
       <p>{t('s5_p1')}</p>
       <p>{t('s5_p2')}</p>
+      <p>{t('s5_p3')}</p>
 
       <h2>{t('s6_title')}</h2>
       <p>
