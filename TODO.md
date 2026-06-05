@@ -1,18 +1,16 @@
 # TODO
 
-## 2. Billing address + VAT/NIF field on checkout + order screen
+## 1. Carrier selection modal when marking order as sent
 
-- Checkout/shipping page:
-  - Add billing address section, defaulting to "same as shipping address" (checkbox)
-  - When unchecked, show full address fields for billing
-  - Add optional VAT/NIF field with tooltip explaining what it is per country (e.g. NIF in PT, VAT number in UK, CIF in ES, etc.)
-- Order screen:
-  - Show "Morada de Faturação" section below "Morada de Envio"
-  - For already-paid orders with no billing address stored: display shipping address as billing address
+When admin clicks "Mark as Sent" on an order, show a modal to select the carrier before confirming.
+
+- Carriers: CTT (default), DPD, DHL, GLS
+- Store selected carrier on the order
+- Only after confirming in the modal should the order be marked as sent
 
 ---
 
-## 3. Payment method section on order screen
+## 2. Staging environment (optional)
 
-- After order is paid, show "Método de Pagamento" section on order screen
-- For already-paid orders with no payment method stored: infer from existing data or show a sensible fallback
+- Create a staging app in Heroku
+- Add a `staging` environment in GitHub Actions that deploys on push to a `staging` branch

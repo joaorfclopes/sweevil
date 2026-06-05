@@ -5,7 +5,7 @@ import Axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   cancelOrder,
   deleteOrder,
@@ -18,7 +18,7 @@ import {
 } from '../actions/orderActions';
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
-import PlaceHolder from '../components/Placeholder';
+import OrderItemsList from '../components/OrderItemsList';
 import ShippingInfoTooltip from '../components/ShippingInfoTooltip';
 import { getTax } from '../config/taxRates';
 import {
@@ -31,39 +31,7 @@ import {
   ORDER_REFUND_RESET,
   ORDER_SEND_RESET,
 } from '../constants/orderConstants';
-import { useLazyLoad } from '../hooks/useLazyLoad';
 import Swal from '../utils/swal';
-
-function OrderItemImage({ item }) {
-  const [containerRef, inView] = useLazyLoad('300px');
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    if (inView && imgRef.current?.complete) {
-      document.getElementById(`${item.product}-order-img`)?.classList.add('show');
-    }
-  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <div ref={containerRef} className="item-image">
-      <PlaceHolder height="100%" hide={inView}>
-        <div id={`${item.product}-order-img`} className="item-image-inner">
-          <Link to={`/shop/product/${item.product}`}>
-            <img
-              ref={imgRef}
-              className="small"
-              src={inView ? item.image : undefined}
-              alt={item.name}
-              onLoad={() =>
-                document.getElementById(`${item.product}-order-img`)?.classList.add('show')
-              }
-            />
-          </Link>
-        </div>
-      </PlaceHolder>
-    </div>
-  );
-}
 
 function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
   const { t } = useTranslation();
@@ -300,7 +268,7 @@ export default function OrderScreen(props) {
 
   const refundHandler = () => {
     Swal.fire({
-      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${order.shippingAddress?.fullName}?`,
+      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${order.shippingDetails?.fullName}?`,
       text: t('order.refundText'),
       showCancelButton: true,
       confirmButtonText: t('order.refundBtn'),
@@ -376,48 +344,79 @@ export default function OrderScreen(props) {
                   </div>
                 )}
                 <div className="card">
-                  <h3>{t('order.shippingAddress')}</h3>
-                  <p>{order.shippingAddress.fullName}</p>
-                  <p>{order.shippingAddress.address}</p>
-                  <p>{order.shippingAddress.city}</p>
-                  <p>{order.shippingAddress.postalCode}</p>
-                  <p>{order.shippingAddress.country}</p>
-                </div>
-                <div className="card">
-                  <h3>{t('order.contactInfo')}</h3>
-                  <p>{order.shippingAddress.email}</p>
+                  <h3>{t('order.shippingDetails')}</h3>
                   <p>
-                    {order.shippingAddress.phoneNumber?.startsWith('+')
-                      ? order.shippingAddress.phoneNumber
-                      : `+${order.shippingAddress.phoneNumber}`}
+                    {t('shipping.fullName')}: {order.shippingDetails.fullName}
+                  </p>
+                  <p>
+                    {t('shipping.address')}: {order.shippingDetails.address}
+                  </p>
+                  <p>
+                    {t('shipping.city')}: {order.shippingDetails.city}
+                  </p>
+                  <p>
+                    {t('shipping.postalCode')}: {order.shippingDetails.postalCode}
+                  </p>
+                  <p>
+                    {t('shipping.country')}: {order.shippingDetails.country}
                   </p>
                 </div>
                 <div className="card">
+                  <h3>{t('order.billingAddress')}</h3>
+                  {(() => {
+                    const billing = order.billingDetails || order.shippingDetails;
+                    return (
+                      <>
+                        <p>
+                          {t('shipping.fullName')}: {billing.fullName}
+                        </p>
+                        <p>
+                          {t('shipping.address')}: {billing.address}
+                        </p>
+                        <p>
+                          {t('shipping.city')}: {billing.city}
+                        </p>
+                        <p>
+                          {t('shipping.postalCode')}: {billing.postalCode}
+                        </p>
+                        <p>
+                          {t('shipping.country')}: {billing.country}
+                        </p>
+                      </>
+                    );
+                  })()}
+                  {order.vatNif && (
+                    <p>
+                      {t('order.vatNif')}: {order.vatNif}
+                    </p>
+                  )}
+                </div>
+                <div className="card">
+                  <h3>{t('order.contactInfo')}</h3>
+                  <p>
+                    {t('shipping.email')}: {order.shippingDetails.email}
+                  </p>
+                  <p>
+                    {t('shipping.phone')}:{' '}
+                    {order.shippingDetails.phoneNumber?.startsWith('+')
+                      ? order.shippingDetails.phoneNumber
+                      : `+${order.shippingDetails.phoneNumber}`}
+                  </p>
+                </div>
+                {order.isPaid && (
+                  <div className="card">
+                    <h3>{t('order.paymentMethod')}</h3>
+                    <p>
+                      {t('order.paymentMethodLabel')}:{' '}
+                      {order.paymentResult?.paymentMethod === 'mb_way'
+                        ? `MB WAY${order.paymentResult?.paymentMethodLast ? ` ···${order.paymentResult.paymentMethodLast}` : ''}`
+                        : `${t('order.paymentMethodCard')}${order.paymentResult?.paymentMethodLast ? ` ····${order.paymentResult.paymentMethodLast}` : ''}`}
+                    </p>
+                  </div>
+                )}
+                <div className="card">
                   <h3>{t('order.items')}</h3>
-                  <ul className="cart-items">
-                    {order.orderItems.map((item, index) => (
-                      <li key={item.product}>
-                        <OrderItemImage item={item} />
-                        <div className="item-content">
-                          <div className="item-name">
-                            <p>{item.name}</p>
-                            {item.size && (
-                              <p className="item-size">
-                                {t('order.size')}: {item.size}
-                              </p>
-                            )}
-                            <p className="item-qty">
-                              {t('order.quantity')}: {item.qty}
-                            </p>
-                          </div>
-                          <div className="item-price">
-                            <p>{item.price && item.price.toFixed(2)}€</p>
-                          </div>
-                        </div>
-                        {order.orderItems[index + 1] && <hr />}
-                      </li>
-                    ))}
-                  </ul>
+                  <OrderItemsList items={order.orderItems} namespace="order" idPrefix="order" />
                 </div>
                 <div className="card total-amount">
                   <p>
@@ -425,7 +424,7 @@ export default function OrderScreen(props) {
                     {order.itemsPrice && order.itemsPrice.toFixed(2)}€
                   </p>
                   {(() => {
-                    const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+                    const tax = getTax(order.shippingDetails.country, order.itemsPrice);
                     return tax ? (
                       <p>
                         {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€

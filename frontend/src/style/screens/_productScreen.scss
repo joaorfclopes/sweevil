@@ -1,7 +1,32 @@
 @use '../general/globals' as *;
 
 .product-screen {
-  padding-top: 130px;
+  padding-top: 90px;
+  .back-button {
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 1.5rem;
+    left: calc(1.5rem + var(--scroll-lock-offset, 0px));
+    z-index: 999;
+    background-color: white;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 10px;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.08),
+      0 6px 16px rgba(0, 0, 0, 0.12),
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    outline: none !important;
+    font-size: 1.2rem;
+    cursor: pointer;
+
+    @media (max-width: 600px) {
+      bottom: 0;
+      left: 0;
+      margin: 1rem;
+    }
+  }
   min-height: 90vh;
   @include md {
     padding-top: 150px;

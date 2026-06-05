@@ -7,7 +7,7 @@ export const sendOrder = ({
     orderId,
     confirmToken,
     orderDate,
-    shippingAddress: { fullName, address, country, postalCode, city },
+    shippingDetails: { fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,

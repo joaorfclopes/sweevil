@@ -10,7 +10,7 @@ export const cancelOrder = ({
     isPaid,
     cancelledByAdmin,
     refundIssued,
-    shippingAddress: { fullName, country },
+    shippingDetails: { fullName, country },
     orderItems,
     itemsPrice,
     shippingPrice,

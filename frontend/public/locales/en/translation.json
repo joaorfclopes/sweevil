@@ -81,11 +81,20 @@
     "cityRequired": "City is required",
     "cityChars": "Letters only",
     "postalRequired": "Postal code is required",
-    "postalInvalid": "Invalid postal code"
+    "postalInvalid": "Invalid postal code",
+    "billingAddress": "Billing Details",
+    "sameAsShipping": "Same as shipping address",
+    "billingFullName": "Full Name",
+    "billingAddressLabel": "Address",
+    "billingCity": "City",
+    "billingPostalCode": "Postal Code",
+    "billingCountry": "Country",
+    "vatNif": "Tax ID / VAT",
+    "vatNifTooltip": "Your tax identification number for invoicing purposes (e.g. NIF, VAT, CIF). Optional."
   },
   "placeOrder": {
     "title": "Confirm Order",
-    "shippingAddress": "Shipping Address",
+    "shippingDetails": "Shipping Details",
     "contactInfo": "Contact Information",
     "items": "Items",
     "size": "Size",
@@ -97,15 +106,22 @@
     "shippingTooltipText": "For more information visit the",
     "shippingTooltipLink": "Terms & Conditions",
     "total": "Total",
-    "confirmBtn": "Confirm Order"
+    "confirmBtn": "Confirm Order",
+    "billingAddress": "Billing Details",
+    "sameAsShipping": "Same as shipping address",
+    "vatNif": "Tax ID / VAT"
   },
   "order": {
     "title": "Your order details",
     "cancelled": "Order cancelled.",
     "sent": "Order sent!",
     "delivered": "Order delivered!",
-    "shippingAddress": "Shipping Address",
+    "shippingDetails": "Shipping Details",
     "contactInfo": "Contact Information",
+    "paymentMethod": "Payment Method",
+    "paymentMethodLabel": "Method",
+    "paymentMethodCard": "Card",
+    "paymentMethodUnknown": "Card",
     "items": "Items",
     "shipping": "Shipping",
     "shippingTime": "(3-8 business days)",
@@ -142,7 +158,9 @@
     "cancelBtn": "Cancel Order",
     "issueRefundBtn": "Issue Refund",
     "cancelRefundBtn": "Cancel Refund",
-    "deleteOrderBtn": "Delete Order"
+    "deleteOrderBtn": "Delete Order",
+    "billingAddress": "Billing Details",
+    "vatNif": "Tax ID / VAT"
   },
   "booking": {
     "title": "Bookings",
@@ -394,7 +412,8 @@
   "common": {
     "yes": "Yes",
     "no": "No",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "optional": "Optional"
   },
   "error": {
     "productNotFound": "Product not found",

@@ -111,7 +111,7 @@ orderRouter.get(
     const { search = '', status = '' } = req.query;
     const query = {};
     if (status) query.status = status;
-    if (search) query['shippingAddress.fullName'] = { $regex: search, $options: 'i' };
+    if (search) query['shippingDetails.fullName'] = { $regex: search, $options: 'i' };
     const total = await Order.countDocuments(query);
     const orders = await Order.find(query)
       .populate('user', 'name')
@@ -259,7 +259,7 @@ orderRouter.get(
  *         application/json:
  *           schema:
  *             type: object
- *             required: [orderItems, shippingAddress]
+ *             required: [orderItems, shippingDetails]
  *             properties:
  *               orderItems:
  *                 type: array
@@ -269,7 +269,7 @@ orderRouter.get(
  *                     product: { type: string }
  *                     qty: { type: integer }
  *                     size: { type: string }
- *               shippingAddress:
+ *               shippingDetails:
  *                 type: object
  *                 properties:
  *                   fullName: { type: string }
@@ -292,7 +292,7 @@ orderRouter.post(
   createOrderLimiter,
   validate(createOrderSchema),
   expressAsyncHandler(async (req, res) => {
-    const { orderItems, shippingAddress } = req.body;
+    const { orderItems, shippingDetails, billingDetails, vatNif } = req.body;
     const builtItems = [];
     for (const item of orderItems) {
       const qty = item.qty;
@@ -313,14 +313,16 @@ orderRouter.post(
     }
     const itemsPrice = parseFloat(builtItems.reduce((a, c) => a + c.price * c.qty, 0).toFixed(2));
     const shippingPrice = parseFloat(
-      getShippingPrice(shippingAddress.country, shippingAddress.postalCode, itemsPrice).toFixed(2)
+      getShippingPrice(shippingDetails.country, shippingDetails.postalCode, itemsPrice).toFixed(2)
     );
     const totalPrice = parseFloat((itemsPrice + shippingPrice).toFixed(2));
     const itemsQty = builtItems.reduce((a, c) => a + c.qty, 0);
     const confirmToken = crypto.randomBytes(32).toString('hex');
     const order = new Order({
       orderItems: builtItems,
-      shippingAddress,
+      shippingDetails,
+      billingDetails,
+      ...(vatNif && { vatNif }),
       itemsQty,
       itemsPrice,
       shippingPrice,
@@ -338,7 +340,7 @@ orderRouter.post(
     const isPtOrder = createdOrder.lang === 'pt';
     await sendMail({
       from,
-      to: shippingAddress.email,
+      to: shippingDetails.email,
       subject: isPtOrder
         ? `Encomenda em ${process.env.BRAND_NAME}`
         : `Order at ${process.env.BRAND_NAME}`,
@@ -350,13 +352,13 @@ orderRouter.post(
     await sendMail({
       from,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: `New order pending payment — ${shippingAddress.fullName}`,
+      subject: `New order pending payment — ${shippingDetails.fullName}`,
       html: placedOrderAdmin({
         order: {
           orderId: createdOrder._id,
           confirmToken: createdOrder.confirmToken,
           orderDate: formatDate(createdOrder.createdAt.toISOString()),
-          shippingAddress: createdOrder.shippingAddress,
+          shippingDetails: createdOrder.shippingDetails,
           orderItems: createdOrder.orderItems,
           itemsPrice: createdOrder.itemsPrice,
           shippingPrice: createdOrder.shippingPrice,
@@ -366,7 +368,7 @@ orderRouter.post(
     });
 
     console.log(
-      `[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingAddress.email} (${shippingAddress.country})`
+      `[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingDetails.email} (${shippingDetails.country})`
     );
     res
       .status(201)
@@ -508,16 +510,67 @@ orderRouter.post(
 
     const totalCents = Math.round(order.totalPrice * 100);
     const shippingCents = Math.round(order.shippingPrice * 100);
-    const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+    const tax = getTax(order.shippingDetails.country, order.itemsPrice);
     const taxCents = tax ? Math.round(tax.amount * 100) : 0;
     const netItemsCents = totalCents - taxCents - shippingCents;
 
     const customer = await stripe.customers.create({
-      email: order.shippingAddress.email,
-      name: order.shippingAddress.fullName,
-      phone: order.shippingAddress.phoneNumber,
+      email: order.shippingDetails.email,
+      name: order.shippingDetails.fullName,
+      phone: order.shippingDetails.phoneNumber,
       metadata: { orderId: order._id.toString() },
     });
+
+    if (order.vatNif && order.vatNif.replace(/\s/g, '').length >= 8) {
+      const EU_VAT_COUNTRIES = new Set([
+        'AT',
+        'BE',
+        'BG',
+        'CY',
+        'CZ',
+        'DE',
+        'DK',
+        'EE',
+        'GR',
+        'ES',
+        'FI',
+        'FR',
+        'HR',
+        'HU',
+        'IE',
+        'IT',
+        'LT',
+        'LU',
+        'LV',
+        'MT',
+        'NL',
+        'PL',
+        'PT',
+        'RO',
+        'SE',
+        'SI',
+        'SK',
+      ]);
+      const country = order.billingDetails?.country || order.shippingDetails?.country;
+      let taxIdType;
+      if (country === 'GB') taxIdType = 'gb_vat';
+      else if (country === 'CH') taxIdType = 'ch_vat';
+      else if (country === 'NO') taxIdType = 'no_vat';
+      else if (country === 'IS') taxIdType = 'is_vat';
+      else if (EU_VAT_COUNTRIES.has(country)) taxIdType = 'eu_vat';
+      if (taxIdType) {
+        try {
+          const nif = order.vatNif;
+          const value =
+            taxIdType === 'eu_vat' && !nif.toUpperCase().startsWith(country)
+              ? `${country}${nif}`
+              : nif;
+          await stripe.customers.createTaxId(customer.id, { type: taxIdType, value });
+        } catch (taxErr) {
+          console.error('Stripe tax ID creation failed:', taxErr.message);
+        }
+      }
+    }
 
     const invoice = await stripe.invoices.create(
       {
@@ -631,7 +684,13 @@ orderRouter.put(
       return res.status(400).json({ message: 'paymentIntentId is required' });
     }
 
-    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
+    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId, {
+      expand: ['payment_method'],
+    });
+    const pm = paymentIntent.payment_method;
+    const pmType = pm?.type || paymentIntent.payment_method_types?.[0] || '';
+    const pmLast =
+      pmType === 'mb_way' ? pm?.billing_details?.phone?.slice(-3) || '' : pm?.card?.last4 || '';
     if (paymentIntent.status !== 'succeeded') {
       return res.status(402).json({ message: `Payment not succeeded: ${paymentIntent.status}` });
     }
@@ -648,6 +707,8 @@ orderRouter.put(
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
       email_address: paymentIntent.receipt_email || '',
       invoiceId: order.stripeInvoiceId || null,
+      paymentMethod: pmType,
+      paymentMethodLast: pmLast,
     };
 
     for (const item of order.orderItems) {
@@ -694,7 +755,7 @@ orderRouter.put(
         orderId: updatedOrder._id,
         confirmToken: updatedOrder.confirmToken,
         orderDate: formatDate(updatedOrder.createdAt.toISOString()),
-        shippingAddress: updatedOrder.shippingAddress,
+        shippingDetails: updatedOrder.shippingDetails,
         orderItems: updatedOrder.orderItems,
         itemsPrice: updatedOrder.itemsPrice,
         shippingPrice: updatedOrder.shippingPrice,
@@ -702,7 +763,7 @@ orderRouter.put(
       };
       await sendMail({
         from,
-        to: order.shippingAddress.email,
+        to: order.shippingDetails.email,
         subject: isPtPay
           ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
           : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
@@ -715,7 +776,7 @@ orderRouter.put(
       await sendMail({
         from,
         to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-        subject: `Order paid — ${updatedOrder.shippingAddress.fullName}`,
+        subject: `Order paid — ${updatedOrder.shippingDetails.fullName}`,
         html: placedOrderAdmin({ order: orderEmailData }),
         attachments: invoiceAttachment,
       });
@@ -724,7 +785,7 @@ orderRouter.put(
     Sentry.metrics.count('order.completed', 1);
     Sentry.metrics.gauge('order.amount', updatedOrder.totalPrice);
     console.log(
-      `[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingAddress.email}`
+      `[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingDetails.email}`
     );
 
     res.send({ message: 'Order paid', order: updatedOrder });
@@ -812,7 +873,7 @@ orderRouter.put(
     const isPtCancel = updatedOrder.lang === 'pt';
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
-      to: updatedOrder.shippingAddress.email,
+      to: updatedOrder.shippingDetails.email,
       subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
       html: (isPtCancel ? cancelOrderEmailPt : cancelOrderEmailEn)({
         order: {
@@ -822,9 +883,9 @@ orderRouter.put(
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
           refundIssued: updatedOrder.isRefunded,
-          shippingAddress: {
-            fullName: updatedOrder.shippingAddress.fullName,
-            country: updatedOrder.shippingAddress.country,
+          shippingDetails: {
+            fullName: updatedOrder.shippingDetails.fullName,
+            country: updatedOrder.shippingDetails.country,
           },
           orderItems: updatedOrder.orderItems,
           itemsPrice: updatedOrder.itemsPrice,
@@ -853,10 +914,10 @@ orderRouter.put(
           isPaid: updatedOrder.isPaid,
           cancelledByAdmin: isAdminUser,
           refundIssued: updatedOrder.isRefunded,
-          shippingAddress: {
-            fullName: updatedOrder.shippingAddress.fullName,
-            email: updatedOrder.shippingAddress.email,
-            phoneNumber: updatedOrder.shippingAddress.phoneNumber,
+          shippingDetails: {
+            fullName: updatedOrder.shippingDetails.fullName,
+            email: updatedOrder.shippingDetails.email,
+            phoneNumber: updatedOrder.shippingDetails.phoneNumber,
           },
           orderItems: updatedOrder.orderItems,
           itemsPrice: updatedOrder.itemsPrice,

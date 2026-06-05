@@ -250,6 +250,7 @@ if (insertedProducts.length === 0) {
     const confirmTokenExpiresAt = isDelivered
       ? new Date(deliveredAt.getTime() + 30 * 24 * 60 * 60 * 1000)
       : undefined;
+    const seedPaymentMethod = Math.random() < 0.5 ? 'card' : 'mb_way';
 
     orders.push({
       orderItems: [
@@ -263,13 +264,21 @@ if (insertedProducts.length === 0) {
           slug: product.slug,
         },
       ],
-      shippingAddress: { ...customer },
+      shippingDetails: { ...customer },
+      billingDetails: { ...customer },
       itemsQty: qty,
       itemsPrice,
       shippingPrice,
       totalPrice,
       isPaid,
       paidAt,
+      ...(isPaid && {
+        paymentResult: {
+          id: `pi_seed_${i}`,
+          status: 'succeeded',
+          paymentMethod: seedPaymentMethod,
+        },
+      }),
       isRefunded,
       isDelivered,
       deliveredAt,

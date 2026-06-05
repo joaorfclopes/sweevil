@@ -81,11 +81,20 @@
     "cityRequired": "A cidade é obrigatória",
     "cityChars": "Apenas letras são permitidas",
     "postalRequired": "O código postal é obrigatório",
-    "postalInvalid": "Código postal inválido"
+    "postalInvalid": "Código postal inválido",
+    "billingAddress": "Detalhes de Faturação",
+    "sameAsShipping": "Igual à morada de envio",
+    "billingFullName": "Nome Completo",
+    "billingAddressLabel": "Morada",
+    "billingCity": "Cidade",
+    "billingPostalCode": "Código Postal",
+    "billingCountry": "País",
+    "vatNif": "NIF / IVA",
+    "vatNifTooltip": "O seu número de identificação fiscal para efeitos de faturação (ex. NIF, IVA, CIF). Opcional."
   },
   "placeOrder": {
     "title": "Confirmar Encomenda",
-    "shippingAddress": "Morada de Envio",
+    "shippingDetails": "Detalhes de Envio",
     "contactInfo": "Informações de Contacto",
     "items": "Artigos",
     "size": "Tamanho",
@@ -97,15 +106,22 @@
     "shippingTooltipText": "Para mais informações consulte os",
     "shippingTooltipLink": "Termos & Condições",
     "total": "Total",
-    "confirmBtn": "Confirmar Encomenda"
+    "confirmBtn": "Confirmar Encomenda",
+    "billingAddress": "Detalhes de Faturação",
+    "sameAsShipping": "Igual à morada de envio",
+    "vatNif": "NIF / IVA"
   },
   "order": {
     "title": "Detalhes da sua encomenda",
     "cancelled": "Encomenda cancelada.",
     "sent": "Encomenda enviada!",
     "delivered": "Encomenda entregue!",
-    "shippingAddress": "Morada de Envio",
+    "shippingDetails": "Detalhes de Envio",
     "contactInfo": "Informações de Contacto",
+    "paymentMethod": "Método de Pagamento",
+    "paymentMethodLabel": "Método",
+    "paymentMethodCard": "Cartão",
+    "paymentMethodUnknown": "Cartão",
     "items": "Artigos",
     "shipping": "Envio",
     "shippingTime": "(3-8 dias úteis)",
@@ -142,7 +158,9 @@
     "cancelBtn": "Cancelar Encomenda",
     "issueRefundBtn": "Emitir Reembolso",
     "cancelRefundBtn": "Cancelar Reembolso",
-    "deleteOrderBtn": "Eliminar Encomenda"
+    "deleteOrderBtn": "Eliminar Encomenda",
+    "billingAddress": "Detalhes de Faturação",
+    "vatNif": "NIF / IVA"
   },
   "booking": {
     "title": "Marcações",
@@ -394,7 +412,8 @@
   "common": {
     "yes": "Sim",
     "no": "Não",
-    "logout": "Sair"
+    "logout": "Sair",
+    "optional": "Opcional"
   },
   "error": {
     "productNotFound": "Produto não encontrado",

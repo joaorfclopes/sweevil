@@ -5,7 +5,7 @@ export const placedOrderAdmin = ({
     orderId,
     confirmToken,
     orderDate,
-    shippingAddress: { email, phoneNumber, fullName, address, country, postalCode, city },
+    shippingDetails: { email, phoneNumber, fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,

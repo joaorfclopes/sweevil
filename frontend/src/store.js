@@ -87,9 +87,13 @@ const initialState = {
     cartItems: localStorage.getItem('cartItems')
       ? JSON.parse(localStorage.getItem('cartItems'))
       : [],
-    shippingAddress: localStorage.getItem('shippingAddress')
-      ? JSON.parse(localStorage.getItem('shippingAddress'))
+    shippingDetails: localStorage.getItem('shippingDetails')
+      ? JSON.parse(localStorage.getItem('shippingDetails'))
       : {},
+    billingDetails: localStorage.getItem('billingDetails')
+      ? JSON.parse(localStorage.getItem('billingDetails'))
+      : null,
+    vatNif: localStorage.getItem('vatNif') || '',
   },
 };
 

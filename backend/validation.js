@@ -27,10 +27,18 @@ export const createBookingSchema = z.object({
   images: z.array(z.string()).max(10).optional().default([]),
 });
 
-const shippingAddressSchema = z.object({
+const shippingDetailsSchema = z.object({
   email: z.string().email(),
   fullName: z.string().min(1),
   phoneNumber: z.string().min(1),
+  address: z.string().min(1),
+  city: z.string().min(1),
+  postalCode: z.string().min(1),
+  country: z.string().min(2),
+});
+
+const billingDetailsSchema = z.object({
+  fullName: z.string().min(1),
   address: z.string().min(1),
   city: z.string().min(1),
   postalCode: z.string().min(1),
@@ -45,7 +53,9 @@ const orderItemSchema = z.object({
 
 export const createOrderSchema = z.object({
   orderItems: z.array(orderItemSchema).min(1, 'Cart is empty'),
-  shippingAddress: shippingAddressSchema,
+  shippingDetails: shippingDetailsSchema,
+  billingDetails: billingDetailsSchema,
+  vatNif: z.string().max(30).optional(),
 });
 
 const coerceStock = z.coerce.number().int().min(0).optional();

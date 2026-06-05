@@ -1,7 +1,7 @@
 @use '../general/globals' as *;
 
 .cart {
-  padding-top: 130px;
+  padding-top: 90px;
   min-height: 90vh;
   @include md {
     padding-top: 150px;
@@ -94,6 +94,9 @@
             margin-right: 1rem;
           }
         }
+      }
+      hr {
+        clear: both;
       }
       .line {
         margin-top: 1rem;
