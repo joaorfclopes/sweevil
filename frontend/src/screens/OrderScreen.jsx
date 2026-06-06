@@ -231,15 +231,16 @@ export default function OrderScreen(props) {
 
     if (!formValues) return;
 
-    const { isConfirmed } = await Swal.fire({
-      title: t('order.sendTitle'),
-      showCancelButton: true,
-      confirmButtonText: t('common.yes'),
-    });
-
-    if (isConfirmed) {
-      dispatch(sendOrder(order._id, formValues.carrier, formValues.trackingNumber));
+    if (!formValues.trackingNumber) {
+      const { isConfirmed } = await Swal.fire({
+        title: t('order.sendTitle'),
+        showCancelButton: true,
+        confirmButtonText: t('common.yes'),
+      });
+      if (!isConfirmed) return;
     }
+
+    dispatch(sendOrder(order._id, formValues.carrier, formValues.trackingNumber));
   };
 
   const deliverHandler = () => {
