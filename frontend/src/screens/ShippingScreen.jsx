@@ -117,7 +117,7 @@ export default function ShippingScreen(props) {
   const [sameAsShipping, setSameAsShipping] = useState(() => {
     const stored = localStorage.getItem('sameAsShipping');
     if (stored !== null) return stored === 'true';
-    return savedBillingDetails === null || savedBillingDetails === undefined;
+    return false;
   });
 
   const schema = useMemo(() => getSchema(t, sameAsShipping), [t, sameAsShipping]);

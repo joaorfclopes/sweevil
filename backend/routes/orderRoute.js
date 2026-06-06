@@ -408,12 +408,9 @@ orderRouter.get(
     if (orderWithToken.confirmTokenExpiresAt && orderWithToken.confirmTokenExpiresAt < new Date()) {
       return res.status(403).json({ message: 'Order access expired' });
     }
-    const {
-      confirmToken: _,
-      confirmTokenExpiresAt: __,
-      _id: ___,
-      ...orderData
-    } = orderWithToken.toObject();
+    const isAdminUser = !!(await getAdminSession(req));
+    const { confirmToken: _, confirmTokenExpiresAt: __, ...orderData } = orderWithToken.toObject();
+    if (!isAdminUser) delete orderData._id;
     res.json(orderData);
   })
 );
@@ -508,22 +505,15 @@ orderRouter.post(
     const stripe = getStripe();
 
     // Reuse existing PaymentIntent on page refresh
-    let retryKey = '';
-    if (order.stripeInvoiceId && order.paymentResult?.id) {
+    if (order.paymentResult?.id) {
       const pi = await stripe.paymentIntents.retrieve(order.paymentResult.id);
       const reuseStatuses = ['requires_payment_method', 'requires_confirmation', 'requires_action'];
       if (reuseStatuses.includes(pi.status)) {
         return res.json({ clientSecret: pi.client_secret });
       }
-      // PI in terminal state — create fresh invoice+PI with unique idempotency keys
-      retryKey = `-${Date.now().toString(36)}`;
     }
 
     const totalCents = Math.round(order.totalPrice * 100);
-    const shippingCents = Math.round(order.shippingPrice * 100);
-    const tax = getTax(order.shippingDetails.country, order.itemsPrice);
-    const taxCents = tax ? Math.round(tax.amount * 100) : 0;
-    const netItemsCents = totalCents - taxCents - shippingCents;
 
     const customer = await stripe.customers.create({
       email: order.shippingDetails.email,
@@ -583,60 +573,15 @@ orderRouter.post(
       }
     }
 
-    const invoice = await stripe.invoices.create(
-      {
-        customer: customer.id,
-        currency: 'eur',
-        collection_method: 'send_invoice',
-        days_until_due: 30,
-        auto_advance: false,
-        metadata: { orderId: order._id.toString() },
-      },
-      { idempotencyKey: `inv-${order._id}${retryKey}` }
-    );
-
-    await stripe.invoiceItems.create({
-      customer: customer.id,
-      invoice: invoice.id,
-      amount: netItemsCents,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalCents,
       currency: 'eur',
-      description: `Products (${order.itemsQty} item${order.itemsQty !== 1 ? 's' : ''})`,
+      customer: customer.id,
+      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+      statement_descriptor_suffix: 'Order',
+      metadata: { orderId: order._id.toString() },
     });
 
-    if (taxCents > 0) {
-      await stripe.invoiceItems.create({
-        customer: customer.id,
-        invoice: invoice.id,
-        amount: taxCents,
-        currency: 'eur',
-        description: `${tax.label} (${tax.display})`,
-      });
-    }
-
-    await stripe.invoiceItems.create({
-      customer: customer.id,
-      invoice: invoice.id,
-      amount: shippingCents,
-      currency: 'eur',
-      description: 'Shipping',
-    });
-
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-
-    const paymentIntent = await stripe.paymentIntents.create(
-      {
-        amount: totalCents,
-        currency: 'eur',
-        customer: customer.id,
-        description: `Payment for invoice ${finalizedInvoice.number ?? invoice.id}`,
-        automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-        statement_descriptor_suffix: 'Order',
-        metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
-      },
-      { idempotencyKey: `pi-${order._id}${retryKey}` }
-    );
-
-    order.stripeInvoiceId = invoice.id;
     order.paymentResult = { id: paymentIntent.id };
     await order.save();
 
@@ -719,7 +664,7 @@ orderRouter.put(
       status: paymentIntent.status,
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
       email_address: paymentIntent.receipt_email || '',
-      invoiceId: order.stripeInvoiceId || null,
+      invoiceId: null,
       paymentMethod: pmType,
       paymentMethodLast: pmLast,
     };
@@ -736,25 +681,63 @@ orderRouter.put(
     if (!updatedOrder.confirmationEmailSent) {
       let invoicePdfBuffer = null;
       let invoiceNumber = 'invoice';
-      if (order.stripeInvoiceId) {
-        try {
-          await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
-          const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) {
-            invoiceNumber = paidInvoice.number;
-            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
-          }
-          if (paidInvoice.invoice_pdf) {
-            const pdfUrl = new URL(paidInvoice.invoice_pdf);
-            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
-              throw new Error('Unexpected invoice_pdf origin');
-            }
-            const pdfRes = await fetch(pdfUrl.toString());
-            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
-          }
-        } catch (e) {
-          console.error('[order] Failed to process invoice:', e.message);
+      try {
+        const stripe = getStripe();
+        const customerId = paymentIntent.customer;
+        const shippingCents = Math.round(updatedOrder.shippingPrice * 100);
+        const tax = getTax(updatedOrder.shippingDetails.country, updatedOrder.itemsPrice);
+        const taxCents = tax ? Math.round(tax.amount * 100) : 0;
+        const netItemsCents = Math.round(updatedOrder.totalPrice * 100) - taxCents - shippingCents;
+        const invoice = await stripe.invoices.create({
+          customer: customerId,
+          currency: 'eur',
+          collection_method: 'send_invoice',
+          days_until_due: 30,
+          auto_advance: false,
+          metadata: { orderId: updatedOrder._id.toString() },
+        });
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: netItemsCents,
+          currency: 'eur',
+          description: `Products (${updatedOrder.itemsQty} item${updatedOrder.itemsQty !== 1 ? 's' : ''})`,
+        });
+        if (taxCents > 0) {
+          await stripe.invoiceItems.create({
+            customer: customerId,
+            invoice: invoice.id,
+            amount: taxCents,
+            currency: 'eur',
+            description: `${tax.label} (${tax.display})`,
+          });
         }
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: shippingCents,
+          currency: 'eur',
+          description: 'Shipping',
+        });
+        await stripe.invoices.finalizeInvoice(invoice.id);
+        const paidInvoice = await stripe.invoices.pay(invoice.id, { paid_out_of_band: true });
+        if (paidInvoice.number) {
+          invoiceNumber = paidInvoice.number;
+          await Order.findByIdAndUpdate(updatedOrder._id, {
+            invoiceNumber: paidInvoice.number,
+            stripeInvoiceId: invoice.id,
+          });
+        }
+        if (paidInvoice.invoice_pdf) {
+          const pdfUrl = new URL(paidInvoice.invoice_pdf);
+          if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+            throw new Error('Unexpected invoice_pdf origin');
+          }
+          const pdfRes = await fetch(pdfUrl.toString());
+          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        }
+      } catch (e) {
+        console.error('[order] Failed to process invoice:', e.message);
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
       const isPtPay = updatedOrder.lang === 'pt';
@@ -853,7 +836,7 @@ orderRouter.put(
       status: paymentIntent.status,
       update_time: new Date(paymentIntent.created * 1000).toISOString(),
       email_address: paymentIntent.receipt_email || '',
-      invoiceId: order.stripeInvoiceId || null,
+      invoiceId: null,
       paymentMethod: pmType,
       paymentMethodLast: pmLast,
     };
@@ -870,25 +853,63 @@ orderRouter.put(
     if (!updatedOrder.confirmationEmailSent) {
       let invoicePdfBuffer = null;
       let invoiceNumber = 'invoice';
-      if (order.stripeInvoiceId) {
-        try {
-          await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
-          const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) {
-            invoiceNumber = paidInvoice.number;
-            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
-          }
-          if (paidInvoice.invoice_pdf) {
-            const pdfUrl = new URL(paidInvoice.invoice_pdf);
-            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
-              throw new Error('Unexpected invoice_pdf origin');
-            }
-            const pdfRes = await fetch(pdfUrl.toString());
-            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
-          }
-        } catch (e) {
-          console.error('[order] Failed to process invoice:', e.message);
+      try {
+        const stripe = getStripe();
+        const customerId = paymentIntent.customer;
+        const shippingCents = Math.round(updatedOrder.shippingPrice * 100);
+        const tax = getTax(updatedOrder.shippingDetails.country, updatedOrder.itemsPrice);
+        const taxCents = tax ? Math.round(tax.amount * 100) : 0;
+        const netItemsCents = Math.round(updatedOrder.totalPrice * 100) - taxCents - shippingCents;
+        const invoice = await stripe.invoices.create({
+          customer: customerId,
+          currency: 'eur',
+          collection_method: 'send_invoice',
+          days_until_due: 30,
+          auto_advance: false,
+          metadata: { orderId: updatedOrder._id.toString() },
+        });
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: netItemsCents,
+          currency: 'eur',
+          description: `Products (${updatedOrder.itemsQty} item${updatedOrder.itemsQty !== 1 ? 's' : ''})`,
+        });
+        if (taxCents > 0) {
+          await stripe.invoiceItems.create({
+            customer: customerId,
+            invoice: invoice.id,
+            amount: taxCents,
+            currency: 'eur',
+            description: `${tax.label} (${tax.display})`,
+          });
         }
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: shippingCents,
+          currency: 'eur',
+          description: 'Shipping',
+        });
+        await stripe.invoices.finalizeInvoice(invoice.id);
+        const paidInvoice = await stripe.invoices.pay(invoice.id, { paid_out_of_band: true });
+        if (paidInvoice.number) {
+          invoiceNumber = paidInvoice.number;
+          await Order.findByIdAndUpdate(updatedOrder._id, {
+            invoiceNumber: paidInvoice.number,
+            stripeInvoiceId: invoice.id,
+          });
+        }
+        if (paidInvoice.invoice_pdf) {
+          const pdfUrl = new URL(paidInvoice.invoice_pdf);
+          if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+            throw new Error('Unexpected invoice_pdf origin');
+          }
+          const pdfRes = await fetch(pdfUrl.toString());
+          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        }
+      } catch (e) {
+        console.error('[order] Failed to process invoice:', e.message);
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
       const isPtPay = updatedOrder.lang === 'pt';
@@ -983,6 +1004,9 @@ orderRouter.put(
       return res.status(403).json({ message: 'Order access expired' });
     }
 
+    const isAdminUser = !!(await getAdminSession(req));
+    const { refundChoice } = req.body;
+
     if (order.isPaid) {
       for (const item of order.orderItems) {
         const field = item.isClothing
@@ -990,13 +1014,30 @@ orderRouter.put(
           : 'countInStock.stock';
         await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
       }
-      order.status = 'CANCELED_PENDING_REFUND';
+      if (isAdminUser) {
+        if (refundChoice === 'yes' && !order.isRefunded) {
+          try {
+            await getStripe().refunds.create({ payment_intent: order.paymentResult.id });
+            order.isRefunded = true;
+            order.status = 'CANCELED_REFUNDED';
+          } catch (refundErr) {
+            console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+            order.status = 'CANCELED_PENDING_REFUND';
+          }
+        } else if (refundChoice === 'no') {
+          order.status = 'CANCELED_NO_REFUND';
+        } else {
+          order.status = 'CANCELED';
+        }
+      } else {
+        order.status = 'CANCELED_PENDING_REFUND';
+      }
     } else {
       order.status = 'CANCELED';
     }
     const updatedOrder = await order.save();
     console.log(
-      `[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: customer (token)`
+      `[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: ${isAdminUser ? 'admin' : 'customer'} (token)`
     );
 
     const isPtCancel = updatedOrder.lang === 'pt';
@@ -1010,7 +1051,7 @@ orderRouter.put(
           confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
-          cancelledByAdmin: false,
+          cancelledByAdmin: isAdminUser,
           refundIssued: updatedOrder.isRefunded,
           shippingDetails: {
             fullName: updatedOrder.shippingDetails.fullName,
@@ -1027,14 +1068,21 @@ orderRouter.put(
     sendMail({
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-      subject: updatedOrder.isPaid ? 'Refund Request' : 'Order Canceled',
+      subject:
+        isAdminUser && updatedOrder.isPaid && updatedOrder.isRefunded
+          ? 'Order Cancelled — Refund Issued'
+          : isAdminUser && updatedOrder.isPaid && refundChoice === 'no'
+            ? 'Order Cancelled — No Refund'
+            : updatedOrder.isPaid
+              ? 'Refund Request'
+              : 'Order Canceled',
       html: cancelOrderAdminEmail({
         order: {
           invoiceNumber: updatedOrder.invoiceNumber ?? '-',
           confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
-          cancelledByAdmin: false,
+          cancelledByAdmin: isAdminUser,
           refundIssued: updatedOrder.isRefunded,
           shippingDetails: {
             fullName: updatedOrder.shippingDetails.fullName,

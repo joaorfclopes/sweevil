@@ -35,11 +35,14 @@ for (const order of toMigrate) {
   const piId = order.paymentResult?.id;
   let paymentMethod = 'card';
 
+  let last4 = null;
+
   if (piId && piId.startsWith('pi_') && !piId.startsWith('pi_seed_')) {
     try {
       const pi = await stripe.paymentIntents.retrieve(piId, { expand: ['latest_charge'] });
-      paymentMethod =
-        pi.latest_charge?.payment_method_details?.type || pi.payment_method_types?.[0] || 'card';
+      const details = pi.latest_charge?.payment_method_details;
+      paymentMethod = details?.type || pi.payment_method_types?.[0] || 'card';
+      last4 = details?.card?.last4 ?? null;
       fromStripe++;
     } catch (err) {
       console.warn(`  Could not fetch PI ${piId}: ${err.message} — defaulting to card`);
@@ -49,10 +52,10 @@ for (const order of toMigrate) {
     fallback++;
   }
 
-  await orders.updateOne(
-    { _id: order._id },
-    { $set: { 'paymentResult.paymentMethod': paymentMethod } }
-  );
+  const update = { 'paymentResult.paymentMethod': paymentMethod };
+  if (last4) update['paymentResult.last4'] = last4;
+
+  await orders.updateOne({ _id: order._id }, { $set: update });
   updated++;
 }
 

@@ -5,6 +5,7 @@ import { placedOrder as placedOrderEn } from '../mailing/en/placedOrder.js';
 import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
 import { sendMail } from '../mailing/sendMail.js';
+import { getTax } from '../mailing/taxRates.js';
 import Booking from '../models/bookingModel.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
@@ -63,26 +64,63 @@ const handleOrderPaid = async (paymentIntent) => {
       const stripe = getStripe();
       let invoicePdfBuffer = null;
       let invoiceNumber = 'invoice';
-      if (order.stripeInvoiceId) {
-        try {
-          await stripe.invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
-          const paidInvoice = await stripe.invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) {
-            invoiceNumber = paidInvoice.number;
-            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
-          }
-          if (paidInvoice.invoice_pdf) {
-            const pdfUrl = new URL(paidInvoice.invoice_pdf);
-            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
-              throw new Error('Unexpected invoice_pdf origin');
-            }
-            const pdfRes = await fetch(pdfUrl.toString());
-            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
-          }
-        } catch (e) {
-          Sentry.captureException(e);
-          console.error('[webhook] Failed to process invoice:', e.message);
+      try {
+        const customerId = expandedPi.customer;
+        const shippingCents = Math.round(order.shippingPrice * 100);
+        const tax = getTax(order.shippingDetails.country, order.itemsPrice);
+        const taxCents = tax ? Math.round(tax.amount * 100) : 0;
+        const netItemsCents = Math.round(order.totalPrice * 100) - taxCents - shippingCents;
+        const invoice = await stripe.invoices.create({
+          customer: customerId,
+          currency: 'eur',
+          collection_method: 'send_invoice',
+          days_until_due: 30,
+          auto_advance: false,
+          metadata: { orderId: order._id.toString() },
+        });
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: netItemsCents,
+          currency: 'eur',
+          description: `Products (${order.itemsQty} item${order.itemsQty !== 1 ? 's' : ''})`,
+        });
+        if (taxCents > 0) {
+          await stripe.invoiceItems.create({
+            customer: customerId,
+            invoice: invoice.id,
+            amount: taxCents,
+            currency: 'eur',
+            description: `${tax.label} (${tax.display})`,
+          });
         }
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          invoice: invoice.id,
+          amount: shippingCents,
+          currency: 'eur',
+          description: 'Shipping',
+        });
+        await stripe.invoices.finalizeInvoice(invoice.id);
+        const paidInvoice = await stripe.invoices.pay(invoice.id, { paid_out_of_band: true });
+        if (paidInvoice.number) {
+          invoiceNumber = paidInvoice.number;
+          await Order.findByIdAndUpdate(order._id, {
+            invoiceNumber: paidInvoice.number,
+            stripeInvoiceId: invoice.id,
+          });
+        }
+        if (paidInvoice.invoice_pdf) {
+          const pdfUrl = new URL(paidInvoice.invoice_pdf);
+          if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+            throw new Error('Unexpected invoice_pdf origin');
+          }
+          const pdfRes = await fetch(pdfUrl.toString());
+          invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+        }
+      } catch (e) {
+        Sentry.captureException(e);
+        console.error('[webhook] Failed to process invoice:', e.message);
       }
       const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
       const isPtWebhook = order.lang === 'pt';

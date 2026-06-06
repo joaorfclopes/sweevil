@@ -137,7 +137,7 @@ export default function PlaceOrderScreen(props) {
                 {t('placeOrder.total')} : {cart.totalPrice && cart.totalPrice.toFixed(2)}€
               </h3>
             </div>
-            <button className="primary" onClick={placeOrderHandler}>
+            <button className="primary" style={{ width: '100%' }} onClick={placeOrderHandler}>
               {t('placeOrder.confirmBtn')}
             </button>
           </div>

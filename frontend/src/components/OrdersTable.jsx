@@ -69,6 +69,12 @@ export default function OrdersTable() {
   }, [debouncedSearch, statusFilter]);
 
   useEffect(() => {
+    return () => {
+      dispatch({ type: ORDER_DELETE_RESET });
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     if (successDelete) dispatch({ type: ORDER_DELETE_RESET });
     if (successRefund) dispatch({ type: ORDER_REFUND_RESET });
     dispatch(
