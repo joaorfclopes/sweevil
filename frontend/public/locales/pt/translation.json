@@ -146,7 +146,7 @@
     "dismissRefundTitle": "Cancelar reembolso pendente?",
     "dismissRefundText": "O estado passará para \"Cancelado (Sem Reembolso)\". O botão de reembolso deixará de aparecer.",
     "dismissRefundBtn": "Sim, cancelar reembolso",
-    "sendTitle": "Marcar encomenda como enviada?",
+    "sendTitle": "Marcar encomenda como enviada sem número de rastreamento?",
     "sendSuccess": "Enviado!",
     "cancelledSwal": "Cancelado!",
     "paidSuccess": "Encomenda paga com sucesso! Verifique o seu email.",

@@ -116,6 +116,9 @@ export default function CartScreen(props) {
 
   return (
     <section className="cart">
+      <button className="back-button" onClick={() => navigate(-1)}>
+        &#8592;
+      </button>
       <h1 className="custom-font">{t('cart.title')}</h1>
       {cartItems.length === 0 ? (
         <div>

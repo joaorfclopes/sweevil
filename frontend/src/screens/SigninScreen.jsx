@@ -61,6 +61,9 @@ export default function SigninScreen(props) {
 
   return (
     <section className="signin">
+      <button className="back-button" onClick={() => navigate(-1)}>
+        &#8592;
+      </button>
       <div className="row center signin-container">
         <div className="signin-inner">
           <h1>{t('signin.title')}</h1>

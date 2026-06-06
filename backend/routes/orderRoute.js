@@ -569,7 +569,7 @@ orderRouter.post(
               : nif;
           await stripe.customers.createTaxId(customer.id, { type: taxIdType, value });
         } catch (taxErr) {
-          console.error('Stripe tax ID creation failed:', taxErr.message);
+          console.error('[order] Stripe tax ID creation failed:', taxErr.message);
         }
       }
     }

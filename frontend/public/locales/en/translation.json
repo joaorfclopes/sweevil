@@ -146,7 +146,7 @@
     "dismissRefundTitle": "Cancel pending refund?",
     "dismissRefundText": "The status will change to \"Cancelled (No Refund)\". The refund button will no longer appear.",
     "dismissRefundBtn": "Yes, cancel refund",
-    "sendTitle": "Mark order as sent?",
+    "sendTitle": "Mark order as sent without tracking number?",
     "sendSuccess": "Sent!",
     "cancelledSwal": "Cancelled!",
     "paidSuccess": "Order successfully paid! Check your email.",

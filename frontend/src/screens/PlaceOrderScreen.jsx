@@ -57,6 +57,9 @@ export default function PlaceOrderScreen(props) {
 
   return (
     <section className="place-order cards-section">
+      <button className="back-button" onClick={() => navigate(-1)}>
+        &#8592;
+      </button>
       <div className="row center place-order-container">
         <LoadingOverlay loading={loading}>
           <div className="place-order-inner">
