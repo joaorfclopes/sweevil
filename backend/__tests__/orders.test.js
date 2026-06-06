@@ -5,6 +5,7 @@ import { clearAuthCollections, createAdminSession } from './helpers/adminSession
 
 let app;
 let productId;
+let Order;
 
 const validShipping = {
   email: 'test@example.com',
@@ -27,6 +28,8 @@ const validBilling = {
 beforeAll(async () => {
   const { createApp } = await import('../createApp.js');
   app = await createApp();
+  const { default: OrderModel } = await import('../models/orderModel.js');
+  Order = OrderModel;
   const { default: Product } = await import('../models/productModel.js');
   const product = await Product.create({
     name: 'Test Product',
@@ -46,7 +49,6 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  const { default: Order } = await import('../models/orderModel.js');
   await Order.deleteMany({});
 });
 
@@ -201,7 +203,6 @@ describe('PUT /api/orders/:id/send', () => {
 
 describe('Order model invoiceNumber field', () => {
   it('defaults invoiceNumber to undefined on new orders', async () => {
-    const { default: Order } = await import('../models/orderModel.js');
     const res = await request(app)
       .post('/api/orders')
       .send({
