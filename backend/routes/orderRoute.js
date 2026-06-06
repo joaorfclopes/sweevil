@@ -181,6 +181,8 @@ orderRouter.put(
       order.isSent = true;
       order.sentAt = Date.now();
       order.status = 'SENT';
+      if (req.body.carrier) order.carrier = req.body.carrier;
+      if (req.body.trackingNumber) order.trackingNumber = req.body.trackingNumber;
       const updatedOrder = await order.save();
       console.log(`[order] Order ${updatedOrder._id} marked as sent`);
       res.send({ message: 'Order sent', order: updatedOrder });
