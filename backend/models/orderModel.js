@@ -59,6 +59,8 @@ const orderSchema = new mongoose.Schema(
     confirmationEmailSent: { type: Boolean, default: false },
     paidAt: { type: Date },
     isSent: { type: Boolean, default: false },
+    carrier: { type: String },
+    trackingNumber: { type: String },
     sentAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },
