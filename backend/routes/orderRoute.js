@@ -357,7 +357,7 @@ orderRouter.post(
       subject: `New order pending payment — ${shippingDetails.fullName}`,
       html: placedOrderAdmin({
         order: {
-          orderId: createdOrder._id,
+          invoiceNumber: null,
           confirmToken: createdOrder.confirmToken,
           orderDate: formatDate(createdOrder.createdAt.toISOString()),
           shippingDetails: createdOrder.shippingDetails,
@@ -757,7 +757,7 @@ orderRouter.put(
           ]
         : [];
       const orderEmailData = {
-        orderId: updatedOrder._id,
+        invoiceNumber: invoiceNumber,
         confirmToken: updatedOrder.confirmToken,
         orderDate: formatDate(updatedOrder.createdAt.toISOString()),
         shippingDetails: updatedOrder.shippingDetails,
@@ -882,7 +882,7 @@ orderRouter.put(
       subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
       html: (isPtCancel ? cancelOrderEmailPt : cancelOrderEmailEn)({
         order: {
-          orderId: updatedOrder._id,
+          invoiceNumber: updatedOrder.invoiceNumber ?? '-',
           confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,
@@ -913,7 +913,7 @@ orderRouter.put(
               : 'Order Canceled',
       html: cancelOrderAdminEmail({
         order: {
-          orderId: updatedOrder._id,
+          invoiceNumber: updatedOrder.invoiceNumber ?? '-',
           confirmToken: updatedOrder.confirmToken,
           orderDate: formatDate(updatedOrder.createdAt.toISOString()),
           isPaid: updatedOrder.isPaid,

@@ -243,7 +243,7 @@ emailRouter.post(
       subject: isPtSent ? 'A sua encomenda está a caminho!' : 'Your Order Is on Its Way!',
       html: (isPtSent ? sendOrderPt : sendOrderEn)({
         order: {
-          orderId: order._id,
+          invoiceNumber: order.invoiceNumber ?? '-',
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           trackingUrl,
@@ -305,7 +305,7 @@ emailRouter.post(
       subject: isPtDelivered ? 'Obrigado pela sua encomenda!' : 'Your Order Has Been Delivered!',
       html: (isPtDelivered ? deliveredOrderPt : deliveredOrderEn)({
         order: {
-          orderId: order._id,
+          invoiceNumber: order.invoiceNumber ?? '-',
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           shippingDetails: {

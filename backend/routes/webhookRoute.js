@@ -67,7 +67,10 @@ const handleOrderPaid = async (paymentIntent) => {
         try {
           await stripe.invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
           const paidInvoice = await stripe.invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.number) {
+            invoiceNumber = paidInvoice.number;
+            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
+          }
           if (paidInvoice.invoice_pdf) {
             const pdfUrl = new URL(paidInvoice.invoice_pdf);
             if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
@@ -93,7 +96,7 @@ const handleOrderPaid = async (paymentIntent) => {
           ]
         : [];
       const orderEmailData = {
-        orderId: order._id,
+        invoiceNumber: invoiceNumber,
         confirmToken: order.confirmToken,
         orderDate: formatDate(order.createdAt.toISOString()),
         shippingDetails: order.shippingDetails,
