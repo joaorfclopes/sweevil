@@ -16,7 +16,10 @@
     0 12px 32px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
   transition:
     background-color 0.2s,
     border-color 0.2s,
@@ -28,12 +31,6 @@
     bottom: 0;
     right: 0;
     margin: 1rem;
-  }
-  svg {
-    width: 30px;
-    padding: 2px;
-    height: 48px;
-    fill: $darkColor;
   }
   &.show {
     @include scaleIn;

@@ -4,10 +4,10 @@ import { getTax } from './taxRates.js';
 
 export const placedOrder = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
-    shippingAddress: { fullName, address, country, postalCode, city },
+    shippingDetails: { fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -199,7 +199,7 @@ export const placedOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  N.º de Encomenda: ${orderId}
+                                  N.º de Encomenda: ${invoiceNumber}
                                 </font>
                               </td>
                             </tr>

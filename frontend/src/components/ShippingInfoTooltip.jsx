@@ -1,4 +1,3 @@
-import InfoIcon from '@mui/icons-material/Info';
 import Popover from '@mui/material/Popover';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +18,7 @@ export default function ShippingInfoTooltip({ namespace }) {
         aria-label="Shipping info"
         type="button"
       >
-        <InfoIcon fontSize="small" />
+        ⓘ
       </button>
       <Popover
         open={Boolean(anchorEl)}

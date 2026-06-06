@@ -1,9 +1,14 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 export default function DireitoArrependimentoScreen() {
   const { t } = useTranslation('withdrawal');
+  const navigate = useNavigate();
   return (
     <section className="legal-screen custom-font">
+      <button className="back-button" onClick={() => navigate(-1)}>
+        &#8592;
+      </button>
       <h1>{t('title')}</h1>
       <span className="last-updated">{t('lastUpdated')}</span>
 

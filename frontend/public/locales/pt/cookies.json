@@ -57,7 +57,7 @@
   "s3_li1_desc": "Armazena o estado de login do lado do cliente.",
   "s3_li2": "cartItems",
   "s3_li2_desc": "Guarda os artigos do carrinho de compras entre visitas.",
-  "s3_li3": "shippingAddress",
+  "s3_li3": "shippingDetails",
   "s3_li3_desc": "Memoriza a sua morada de envio durante a finalização da compra.",
   "s3_li4": "trackingConsent",
   "s3_li4_desc": "Regista a sua escolha de consentimento de cookies.",

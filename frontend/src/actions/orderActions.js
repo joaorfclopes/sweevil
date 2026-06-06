@@ -66,29 +66,29 @@ export const detailsOrder = (token) => async (dispatch) => {
   }
 };
 
-export const payOrder = (order, paymentResult) => async (dispatch) => {
-  dispatch({ type: ORDER_PAY_REQUEST, payload: { order, paymentResult } });
+export const payOrder = (token, paymentResult) => async (dispatch) => {
+  dispatch({ type: ORDER_PAY_REQUEST });
   try {
-    const { data } = await Axios.put(`/api/orders/${order._id}/pay`, paymentResult);
+    const { data } = await Axios.put(`/api/orders/token/${token}/pay`, paymentResult);
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
-    console.log(`[order] Paid — ${order._id}`);
+    console.log(`[order] Paid — token ${token}`);
   } catch (error) {
     if (error.response?.data?.message === 'Order already paid') {
-      const { data } = await Axios.get(`/api/orders/token/${paymentResult.confirmToken}`);
+      const { data } = await Axios.get(`/api/orders/token/${token}`);
       dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
-      console.log(`[order] Paid (already confirmed) — ${order._id}`);
+      console.log(`[order] Paid (already confirmed) — token ${token}`);
     } else {
       const msg = translateBackendMessage(error.response?.data?.message) || error.message;
-      console.warn(`[order] Pay failed — ${order._id} — ${msg}`);
+      console.warn(`[order] Pay failed — token ${token} — ${msg}`);
       dispatch({ type: ORDER_PAY_FAIL, payload: msg });
     }
   }
 };
 
-export const sendOrder = (orderId) => async (dispatch) => {
+export const sendOrder = (orderId, carrier, trackingNumber) => async (dispatch) => {
   dispatch({ type: ORDER_SEND_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.put(`/api/orders/${orderId}/send`, {});
+    const { data } = await Axios.put(`/api/orders/${orderId}/send`, { carrier, trackingNumber });
     dispatch({ type: ORDER_SEND_SUCCESS, payload: data });
     await Axios.post('/api/email/sentOrder', { order: data.order });
   } catch (error) {
@@ -114,15 +114,15 @@ export const deliverOrder = (orderId) => async (dispatch) => {
 };
 
 export const cancelOrder =
-  (orderId, token, refundChoice = null) =>
+  (token, refundChoice = null) =>
   async (dispatch) => {
-    dispatch({ type: ORDER_CANCEL_REQUEST, payload: orderId });
+    dispatch({ type: ORDER_CANCEL_REQUEST });
     try {
-      const body = token ? { confirmToken: token } : {};
+      const body = {};
       if (refundChoice) body.refundChoice = refundChoice;
-      const { data } = await Axios.put(`/api/orders/${orderId}/cancel`, body);
+      const { data } = await Axios.put(`/api/orders/token/${token}/cancel`, body);
       dispatch({ type: ORDER_CANCEL_SUCCESS, payload: data });
-      console.log(`[order] Cancelled — ${orderId}`);
+      console.log(`[order] Cancelled — token ${token}`);
     } catch (error) {
       dispatch({
         type: ORDER_CANCEL_FAIL,

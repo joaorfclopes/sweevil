@@ -2,10 +2,10 @@ import itemsDetails from './itemsDetails.js';
 
 export const placedOrderAdmin = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
-    shippingAddress: { email, phoneNumber, fullName, address, country, postalCode, city },
+    shippingDetails: { email, phoneNumber, fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -194,7 +194,7 @@ export const placedOrderAdmin = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  Order No.: ${invoiceNumber}
                                 </font>
                               </td>
                             </tr>

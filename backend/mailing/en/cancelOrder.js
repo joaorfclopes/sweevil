@@ -4,13 +4,13 @@ import { getTax } from '../taxRates.js';
 
 export const cancelOrder = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
     isPaid,
     cancelledByAdmin,
     refundIssued,
-    shippingAddress: { fullName, country },
+    shippingDetails: { fullName, country },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -199,7 +199,7 @@ export const cancelOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  Order No.: ${invoiceNumber}
                                 </font>
                               </td>
                             </tr>

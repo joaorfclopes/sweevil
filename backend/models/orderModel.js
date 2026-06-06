@@ -17,7 +17,7 @@ const orderSchema = new mongoose.Schema(
         slug: { type: String },
       },
     ],
-    shippingAddress: {
+    shippingDetails: {
       email: { type: String, required: true },
       phoneNumber: { type: String, required: true },
       fullName: { type: String, required: true },
@@ -26,7 +26,22 @@ const orderSchema = new mongoose.Schema(
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
     },
+    billingDetails: {
+      type: new mongoose.Schema(
+        {
+          fullName: { type: String },
+          address: { type: String },
+          city: { type: String },
+          postalCode: { type: String },
+          country: { type: String },
+        },
+        { _id: false }
+      ),
+      required: true,
+    },
+    vatNif: { type: String },
     stripeInvoiceId: { type: String },
+    invoiceNumber: { type: String },
     lang: { type: String },
     paymentResult: {
       id: String,
@@ -34,6 +49,8 @@ const orderSchema = new mongoose.Schema(
       update_time: String,
       email_address: String,
       invoiceId: String,
+      paymentMethod: String,
+      paymentMethodLast: String,
     },
     itemsQty: { type: Number, required: true },
     itemsPrice: { type: Number, required: true },
@@ -43,6 +60,8 @@ const orderSchema = new mongoose.Schema(
     confirmationEmailSent: { type: Boolean, default: false },
     paidAt: { type: Date },
     isSent: { type: Boolean, default: false },
+    carrier: { type: String },
+    trackingNumber: { type: String },
     sentAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },

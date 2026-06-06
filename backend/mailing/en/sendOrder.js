@@ -4,10 +4,13 @@ import { getTax } from '../taxRates.js';
 
 export const sendOrder = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
-    shippingAddress: { fullName, address, country, postalCode, city },
+    trackingUrl,
+    carrier,
+    trackingNumber,
+    shippingDetails: { fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -196,7 +199,7 @@ export const sendOrder = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  Order No.: ${invoiceNumber}
                                 </font>
                               </td>
                             </tr>
@@ -289,6 +292,66 @@ export const sendOrder = ({
                                 </table>
                               </td>
                             </tr>
+                            ${(() => {
+                              if (!trackingUrl) return '';
+                              return `
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="font-family: 'FuturaPTBook-Reg', Futura, Arial, sans-serif; color: #2d2d2d; font-size: 13px; line-height: 20px; letter-spacing: 0.6px;">
+                                <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
+                                  To track your order, click the button below.
+                                </font>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <table
+                                  width="264"
+                                  align="center"
+                                  cellpadding="0"
+                                  cellspacing="0"
+                                  border="0"
+                                  style="border-collapse: collapse; border-spacing: 0; font-size: 0;"
+                                >
+                                  <tbody>
+                                    <tr>
+                                      <td
+                                        align="center"
+                                        width="264"
+                                        style="background-color: #2d2d2d; padding-top: 10px; padding-bottom: 10px;"
+                                      >
+                                        <a
+                                          href="${trackingUrl}"
+                                          style="color: #ffffff; font-family: 'FuturaPTHeavy-Reg', Futura, Arial, sans-serif; font-size: 12px; line-height: 20px; font-weight: 700; text-align: center; text-decoration: none; text-transform: uppercase; letter-spacing: 0.6px;"
+                                          rel="noreferrer"
+                                          target="_blank"
+                                        >
+                                          <font face="'FuturaPTHeavy-Reg', Futura, Arial, sans-serif">
+                                            Track your order
+                                          </font>
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="font-family: 'FuturaPTBook-Reg', Futura, Arial, sans-serif; color: #767676; font-size: 12px; line-height: 20px; letter-spacing: 0.6px;">
+                                <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
+                                  If the button does not work, you can go to the <strong>${carrier}</strong> website and search for tracking number: <strong>${trackingNumber}</strong>
+                                </font>
+                              </td>
+                            </tr>`;
+                            })()}
                             <tr>
                               <td
                                 height="24"

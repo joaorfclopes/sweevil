@@ -98,7 +98,7 @@ export default function OrdersTable() {
     Swal.fire({
       title: t('admin.refundTitle', {
         price: order.totalPrice?.toFixed(2),
-        name: formatName(order.shippingAddress.fullName),
+        name: formatName(order.shippingDetails.fullName),
       }),
       text: t('admin.refundText'),
       showCancelButton: true,
@@ -169,7 +169,7 @@ export default function OrdersTable() {
       t('admin.colUpdated'),
     ];
     const rows = filtered.map((o) => [
-      formatName(o.shippingAddress?.fullName),
+      formatName(o.shippingDetails?.fullName),
       formatDateDay(o.createdAt),
       o.totalPrice?.toFixed(2),
       o.isPaid ? formatDateDay(o.paidAt) : t('common.no'),
@@ -285,7 +285,7 @@ export default function OrdersTable() {
                             />
                           </TableCell>
                           {[
-                            { id: 'shippingAddress.fullName', label: t('admin.colName') },
+                            { id: 'shippingDetails.fullName', label: t('admin.colName') },
                             { id: 'createdAt', label: t('admin.colDate') },
                             { id: 'totalPrice', label: t('admin.colTotal') },
                             { id: 'isPaid', label: t('status.PAID') },
@@ -340,7 +340,7 @@ export default function OrdersTable() {
                                 />
                               </TableCell>
                               <TableCell align="center">
-                                {formatName(order.shippingAddress.fullName)}
+                                {formatName(order.shippingDetails.fullName)}
                               </TableCell>
                               <TableCell align="center">{formatDateDay(order.createdAt)}</TableCell>
                               <TableCell align="center">{order.totalPrice?.toFixed(2)}€</TableCell>

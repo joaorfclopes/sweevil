@@ -27,6 +27,15 @@ const handleOrderPaid = async (paymentIntent) => {
   const order = await Order.findById(orderId);
   if (!order || order.isPaid) return;
 
+  const stripe = getStripe();
+  const expandedPi = await stripe.paymentIntents.retrieve(paymentIntent.id, {
+    expand: ['payment_method'],
+  });
+  const pm = expandedPi.payment_method;
+  const pmType = pm?.type || paymentIntent.payment_method_types?.[0] || '';
+  const pmLast =
+    pmType === 'mb_way' ? pm?.billing_details?.phone?.slice(-3) || '' : pm?.card?.last4 || '';
+
   order.isPaid = true;
   order.paidAt = Date.now();
   order.status = 'PAID';
@@ -35,6 +44,8 @@ const handleOrderPaid = async (paymentIntent) => {
     status: paymentIntent.status,
     update_time: new Date(paymentIntent.created * 1000).toISOString(),
     email_address: paymentIntent.receipt_email || '',
+    paymentMethod: pmType,
+    paymentMethodLast: pmLast,
   };
 
   for (const item of order.orderItems) {
@@ -56,7 +67,10 @@ const handleOrderPaid = async (paymentIntent) => {
         try {
           await stripe.invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
           const paidInvoice = await stripe.invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.number) {
+            invoiceNumber = paidInvoice.number;
+            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
+          }
           if (paidInvoice.invoice_pdf) {
             const pdfUrl = new URL(paidInvoice.invoice_pdf);
             if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
@@ -82,10 +96,10 @@ const handleOrderPaid = async (paymentIntent) => {
           ]
         : [];
       const orderEmailData = {
-        orderId: order._id,
+        invoiceNumber: invoiceNumber,
         confirmToken: order.confirmToken,
         orderDate: formatDate(order.createdAt.toISOString()),
-        shippingAddress: order.shippingAddress,
+        shippingDetails: order.shippingDetails,
         orderItems: order.orderItems,
         itemsPrice: order.itemsPrice,
         shippingPrice: order.shippingPrice,
@@ -93,7 +107,7 @@ const handleOrderPaid = async (paymentIntent) => {
       };
       await sendMail({
         from,
-        to: order.shippingAddress.email,
+        to: order.shippingDetails.email,
         subject: isPtWebhook
           ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
           : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
@@ -106,7 +120,7 @@ const handleOrderPaid = async (paymentIntent) => {
       await sendMail({
         from,
         to: process.env.VITE_SENDER_EMAIL_ADDRESS,
-        subject: `Order paid — ${order.shippingAddress.fullName}`,
+        subject: `Order paid — ${order.shippingDetails.fullName}`,
         html: placedOrderAdmin({ order: orderEmailData }),
         attachments: invoiceAttachment,
       });
@@ -178,7 +192,7 @@ const handlePaymentFailed = async (paymentIntent) => {
   let subject, body;
   if (paymentIntent.metadata?.orderId) {
     const order = await Order.findById(paymentIntent.metadata.orderId);
-    const name = order?.shippingAddress?.fullName || paymentIntent.metadata.orderId;
+    const name = order?.shippingDetails?.fullName || paymentIntent.metadata.orderId;
     subject = `Payment failed — Order by ${name}`;
     body = `<p>Payment failed for order by <strong>${name}</strong>.</p><p>Order ID: ${paymentIntent.metadata.orderId}</p><p>Reason: ${reason}</p>`;
   } else if (paymentIntent.metadata?.bookingId) {

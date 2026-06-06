@@ -5,7 +5,7 @@ import Axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   cancelOrder,
   deleteOrder,
@@ -18,7 +18,7 @@ import {
 } from '../actions/orderActions';
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
-import PlaceHolder from '../components/Placeholder';
+import OrderItemsList from '../components/OrderItemsList';
 import ShippingInfoTooltip from '../components/ShippingInfoTooltip';
 import { getTax } from '../config/taxRates';
 import {
@@ -31,39 +31,7 @@ import {
   ORDER_REFUND_RESET,
   ORDER_SEND_RESET,
 } from '../constants/orderConstants';
-import { useLazyLoad } from '../hooks/useLazyLoad';
 import Swal from '../utils/swal';
-
-function OrderItemImage({ item }) {
-  const [containerRef, inView] = useLazyLoad('300px');
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    if (inView && imgRef.current?.complete) {
-      document.getElementById(`${item.product}-order-img`)?.classList.add('show');
-    }
-  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <div ref={containerRef} className="item-image">
-      <PlaceHolder height="100%" hide={inView}>
-        <div id={`${item.product}-order-img`} className="item-image-inner">
-          <Link to={`/shop/product/${item.product}`}>
-            <img
-              ref={imgRef}
-              className="small"
-              src={inView ? item.image : undefined}
-              alt={item.name}
-              onLoad={() =>
-                document.getElementById(`${item.product}-order-img`)?.classList.add('show')
-              }
-            />
-          </Link>
-        </div>
-      </PlaceHolder>
-    </div>
-  );
-}
 
 function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
   const { t } = useTranslation();
@@ -87,7 +55,7 @@ function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
       onPayingChange?.(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       onPayingChange?.(false);
-      dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
+      dispatch(payOrder(token, { paymentIntentId: paymentIntent.id }));
     }
   };
 
@@ -201,9 +169,7 @@ export default function OrderScreen(props) {
       const { data: publishableKey } = await Axios.get('/api/config/stripe');
       if (cancelled) return;
       setStripePromise(loadStripe(publishableKey));
-      const { data } = await Axios.post(`/api/orders/${order._id}/create-payment-intent`, {
-        confirmToken: token,
-      });
+      const { data } = await Axios.post(`/api/orders/token/${token}/create-payment-intent`, {});
       if (cancelled) return;
       setClientSecret(data.clientSecret);
     };
@@ -212,7 +178,7 @@ export default function OrderScreen(props) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order?._id]);
+  }, [token, !!order]);
 
   useEffect(() => {
     if (handledRedirect.current) return;
@@ -220,21 +186,59 @@ export default function OrderScreen(props) {
     const redirectStatus = searchParams.get('redirect_status');
     if (paymentIntentId && redirectStatus === 'succeeded' && order && !order.isPaid) {
       handledRedirect.current = true;
-      dispatch(payOrder(order, { paymentIntentId, confirmToken: token }));
+      dispatch(payOrder(token, { paymentIntentId }));
     }
   }, [searchParams, order, dispatch]);
 
-  const sendHandler = () => {
-    Swal.fire({
-      title: t('order.sendTitle'),
+  const sendHandler = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: t('order.carrierModalTitle'),
+      html: `
+        <div style="text-align:left">
+          <div style="margin-bottom:1rem">
+            ${['CTT', 'DPD', 'DHL', 'GLS']
+              .map(
+                (c, i) => `
+              <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;cursor:pointer">
+                <input type="radio" name="swal-carrier" value="${c}" ${i === 0 ? 'checked' : ''}> ${c}
+              </label>`
+              )
+              .join('')}
+          </div>
+          <input id="swal-tracking" type="text" placeholder="${t('order.trackingNumberPlaceholder')}"
+                 class="swal2-input" style="width:100%;margin:0;box-sizing:border-box">
+          <p id="swal-tracking-warning" style="color:#b45309;font-size:0.82rem;margin-top:0.5rem">
+            ${t('order.trackingWarning')}
+          </p>
+        </div>
+      `,
       showCancelButton: true,
-      confirmButtonText: t('common.yes'),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(sendOrder(order._id));
-        Swal.fire(t('order.sendSuccess'), '', 'success');
-      }
+      confirmButtonText: t('order.confirmSend'),
+      didOpen: () => {
+        const input = document.getElementById('swal-tracking');
+        const warning = document.getElementById('swal-tracking-warning');
+        input.addEventListener('input', () => {
+          warning.style.display = input.value ? 'none' : 'block';
+        });
+      },
+      preConfirm: () => ({
+        carrier: document.querySelector('input[name="swal-carrier"]:checked')?.value || 'CTT',
+        trackingNumber: document.getElementById('swal-tracking').value,
+      }),
     });
+
+    if (!formValues) return;
+
+    if (!formValues.trackingNumber) {
+      const { isConfirmed } = await Swal.fire({
+        title: t('order.sendTitle'),
+        showCancelButton: true,
+        confirmButtonText: t('common.yes'),
+      });
+      if (!isConfirmed) return;
+    }
+
+    dispatch(sendOrder(order._id, formValues.carrier, formValues.trackingNumber));
   };
 
   const deliverHandler = () => {
@@ -265,9 +269,9 @@ export default function OrderScreen(props) {
         cancelButtonText: t('order.keepOrder'),
       }).then((result) => {
         if (result.isConfirmed) {
-          dispatch(cancelOrder(order._id, token, 'yes'));
+          dispatch(cancelOrder(token, 'yes'));
         } else if (result.isDenied) {
-          dispatch(cancelOrder(order._id, token, 'no'));
+          dispatch(cancelOrder(token, 'no'));
         }
       });
     } else {
@@ -279,7 +283,7 @@ export default function OrderScreen(props) {
         denyButtonText: t('common.yes'),
       }).then((result) => {
         if (result.isDenied) {
-          dispatch(cancelOrder(order._id, token));
+          dispatch(cancelOrder(token));
           Swal.fire(t('order.cancelledSwal'), '', 'error');
         }
       });
@@ -300,7 +304,7 @@ export default function OrderScreen(props) {
 
   const refundHandler = () => {
     Swal.fire({
-      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${order.shippingAddress?.fullName}?`,
+      title: `Reembolso €${order.totalPrice?.toFixed(2)} para ${order.shippingDetails?.fullName}?`,
       text: t('order.refundText'),
       showCancelButton: true,
       confirmButtonText: t('order.refundBtn'),
@@ -309,6 +313,24 @@ export default function OrderScreen(props) {
       if (result.isConfirmed) dispatch(refundOrder(order._id));
     });
   };
+
+  const adminTrackingUrl = (() => {
+    if (!order?.trackingNumber) return null;
+    const { carrier, trackingNumber } = order;
+    const postalCode = order.shippingDetails?.postalCode;
+    switch (carrier) {
+      case 'CTT':
+        return `https://appserver.ctt.pt/CustomerArea/PublicArea_Detail?ObjectCodeInput=${trackingNumber}&SearchInput=${trackingNumber}&IsFromPublicArea=true`;
+      case 'DPD':
+        return `https://tracking.dpd.pt/track-and-trace?reference=${trackingNumber}`;
+      case 'DHL':
+        return `https://www.dhl.com/pt-en/home/tracking.html?tracking-id=${trackingNumber}&submit=1`;
+      case 'GLS':
+        return `https://mygls.gls-portugal.pt/e/${trackingNumber}/${postalCode}/en`;
+      default:
+        return null;
+    }
+  })();
 
   const dismissRefundHandler = () => {
     Swal.fire({
@@ -324,6 +346,9 @@ export default function OrderScreen(props) {
 
   return (
     <section className="order cards-section">
+      <button className="back-button" onClick={() => navigate(-1)}>
+        &#8592;
+      </button>
       {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
@@ -376,48 +401,79 @@ export default function OrderScreen(props) {
                   </div>
                 )}
                 <div className="card">
-                  <h3>{t('order.shippingAddress')}</h3>
-                  <p>{order.shippingAddress.fullName}</p>
-                  <p>{order.shippingAddress.address}</p>
-                  <p>{order.shippingAddress.city}</p>
-                  <p>{order.shippingAddress.postalCode}</p>
-                  <p>{order.shippingAddress.country}</p>
-                </div>
-                <div className="card">
-                  <h3>{t('order.contactInfo')}</h3>
-                  <p>{order.shippingAddress.email}</p>
+                  <h3>{t('order.shippingDetails')}</h3>
                   <p>
-                    {order.shippingAddress.phoneNumber?.startsWith('+')
-                      ? order.shippingAddress.phoneNumber
-                      : `+${order.shippingAddress.phoneNumber}`}
+                    {t('shipping.fullName')}: {order.shippingDetails.fullName}
+                  </p>
+                  <p>
+                    {t('shipping.address')}: {order.shippingDetails.address}
+                  </p>
+                  <p>
+                    {t('shipping.city')}: {order.shippingDetails.city}
+                  </p>
+                  <p>
+                    {t('shipping.postalCode')}: {order.shippingDetails.postalCode}
+                  </p>
+                  <p>
+                    {t('shipping.country')}: {order.shippingDetails.country}
                   </p>
                 </div>
                 <div className="card">
+                  <h3>{t('order.billingAddress')}</h3>
+                  {(() => {
+                    const billing = order.billingDetails || order.shippingDetails;
+                    return (
+                      <>
+                        <p>
+                          {t('shipping.fullName')}: {billing.fullName}
+                        </p>
+                        <p>
+                          {t('shipping.address')}: {billing.address}
+                        </p>
+                        <p>
+                          {t('shipping.city')}: {billing.city}
+                        </p>
+                        <p>
+                          {t('shipping.postalCode')}: {billing.postalCode}
+                        </p>
+                        <p>
+                          {t('shipping.country')}: {billing.country}
+                        </p>
+                      </>
+                    );
+                  })()}
+                  {order.vatNif && (
+                    <p>
+                      {t('order.vatNif')}: {order.vatNif}
+                    </p>
+                  )}
+                </div>
+                <div className="card">
+                  <h3>{t('order.contactInfo')}</h3>
+                  <p>
+                    {t('shipping.email')}: {order.shippingDetails.email}
+                  </p>
+                  <p>
+                    {t('shipping.phone')}:{' '}
+                    {order.shippingDetails.phoneNumber?.startsWith('+')
+                      ? order.shippingDetails.phoneNumber
+                      : `+${order.shippingDetails.phoneNumber}`}
+                  </p>
+                </div>
+                {order.isPaid && (
+                  <div className="card">
+                    <h3>{t('order.paymentMethod')}</h3>
+                    <p>
+                      {t('order.paymentMethodLabel')}:{' '}
+                      {order.paymentResult?.paymentMethod === 'mb_way'
+                        ? `MB WAY${order.paymentResult?.paymentMethodLast ? ` ···${order.paymentResult.paymentMethodLast}` : ''}`
+                        : `${t('order.paymentMethodCard')}${order.paymentResult?.paymentMethodLast ? ` ····${order.paymentResult.paymentMethodLast}` : ''}`}
+                    </p>
+                  </div>
+                )}
+                <div className="card">
                   <h3>{t('order.items')}</h3>
-                  <ul className="cart-items">
-                    {order.orderItems.map((item, index) => (
-                      <li key={item.product}>
-                        <OrderItemImage item={item} />
-                        <div className="item-content">
-                          <div className="item-name">
-                            <p>{item.name}</p>
-                            {item.size && (
-                              <p className="item-size">
-                                {t('order.size')}: {item.size}
-                              </p>
-                            )}
-                            <p className="item-qty">
-                              {t('order.quantity')}: {item.qty}
-                            </p>
-                          </div>
-                          <div className="item-price">
-                            <p>{item.price && item.price.toFixed(2)}€</p>
-                          </div>
-                        </div>
-                        {order.orderItems[index + 1] && <hr />}
-                      </li>
-                    ))}
-                  </ul>
+                  <OrderItemsList items={order.orderItems} namespace="order" idPrefix="order" />
                 </div>
                 <div className="card total-amount">
                   <p>
@@ -425,7 +481,7 @@ export default function OrderScreen(props) {
                     {order.itemsPrice && order.itemsPrice.toFixed(2)}€
                   </p>
                   {(() => {
-                    const tax = getTax(order.shippingAddress.country, order.itemsPrice);
+                    const tax = getTax(order.shippingDetails.country, order.itemsPrice);
                     return tax ? (
                       <p>
                         {tax.label} ({tax.display}) : {tax.amount.toFixed(2)}€
@@ -475,6 +531,14 @@ export default function OrderScreen(props) {
                         {t('order.sendBtn')}
                       </button>
                     )}
+                  {userInfo?.isAdmin && order.isSent && adminTrackingUrl && (
+                    <button
+                      className="secondary"
+                      onClick={() => window.open(adminTrackingUrl, '_blank', 'noreferrer')}
+                    >
+                      {t('order.trackParcelBtn')}
+                    </button>
+                  )}
                   {order.isSent && !order.isDelivered && (
                     <button className="primary" onClick={deliverHandler}>
                       {t('order.deliverBtn')}

@@ -57,7 +57,7 @@
   "s3_li1_desc": "Stores your login state client-side.",
   "s3_li2": "cartItems",
   "s3_li2_desc": "Saves items in your shopping cart between visits.",
-  "s3_li3": "shippingAddress",
+  "s3_li3": "shippingDetails",
   "s3_li3_desc": "Remembers your shipping address during checkout.",
   "s3_li4": "trackingConsent",
   "s3_li4_desc": "Records your cookie consent choice.",

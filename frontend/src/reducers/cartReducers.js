@@ -2,7 +2,8 @@ import {
   CART_ADD_ITEM,
   CART_EMPTY,
   CART_REMOVE_ITEM,
-  CART_SAVE_SHIPPING_ADDRESS,
+  CART_SAVE_BILLING_INFO,
+  CART_SAVE_SHIPPING_DETAILS,
 } from '../constants/cartConstants';
 
 export const cartReducer = (state = { cartItems: [] }, action) => {
@@ -31,8 +32,14 @@ export const cartReducer = (state = { cartItems: [] }, action) => {
         ...state,
         cartItems: [],
       };
-    case CART_SAVE_SHIPPING_ADDRESS:
-      return { ...state, shippingAddress: action.payload };
+    case CART_SAVE_SHIPPING_DETAILS:
+      return { ...state, shippingDetails: action.payload };
+    case CART_SAVE_BILLING_INFO:
+      return {
+        ...state,
+        billingDetails: action.payload.billingDetails,
+        vatNif: action.payload.vatNif,
+      };
     default:
       return state;
   }

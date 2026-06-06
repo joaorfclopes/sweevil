@@ -5,7 +5,7 @@
     @include margin-center;
   }
   .order-container {
-    padding-top: 130px;
+    padding-top: 90px;
     min-height: 90vh;
     @include md {
       padding-top: 150px;
@@ -32,6 +32,10 @@
     .cart-items {
       li {
         overflow: hidden;
+        margin-bottom: 1rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
         .item-content {
           min-height: unset;
         }

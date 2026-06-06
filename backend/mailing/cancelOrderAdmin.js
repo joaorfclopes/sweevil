@@ -3,13 +3,13 @@ import itemsDetails from './itemsDetails.js';
 
 export const cancelOrderAdmin = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
     isPaid,
     cancelledByAdmin,
     refundIssued,
-    shippingAddress: { fullName, email, phoneNumber },
+    shippingDetails: { fullName, email, phoneNumber },
     orderItems,
     itemsPrice,
     shippingPrice,
@@ -200,7 +200,7 @@ export const cancelOrderAdmin = ({
                                 <font
                                   face="'FuturaPTBook-Reg', Futura, Arial, sans-serif"
                                 >
-                                  Order No.: ${orderId}
+                                  Order No.: ${invoiceNumber}
                                 </font>
                               </td>
                             </tr>

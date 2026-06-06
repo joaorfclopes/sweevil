@@ -11,6 +11,7 @@ import { sendOrder as sendOrderEn } from '../mailing/en/sendOrder.js';
 import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
 import { sendOrder as sendOrderPt } from '../mailing/sendOrder.js';
+import { buildTrackingUrl } from '../mailing/trackingUrl.js';
 import Order from '../models/orderModel.js';
 import { formatDate, isAdmin, isAuth } from '../utils.js';
 
@@ -108,7 +109,7 @@ emailRouter.post(
     const isPt = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
-      to: order.shippingAddress.email,
+      to: order.shippingDetails.email,
       subject: isPt
         ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
         : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
@@ -117,12 +118,12 @@ emailRouter.post(
           orderId: order._id,
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
-          shippingAddress: {
-            fullName: order.shippingAddress.fullName,
-            address: order.shippingAddress.address,
-            country: order.shippingAddress.country,
-            postalCode: order.shippingAddress.postalCode,
-            city: order.shippingAddress.city,
+          shippingDetails: {
+            fullName: order.shippingDetails.fullName,
+            address: order.shippingDetails.address,
+            country: order.shippingDetails.country,
+            postalCode: order.shippingDetails.postalCode,
+            city: order.shippingDetails.city,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
@@ -179,14 +180,14 @@ emailRouter.post(
           orderId: order._id,
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
-          shippingAddress: {
-            email: order.shippingAddress.email,
-            phoneNumber: order.shippingAddress.phoneNumber,
-            fullName: order.shippingAddress.fullName,
-            address: order.shippingAddress.address,
-            country: order.shippingAddress.country,
-            postalCode: order.shippingAddress.postalCode,
-            city: order.shippingAddress.city,
+          shippingDetails: {
+            email: order.shippingDetails.email,
+            phoneNumber: order.shippingDetails.phoneNumber,
+            fullName: order.shippingDetails.fullName,
+            address: order.shippingDetails.address,
+            country: order.shippingDetails.country,
+            postalCode: order.shippingDetails.postalCode,
+            city: order.shippingDetails.city,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
@@ -231,21 +232,29 @@ emailRouter.post(
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
     const isPtSent = order.lang === 'pt';
+    const trackingUrl = buildTrackingUrl(
+      order.carrier,
+      order.trackingNumber,
+      order.shippingDetails.postalCode
+    );
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
-      to: order.shippingAddress.email,
+      to: order.shippingDetails.email,
       subject: isPtSent ? 'A sua encomenda está a caminho!' : 'Your Order Is on Its Way!',
       html: (isPtSent ? sendOrderPt : sendOrderEn)({
         order: {
-          orderId: order._id,
+          invoiceNumber: order.invoiceNumber ?? '-',
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
-          shippingAddress: {
-            fullName: order.shippingAddress.fullName,
-            address: order.shippingAddress.address,
-            country: order.shippingAddress.country,
-            postalCode: order.shippingAddress.postalCode,
-            city: order.shippingAddress.city,
+          trackingUrl,
+          carrier: order.carrier,
+          trackingNumber: order.trackingNumber,
+          shippingDetails: {
+            fullName: order.shippingDetails.fullName,
+            address: order.shippingDetails.address,
+            country: order.shippingDetails.country,
+            postalCode: order.shippingDetails.postalCode,
+            city: order.shippingDetails.city,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
@@ -292,19 +301,19 @@ emailRouter.post(
     const isPtDelivered = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
-      to: order.shippingAddress.email,
+      to: order.shippingDetails.email,
       subject: isPtDelivered ? 'Obrigado pela sua encomenda!' : 'Your Order Has Been Delivered!',
       html: (isPtDelivered ? deliveredOrderPt : deliveredOrderEn)({
         order: {
-          orderId: order._id,
+          invoiceNumber: order.invoiceNumber ?? '-',
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
-          shippingAddress: {
-            fullName: order.shippingAddress.fullName,
-            address: order.shippingAddress.address,
-            country: order.shippingAddress.country,
-            postalCode: order.shippingAddress.postalCode,
-            city: order.shippingAddress.city,
+          shippingDetails: {
+            fullName: order.shippingDetails.fullName,
+            address: order.shippingDetails.address,
+            country: order.shippingDetails.country,
+            postalCode: order.shippingDetails.postalCode,
+            city: order.shippingDetails.city,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
@@ -355,7 +364,7 @@ emailRouter.post(
     const isPtCancel = order.lang === 'pt';
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
-      to: order.shippingAddress.email,
+      to: order.shippingDetails.email,
       subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
       html: (isPtCancel ? cancelOrderPt : cancelOrderEn)({
         order: {
@@ -363,9 +372,9 @@ emailRouter.post(
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           isPaid: order.isPaid,
-          shippingAddress: {
-            fullName: order.shippingAddress.fullName,
-            country: order.shippingAddress.country,
+          shippingDetails: {
+            fullName: order.shippingDetails.fullName,
+            country: order.shippingDetails.country,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
@@ -422,10 +431,10 @@ emailRouter.post(
           orderId: order._id,
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
-          shippingAddress: {
-            fullName: order.shippingAddress.fullName,
-            email: order.shippingAddress.email,
-            phoneNumber: order.shippingAddress.phoneNumber,
+          shippingDetails: {
+            fullName: order.shippingDetails.fullName,
+            email: order.shippingDetails.email,
+            phoneNumber: order.shippingDetails.phoneNumber,
           },
           orderItems: order.orderItems,
           itemsPrice: order.itemsPrice,
