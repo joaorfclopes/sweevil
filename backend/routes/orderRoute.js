@@ -408,7 +408,12 @@ orderRouter.get(
     if (orderWithToken.confirmTokenExpiresAt && orderWithToken.confirmTokenExpiresAt < new Date()) {
       return res.status(403).json({ message: 'Order access expired' });
     }
-    const { confirmToken: _, confirmTokenExpiresAt: __, ...orderData } = orderWithToken.toObject();
+    const {
+      confirmToken: _,
+      confirmTokenExpiresAt: __,
+      _id: ___,
+      ...orderData
+    } = orderWithToken.toObject();
     res.json(orderData);
   })
 );
