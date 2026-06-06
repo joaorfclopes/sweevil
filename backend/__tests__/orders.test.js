@@ -234,3 +234,62 @@ describe('invoiceNumber persistence via findByIdAndUpdate', () => {
     expect(order.invoiceNumber).toBe('INV-0042');
   });
 });
+
+describe('Token-based client routes', () => {
+  it('POST /token/:token/create-payment-intent returns 404 for unknown token', async () => {
+    const res = await request(app)
+      .post('/api/orders/token/badtoken/create-payment-intent')
+      .send({});
+    expect(res.status).toBe(404);
+  });
+
+  it('PUT /token/:token/pay returns 404 for unknown token', async () => {
+    const res = await request(app)
+      .put('/api/orders/token/badtoken/pay')
+      .send({ paymentIntentId: 'pi_test' });
+    expect(res.status).toBe(404);
+  });
+
+  it('PUT /token/:token/cancel returns 404 for unknown token', async () => {
+    const res = await request(app).put('/api/orders/token/badtoken/cancel').send({});
+    expect(res.status).toBe(404);
+  });
+
+  it('PUT /token/:token/cancel cancels an unpaid order by token', async () => {
+    const order = await Order.create({
+      orderItems: [{ product: productId, qty: 1, name: 'P', image: 'i.jpg', price: 10 }],
+      shippingDetails: validShipping,
+      billingDetails: validShipping,
+      itemsQty: 1,
+      itemsPrice: 10,
+      shippingPrice: 5,
+      totalPrice: 15,
+      status: 'PENDING_PAYMENT',
+      confirmToken: 'validtoken456',
+      confirmTokenExpiresAt: new Date(Date.now() + 86400000),
+    });
+    const res = await request(app).put(`/api/orders/token/${order.confirmToken}/cancel`).send({});
+    expect(res.status).toBe(200);
+    const updated = await Order.findById(order._id);
+    expect(updated.status).toBe('CANCELED');
+  });
+
+  it('POST /token/:token/create-payment-intent returns 403 for expired token', async () => {
+    const order = await Order.create({
+      orderItems: [{ product: productId, qty: 1, name: 'P', image: 'i.jpg', price: 10 }],
+      shippingDetails: validShipping,
+      billingDetails: validShipping,
+      itemsQty: 1,
+      itemsPrice: 10,
+      shippingPrice: 5,
+      totalPrice: 15,
+      status: 'PENDING_PAYMENT',
+      confirmToken: 'expiredtoken123',
+      confirmTokenExpiresAt: new Date(Date.now() - 1000),
+    });
+    const res = await request(app)
+      .post(`/api/orders/token/${order.confirmToken}/create-payment-intent`)
+      .send({});
+    expect(res.status).toBe(403);
+  });
+});

@@ -488,14 +488,13 @@ orderRouter.get(
  *         description: Rate limit exceeded
  */
 orderRouter.post(
-  '/:id/create-payment-intent',
+  '/token/:token/create-payment-intent',
   paymentLimiter,
   expressAsyncHandler(async (req, res) => {
-    const { confirmToken } = req.body;
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).send({ message: 'Order not found' });
-    if (!validateToken(order, confirmToken)) {
-      return res.status(403).json({ message: 'Invalid token' });
+    const order = await Order.findOne({ confirmToken: req.params.token });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.confirmTokenExpiresAt && order.confirmTokenExpiresAt < new Date()) {
+      return res.status(403).json({ message: 'Order access expired' });
     }
     if (order.isPaid) {
       return res.status(400).json({ message: 'Order already paid' });
@@ -670,6 +669,140 @@ orderRouter.post(
  *         description: Rate limit exceeded
  */
 orderRouter.put(
+  '/token/:token/pay',
+  paymentLimiter,
+  expressAsyncHandler(async (req, res) => {
+    const { paymentIntentId } = req.body;
+    const order = await Order.findOne({ confirmToken: req.params.token });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.confirmTokenExpiresAt && order.confirmTokenExpiresAt < new Date()) {
+      return res.status(403).json({ message: 'Order access expired' });
+    }
+    if (order.isPaid) {
+      return res.status(400).json({ message: 'Order already paid' });
+    }
+    if (!paymentIntentId || typeof paymentIntentId !== 'string') {
+      return res.status(400).json({ message: 'paymentIntentId is required' });
+    }
+
+    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId, {
+      expand: ['payment_method'],
+    });
+    const pm = paymentIntent.payment_method;
+    const pmType = pm?.type || paymentIntent.payment_method_types?.[0] || '';
+    const pmLast =
+      pmType === 'mb_way' ? pm?.billing_details?.phone?.slice(-3) || '' : pm?.card?.last4 || '';
+    if (paymentIntent.status !== 'succeeded') {
+      return res.status(402).json({ message: `Payment not succeeded: ${paymentIntent.status}` });
+    }
+    if (Math.abs(paymentIntent.amount_received - Math.round(order.totalPrice * 100)) > 1) {
+      return res.status(402).json({ message: 'Payment amount does not match order total' });
+    }
+
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.status = 'PAID';
+    order.paymentResult = {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      update_time: new Date(paymentIntent.created * 1000).toISOString(),
+      email_address: paymentIntent.receipt_email || '',
+      invoiceId: order.stripeInvoiceId || null,
+      paymentMethod: pmType,
+      paymentMethodLast: pmLast,
+    };
+
+    for (const item of order.orderItems) {
+      const field = item.isClothing
+        ? `countInStock.${item.size.toLowerCase()}`
+        : 'countInStock.stock';
+      await Product.findByIdAndUpdate(item.product, { $inc: { [field]: -item.qty } });
+    }
+
+    const updatedOrder = await order.save();
+
+    if (!updatedOrder.confirmationEmailSent) {
+      let invoicePdfBuffer = null;
+      let invoiceNumber = 'invoice';
+      if (order.stripeInvoiceId) {
+        try {
+          await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
+          const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
+          if (paidInvoice.number) {
+            invoiceNumber = paidInvoice.number;
+            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
+          }
+          if (paidInvoice.invoice_pdf) {
+            const pdfUrl = new URL(paidInvoice.invoice_pdf);
+            if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {
+              throw new Error('Unexpected invoice_pdf origin');
+            }
+            const pdfRes = await fetch(pdfUrl.toString());
+            invoicePdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+          }
+        } catch (e) {
+          console.error('[order] Failed to process invoice:', e.message);
+        }
+      }
+      const from = `${process.env.BRAND_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`;
+      const isPtPay = updatedOrder.lang === 'pt';
+      const invoiceAttachment = invoicePdfBuffer
+        ? [
+            {
+              filename: `${invoiceNumber}.pdf`,
+              content: invoicePdfBuffer,
+              contentType: 'application/pdf',
+            },
+          ]
+        : [];
+      const orderEmailData = {
+        invoiceNumber: invoiceNumber,
+        confirmToken: updatedOrder.confirmToken,
+        orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+        shippingDetails: updatedOrder.shippingDetails,
+        orderItems: updatedOrder.orderItems,
+        itemsPrice: updatedOrder.itemsPrice,
+        shippingPrice: updatedOrder.shippingPrice,
+        totalPrice: updatedOrder.totalPrice,
+      };
+      await sendMail({
+        from,
+        to: order.shippingDetails.email,
+        subject: isPtPay
+          ? `Fez uma nova encomenda em ${process.env.BRAND_NAME}!`
+          : `Thank You for Your Order at ${process.env.BRAND_NAME}!`,
+        html: (isPtPay ? placedOrderPt : placedOrderEn)({
+          order: orderEmailData,
+          hasInvoice: !!invoicePdfBuffer,
+        }),
+        attachments: invoiceAttachment,
+      });
+      await sendMail({
+        from,
+        to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+        subject: `Order paid — ${updatedOrder.shippingDetails.fullName}`,
+        html: placedOrderAdmin({ order: orderEmailData }),
+        attachments: invoiceAttachment,
+      });
+      await Order.findByIdAndUpdate(updatedOrder._id, { confirmationEmailSent: true });
+    }
+    Sentry.metrics.count('order.completed', 1);
+    Sentry.metrics.gauge('order.amount', updatedOrder.totalPrice);
+    console.log(
+      `[order] Order ${updatedOrder._id} paid — €${updatedOrder.totalPrice} for ${updatedOrder.shippingDetails.email}`
+    );
+
+    const {
+      _id: _oid,
+      confirmToken: _ct,
+      confirmTokenExpiresAt: _cte,
+      ...paidOrderData
+    } = updatedOrder.toObject();
+    res.send({ message: 'Order paid', order: paidOrderData });
+  })
+);
+
+orderRouter.put(
   '/:id/pay',
   paymentLimiter,
   expressAsyncHandler(async (req, res) => {
@@ -829,6 +962,91 @@ orderRouter.put(
  *       404:
  *         description: Order not found
  */
+orderRouter.put(
+  '/token/:token/cancel',
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findOne({ confirmToken: req.params.token });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.confirmTokenExpiresAt && order.confirmTokenExpiresAt < new Date()) {
+      return res.status(403).json({ message: 'Order access expired' });
+    }
+
+    if (order.isPaid) {
+      for (const item of order.orderItems) {
+        const field = item.isClothing
+          ? `countInStock.${item.size.toLowerCase()}`
+          : 'countInStock.stock';
+        await Product.findByIdAndUpdate(item.product, { $inc: { [field]: item.qty } });
+      }
+      order.status = 'CANCELED_PENDING_REFUND';
+    } else {
+      order.status = 'CANCELED';
+    }
+    const updatedOrder = await order.save();
+    console.log(
+      `[order] Order ${updatedOrder._id} cancelled — isPaid: ${updatedOrder.isPaid}, by: customer (token)`
+    );
+
+    const isPtCancel = updatedOrder.lang === 'pt';
+    sendMail({
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: updatedOrder.shippingDetails.email,
+      subject: isPtCancel ? 'Encomenda Cancelada!' : 'Order Cancelled!',
+      html: (isPtCancel ? cancelOrderEmailPt : cancelOrderEmailEn)({
+        order: {
+          invoiceNumber: updatedOrder.invoiceNumber ?? '-',
+          confirmToken: updatedOrder.confirmToken,
+          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+          isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: false,
+          refundIssued: updatedOrder.isRefunded,
+          shippingDetails: {
+            fullName: updatedOrder.shippingDetails.fullName,
+            country: updatedOrder.shippingDetails.country,
+          },
+          orderItems: updatedOrder.orderItems,
+          itemsPrice: updatedOrder.itemsPrice,
+          shippingPrice: updatedOrder.shippingPrice,
+          totalPrice: updatedOrder.totalPrice,
+        },
+      }),
+    });
+
+    sendMail({
+      from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
+      to: process.env.VITE_SENDER_EMAIL_ADDRESS,
+      subject: updatedOrder.isPaid ? 'Refund Request' : 'Order Canceled',
+      html: cancelOrderAdminEmail({
+        order: {
+          invoiceNumber: updatedOrder.invoiceNumber ?? '-',
+          confirmToken: updatedOrder.confirmToken,
+          orderDate: formatDate(updatedOrder.createdAt.toISOString()),
+          isPaid: updatedOrder.isPaid,
+          cancelledByAdmin: false,
+          refundIssued: updatedOrder.isRefunded,
+          shippingDetails: {
+            fullName: updatedOrder.shippingDetails.fullName,
+            email: updatedOrder.shippingDetails.email,
+            phoneNumber: updatedOrder.shippingDetails.phoneNumber,
+          },
+          orderItems: updatedOrder.orderItems,
+          itemsPrice: updatedOrder.itemsPrice,
+          shippingPrice: updatedOrder.shippingPrice,
+          totalPrice: updatedOrder.totalPrice,
+        },
+      }),
+    });
+
+    const {
+      _id: _cid,
+      confirmToken: _ct,
+      confirmTokenExpiresAt: _cte,
+      ...cancelOrderData
+    } = updatedOrder.toObject();
+    res.send({ message: 'Order canceled', order: cancelOrderData });
+  })
+);
+
 orderRouter.put(
   '/:id/cancel',
   expressAsyncHandler(async (req, res) => {
