@@ -247,6 +247,8 @@ emailRouter.post(
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
           trackingUrl,
+          carrier: order.carrier,
+          trackingNumber: order.trackingNumber,
           shippingDetails: {
             fullName: order.shippingDetails.fullName,
             address: order.shippingDetails.address,

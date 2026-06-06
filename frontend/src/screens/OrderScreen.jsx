@@ -316,6 +316,24 @@ export default function OrderScreen(props) {
     });
   };
 
+  const adminTrackingUrl = (() => {
+    if (!order?.trackingNumber) return null;
+    const { carrier, trackingNumber } = order;
+    const postalCode = order.shippingDetails?.postalCode;
+    switch (carrier) {
+      case 'CTT':
+        return `https://appserver.ctt.pt/CustomerArea/PublicArea_Detail?ObjectCodeInput=${trackingNumber}&SearchInput=${trackingNumber}&IsFromPublicArea=true`;
+      case 'DPD':
+        return `https://tracking.dpd.pt/track-and-trace?reference=${trackingNumber}`;
+      case 'DHL':
+        return `https://www.dhl.com/pt-en/home/tracking.html?tracking-id=${trackingNumber}&submit=1`;
+      case 'GLS':
+        return `https://mygls.gls-portugal.pt/e/${trackingNumber}/${postalCode}/en`;
+      default:
+        return null;
+    }
+  })();
+
   const dismissRefundHandler = () => {
     Swal.fire({
       title: t('order.dismissRefundTitle'),
@@ -512,6 +530,14 @@ export default function OrderScreen(props) {
                         {t('order.sendBtn')}
                       </button>
                     )}
+                  {userInfo?.isAdmin && order.isSent && adminTrackingUrl && (
+                    <button
+                      className="secondary"
+                      onClick={() => window.open(adminTrackingUrl, '_blank', 'noreferrer')}
+                    >
+                      {t('order.trackParcelBtn')}
+                    </button>
+                  )}
                   {order.isSent && !order.isDelivered && (
                     <button className="primary" onClick={deliverHandler}>
                       {t('order.deliverBtn')}

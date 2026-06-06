@@ -8,6 +8,8 @@ export const sendOrder = ({
     confirmToken,
     orderDate,
     trackingUrl,
+    carrier,
+    trackingNumber,
     shippingDetails: { fullName, address, country, postalCode, city },
     orderItems,
     itemsPrice,
@@ -290,9 +292,19 @@ export const sendOrder = ({
                                 </table>
                               </td>
                             </tr>
-                            ${
-                              trackingUrl
-                                ? `
+                            ${(() => {
+                              if (!trackingUrl) return '';
+                              return `
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="font-family: 'FuturaPTBook-Reg', Futura, Arial, sans-serif; color: #2d2d2d; font-size: 13px; line-height: 20px; letter-spacing: 0.6px;">
+                                <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
+                                  Para rastrear a sua encomenda, clique no botão abaixo.
+                                </font>
+                              </td>
+                            </tr>
                             <tr>
                               <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
                             </tr>
@@ -328,9 +340,18 @@ export const sendOrder = ({
                                   </tbody>
                                 </table>
                               </td>
-                            </tr>`
-                                : ''
-                            }
+                            </tr>
+                            <tr>
+                              <td height="12" style="font-size: 12px; line-height: 12px">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td align="center" style="font-family: 'FuturaPTBook-Reg', Futura, Arial, sans-serif; color: #767676; font-size: 12px; line-height: 20px; letter-spacing: 0.6px;">
+                                <font face="'FuturaPTBook-Reg', Futura, Arial, sans-serif">
+                                  Se o botão não funcionar, pode aceder ao website da <strong>${carrier}</strong> e pesquisar pelo número de rastreamento: <strong>${trackingNumber}</strong>
+                                </font>
+                              </td>
+                            </tr>`;
+                            })()}
                             <tr>
                               <td
                                 height="24"

@@ -158,6 +158,7 @@
     "trackingNumberPlaceholder": "Número de rastreamento (opcional)",
     "trackingWarning": "Sem número de rastreamento — o cliente não conseguirá rastrear a encomenda.",
     "confirmSend": "Confirmar",
+    "trackParcelBtn": "Rastrear Encomenda",
     "deliverBtn": "Marcar como Entregue",
     "cancelBtn": "Cancelar Encomenda",
     "issueRefundBtn": "Emitir Reembolso",

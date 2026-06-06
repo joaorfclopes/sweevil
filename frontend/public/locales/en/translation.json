@@ -158,6 +158,7 @@
     "trackingNumberPlaceholder": "Tracking number (optional)",
     "trackingWarning": "No tracking number — the customer will not be able to track the parcel.",
     "confirmSend": "Confirm",
+    "trackParcelBtn": "Track Parcel",
     "deliverBtn": "Mark as Delivered",
     "cancelBtn": "Cancel Order",
     "issueRefundBtn": "Issue Refund",
