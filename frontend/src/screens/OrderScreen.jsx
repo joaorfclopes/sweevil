@@ -55,7 +55,7 @@ function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
       onPayingChange?.(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       onPayingChange?.(false);
-      dispatch(payOrder(order, { paymentIntentId: paymentIntent.id, confirmToken: token }));
+      dispatch(payOrder(token, { paymentIntentId: paymentIntent.id }));
     }
   };
 
@@ -169,9 +169,7 @@ export default function OrderScreen(props) {
       const { data: publishableKey } = await Axios.get('/api/config/stripe');
       if (cancelled) return;
       setStripePromise(loadStripe(publishableKey));
-      const { data } = await Axios.post(`/api/orders/${order._id}/create-payment-intent`, {
-        confirmToken: token,
-      });
+      const { data } = await Axios.post(`/api/orders/token/${token}/create-payment-intent`, {});
       if (cancelled) return;
       setClientSecret(data.clientSecret);
     };
@@ -180,7 +178,7 @@ export default function OrderScreen(props) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order?._id]);
+  }, [token]);
 
   useEffect(() => {
     if (handledRedirect.current) return;
@@ -188,7 +186,7 @@ export default function OrderScreen(props) {
     const redirectStatus = searchParams.get('redirect_status');
     if (paymentIntentId && redirectStatus === 'succeeded' && order && !order.isPaid) {
       handledRedirect.current = true;
-      dispatch(payOrder(order, { paymentIntentId, confirmToken: token }));
+      dispatch(payOrder(token, { paymentIntentId }));
     }
   }, [searchParams, order, dispatch]);
 
@@ -271,9 +269,9 @@ export default function OrderScreen(props) {
         cancelButtonText: t('order.keepOrder'),
       }).then((result) => {
         if (result.isConfirmed) {
-          dispatch(cancelOrder(order._id, token, 'yes'));
+          dispatch(cancelOrder(token, 'yes'));
         } else if (result.isDenied) {
-          dispatch(cancelOrder(order._id, token, 'no'));
+          dispatch(cancelOrder(token, 'no'));
         }
       });
     } else {
@@ -285,7 +283,7 @@ export default function OrderScreen(props) {
         denyButtonText: t('common.yes'),
       }).then((result) => {
         if (result.isDenied) {
-          dispatch(cancelOrder(order._id, token));
+          dispatch(cancelOrder(token));
           Swal.fire(t('order.cancelledSwal'), '', 'error');
         }
       });

@@ -372,9 +372,10 @@ orderRouter.post(
     console.log(
       `[order] Created order ${createdOrder._id} — ${itemsQty} item(s), €${totalPrice} for ${shippingDetails.email} (${shippingDetails.country})`
     );
+    const { _id: _omit, ...createdOrderData } = createdOrder.toObject();
     res
       .status(201)
-      .send({ message: 'New order created', order: { ...createdOrder.toObject(), confirmToken } });
+      .send({ message: 'New order created', order: { ...createdOrderData, confirmToken } });
   })
 );
 
@@ -407,7 +408,12 @@ orderRouter.get(
     if (orderWithToken.confirmTokenExpiresAt && orderWithToken.confirmTokenExpiresAt < new Date()) {
       return res.status(403).json({ message: 'Order access expired' });
     }
-    const { confirmToken: _, confirmTokenExpiresAt: __, ...orderData } = orderWithToken.toObject();
+    const {
+      _id: _omitId,
+      confirmToken: _,
+      confirmTokenExpiresAt: __,
+      ...orderData
+    } = orderWithToken.toObject();
     res.json(orderData);
   })
 );

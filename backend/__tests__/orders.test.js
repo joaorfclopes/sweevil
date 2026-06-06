@@ -78,7 +78,7 @@ describe('POST /api/orders', () => {
       });
     expect(res.status).toBe(201);
     const { default: Order } = await import('../models/orderModel.js');
-    const order = await Order.findById(res.body.order._id);
+    const order = await Order.findOne({ confirmToken: res.body.order.confirmToken });
     expect(order.billingDetails).toMatchObject(validBilling);
     expect(order.vatNif).toBe('PT123456789');
   });
@@ -211,7 +211,7 @@ describe('Order model invoiceNumber field', () => {
         billingDetails: validShipping,
       });
     expect(res.status).toBe(201);
-    const order = await Order.findById(res.body.order._id);
+    const order = await Order.findOne({ confirmToken: res.body.order.confirmToken });
     expect(order.invoiceNumber).toBeUndefined();
   });
 });
@@ -226,12 +226,45 @@ describe('invoiceNumber persistence via findByIdAndUpdate', () => {
         billingDetails: validShipping,
       });
     expect(res.status).toBe(201);
-    const order = await Order.findByIdAndUpdate(
-      res.body.order._id,
+    const order = await Order.findOne({ confirmToken: res.body.order.confirmToken });
+    const updated = await Order.findByIdAndUpdate(
+      order._id,
       { invoiceNumber: 'INV-0042' },
       { new: true }
     );
-    expect(order.invoiceNumber).toBe('INV-0042');
+    expect(updated.invoiceNumber).toBe('INV-0042');
+  });
+});
+
+describe('public order responses must not include _id', () => {
+  it('POST /api/orders does not return _id', async () => {
+    const res = await request(app)
+      .post('/api/orders')
+      .send({
+        orderItems: [{ product: productId, qty: 1 }],
+        shippingDetails: validShipping,
+        billingDetails: validShipping,
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.order._id).toBeUndefined();
+  });
+
+  it('GET /api/orders/token/:token does not return _id', async () => {
+    const order = await Order.create({
+      orderItems: [{ product: productId, qty: 1, name: 'P', image: 'i.jpg', price: 10 }],
+      shippingDetails: validShipping,
+      billingDetails: validShipping,
+      itemsQty: 1,
+      itemsPrice: 10,
+      shippingPrice: 5,
+      totalPrice: 15,
+      status: 'PENDING_PAYMENT',
+      confirmToken: 'testtoken789',
+      confirmTokenExpiresAt: new Date(Date.now() + 86400000),
+    });
+    const res = await request(app).get(`/api/orders/token/${order.confirmToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body._id).toBeUndefined();
   });
 });
 
@@ -270,7 +303,7 @@ describe('Token-based client routes', () => {
     });
     const res = await request(app).put(`/api/orders/token/${order.confirmToken}/cancel`).send({});
     expect(res.status).toBe(200);
-    const updated = await Order.findById(order._id);
+    const updated = await Order.findOne({ confirmToken: 'validtoken456' });
     expect(updated.status).toBe('CANCELED');
   });
 
