@@ -617,12 +617,14 @@ orderRouter.post(
       description: 'Shipping',
     });
 
-    await stripe.invoices.finalizeInvoice(invoice.id);
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
 
     const paymentIntent = await stripe.paymentIntents.create(
       {
         amount: totalCents,
         currency: 'eur',
+        customer: customer.id,
+        description: `Payment for invoice ${finalizedInvoice.number ?? invoice.id}`,
         automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
         statement_descriptor_suffix: 'Order',
         metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
