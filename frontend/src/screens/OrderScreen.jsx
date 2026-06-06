@@ -178,7 +178,7 @@ export default function OrderScreen(props) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, !!order]);
 
   useEffect(() => {
     if (handledRedirect.current) return;
