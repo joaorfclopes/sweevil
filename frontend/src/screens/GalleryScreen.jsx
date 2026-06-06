@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import Lightbox from 'yet-another-react-lightbox';
@@ -11,6 +11,7 @@ import GalleryImage from '../components/GalleryImage';
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
+import { scrollWithOffset } from '../utils';
 import { displayDescription, displayName } from '../utils/i18nDisplay';
 
 const INITIAL_ROWS = 3;
@@ -48,6 +49,7 @@ export default function GalleryScreen() {
 
   const colCount = useColCount();
   useScrollLock(lightboxOpen);
+  const hashScrolled = useRef(false);
 
   // Use ordered DB categories; fall back to image-derived names for any not yet synced
   const categoryMap = Object.fromEntries(dbCategories.map((c) => [c.name, c]));
@@ -70,6 +72,66 @@ export default function GalleryScreen() {
   useEffect(() => {
     setVisibleRows(INITIAL_ROWS);
   }, [selectedFilter]);
+
+  // Hash scroll: App.jsx skips #gallery. We handle it here after About settles.
+  // About has two async layout shifts: text API load + video loadedmetadata.
+  // We observe About's height and re-scroll on each change until the user
+  // scrolls manually or 5s has elapsed (covers video load on slow connections).
+  useEffect(() => {
+    if (loading || !gallery?.length || hashScrolled.current) return;
+    if (window.location.hash !== '#gallery') return;
+    hashScrolled.current = true;
+
+    let programmaticScroll = false;
+    let userScrolled = false;
+    let debounce;
+
+    const onScroll = () => {
+      if (!programmaticScroll) userScrolled = true;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    const scrollToGallery = () => {
+      if (userScrolled) return;
+      programmaticScroll = true;
+      const el = document.getElementById('gallery');
+      if (el) scrollWithOffset(el);
+      setTimeout(() => {
+        programmaticScroll = false;
+      }, 600);
+    };
+
+    const aboutEl = document.getElementById('about');
+    if (!aboutEl) {
+      scrollToGallery();
+      window.removeEventListener('scroll', onScroll);
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      if (userScrolled) {
+        observer.disconnect();
+        return;
+      }
+      clearTimeout(debounce);
+      debounce = setTimeout(scrollToGallery, 50);
+    });
+    observer.observe(aboutEl);
+
+    // Stop observing after 5s — covers video loadedmetadata on slow connections
+    const stopTimer = setTimeout(() => {
+      observer.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      scrollToGallery();
+    }, 5000);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(debounce);
+      clearTimeout(stopTimer);
+    };
+  }, [loading, gallery]);
 
   const getFilteredGallery = () => {
     if (!gallery) return [];
@@ -111,7 +173,7 @@ export default function GalleryScreen() {
       {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
-        <LoadingOverlay loading={loading} minHeight="75vh">
+        <LoadingOverlay loading={loading && !gallery?.length} minHeight="75vh">
           <div className="row center">
             <div className="gallery-container">
               <div className="filters">

@@ -22,12 +22,26 @@ function ProductSkeleton() {
   );
 }
 
+function FilterSkeleton() {
+  return (
+    <div className="filters">
+      {[60, 80, 50, 70].map((w, i) => (
+        <div key={i} className="filter" style={{ width: `${w}px`, pointerEvents: 'none' }}>
+          <Placeholder text height="1em" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function ShopScreen(props) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
-  const { categories = [] } = useSelector((state) => state.productCategoryList);
+  const { categories = [], loading: categoriesLoading } = useSelector(
+    (state) => state.productCategoryList
+  );
 
   const [selectedCategory, setSelectedCategory] = useState('*');
 
@@ -54,7 +68,9 @@ export default function ShopScreen(props) {
     <section className="shop">
       <div className="free-shipping-banner">{t('shop.freeShipping')}</div>
       <div className="shop-container">
-        {categoriesInUse.length > 0 && (
+        {categoriesLoading ? (
+          <FilterSkeleton />
+        ) : categoriesInUse.length > 0 ? (
           <div className="filters">
             <div
               className={`filter${selectedCategory === '*' ? ' active' : ''}`}
@@ -72,7 +88,7 @@ export default function ShopScreen(props) {
               </div>
             ))}
           </div>
-        )}
+        ) : null}
         <div className="row center">
           {loading && !products?.length ? (
             Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)

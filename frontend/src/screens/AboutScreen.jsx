@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Placeholder from '../components/Placeholder';
 import Video from '../components/Video';
 const VIDEO_WEBM = '/video/video.webm';
 
 export default function AboutScreen(props) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const [aboutLoaded, setAboutLoaded] = useState(false);
   const [about, setAbout] = useState({
     en: { title: "Who's Sweevil?", body: '' },
     pt: { title: 'Quem é Sweevil?', body: '' },
@@ -15,8 +17,11 @@ export default function AboutScreen(props) {
   useEffect(() => {
     axios
       .get('/api/about')
-      .then((res) => setAbout(res.data))
-      .catch(() => {});
+      .then((res) => {
+        setAbout(res.data);
+        setAboutLoaded(true);
+      })
+      .catch(() => setAboutLoaded(true));
   }, []);
 
   const current = about[lang] || about.en || {};
@@ -32,9 +37,19 @@ export default function AboutScreen(props) {
         />
         <div className="text">
           <h1 className="title">{current.title}</h1>
-          {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          {!aboutLoaded ? (
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}
+            >
+              {['95%', '88%', '72%'].map((w, i) => (
+                <div key={i} style={{ width: w }}>
+                  <Placeholder text height="1em" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            paragraphs.map((p, i) => <p key={i}>{p}</p>)
+          )}
         </div>
         <Video
           webmSrc={VIDEO_WEBM}

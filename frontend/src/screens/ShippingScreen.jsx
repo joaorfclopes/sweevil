@@ -259,9 +259,6 @@ export default function ShippingScreen(props) {
 
   return (
     <section className="shipping">
-      <button className="back-button" onClick={() => navigate(-1)}>
-        &#8592;
-      </button>
       <div className="shipping-container">
         <div className="shipping-inner">
           <form className="shipping-form" onSubmit={handleSubmit(onSubmit)}>

@@ -346,9 +346,6 @@ export default function OrderScreen(props) {
 
   return (
     <section className="order cards-section">
-      <button className="back-button" onClick={() => navigate(-1)}>
-        &#8592;
-      </button>
       {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (

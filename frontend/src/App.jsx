@@ -191,13 +191,14 @@ function AppContent() {
     }
   }, [location.pathname]);
 
-  // Scroll to hash section once content is rendered
+  // Scroll to hash section once content is rendered.
+  // #gallery is excluded — GalleryScreen waits for About content to settle first.
   useEffect(() => {
-    if (!loading && window.location.hash) {
-      const id = window.location.hash.slice(1);
-      const el = document.getElementById(id);
-      if (el) scrollWithOffset(el);
-    }
+    if (loading || !window.location.hash) return;
+    const id = window.location.hash.slice(1);
+    if (id === 'gallery') return;
+    const el = document.getElementById(id);
+    if (el) scrollWithOffset(el);
   }, [loading]);
 
   if (maintenanceMode) return <MaintenanceScreen />;

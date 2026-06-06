@@ -150,9 +150,6 @@ export default function ProductScreen(props) {
 
   return (
     <section className="product-screen">
-      <button className="back-button" onClick={() => navigate(-1)}>
-        &#8592;
-      </button>
       {error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
