@@ -31,7 +31,6 @@ import {
   ORDER_REFUND_RESET,
   ORDER_SEND_RESET,
 } from '../constants/orderConstants';
-import useScrollLock from '../hooks/useScrollLock';
 import Swal from '../utils/swal';
 
 function StripeCheckoutForm({ order, dispatch, token, onPayingChange }) {
@@ -86,10 +85,6 @@ export default function OrderScreen(props) {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState('');
   const [stripeFormPaying, setStripeFormPaying] = useState(false);
-  const [showCarrierModal, setShowCarrierModal] = useState(false);
-  const [selectedCarrier, setSelectedCarrier] = useState('CTT');
-  const [trackingNumber, setTrackingNumber] = useState('');
-  useScrollLock(showCarrierModal);
   const handledRedirect = useRef(false);
   const fetchedTokenRef = useRef(null);
 
@@ -197,27 +192,54 @@ export default function OrderScreen(props) {
     }
   }, [searchParams, order, dispatch]);
 
-  const sendHandler = () => setShowCarrierModal(true);
+  const sendHandler = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: t('order.carrierModalTitle'),
+      html: `
+        <div style="text-align:left">
+          <div style="margin-bottom:1rem">
+            ${['CTT', 'DPD', 'DHL', 'GLS']
+              .map(
+                (c, i) => `
+              <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;cursor:pointer">
+                <input type="radio" name="swal-carrier" value="${c}" ${i === 0 ? 'checked' : ''}> ${c}
+              </label>`
+              )
+              .join('')}
+          </div>
+          <input id="swal-tracking" type="text" placeholder="${t('order.trackingNumberPlaceholder')}"
+                 class="swal2-input" style="width:100%;margin:0;box-sizing:border-box">
+          <p id="swal-tracking-warning" style="color:#b45309;font-size:0.82rem;margin-top:0.5rem">
+            ${t('order.trackingWarning')}
+          </p>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: t('order.confirmSend'),
+      didOpen: () => {
+        const input = document.getElementById('swal-tracking');
+        const warning = document.getElementById('swal-tracking-warning');
+        input.addEventListener('input', () => {
+          warning.style.display = input.value ? 'none' : 'block';
+        });
+      },
+      preConfirm: () => ({
+        carrier: document.querySelector('input[name="swal-carrier"]:checked')?.value || 'CTT',
+        trackingNumber: document.getElementById('swal-tracking').value,
+      }),
+    });
 
-  const confirmSendHandler = () => {
-    Swal.fire({
+    if (!formValues) return;
+
+    const { isConfirmed } = await Swal.fire({
       title: t('order.sendTitle'),
       showCancelButton: true,
       confirmButtonText: t('common.yes'),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(sendOrder(order._id, selectedCarrier, trackingNumber));
-        setShowCarrierModal(false);
-        setSelectedCarrier('CTT');
-        setTrackingNumber('');
-      }
     });
-  };
 
-  const cancelSendHandler = () => {
-    setShowCarrierModal(false);
-    setSelectedCarrier('CTT');
-    setTrackingNumber('');
+    if (isConfirmed) {
+      dispatch(sendOrder(order._id, formValues.carrier, formValues.trackingNumber));
+    }
   };
 
   const deliverHandler = () => {
@@ -521,49 +543,6 @@ export default function OrderScreen(props) {
             </div>
           )}
         </LoadingOverlay>
-      )}
-      {showCarrierModal && (
-        <div className="order-modal-overlay" onClick={cancelSendHandler}>
-          <div className="order-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="order-modal-header">
-              <p className="order-modal-title">{t('order.carrierModalTitle')}</p>
-              <button className="order-modal-close" onClick={cancelSendHandler} aria-label="Close">
-                ×
-              </button>
-            </div>
-            <div className="order-modal-carriers">
-              {['CTT', 'DPD', 'DHL', 'GLS'].map((c) => (
-                <label key={c}>
-                  <input
-                    type="radio"
-                    name="carrier"
-                    value={c}
-                    checked={selectedCarrier === c}
-                    onChange={() => setSelectedCarrier(c)}
-                  />
-                  {c}
-                </label>
-              ))}
-            </div>
-            <div className="order-modal-tracking">
-              <input
-                type="text"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder={t('order.trackingNumberPlaceholder')}
-              />
-            </div>
-            {!trackingNumber && <p className="order-modal-warning">{t('order.trackingWarning')}</p>}
-            <div className="order-modal-actions">
-              <button className="secondary" onClick={cancelSendHandler}>
-                {t('admin.cancel')}
-              </button>
-              <button className="primary" onClick={confirmSendHandler}>
-                {t('order.confirmSend')}
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </section>
   );
