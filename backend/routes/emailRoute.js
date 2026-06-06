@@ -11,6 +11,7 @@ import { sendOrder as sendOrderEn } from '../mailing/en/sendOrder.js';
 import { placedOrder as placedOrderPt } from '../mailing/placedOrder.js';
 import { placedOrderAdmin } from '../mailing/placedOrderAdmin.js';
 import { sendOrder as sendOrderPt } from '../mailing/sendOrder.js';
+import { buildTrackingUrl } from '../mailing/trackingUrl.js';
 import Order from '../models/orderModel.js';
 import { formatDate, isAdmin, isAuth } from '../utils.js';
 
@@ -231,6 +232,11 @@ emailRouter.post(
     const order = await Order.findById(req.body.order?._id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
     const isPtSent = order.lang === 'pt';
+    const trackingUrl = buildTrackingUrl(
+      order.carrier,
+      order.trackingNumber,
+      order.shippingDetails.postalCode
+    );
     const mailOptions = {
       from: `${process.env.SENDER_USER_NAME} <${process.env.VITE_SENDER_EMAIL_ADDRESS}>`,
       to: order.shippingDetails.email,
@@ -240,6 +246,7 @@ emailRouter.post(
           orderId: order._id,
           confirmToken: order.confirmToken,
           orderDate: formatDate(order.createdAt.toISOString()),
+          trackingUrl,
           shippingDetails: {
             fullName: order.shippingDetails.fullName,
             address: order.shippingDetails.address,
