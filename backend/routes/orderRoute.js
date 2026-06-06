@@ -508,11 +508,15 @@ orderRouter.post(
     const stripe = getStripe();
 
     // Reuse existing PaymentIntent on page refresh
+    let retryKey = '';
     if (order.stripeInvoiceId && order.paymentResult?.id) {
       const pi = await stripe.paymentIntents.retrieve(order.paymentResult.id);
-      if (pi.status === 'requires_payment_method' || pi.status === 'requires_confirmation') {
+      const reuseStatuses = ['requires_payment_method', 'requires_confirmation', 'requires_action'];
+      if (reuseStatuses.includes(pi.status)) {
         return res.json({ clientSecret: pi.client_secret });
       }
+      // PI in terminal state — create fresh invoice+PI with unique idempotency keys
+      retryKey = `-${Date.now().toString(36)}`;
     }
 
     const totalCents = Math.round(order.totalPrice * 100);
@@ -588,7 +592,7 @@ orderRouter.post(
         auto_advance: false,
         metadata: { orderId: order._id.toString() },
       },
-      { idempotencyKey: `inv-${order._id}` }
+      { idempotencyKey: `inv-${order._id}${retryKey}` }
     );
 
     await stripe.invoiceItems.create({
@@ -629,7 +633,7 @@ orderRouter.post(
         statement_descriptor_suffix: 'Order',
         metadata: { orderId: order._id.toString(), stripeInvoiceId: invoice.id },
       },
-      { idempotencyKey: `pi-${order._id}` }
+      { idempotencyKey: `pi-${order._id}${retryKey}` }
     );
 
     order.stripeInvoiceId = invoice.id;

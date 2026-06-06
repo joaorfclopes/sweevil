@@ -130,6 +130,7 @@
     "quantity": "Quantidade",
     "size": "Tamanho",
     "pay": "Pagar €{{amount}}",
+    "paymentSetupError": "Erro ao carregar formulário de pagamento. Por favor, atualize a página.",
     "deliverTitle": "Entregar encomenda?",
     "deliverSuccess": "Entregue!",
     "cancelTitle": "Cancelar esta encomenda?",

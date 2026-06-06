@@ -130,6 +130,7 @@
     "quantity": "Quantity",
     "size": "Size",
     "pay": "Pay €{{amount}}",
+    "paymentSetupError": "Failed to load payment form. Please refresh the page.",
     "deliverTitle": "Mark order as delivered?",
     "deliverSuccess": "Delivered!",
     "cancelTitle": "Cancel this order?",

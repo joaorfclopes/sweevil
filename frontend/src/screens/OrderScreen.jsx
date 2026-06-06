@@ -85,6 +85,7 @@ export default function OrderScreen(props) {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState('');
   const [stripeFormPaying, setStripeFormPaying] = useState(false);
+  const [stripeSetupError, setStripeSetupError] = useState('');
   const handledRedirect = useRef(false);
   const fetchedTokenRef = useRef(null);
 
@@ -166,13 +167,21 @@ export default function OrderScreen(props) {
 
     let cancelled = false;
     const setupStripe = async () => {
-      const { data: publishableKey } = await Axios.get('/api/config/stripe');
-      if (cancelled) return;
-      setStripePromise(loadStripe(publishableKey));
-      const { data } = await Axios.post(`/api/orders/token/${token}/create-payment-intent`, {});
-      if (cancelled) return;
-      setClientSecret(data.clientSecret);
+      try {
+        const { data: publishableKey } = await Axios.get('/api/config/stripe');
+        if (cancelled) return;
+        setStripePromise(loadStripe(publishableKey));
+        const { data } = await Axios.post(`/api/orders/token/${token}/create-payment-intent`, {});
+        if (cancelled) return;
+        setClientSecret(data.clientSecret);
+      } catch (err) {
+        if (cancelled) return;
+        setStripeSetupError(
+          err.response?.data?.message || err.message || t('order.paymentSetupError')
+        );
+      }
     };
+    setStripeSetupError('');
     setupStripe();
     return () => {
       cancelled = true;
@@ -363,6 +372,7 @@ export default function OrderScreen(props) {
             (order &&
               !order.isPaid &&
               !order.status?.startsWith('CANCELED') &&
+              !stripeSetupError &&
               (!clientSecret || !stripePromise))
           }
           minHeight="75vh"
@@ -494,6 +504,7 @@ export default function OrderScreen(props) {
                     {t('order.total')} : {order.totalPrice && order.totalPrice.toFixed(2)}€
                   </h3>
                 </div>
+                {stripeSetupError && <MessageBox variant="error">{stripeSetupError}</MessageBox>}
                 {!order.status?.startsWith('CANCELED') &&
                   !order.isPaid &&
                   clientSecret &&
