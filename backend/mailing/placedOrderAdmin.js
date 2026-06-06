@@ -2,7 +2,7 @@ import itemsDetails from './itemsDetails.js';
 
 export const placedOrderAdmin = ({
   order: {
-    orderId,
+    invoiceNumber,
     confirmToken,
     orderDate,
     shippingDetails: { email, phoneNumber, fullName, address, country, postalCode, city },

@@ -729,7 +729,10 @@ orderRouter.put(
         try {
           await getStripe().invoices.pay(order.stripeInvoiceId, { paid_out_of_band: true });
           const paidInvoice = await getStripe().invoices.retrieve(order.stripeInvoiceId);
-          if (paidInvoice.number) invoiceNumber = paidInvoice.number;
+          if (paidInvoice.number) {
+            invoiceNumber = paidInvoice.number;
+            await Order.findByIdAndUpdate(order._id, { invoiceNumber: paidInvoice.number });
+          }
           if (paidInvoice.invoice_pdf) {
             const pdfUrl = new URL(paidInvoice.invoice_pdf);
             if (pdfUrl.protocol !== 'https:' || !pdfUrl.hostname.endsWith('.stripe.com')) {

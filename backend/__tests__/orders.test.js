@@ -215,3 +215,22 @@ describe('Order model invoiceNumber field', () => {
     expect(order.invoiceNumber).toBeUndefined();
   });
 });
+
+describe('invoiceNumber persistence via findByIdAndUpdate', () => {
+  it('can save and retrieve invoiceNumber on an order', async () => {
+    const res = await request(app)
+      .post('/api/orders')
+      .send({
+        orderItems: [{ product: productId, qty: 1 }],
+        shippingDetails: validShipping,
+        billingDetails: validShipping,
+      });
+    expect(res.status).toBe(201);
+    const order = await Order.findByIdAndUpdate(
+      res.body.order._id,
+      { invoiceNumber: 'INV-0042' },
+      { new: true }
+    );
+    expect(order.invoiceNumber).toBe('INV-0042');
+  });
+});
