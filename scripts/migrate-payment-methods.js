@@ -23,9 +23,7 @@ await mongoose.connect(MONGODB_URL);
 const db = mongoose.connection.db;
 const orders = db.collection('orders');
 
-const toMigrate = await orders
-  .find({ isPaid: true, 'paymentResult.paymentMethod': { $in: [null, '', undefined] } })
-  .toArray();
+const toMigrate = await orders.find({ isPaid: true }).toArray();
 
 console.log(`Found ${toMigrate.length} paid orders without paymentMethod`);
 
@@ -39,8 +37,9 @@ for (const order of toMigrate) {
 
   if (piId && piId.startsWith('pi_') && !piId.startsWith('pi_seed_')) {
     try {
-      const pi = await stripe.paymentIntents.retrieve(piId);
-      paymentMethod = pi.payment_method_types?.[0] || 'card';
+      const pi = await stripe.paymentIntents.retrieve(piId, { expand: ['latest_charge'] });
+      paymentMethod =
+        pi.latest_charge?.payment_method_details?.type || pi.payment_method_types?.[0] || 'card';
       fromStripe++;
     } catch (err) {
       console.warn(`  Could not fetch PI ${piId}: ${err.message} — defaulting to card`);
