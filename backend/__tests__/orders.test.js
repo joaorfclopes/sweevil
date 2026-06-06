@@ -198,3 +198,19 @@ describe('PUT /api/orders/:id/send', () => {
     expect(updated.isSent).toBe(true);
   });
 });
+
+describe('Order model invoiceNumber field', () => {
+  it('defaults invoiceNumber to undefined on new orders', async () => {
+    const { default: Order } = await import('../models/orderModel.js');
+    const res = await request(app)
+      .post('/api/orders')
+      .send({
+        orderItems: [{ product: productId, qty: 1 }],
+        shippingDetails: validShipping,
+        billingDetails: validShipping,
+      });
+    expect(res.status).toBe(201);
+    const order = await Order.findById(res.body.order._id);
+    expect(order.invoiceNumber).toBeUndefined();
+  });
+});

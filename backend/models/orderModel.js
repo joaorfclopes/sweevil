@@ -41,6 +41,7 @@ const orderSchema = new mongoose.Schema(
     },
     vatNif: { type: String },
     stripeInvoiceId: { type: String },
+    invoiceNumber: { type: String },
     lang: { type: String },
     paymentResult: {
       id: String,
