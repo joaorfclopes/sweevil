@@ -41,4 +41,12 @@ describe('buildTrackingUrl', () => {
   it('returns null for unknown carrier', () => {
     expect(buildTrackingUrl('UNKNOWN', 'ABC123', '1000-001')).toBeNull();
   });
+
+  it('returns null when carrier is null with trackingNumber present', () => {
+    expect(buildTrackingUrl(null, 'ABC123', '1000-001')).toBeNull();
+  });
+
+  it('returns null when carrier is undefined with trackingNumber present', () => {
+    expect(buildTrackingUrl(undefined, 'ABC123', '1000-001')).toBeNull();
+  });
 });
