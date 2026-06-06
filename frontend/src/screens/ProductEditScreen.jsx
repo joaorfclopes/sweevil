@@ -390,9 +390,6 @@ export default function ProductEditScreen(props) {
 
   return (
     <section className="product-edit">
-      <button className="back-button" onClick={() => navigate(-1)}>
-        &#8592;
-      </button>
       {!isNew && error ? (
         <MessageBox variant="error">{error}</MessageBox>
       ) : (
