@@ -200,10 +200,18 @@ export default function OrderScreen(props) {
   const sendHandler = () => setShowCarrierModal(true);
 
   const confirmSendHandler = () => {
-    dispatch(sendOrder(order._id, selectedCarrier, trackingNumber));
-    setShowCarrierModal(false);
-    setSelectedCarrier('CTT');
-    setTrackingNumber('');
+    Swal.fire({
+      title: t('order.sendTitle'),
+      showCancelButton: true,
+      confirmButtonText: t('common.yes'),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(sendOrder(order._id, selectedCarrier, trackingNumber));
+        setShowCarrierModal(false);
+        setSelectedCarrier('CTT');
+        setTrackingNumber('');
+      }
+    });
   };
 
   const cancelSendHandler = () => {
@@ -517,10 +525,12 @@ export default function OrderScreen(props) {
       {showCarrierModal && (
         <div className="order-modal-overlay" onClick={cancelSendHandler}>
           <div className="order-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="order-modal-close" onClick={cancelSendHandler} aria-label="Close">
-              ×
-            </button>
-            <p className="order-modal-title">{t('order.carrierModalTitle')}</p>
+            <div className="order-modal-header">
+              <p className="order-modal-title">{t('order.carrierModalTitle')}</p>
+              <button className="order-modal-close" onClick={cancelSendHandler} aria-label="Close">
+                ×
+              </button>
+            </div>
             <div className="order-modal-carriers">
               {['CTT', 'DPD', 'DHL', 'GLS'].map((c) => (
                 <label key={c}>
