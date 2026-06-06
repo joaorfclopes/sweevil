@@ -98,7 +98,7 @@ export default function OrdersTable() {
     Swal.fire({
       title: t('admin.refundTitle', {
         price: order.totalPrice?.toFixed(2),
-        name: formatName(order.shippingDetails.fullName),
+        name: formatName(order.shippingDetails?.fullName),
       }),
       text: t('admin.refundText'),
       showCancelButton: true,
@@ -340,7 +340,7 @@ export default function OrdersTable() {
                                 />
                               </TableCell>
                               <TableCell align="center">
-                                {formatName(order.shippingDetails.fullName)}
+                                {formatName(order.shippingDetails?.fullName)}
                               </TableCell>
                               <TableCell align="center">{formatDateDay(order.createdAt)}</TableCell>
                               <TableCell align="center">{order.totalPrice?.toFixed(2)}€</TableCell>
