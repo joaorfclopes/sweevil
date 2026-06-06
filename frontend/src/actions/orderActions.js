@@ -85,10 +85,10 @@ export const payOrder = (order, paymentResult) => async (dispatch) => {
   }
 };
 
-export const sendOrder = (orderId) => async (dispatch) => {
+export const sendOrder = (orderId, carrier, trackingNumber) => async (dispatch) => {
   dispatch({ type: ORDER_SEND_REQUEST, payload: orderId });
   try {
-    const { data } = await Axios.put(`/api/orders/${orderId}/send`, {});
+    const { data } = await Axios.put(`/api/orders/${orderId}/send`, { carrier, trackingNumber });
     dispatch({ type: ORDER_SEND_SUCCESS, payload: data });
     await Axios.post('/api/email/sentOrder', { order: data.order });
   } catch (error) {
