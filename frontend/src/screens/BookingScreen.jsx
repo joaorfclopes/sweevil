@@ -434,6 +434,41 @@ export default function BookingScreen(props) {
                           )}
                         </div>
                         <div>
+                          <label htmlFor="vatNif">
+                            {t('booking.vatNif')}
+                            <button
+                              type="button"
+                              className="shipping-info-btn"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setVatNifAnchorEl(e.currentTarget);
+                              }}
+                              aria-label="Tax ID info"
+                            >
+                              ⓘ
+                            </button>
+                          </label>
+                          <Popover
+                            open={Boolean(vatNifAnchorEl)}
+                            anchorEl={vatNifAnchorEl}
+                            onClose={() => setVatNifAnchorEl(null)}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            disableScrollLock
+                          >
+                            <p className="shipping-info-popover">{t('booking.vatNifTooltip')}</p>
+                          </Popover>
+                          <input
+                            type="text"
+                            id="vatNif"
+                            maxLength={30}
+                            placeholder={t('common.optional')}
+                            {...registerBooking('vatNif')}
+                          />
+                          {bookingErrors.vatNif && (
+                            <span className="field-error">{bookingErrors.vatNif.message}</span>
+                          )}
+                        </div>
+                        <div>
                           <label>{t('booking.notes')}</label>
                           <textarea rows={3} maxLength={1000} {...registerBooking('notes')} />
                           {bookingErrors.notes && (
@@ -470,41 +505,6 @@ export default function BookingScreen(props) {
                                 onChange={handleImageChange}
                               />
                             </label>
-                          )}
-                        </div>
-                        <div>
-                          <label htmlFor="vatNif">
-                            {t('booking.vatNif')}
-                            <button
-                              type="button"
-                              className="shipping-info-btn"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setVatNifAnchorEl(e.currentTarget);
-                              }}
-                              aria-label="Tax ID info"
-                            >
-                              ⓘ
-                            </button>
-                          </label>
-                          <Popover
-                            open={Boolean(vatNifAnchorEl)}
-                            anchorEl={vatNifAnchorEl}
-                            onClose={() => setVatNifAnchorEl(null)}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                            disableScrollLock
-                          >
-                            <p className="shipping-info-popover">{t('booking.vatNifTooltip')}</p>
-                          </Popover>
-                          <input
-                            type="text"
-                            id="vatNif"
-                            maxLength={30}
-                            placeholder={t('common.optional')}
-                            {...registerBooking('vatNif')}
-                          />
-                          {bookingErrors.vatNif && (
-                            <span className="field-error">{bookingErrors.vatNif.message}</span>
                           )}
                         </div>
                         <button type="submit" className="primary">
