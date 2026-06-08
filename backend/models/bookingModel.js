@@ -12,6 +12,7 @@ const bookingSchema = new mongoose.Schema(
       phone: { type: String, required: true },
       notes: { type: String, default: '' },
     },
+    vatNif: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     status: {
       type: String,

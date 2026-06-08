@@ -25,6 +25,7 @@ export const createBookingSchema = z.object({
     notes: z.string().optional(),
   }),
   images: z.array(z.string()).max(10).optional().default([]),
+  vatNif: z.string().max(30).optional(),
 });
 
 const shippingDetailsSchema = z.object({

@@ -76,4 +76,18 @@ describe('Bookings', () => {
     expect(cancel.status).toBe(200);
     expect(cancel.body.booking.status).toBe('CANCELED');
   });
+
+  it('POST /api/bookings stores optional vatNif', async () => {
+    const res = await request(app)
+      .post('/api/bookings')
+      .send({ ...newBookingPayload(), vatNif: 'PT123456789' });
+    expect(res.status).toBe(201);
+    expect(res.body.vatNif).toBe('PT123456789');
+  });
+
+  it('POST /api/bookings without vatNif still succeeds', async () => {
+    const res = await request(app).post('/api/bookings').send(newBookingPayload());
+    expect(res.status).toBe(201);
+    expect(res.body.vatNif).toBeUndefined();
+  });
 });

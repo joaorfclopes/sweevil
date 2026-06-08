@@ -183,6 +183,10 @@ bookingRouter.get(
  *                 type: array
  *                 items: { type: string }
  *                 description: Up to 10 S3 reference image URLs
+ *               vatNif:
+ *                 type: string
+ *                 maxLength: 30
+ *                 description: Optional tax ID / VAT number for invoicing
  *               guestInfo:
  *                 type: object
  *                 required: [name, email, phone]
@@ -206,7 +210,7 @@ bookingRouter.post(
   createBookingLimiter,
   validate(createBookingSchema),
   expressAsyncHandler(async (req, res) => {
-    const { date, slot, guestInfo, images } = req.body;
+    const { date, slot, guestInfo, images, vatNif } = req.body;
     const dayStart = new Date(date + 'T00:00:00.000Z');
     const dayEnd = new Date(date + 'T23:59:59.999Z');
     const avail = await Availability.findOne({ date: { $gte: dayStart, $lte: dayEnd } });
@@ -235,6 +239,7 @@ bookingRouter.post(
       images: safeImages,
       confirmToken,
       lang: req.body.lang || 'en',
+      ...(vatNif ? { vatNif } : {}),
     });
     let created;
     try {
@@ -323,7 +328,10 @@ bookingRouter.post(
       email: booking.guestInfo.email,
       name: booking.guestInfo.name,
       phone: booking.guestInfo.phone,
-      metadata: { bookingId: booking._id.toString() },
+      metadata: {
+        bookingId: booking._id.toString(),
+        ...(booking.vatNif ? { vatNif: booking.vatNif } : {}),
+      },
     });
 
     // Create invoice for record-keeping and PDF — decoupled from payment collection

@@ -58,6 +58,16 @@ export const bookingConfirmation = ({ booking, hasInvoice = false }) => {
                   <span style="color:#1a1a1a;font-size:15px;">${booking.price.toFixed(2)}€</span>
                 </td>
               </tr>
+              ${
+                booking.vatNif
+                  ? `<tr>
+                <td style="padding:8px 20px;">
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">NIF / IVA</strong><br/>
+                  <span style="color:#1a1a1a;font-size:15px;">${booking.vatNif}</span>
+                </td>
+              </tr>`
+                  : ''
+              }
             </tbody>
           </table>
           ${
