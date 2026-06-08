@@ -39,10 +39,21 @@ for (const order of toMigrate) {
 
   if (piId && piId.startsWith('pi_') && !piId.startsWith('pi_seed_')) {
     try {
-      const pi = await stripe.paymentIntents.retrieve(piId, { expand: ['latest_charge'] });
+      const pi = await stripe.paymentIntents.retrieve(piId, {
+        expand: ['latest_charge', 'payment_method'],
+      });
       const details = pi.latest_charge?.payment_method_details;
       paymentMethod = details?.type || pi.payment_method_types?.[0] || 'card';
-      last4 = details?.card?.last4 ?? null;
+      if (paymentMethod === 'card') {
+        last4 = details?.card?.last4 ?? null;
+      } else if (paymentMethod === 'mb_way') {
+        const phone =
+          pi.payment_method?.mb_way?.phone ??
+          order.billingDetails?.phoneNumber ??
+          order.shippingDetails?.phoneNumber ??
+          null;
+        last4 = phone ? phone.replace(/\D/g, '').slice(-3) : null;
+      }
       fromStripe++;
     } catch (err) {
       console.warn(`  Could not fetch PI ${piId}: ${err.message} — defaulting to card`);
@@ -53,7 +64,7 @@ for (const order of toMigrate) {
   }
 
   const update = { 'paymentResult.paymentMethod': paymentMethod };
-  if (last4) update['paymentResult.last4'] = last4;
+  if (last4) update['paymentResult.paymentMethodLast'] = last4;
 
   await orders.updateOne({ _id: order._id }, { $set: update });
   updated++;
