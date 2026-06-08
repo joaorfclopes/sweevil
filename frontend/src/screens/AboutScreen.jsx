@@ -20,8 +20,12 @@ export default function AboutScreen(props) {
       .then((res) => {
         setAbout(res.data);
         setAboutLoaded(true);
+        props.onAboutLoaded?.();
       })
-      .catch(() => setAboutLoaded(true));
+      .catch(() => {
+        setAboutLoaded(true);
+        props.onAboutLoaded?.();
+      });
   }, []);
 
   const current = about[lang] || about.en || {};

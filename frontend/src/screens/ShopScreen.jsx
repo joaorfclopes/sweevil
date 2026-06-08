@@ -16,7 +16,9 @@ function ProductSkeleton() {
         <div className="product-image-skeleton">
           <Placeholder aspectRatio="1/1" />
         </div>
-        <Placeholder height="59px" text />
+        <div style={{ marginTop: '7px' }}>
+          <Placeholder height="59px" text />
+        </div>
       </div>
     </div>
   );
