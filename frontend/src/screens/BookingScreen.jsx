@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import Popover from '@mui/material/Popover';
 import { DateCalendar, LocalizationProvider, PickerDay } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as Sentry from '@sentry/react';
@@ -34,6 +35,7 @@ const bookingFormSchema = z.object({
     .regex(/^[\p{L}\p{N}\s\-'.,!?()\n]*$/u, 'Caracteres inválidos nas notas')
     .optional()
     .or(z.literal('')),
+  vatNif: z.string().max(30).optional().or(z.literal('')),
 });
 
 function StripeCheckoutForm({ price, onSuccess, onProcessing, onPayingChange }) {
@@ -131,7 +133,7 @@ export default function BookingScreen(props) {
   } = useForm({
     resolver: zodResolver(bookingFormSchema),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', phone: '', notes: '' },
+    defaultValues: { name: '', email: '', phone: '', notes: '', vatNif: '' },
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -144,6 +146,7 @@ export default function BookingScreen(props) {
   const [submitError, setSubmitError] = useState('');
   const [awaitingMbway, setAwaitingMbway] = useState(false);
   const [stripeFormPaying, setStripeFormPaying] = useState(false);
+  const [vatNifAnchorEl, setVatNifAnchorEl] = useState(null);
 
   const handledRedirect = useRef(false);
 
@@ -221,6 +224,7 @@ export default function BookingScreen(props) {
         guestInfo: formData,
         images: uploadedUrls,
         lang: i18n.language,
+        ...(formData.vatNif ? { vatNif: formData.vatNif } : {}),
       });
       setBooking(createdBooking);
       Sentry.metrics.count('booking.submit_attempted', 1);
@@ -427,6 +431,41 @@ export default function BookingScreen(props) {
                           />
                           {bookingErrors.phone && (
                             <span className="field-error">{bookingErrors.phone.message}</span>
+                          )}
+                        </div>
+                        <div>
+                          <label htmlFor="vatNif">
+                            {t('booking.vatNif')}
+                            <button
+                              type="button"
+                              className="shipping-info-btn"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setVatNifAnchorEl(e.currentTarget);
+                              }}
+                              aria-label="Tax ID info"
+                            >
+                              ⓘ
+                            </button>
+                          </label>
+                          <Popover
+                            open={Boolean(vatNifAnchorEl)}
+                            anchorEl={vatNifAnchorEl}
+                            onClose={() => setVatNifAnchorEl(null)}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            disableScrollLock
+                          >
+                            <p className="shipping-info-popover">{t('booking.vatNifTooltip')}</p>
+                          </Popover>
+                          <input
+                            type="text"
+                            id="vatNif"
+                            maxLength={30}
+                            placeholder={t('common.optional')}
+                            {...registerBooking('vatNif')}
+                          />
+                          {bookingErrors.vatNif && (
+                            <span className="field-error">{bookingErrors.vatNif.message}</span>
                           )}
                         </div>
                         <div>

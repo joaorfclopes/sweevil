@@ -194,7 +194,9 @@
     "pay": "Pagar €{{amount}}",
     "continueToPayment": "Continuar para Pagamento — {{amount}}€",
     "included": "incluído",
-    "removePhoto": "Remover foto"
+    "removePhoto": "Remover foto",
+    "vatNif": "NIF / IVA",
+    "vatNifTooltip": "O seu número de identificação fiscal para efeitos de faturação (ex. NIF, IVA, CIF). Opcional."
   },
   "shop": {
     "soldOut": "Esgotado",

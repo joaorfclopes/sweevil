@@ -80,6 +80,16 @@ export const bookingAdmin = ({ booking }) => {
                   : ''
               }
               ${
+                booking.vatNif
+                  ? `<tr>
+                <td style="padding:8px 20px;">
+                  <strong style="color:#767676;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">NIF / VAT</strong><br/>
+                  <span style="color:#1a1a1a;font-size:15px;">${booking.vatNif}</span>
+                </td>
+              </tr>`
+                  : ''
+              }
+              ${
                 booking.images && booking.images.length > 0
                   ? `<tr>
                 <td style="padding:8px 20px;">
