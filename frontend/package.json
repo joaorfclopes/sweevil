@@ -13,7 +13,7 @@
     "@hookform/resolvers": "^5.4.0",
     "@mui/icons-material": "^9.1.0",
     "@mui/material": "^9.1.0",
-    "@mui/x-date-pickers": "^9.3.0",
+    "@mui/x-date-pickers": "^9.4.0",
     "@sentry/react": "^10.57.0",
     "@simplewebauthn/browser": "^13.3.0",
     "@stripe/react-stripe-js": "^6.6.0",
