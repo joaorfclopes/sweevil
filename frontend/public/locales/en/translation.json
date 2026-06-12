@@ -439,5 +439,14 @@
     "termsConditions": "Terms & Conditions",
     "withdrawalRight": "Right of Withdrawal",
     "back": "Back"
+  },
+  "stepper": {
+    "shipping": "Shipping",
+    "billing": "Billing",
+    "review": "Review",
+    "date": "Date",
+    "time": "Time",
+    "details": "Details",
+    "payment": "Payment"
   }
 }

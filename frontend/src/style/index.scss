@@ -34,6 +34,7 @@
 @use './components/arrowUp';
 @use './components/consentNotice';
 @use './components/shippingInfoTooltip';
+@use './components/checkoutStepper';
 
 #root {
   &.show {

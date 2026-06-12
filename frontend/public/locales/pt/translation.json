@@ -439,5 +439,14 @@
     "termsConditions": "Termos e Condições Gerais de Venda",
     "withdrawalRight": "Direito de Arrependimento",
     "back": "Voltar"
+  },
+  "stepper": {
+    "shipping": "Envio",
+    "billing": "Faturação",
+    "review": "Revisão",
+    "date": "Data",
+    "time": "Horário",
+    "details": "Detalhes",
+    "payment": "Pagamento"
   }
 }
