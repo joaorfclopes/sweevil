@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { saveBillingInfo, saveShippingDetails } from '../actions/cartActions';
+import CheckoutStepper from '../components/CheckoutStepper';
 
 const PhoneInput = _PhoneInput.default || _PhoneInput;
 
@@ -261,6 +262,10 @@ export default function ShippingScreen(props) {
     <section className="shipping">
       <div className="shipping-container">
         <div className="shipping-inner">
+          <CheckoutStepper
+            steps={[t('stepper.shipping'), t('stepper.billing'), t('stepper.review')]}
+            activeStep={0}
+          />
           <form className="shipping-form" onSubmit={handleSubmit(onSubmit)}>
             <h2>{t('shipping.title')}</h2>
             <div>

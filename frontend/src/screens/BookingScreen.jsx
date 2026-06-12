@@ -14,6 +14,7 @@ import _PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
+import CheckoutStepper from '../components/CheckoutStepper';
 import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
@@ -324,6 +325,16 @@ export default function BookingScreen(props) {
           </div>
         ) : (
           <>
+            <CheckoutStepper
+              steps={[
+                t('stepper.date'),
+                t('stepper.time'),
+                t('stepper.details'),
+                t('stepper.payment'),
+              ]}
+              activeStep={step}
+              onStepClick={(i) => setStep(i)}
+            />
             <div className="booking-calendar-outer">
               <img src="/bookings.avif" alt="" className="booking-hero-img" />
               <div className="booking-calendar-content">

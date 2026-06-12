@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
+import CheckoutStepper from '../components/CheckoutStepper';
 import LoadingOverlay from '../components/LoadingOverlay';
 import OrderItemsList from '../components/OrderItemsList';
 import ShippingInfoTooltip from '../components/ShippingInfoTooltip';
@@ -61,6 +62,11 @@ export default function PlaceOrderScreen(props) {
         <LoadingOverlay loading={loading}>
           <div className="place-order-inner">
             <h1 className="custom-font">{t('placeOrder.title')}</h1>
+            <CheckoutStepper
+              steps={[t('stepper.shipping'), t('stepper.billing'), t('stepper.review')]}
+              activeStep={2}
+              onStepClick={() => navigate('/cart/shipping')}
+            />
             <div className="card">
               <h3>{t('placeOrder.shippingDetails')}</h3>
               <p>
