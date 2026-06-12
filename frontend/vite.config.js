@@ -54,5 +54,10 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
       sourcemap: true,
     },
+    test: {
+      environment: 'jsdom',
+      setupFiles: './src/setupTests.js',
+      globals: true,
+    },
   };
 });
