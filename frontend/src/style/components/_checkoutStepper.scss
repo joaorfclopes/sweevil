@@ -1,15 +1,25 @@
+@use '../general/globals' as *;
+
 .checkout-stepper {
   display: flex;
   align-items: flex-start;
+  margin-top: 1rem;
   margin-bottom: 2rem;
   width: 100%;
   max-width: 500px;
+
+  @include lg {
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   .stepper-step {
     display: flex;
     flex-direction: column;
     align-items: center;
     flex: 0 0 auto;
+    position: relative;
+    z-index: 1;
   }
 
   .stepper-connector {
@@ -18,6 +28,8 @@
     background: #000;
     margin-top: 15px;
     min-width: 8px;
+    position: relative;
+    z-index: 0;
 
     &--future {
       background: #bbb;
@@ -40,8 +52,9 @@
     cursor: default;
 
     &--active {
-      outline: 2px solid #000;
-      outline-offset: 3px;
+      box-shadow:
+        0 0 0 3px #fff,
+        0 0 0 5px #000;
     }
 
     &--future {

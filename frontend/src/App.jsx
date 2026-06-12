@@ -12,6 +12,7 @@ import { USER_SIGNIN_SUCCESS, USER_SIGNOUT } from './constants/userConstants';
 import { FeaturesProvider, useFeatures } from './FeaturesContext';
 import { authClient } from './lib/authClient';
 import AdminScreen from './screens/AdminScreen';
+import BillingScreen from './screens/BillingScreen';
 import BookingScreen from './screens/BookingScreen';
 import CartScreen from './screens/CartScreen';
 import CookiePolicyScreen from './screens/CookiePolicyScreen';
@@ -220,6 +221,7 @@ function AppContent() {
                 <Route path="/shop/product/:id" element={<ProductScreen />} />
                 <Route path="/cart" element={<CartScreen />} />
                 <Route path="/cart/shipping" element={<ShippingScreen />} />
+                <Route path="/cart/billing" element={<BillingScreen />} />
                 <Route path="/cart/placeorder" element={<PlaceOrderScreen />} />
                 <Route path="/cart/order/:token" element={<OrderScreen />} />
                 <Route path="/signin" element={<SigninScreen />} />

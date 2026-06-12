@@ -65,7 +65,7 @@ export default function PlaceOrderScreen(props) {
             <CheckoutStepper
               steps={[t('stepper.shipping'), t('stepper.billing'), t('stepper.review')]}
               activeStep={2}
-              onStepClick={() => navigate('/cart/shipping')}
+              onStepClick={(i) => navigate(i === 0 ? '/cart/shipping' : '/cart/billing')}
             />
             <div className="card">
               <h3>{t('placeOrder.shippingDetails')}</h3>
