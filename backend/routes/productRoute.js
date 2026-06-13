@@ -79,7 +79,8 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const hasAdminParams = req.query.page || req.query.limit || req.query.search || req.query.all;
     if (req.user?.isAdmin && hasAdminParams) {
-      const { search = '', all } = req.query;
+      const { search: rawSearch = '', all } = req.query;
+      const search = typeof rawSearch === 'string' ? rawSearch : '';
       const query = {};
       if (search) query.name = { $regex: search, $options: 'i' };
 

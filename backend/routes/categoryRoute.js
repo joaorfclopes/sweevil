@@ -76,8 +76,8 @@ categoryRouter.post(
     }
     const category = new Category({
       name: name.trim(),
-      nameEn: nameEn?.trim(),
-      namePt: namePt?.trim(),
+      nameEn: typeof nameEn === 'string' ? nameEn.trim() : undefined,
+      namePt: typeof namePt === 'string' ? namePt.trim() : undefined,
     });
     const created = await category.save();
     await cacheDel(CACHE_KEY);
@@ -175,8 +175,10 @@ categoryRouter.put(
     const oldName = category.name;
     const newName = name.trim();
     category.name = newName;
-    if (nameEn !== undefined) category.nameEn = nameEn?.trim() || undefined;
-    if (namePt !== undefined) category.namePt = namePt?.trim() || undefined;
+    if (nameEn !== undefined)
+      category.nameEn = typeof nameEn === 'string' ? nameEn.trim() || undefined : undefined;
+    if (namePt !== undefined)
+      category.namePt = typeof namePt === 'string' ? namePt.trim() || undefined : undefined;
     const updated = await category.save();
     await GalleryImage.updateMany({ category: oldName }, { category: newName });
     await cacheDel(CACHE_KEY);

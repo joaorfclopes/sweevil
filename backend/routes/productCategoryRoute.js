@@ -99,8 +99,8 @@ productCategoryRouter.post(
     const category = await ProductCategory.create({
       name: name.trim(),
       isClothing: !!isClothing,
-      nameEn: nameEn?.trim(),
-      namePt: namePt?.trim(),
+      nameEn: typeof nameEn === 'string' ? nameEn.trim() : undefined,
+      namePt: typeof namePt === 'string' ? namePt.trim() : undefined,
     });
     await cacheDel(CACHE_KEY);
     res.status(201).json(category);
@@ -159,8 +159,10 @@ productCategoryRouter.put(
     const oldName = category.name;
     category.name = name.trim();
     if (isClothing !== undefined) category.isClothing = !!isClothing;
-    if (nameEn !== undefined) category.nameEn = nameEn?.trim() || undefined;
-    if (namePt !== undefined) category.namePt = namePt?.trim() || undefined;
+    if (nameEn !== undefined)
+      category.nameEn = typeof nameEn === 'string' ? nameEn.trim() || undefined : undefined;
+    if (namePt !== undefined)
+      category.namePt = typeof namePt === 'string' ? namePt.trim() || undefined : undefined;
     await category.save();
     if (oldName !== category.name) {
       await Product.updateMany({ category: oldName }, { $set: { category: category.name } });
