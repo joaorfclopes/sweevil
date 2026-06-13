@@ -1026,7 +1026,11 @@ orderRouter.put(
             order.isRefunded = true;
             order.status = 'CANCELED_REFUNDED';
           } catch (refundErr) {
-            console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+            console.error(
+              '[order] Stripe refund failed for',
+              String(order._id) + ':',
+              refundErr.message
+            );
             order.status = 'CANCELED_PENDING_REFUND';
           }
         } else if (refundChoice === 'no') {
@@ -1139,7 +1143,11 @@ orderRouter.put(
             order.isRefunded = true;
             order.status = 'CANCELED_REFUNDED';
           } catch (refundErr) {
-            console.error(`[order] Stripe refund failed for ${order._id}:`, refundErr.message);
+            console.error(
+              '[order] Stripe refund failed for',
+              String(order._id) + ':',
+              refundErr.message
+            );
             order.status = 'CANCELED_PENDING_REFUND';
           }
         } else if (refundChoice === 'no') {
