@@ -1,6 +1,4 @@
-FROM node:24-alpine
-
-RUN apk upgrade --no-cache
+FROM node:24-slim
 
 WORKDIR /app/frontend
 
