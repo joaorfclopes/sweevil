@@ -307,7 +307,10 @@ export default function OrderScreen(props) {
       confirmButtonText: t('order.deleteBtn'),
       confirmButtonColor: '#d32f2f',
     }).then((result) => {
-      if (result.isConfirmed) dispatch(deleteOrder(order._id));
+      if (result.isConfirmed) {
+        if (!order._id) return;
+        dispatch(deleteOrder(order._id));
+      }
     });
   };
 

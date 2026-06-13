@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 import Stripe from 'stripe';
 import { getAuth } from '../auth.js';
 import { getShippingPrice } from '../config/shippingZones.js';
@@ -144,6 +145,9 @@ orderRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid order id' });
+    }
     const order = await Order.findById(req.params.id);
     if (order) {
       await order.deleteOne();

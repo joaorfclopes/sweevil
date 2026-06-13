@@ -268,6 +268,15 @@ describe('public order responses must not include _id', () => {
   });
 });
 
+describe('DELETE /api/orders/:id', () => {
+  it('returns 400 for invalid ObjectId', async () => {
+    const cookie = await createAdminSession();
+    const res = await request(app).delete('/api/orders/undefined').set('Cookie', cookie);
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe('Invalid order id');
+  });
+});
+
 describe('Token-based client routes', () => {
   it('POST /token/:token/create-payment-intent returns 404 for unknown token', async () => {
     const res = await request(app)

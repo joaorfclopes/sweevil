@@ -94,6 +94,7 @@ export default function OrdersTable() {
       confirmButtonText: t('common.yes'),
     }).then((result) => {
       if (result.isConfirmed) {
+        if (!order._id) return;
         dispatch(deleteOrder(order._id));
         Swal.fire(t('admin.deletedSuccess'), '', 'success');
       }
@@ -158,7 +159,9 @@ export default function OrdersTable() {
       confirmButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
-        selected.forEach((id) => dispatch(deleteOrder(id)));
+        selected.forEach((id) => {
+          if (id) dispatch(deleteOrder(id));
+        });
         setSelected(new Set());
       }
     });
