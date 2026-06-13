@@ -151,6 +151,7 @@ orderRouter.delete(
     const order = await Order.findById(req.params.id);
     if (order) {
       await order.deleteOne();
+      console.log(`[order] Order ${order._id} deleted`);
       res.send({ message: 'Order deleted', order });
     } else {
       res.status(404).send({ message: 'Order not found' });
