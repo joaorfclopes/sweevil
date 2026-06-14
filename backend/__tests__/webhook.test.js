@@ -14,7 +14,8 @@ afterAll(async () => {
   await mongoose.disconnect();
 });
 
-const WEBHOOK_SECRET = 'whsec_test_webhook_secret_for_tests_only';
+const WEBHOOK_SECRET =
+  process.env.STRIPE_WEBHOOK_SECRET ?? 'whsec_test_webhook_secret_for_tests_only';
 
 function makeStripeEvent(type, payload) {
   return {

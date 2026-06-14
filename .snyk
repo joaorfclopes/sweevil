@@ -1,18 +1,4 @@
 # Snyk (https://snyk.io) policy file
 version: v1.25.0
-ignore:
-  'fc3065be.3f481afb.8b18f948.d7919eeb.79a7d027.5fce695c.2a1b1ed7.89d75565.fc3065be.3f481afb.72aa1700.d7919eeb.79a7d027.5fce695c.2a1b1ed7.89d75565':
-    - '*':
-        reason: >-
-          Test file only. Intentionally fake Stripe webhook signing secret used
-          in unit tests. Not deployed.
-        expires: '2027-06-13T00:00:00.000Z'
-        created: '2026-06-13T00:00:00.000Z'
-  'fc3065be.4773f344.607187b5.d7919eeb.79a7d027.f7edcf51.2a1b1ed7.8970c4be.fc3065be.4773f344.8b18f948.d7919eeb.79a7d027.5fce695c.2a1b1ed7.89d75565':
-    - '*':
-        reason: >-
-          Test file only. Intentionally fake Stripe webhook signing secret used
-          in unit tests. Not deployed.
-        expires: '2027-06-13T00:00:00.000Z'
-        created: '2026-06-13T00:00:00.000Z'
+ignore: {}
 patch: {}

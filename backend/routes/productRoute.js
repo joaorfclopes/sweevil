@@ -77,7 +77,8 @@ productRouter.get(
   '/',
   optionalAuth,
   expressAsyncHandler(async (req, res) => {
-    const hasAdminParams = req.query.page || req.query.limit || req.query.search || req.query.all;
+    const hasAdminParams =
+      'page' in req.query || 'limit' in req.query || 'search' in req.query || 'all' in req.query;
     if (req.user?.isAdmin && hasAdminParams) {
       const { search: rawSearch = '', all } = req.query;
       const search = typeof rawSearch === 'string' ? rawSearch : '';
