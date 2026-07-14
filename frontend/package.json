@@ -27,7 +27,7 @@
     "dayjs": "^1.11.21",
     "framer-motion": "^12.42.1",
     "heic2any": "^0.0.4",
-    "i18next": "^26.3.4",
+    "i18next": "^26.3.6",
     "i18next-http-backend": "^4.0.0",
     "notyf": "^3.10.0",
     "react": "^19.2.7",
