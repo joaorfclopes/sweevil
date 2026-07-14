@@ -44,7 +44,7 @@
     "sass": "^1.101.0",
     "sweetalert2": "^11.26.25",
     "validator": "^13.15.35",
-    "yet-another-react-lightbox": "^3.32.0",
+    "yet-another-react-lightbox": "^3.32.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
