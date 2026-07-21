@@ -46,7 +46,7 @@
     "geoip-lite": "^2.0.3",
     "helmet": "^8.3.0",
     "ioredis": "^5.11.1",
-    "mongoose": "^9.7.4",
+    "mongoose": "^9.8.0",
     "multer": "^2.2.0",
     "nanoid": "^6.0.0",
     "nodemailer": "^9.0.3",
