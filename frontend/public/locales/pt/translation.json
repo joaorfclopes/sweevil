@@ -191,6 +191,8 @@
     "exclusivityNotice": "Por favor, note que o valor da marcação não é reembolsável.",
     "priceInquiry": "Para pedidos de preço antes de marcar, contacte:",
     "moreInfo": "Clique aqui para mais informações",
+    "exclusivityInfo": "Cada design é uma peça original, desenhada à mão com autenticidade. Para garantir exclusividade, não repito designs. Se tiver interesse numa peça anterior, pode enviá-la como referência e criarei um novo design único inspirado nela.",
+    "closeInfo": "Fechar",
     "pay": "Pagar €{{amount}}",
     "continueToPayment": "Continuar para Pagamento — {{amount}}€",
     "included": "incluído",

@@ -108,9 +108,6 @@ function AvailableDay(props) {
 
 const STEPS = { CALENDAR: 0, SLOTS: 1, FORM: 2, PAYMENT: 3, CONFIRMED: 4 };
 
-const EXCLUSIVITY_TEXT =
-  'Cada design é uma peça original, desenhada à mão com autenticidade. Para garantir exclusividade, não repito designs. Se tiver interesse numa peça anterior, pode enviá-la como referência e crierei um novo design único inspirado nela.';
-
 export default function BookingScreen(props) {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -587,11 +584,11 @@ export default function BookingScreen(props) {
             <button
               className="booking-modal-close"
               onClick={() => setInfoModalOpen(false)}
-              aria-label="Close"
+              aria-label={t('booking.closeInfo')}
             >
               ×
             </button>
-            <p>{EXCLUSIVITY_TEXT}</p>
+            <p>{t('booking.exclusivityInfo')}</p>
           </div>
         </div>
       )}
