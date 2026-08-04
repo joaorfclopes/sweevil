@@ -191,6 +191,8 @@
     "exclusivityNotice": "Please note that the booking value is non-refundable.",
     "priceInquiry": "For price inquiries before booking, please contact:",
     "moreInfo": "Click here for more info",
+    "exclusivityInfo": "Every design is an original piece, hand-drawn with authenticity. To guarantee exclusivity, I do not repeat designs. If you are interested in a previous piece, you can send it as a reference and I will create a new, unique design inspired by it.",
+    "closeInfo": "Close",
     "pay": "Pay €{{amount}}",
     "continueToPayment": "Continue to Payment — {{amount}}€",
     "included": "included",
