@@ -61,6 +61,7 @@ import {
 import useScrollLock from '../hooks/useScrollLock';
 import { formatDateDay } from '../utils.js';
 import { downloadCSV, getComparator, isNewRow } from '../utils/adminTableUtils';
+import datePickerLocale from '../utils/datePickerLocale';
 import Swal from '../utils/swal';
 import LoadingOverlay from './LoadingOverlay';
 import MessageBox from './MessageBox';
@@ -120,7 +121,7 @@ function ExtraPickerDay({
 }
 
 export default function BookingsAdminTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
 
   const bookingList = useSelector((s) => s.bookingList);
@@ -478,7 +479,10 @@ export default function BookingsAdminTab() {
                     width: 'fit-content',
                   }}
                 >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale={datePickerLocale(i18n.language)}
+                  >
                     <DateCalendar
                       onChange={handleDayClick}
                       disablePast
@@ -892,7 +896,10 @@ export default function BookingsAdminTab() {
           )}
           {!editingAvail && showExtraPicker && (
             <Box sx={{ mt: 1 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale={datePickerLocale(i18n.language)}
+              >
                 <DateCalendar
                   disablePast
                   referenceDate={dialogDate ? dayjs(dialogDate) : undefined}

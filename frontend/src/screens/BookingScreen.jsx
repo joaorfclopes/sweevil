@@ -19,6 +19,7 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import MessageBox from '../components/MessageBox';
 import useScrollLock from '../hooks/useScrollLock';
 import { convertIfHeic } from '../utils/convertHeic';
+import datePickerLocale from '../utils/datePickerLocale';
 
 const PhoneInput = _PhoneInput.default || _PhoneInput;
 
@@ -355,7 +356,10 @@ export default function BookingScreen(props) {
                       <MessageBox variant="error">{availError}</MessageBox>
                     ) : (
                       <LoadingOverlay loading={loadingAvail} minHeight="300px">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <LocalizationProvider
+                          dateAdapter={AdapterDayjs}
+                          adapterLocale={datePickerLocale(i18n.language)}
+                        >
                           <DateCalendar
                             minDate={dayjs().add(3, 'day')}
                             shouldDisableDate={shouldDisableDate}

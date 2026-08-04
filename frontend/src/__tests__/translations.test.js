@@ -24,9 +24,11 @@ const namespaces = readdirSync(join(localesDir, 'en')).filter((f) => f.endsWith(
 describe('translations', () => {
   it('exposes the same namespaces in every language', () => {
     for (const lang of LANGS) {
-      expect(readdirSync(join(localesDir, lang)).filter((f) => f.endsWith('.json')).sort()).toEqual(
-        [...namespaces].sort()
-      );
+      expect(
+        readdirSync(join(localesDir, lang))
+          .filter((f) => f.endsWith('.json'))
+          .sort()
+      ).toEqual([...namespaces].sort());
     }
   });
 
