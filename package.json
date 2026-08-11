@@ -48,7 +48,7 @@
     "ioredis": "^6.0.0",
     "mongoose": "^9.9.1",
     "multer": "^2.2.0",
-    "nanoid": "^6.0.0",
+    "nanoid": "^6.0.1",
     "nodemailer": "^9.0.5",
     "sharp": "^0.35.3",
     "stripe": "^22.4.0",
