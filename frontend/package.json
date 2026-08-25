@@ -24,7 +24,7 @@
     "axios": "^1.19.0",
     "better-auth": "^1.6.29",
     "countries-list": "^3.4.1",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.23",
     "framer-motion": "^13.1.1",
     "heic2any": "^0.0.4",
     "i18next": "^26.4.0",
