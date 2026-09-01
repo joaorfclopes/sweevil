@@ -45,7 +45,7 @@
     "sweetalert2": "^11.26.25",
     "validator": "^13.15.35",
     "yet-another-react-lightbox": "^3.32.2",
-    "zod": "^4.4.3"
+    "zod": "^4.5.2"
   },
   "devDependencies": {
     "@sentry/vite-plugin": "^5.4.0",
