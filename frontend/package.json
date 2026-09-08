@@ -20,7 +20,7 @@
     "@stripe/stripe-js": "^9.14.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.6",
+    "@testing-library/user-event": "^14.6.7",
     "axios": "^1.20.0",
     "better-auth": "^1.7.2",
     "countries-list": "^3.4.1",
