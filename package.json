@@ -57,7 +57,7 @@
     "zod": "^4.6.2"
   },
   "devDependencies": {
-    "@jest/globals": "^30.5.1",
+    "@jest/globals": "^30.5.2",
     "concurrently": "^10.0.5",
     "eslint": "^10.10.0",
     "eslint-plugin-react": "^7.37.4",
