@@ -50,7 +50,7 @@
   "devDependencies": {
     "@sentry/vite-plugin": "^5.4.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "jsdom": "^30.0.1",
+    "jsdom": "^30.1.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vite-plugin-svgr": "^5.2.0",
