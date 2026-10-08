@@ -1,28 +1,24 @@
 ---
 name: Explore Codebase
-description: Navigate and understand codebase structure using the knowledge graph
+description: Navigate and understand codebase structure using the graphify knowledge graph
 ---
 
 ## Explore Codebase
 
-Use the code-review-graph MCP tools to explore and understand the codebase.
+Use the graphify knowledge graph (`graphify-out/graph.json`) to explore and understand the codebase.
 
 ### Steps
 
-1. Run `list_graph_stats` to see overall codebase metrics.
-2. Run `get_architecture_overview` for high-level community structure.
-3. Use `list_communities` to find major modules, then `get_community` for details.
-4. Use `semantic_search_nodes` to find specific functions or classes.
-5. Use `query_graph` with patterns like `callers_of`, `callees_of`, `imports_of` to trace relationships.
-6. Use `list_flows` and `get_flow` to understand execution paths.
+1. If `graphify-out/` is missing or may be stale, run `graphify update .` first.
+2. Read `graphify-out/GRAPH_REPORT.md` for high-level community structure.
+3. Run `graphify god-nodes` to find the most connected modules.
+4. Use `graphify query "<question>"` to find specific functions, classes, or flows.
+5. Use `graphify path "A" "B"` to trace how two things connect.
+6. Use `graphify explain "X"` to understand one node and its neighbors.
+7. Use `graphify affected "X"` to see what a change to X impacts.
 
 ### Tips
 
-- Start broad (stats, architecture) then narrow down to specific areas.
-- Use `children_of` on a file to see all its functions and classes.
-- Use `find_large_functions` to identify complex code.
-
-## Token Efficiency Rules
-- ALWAYS start with `get_minimal_context(task="<your task>")` before any other graph tool.
-- Use `detail_level="minimal"` on all calls. Only escalate to "standard" when minimal is insufficient.
-- Target: complete any review/debug/refactor task in ≤5 tool calls and ≤800 total output tokens.
+- Start broad (report, god nodes) then narrow down to specific areas.
+- Keep `graphify query` output small with `--budget N`.
+- Fall back to Grep/Glob/Read only when the graph doesn't cover what you need.
