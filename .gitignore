@@ -29,8 +29,8 @@ debug.log
 frontend/.env
 .history
 
-# Added by code-review-graph
-.code-review-graph/
+# graphify
+graphify-out/
 
 # Claude Code agent worktrees
 .claude/worktrees/
