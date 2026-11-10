@@ -36,7 +36,7 @@
     "@aws-sdk/lib-storage": "^3.1161.0",
     "@better-auth/passkey": "^1.7.14",
     "@sentry/node": "^11.11.0",
-    "@sentry/profiling-node": "^11.10.0",
+    "@sentry/profiling-node": "^11.11.0",
     "@simplewebauthn/server": "^14.1.0",
     "better-auth": "^1.7.14",
     "dotenv": "^18.0.9",
