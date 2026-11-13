@@ -6,11 +6,6 @@
       "env": {
         "SNYK_TOKEN": "${SNYK_TOKEN}"
       }
-    },
-    "graphify": {
-      "command": "graphify-mcp",
-      "args": [],
-      "type": "stdio"
     }
   }
 }
