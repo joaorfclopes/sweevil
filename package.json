@@ -33,7 +33,7 @@
   "homepage": "https://github.com/joaorfclopes/sweevil#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1175.0",
-    "@aws-sdk/lib-storage": "^3.1169.0",
+    "@aws-sdk/lib-storage": "^3.1175.0",
     "@better-auth/passkey": "^1.7.27",
     "@sentry/node": "^11.12.0",
     "@sentry/profiling-node": "^11.16.0",
